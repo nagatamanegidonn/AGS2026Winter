@@ -82,6 +82,17 @@ public:
 	const void CaptureMainScreen(void);
 	const void DrawCapturedScreen(int x, int y);
 
+	/// <summary>
+	/// シーンを新しく「積む」
+	/// </summary>
+	/// <param name="scene"></param>
+	void PushScene(std::shared_ptr<SceneBase> scene);
+
+	/// <summary>
+	/// 最後に追加したシーンを削除する
+	/// </summary>
+	void PopScene();
+
 private:
 
 	// 静的インスタンス
@@ -98,7 +109,7 @@ private:
 	std::unique_ptr<Fader> fader_;
 
 	// 各種シーン
-	std::unique_ptr<SceneBase> scene_;
+	std::list<std::shared_ptr<SceneBase>> scene_;
 
 	// カメラ
 	std::shared_ptr<Camera> camera_;

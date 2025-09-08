@@ -134,7 +134,9 @@ void SceneManager::Update(void)
 	else
 	{
 		// 更新
-		scene_->Update();
+		for (auto& scene : scene_) {
+			scene->Update();
+		}
 	}
 
 	// カメラ更新
@@ -158,7 +160,9 @@ void SceneManager::Draw(void)
 	UpdateEffekseer3D();
 
 	// 描画
-	scene_->Draw();
+	for (auto& scene : scene_) {
+		scene->Draw();
+	}
 
 	// Effekseerにより再生中のエフェクトを描画する。
 	DrawEffekseer3D();
@@ -266,6 +270,17 @@ const void SceneManager::DrawCapturedScreen(int x, int y)
 	}
 }
 
+void SceneManager::PushScene(std::shared_ptr<SceneBase> scene)
+{
+	scene_.push_back(scene);
+}
+void SceneManager::PopScene()
+{
+	if (scene_.size() > 1) {
+		scene_.pop_back();
+	}
+}
+
 void SceneManager::DoChangeScene(SCENE_ID sceneId)
 {
 
@@ -277,28 +292,36 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 	sceneId_ = sceneId;
 
 	// 現在のシーンを解放
-	if (scene_ != nullptr)
+	if (!scene_.empty())
 	{
-		scene_.reset();
+		scene_.clear();
 	}
 
 	switch (sceneId_)
 	{
 	case SCENE_ID::TITLE:
-		scene_ = std::make_unique<TitleScene>();
+		scene_.push_back(std::make_shared<TitleScene>());
+		//scene_ = std::make_unique<TitleScene>();
 		break;
 	case SCENE_ID::CONNECT:
-		scene_ = std::make_unique<ConnectScene>();
+		scene_.push_back(std::make_shared<ConnectScene>());
+		//scene_ = std::make_unique<ConnectScene>();
 		break;
 	case SCENE_ID::GAME:
-		scene_ = std::make_unique<GameScene>();
+		scene_.push_back(std::make_shared<GameScene>());
+		//scene_ = std::make_unique<GameScene>();
 		break;
 	case SCENE_ID::RSULT:
-		scene_ = std::make_unique<RefreshScene>();
+		scene_.push_back(std::make_shared<RefreshScene>());
+		//scene_ = std::make_unique<RefreshScene>();
 		break;
 	}
 
-	scene_->Init();
+	// 挿入したシーンだけ Init
+	if (!scene_.empty())
+	{
+		scene_.back()->Init();   // ← これでOK
+	}
 
 	//ResetDeltaTime();
 
