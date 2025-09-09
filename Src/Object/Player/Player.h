@@ -114,6 +114,7 @@ public:
 		DEAD,
 	};
 
+	//プレイヤー自身から発生されるサウンド
 	enum class SE
 	{
 		CHAGE,
@@ -130,6 +131,8 @@ public:
 		ATTRCK1,
 		ATTRCK2,
 		ATTRCK3,
+
+		MAX//音なしfor文用
 	};
 
 	// キーコンフィグ(1P、2P)

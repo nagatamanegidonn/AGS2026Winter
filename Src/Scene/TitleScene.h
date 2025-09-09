@@ -121,7 +121,6 @@ private:
 
 	//ここで変更するステータス
 	bool isPad_;
-	bool isHost_;
 	int selectId_;
 	int weponId_;
 	bool isWpSelect_;

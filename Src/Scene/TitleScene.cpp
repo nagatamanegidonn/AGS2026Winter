@@ -62,7 +62,6 @@ void TitleScene::Init(void)
 	player_->SetWepon(SceneManager::GetInstance().GetWeponId());
 
 	//選択中の項目
-	isHost_ = true;
 	selectId_ = (int)MENU::GAME_START;
 	weponId_ = SceneManager::GetInstance().GetWeponId();
 	isWpSelect_ = false;
@@ -161,7 +160,7 @@ void TitleScene::Draw(void)
 	// ホストorクライアント
 	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0x000000, true);
 	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0xffffff, false);
-	if (isHost_)
+	if (SceneManager::GetInstance().IsHost())
 	{
 		DrawString(B1_S_POS.x + 50, B1_S_POS.y + 7, L"HOST", 0xffffff);
 	}
@@ -329,13 +328,13 @@ void TitleScene::MouseUpdate(void)
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
 			selectId_ = (int)MENU::USER_SELECT;
-			if (isHost_)
+			if (SceneManager::GetInstance().IsHost())
 			{
-				isHost_ = false;
+				SceneManager::GetInstance().SetHost(false);
 			}
 			else
 			{
-				isHost_ = true;
+				SceneManager::GetInstance().SetHost(true);
 			}
 		}
 		// ゲームスタート
@@ -345,7 +344,7 @@ void TitleScene::MouseUpdate(void)
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
 			selectId_ = (int)MENU::GAME_START;
-			if (isHost_)
+			if (SceneManager::GetInstance().IsHost())
 			{
 				NetManager::GetInstance().Run(NET_MODE::HOST);
 				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::CONNECT);
@@ -465,13 +464,13 @@ void TitleScene::PNormalUpdate(void)
 		{
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
-			if (isHost_)
+			if (SceneManager::GetInstance().IsHost())
 			{
-				isHost_ = false;
+				SceneManager::GetInstance().SetHost(false);
 			}
 			else
 			{
-				isHost_ = true;
+				SceneManager::GetInstance().SetHost(true);
 			}
 		}
 		break;
@@ -483,7 +482,7 @@ void TitleScene::PNormalUpdate(void)
 			SetMouseDispFlag(true);
 			//SetMouseDispFlag(false);
 
-			if (isHost_)
+			if (SceneManager::GetInstance().IsHost())
 			{
 				NetManager::GetInstance().Run(NET_MODE::HOST);
 				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::CONNECT);

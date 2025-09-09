@@ -423,15 +423,22 @@ void Player::Update(void)
 		float volume = AsoUtility::CalcVolumeByDistance(selfPos, transform_.pos, MAX_EAR_RADIUS);
 
 		// 無音なら停止
-		soundController_->ChengeVolume((int)SE::CHAGE, volume); // ボリュームだけ更新
-		soundController_->ChengeVolume((int)SE::DRAW, volume); // ボリュームだけ更新
-		soundController_->ChengeVolume((int)SE::CLOSE, volume); // ボリュームだけ更新
-		soundController_->ChengeVolume((int)SE::WALK, volume); // ボリュームだけ更新
-		soundController_->ChengeVolume((int)SE::RUN, volume); // ボリュームだけ更新
-		soundController_->ChengeVolume((int)SE::ROLL, volume); // ボリュームだけ更新
-		soundController_->ChengeVolume((int)SE::DAMAGE, volume); // ボリュームだけ更新
-		soundController_->ChengeVolume((int)SE::HI_DAMAGE, volume); // ボリュームだけ更新
-		soundController_->ChengeVolume((int)SE::DOWN, volume); // ボリュームだけ更新
+#pragma region 旧型
+		//soundController_->ChengeVolume((int)SE::CHAGE, volume);	// ボリュームだけ更新
+		//soundController_->ChengeVolume((int)SE::DRAW, volume);	// ボリュームだけ更新
+		//soundController_->ChengeVolume((int)SE::CLOSE, volume); // ボリュームだけ更新
+		//soundController_->ChengeVolume((int)SE::WALK, volume);	// ボリュームだけ更新
+		//soundController_->ChengeVolume((int)SE::RUN, volume);	// ボリュームだけ更新
+		//soundController_->ChengeVolume((int)SE::ROLL, volume);	// ボリュームだけ更新
+		//soundController_->ChengeVolume((int)SE::DAMAGE, volume);	// ボリュームだけ更新
+		//soundController_->ChengeVolume((int)SE::HI_DAMAGE, volume);	// ボリュームだけ更新
+		//soundController_->ChengeVolume((int)SE::DOWN, volume);		// ボリュームだけ更新
+#pragma endregion
+		for (int i = 0; i < static_cast<int>(SE::MAX); i++) {
+			SE se = static_cast<SE>(i);
+			// ここで se を使う処理を書く
+			soundController_->ChengeVolume(i, volume);		// ボリュームだけ更新
+		}
 
 	}
 	

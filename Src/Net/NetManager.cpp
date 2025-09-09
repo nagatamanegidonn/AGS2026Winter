@@ -649,6 +649,15 @@ bool NetManager::IsSync(void)
 	return isSync_;
 }
 
+//通信をやめてタイトルへ
+void NetManager::ResetSync(void)
+{
+	isSync_ = false; // 同期解除 or 状態遷移など
+	NetManager::GetInstance().Stop();
+	SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);
+
+}
+
 void NetManager::SetAction(PLAYER_ACTION act)
 {
 	pool_.selfAction_.actBits |= static_cast<int>(act);

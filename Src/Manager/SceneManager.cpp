@@ -36,7 +36,7 @@ SceneManager::SceneManager(void)
 
 	camera_ = nullptr;
 
-
+	IsHost_ = true;
 }
 
 SceneManager::~SceneManager(void)
@@ -80,6 +80,9 @@ void SceneManager::Init(void)
 
 	// 3D用の設定
 	Init3D();
+
+	//接続はHost
+	IsHost_ = true;
 
 	// 初期シーンの設定
 	DoChangeScene(SCENE_ID::TITLE);
@@ -279,6 +282,16 @@ void SceneManager::PopScene()
 	if (scene_.size() > 1) {
 		scene_.pop_back();
 	}
+}
+
+void SceneManager::SetHost(bool value)
+{
+	//タイトル以外は変更不可
+	if (sceneId_ != SCENE_ID::TITLE) {
+		return;
+	}
+
+	IsHost_ = value;
 }
 
 void SceneManager::DoChangeScene(SCENE_ID sceneId)

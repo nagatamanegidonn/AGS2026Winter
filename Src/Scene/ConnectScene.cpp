@@ -128,6 +128,16 @@ void ConnectScene::Update(void)
 		}
 
 	}
+	//client‚È‚ç
+	else if (players.size() <= 1) {
+		//ƒ^ƒCƒgƒ‹‚Ö–ß‚é
+		if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::DOWN)
+			|| ins.IsTrgDown(KEY_INPUT_BACK))
+		{
+			nIns.ResetSync();
+			return;
+		}
+	}
 
 	if (nIns.IsSameGameState(GAME_STATE::GOTO_GAME))
 	{
@@ -171,22 +181,35 @@ void ConnectScene::Draw(void)
 	for (const auto& users : players)
 	{
 
-		IPDATA ip = users.second.ip;
+		if (users.second.mode == NET_MODE::HOST)
+		{
+			IPDATA ip = users.second.ip;
 
-		std::wstring out = L"";
-		out += std::to_wstring(users.second.key) + L" ";
-		out += std::to_wstring(ip.d1);
-		out += L".";
-		out += std::to_wstring(ip.d2);
-		out += L".";
-		out += std::to_wstring(ip.d3);
-		out += L".";
-		out += std::to_wstring(ip.d4);
-		out += L" : " + std::to_wstring(users.second.port);
 
-		DrawString(HX - 100, y, out.c_str(), 0xffffff);
-		y += 20;
+			Vector2(HX - WIDTH / 2, B1_Y - HEIGHT / 2);
 
+
+			std::wstring out = L"Ú‘±”Ô†:";
+			//out += std::to_wstring(users.second.key) + L" ";
+			out += std::to_wstring(ip.d1);
+			out += L".";
+			out += std::to_wstring(ip.d2);
+			out += L".";
+			out += std::to_wstring(ip.d3);
+			out += L".";
+			out += std::to_wstring(ip.d4);
+			//out += L" : " + std::to_wstring(users.second.port);
+
+			//DrawString(HX - 100, y, out.c_str(), 0xffffff);
+			int len = (int)wcslen(out.c_str());
+			int width = GetDrawStringWidth(out.c_str(), len);
+
+			DrawBox(HX - (width / 2) - 10, y - (HEIGHT / 2)
+				, HX + (width / 2) + 10, y + (HEIGHT / 2), 0x000000, true);
+			DrawFormatString(HX - (width / 2), y- (len/2), 0xffffff, out.c_str());
+
+			y += 20;
+		}
 	}
 
 	if (NetManager::GetInstance().GetMode() == NET_MODE::HOST)

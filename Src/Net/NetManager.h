@@ -185,6 +185,8 @@ public:
 
 	bool IsSync(void);
 
+	void ResetSync(void);
+
 private:
 
 	const int RECEIVE_PORT_HOST			= 65000;

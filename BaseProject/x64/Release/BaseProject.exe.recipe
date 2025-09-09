@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\x64\Release\BaseProject.exe</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\Map.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\PlayerHp.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\PlayerStatus.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\Texture.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\Timer.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>

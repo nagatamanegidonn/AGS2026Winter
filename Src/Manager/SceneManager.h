@@ -79,6 +79,7 @@ public:
 	const int GetWeponId(void)const { return weponId_; }
 	const void SetWeponId(int weponId) { weponId_ = weponId; }
 
+	//シーンを画像保存
 	const void CaptureMainScreen(void);
 	const void DrawCapturedScreen(int x, int y);
 
@@ -92,6 +93,11 @@ public:
 	/// 最後に追加したシーンを削除する
 	/// </summary>
 	void PopScene();
+
+	//接続モードについて
+	const bool IsHost(void)const { return IsHost_; }
+	void SetHost(bool value);
+
 
 private:
 
@@ -130,6 +136,9 @@ private:
 	//プレイヤー設定
 	int charId_;
 	int weponId_;
+
+	//接続モード
+	bool IsHost_;
 
 	int ControllerId_;
 

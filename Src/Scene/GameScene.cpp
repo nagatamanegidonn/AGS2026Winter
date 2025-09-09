@@ -405,7 +405,7 @@ void GameScene::Draw(void)
 
 
 	VECTOR playerPos;
-	VECTOR playerDirF;
+	VECTOR playerDirF{};
 	// プレイヤーの描画
 	for (auto& player : players_)
 	{
@@ -444,10 +444,10 @@ void GameScene::Draw(void)
 	Material_->SetConstBuf(1,{ -playerDirF.x, playerDirF.z, 0.05f, 0.05f });//
 	Material_->SetConstBuf(2,{ -camRight.x, camRight.z, 0.0f, 0.0f });//
 
-
-	SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);
+	//ミニマップの描画
+	/*SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);
 	Renderer_->Draw(MAP_POS_X, MAP_POS_Y);
-	SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);
+	SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);*/
 
 #ifdef _DEBUG
 

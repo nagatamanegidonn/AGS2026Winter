@@ -90,9 +90,7 @@ enum class PLAYER_ACTION
 	JUMP_TRG = 8,
 	JUMP_CANCEL = 16,
 	SHOT = 32,
-	IS_CLEAR = 64,
-	IS_BATTLE = 128,
-	IS_ATTRCK = 256,
+	IS_BATTLE = 64,
 };
 
 struct NET_ACTION
