@@ -236,7 +236,7 @@ void GameScene::Update(void)
 			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
 			//SoundManager::GetInstance().Resume(SoundManager::SRC::BATTLE_BGM, Sound::TIMES::LOOP);
 		}
-		else
+		else if(player->IsSelf())
 		{
 			if (soundRate_ > 0.0f)
 			{

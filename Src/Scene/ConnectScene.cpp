@@ -126,10 +126,9 @@ void ConnectScene::Update(void)
 				NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
 			}
 		}
-
 	}
-	//clientなら
-	else if (players.size() <= 1) {
+
+	if (players.size() <= 1) {
 		//タイトルへ戻る
 		if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::DOWN)
 			|| ins.IsTrgDown(KEY_INPUT_BACK))
