@@ -591,6 +591,8 @@ void Player::DrawUI(int i)
 	int dy = (i * 16);
 	int scale = 3;
 	int scaleY = 10;
+
+	//自身のUI（他描画なし）
 	if (key_ == nIns.GetSelf().key)
 	{
 		hpMaterial_->SetConstBuf(1, { (float)hp_ / (float)hpMax_, ((float)hp_ + damage_) / (float)hpMax_, 1.0f, 1.0f });
@@ -599,6 +601,7 @@ void Player::DrawUI(int i)
 		staRenderer_->Draw(GAGE_POS_X, STA_POS_Y);
 	}
 
+	//共通描画
 	Material_->SetConstBuf(1, { (float)hp_ / (float)hpMax_, 1.0f, 1.0f, 1.0f });
 	Renderer_->Draw(PRAM_POS_X, PRAM_POS_Y + (PRAM_distance_Y * i));
 
@@ -613,11 +616,11 @@ void Player::DrawUI(int i)
 		, demoRot_.y, demoRot_.z);*/
 #ifdef DEBUG
 
-	DrawFormatString(300, i * 65, 0x000000, "プレイヤー番号(%d)", key_);
-	DrawFormatString(300, i * 65 + 16, 0x000000, "プレイヤー座標(%.2f, %.2f,%2f)", transform_.pos.x, transform_.pos.y, transform_.pos.z);
-	DrawFormatString(300, i * 65 + 48, 0x000000, "剣ウェポン回転(%.2f, %.2f,%2f)", AsoUtility::GetDisPow(selfPos,transform_.pos)
+	DrawFormatString(300, i * 65, 0x000000, L"プレイヤー番号(%d)", key_);
+	DrawFormatString(300, i * 65 + 16, 0x000000, L"プレイヤー座標(%.2f, %.2f,%2f)", transform_.pos.x, transform_.pos.y, transform_.pos.z);
+	DrawFormatString(300, i * 65 + 48, 0x000000, L"剣ウェポン回転(%.2f, %.2f,%2f)", AsoUtility::GetDisPow(selfPos,transform_.pos)
 		, demoRot_.y, demoRot_.z);
-	DrawFormatString(300, i * 65 + 32, 0x000000, "アニメーション(%d, %d,%d)", animeType, areaId_, hp_);
+	DrawFormatString(300, i * 65 + 32, 0x000000, L"アニメーション(%d, %d,%d)", animeType, areaId_, hp_);
 
 #endif // DEBUG
 
