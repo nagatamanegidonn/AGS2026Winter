@@ -16,6 +16,7 @@ public:
 	void Draw(void);
 	void Release(void);
 
+	
 private:
 
 	//アイテム画像
@@ -23,6 +24,7 @@ private:
 	//アイテム名
 	std::string  name_;
 		 
-
+	//持っている数
+	int count_;
 };
 
