@@ -38,11 +38,11 @@ public:
 	// デストラクタ
 	~Object(void);
 
-	void Init(void) override;
-	void Update(void) override;
-	void Draw(void) override;
+	virtual void Init(void) override;
+	virtual void Update(void) override;
+	virtual void Draw(void) override;
 
-private:
+protected:
 
 	
 	// プレイヤー

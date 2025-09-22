@@ -81,5 +81,8 @@ private:
 
 	// ワープスター
 	void MakeWarpStar(void);
+	
+	// hana
+	void MakeFlour(void);
 
 };

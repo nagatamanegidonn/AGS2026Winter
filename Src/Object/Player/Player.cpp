@@ -1913,13 +1913,14 @@ void Player::DrawDebug(void)
 
 	//DrawFormatString(100, 132, 0xFFFFFF, "Draw : %s", isDrawWepon_ ? "true" : "false");
 	//DrawFormatString(100, 116, 0xFFFFFF, "Close: %s", isCloseWepon_ ? "true" : "false");
-	DrawFormatString(100, 116, 0xFFFFFF, L"Attrck: %s", inputController_->IsNew(InputController::KEY::ATTRCK) ? "true" : "false");
+	DrawFormatString(100, 116, 0xFFFFFF, L"Attrck: %s", inputController_->IsNew(InputController::KEY::ATTRCK) ? L"true" : L"false");
 	DrawFormatString(100, 132, 0xFFFFFF, L"ChageT: %.2f", chageAttrckTime_);
 	//î{ó¶ê›íË
 	int rate = chageAttrckTime_ / (CHAGE_MAX_TIME / 4.0f);
 	
 	DrawFormatString(100, 148, 0xFFFFFF, L"ChageR: %d", rate);
 	DrawFormatString(100, 164, 0xFFFFFF, L"Damage: %.2f", attrckDamage_ * attrckRate_);
+	DrawFormatString(100, 180, 0xFFFFFF, L"Postion: X_%.2fY_%.2fZ_%.2f", transform_.pos.x,transform_.pos.y,transform_.pos.z);
 }
 
 void Player::AttrckUpdate(void)
