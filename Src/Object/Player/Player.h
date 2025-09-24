@@ -12,6 +12,8 @@ class InputController;
 class EffectController;
 class SoundController;
 
+class ItemPoach;
+
 class Capsule;
 class Collider;
 
@@ -71,12 +73,15 @@ public:
 
 		ATTRCK,
 
-		ROWLING,//回避
+		ROWLING,	//回避
 
-		DAMAGE,		//ダメージ
-		HI_DAMAGE,	//
+		DAMAGE,		//ダメージ（のけぞり）
+		HI_DAMAGE,	//ダメ―ジ（吹っ飛び）
+		DEAD,		//死亡
 
-		DEAD,
+		GET,
+		USE,
+
 		END
 	};
 
@@ -84,10 +89,13 @@ public:
 	enum class ANIM_TYPE
 	{
 		IDLE,
-		BLEND_IDLE,
 		RUN,
 		FAST_RUN,
 		ROLL,
+
+		//採取
+		GET,
+		USE,
 
 		//抜刀
 		DRAW,
@@ -166,7 +174,7 @@ public:
 	
 
 	// 座標の取得
-	const Transform& GetTransItem(void) const { return transWeapon_; }
+	const Transform& GetTransWepon(void) const { return transWeapon_; }
 
 	const int GetKey(void) const { return key_; }
 
@@ -182,6 +190,7 @@ public:
 	// プレイヤー種別(1P or 2P)
 	PLAYER_TYPE GetPlayerType(void)const;
 	bool CollisionCapsule(int& modelId)const;
+	//球体との当たり判定
 	const bool CollisionSphere(const VECTOR pos,float r)const;
 
 	const bool IsAttrck(void) const;//通信プレイヤーのことは不明
@@ -192,6 +201,9 @@ public:
 	//注目するか
 	bool IsAimSet(void);
 	bool IsTrgAimSet(void);
+
+	//採取の際の情報（仮）
+	const void SetItemId(int id) { itemId_ = id; }
 
 protected:
 
@@ -280,6 +292,12 @@ protected:
 	float flyigTime_;
 	float downTime_;
 
+	//採取の際の情報（仮）
+	//採取行動の際にどのアイテムがとれるかをId管理（何もないときはー１）
+	int itemId_;
+	//アイテムポーチ
+	std::unique_ptr <ItemPoach> poach_;
+
 	virtual void InitPram(void);
 	virtual void InitAnimation(void);
 	virtual void InitEffect(void);
@@ -298,6 +316,8 @@ protected:
 	void ChangeStateDamage(void);
 	void ChangeStateHiDamage(void);
 	void ChangeStateDead(void);
+	void ChangeStateGet(void);
+	void ChangeStateUse(void);
 
 	// 更新ステップ
 	void UpdateNone(void);
@@ -309,6 +329,8 @@ protected:
 	void UpdateDamage(void);
 	void UpdateHiDamage(void);
 	void UpdateDead(void);
+	void UpdateGet(void);
+	void UpdateUse(void);
 
 
 
@@ -343,6 +365,7 @@ protected:
 
 	//攻撃キャンセル時の処理
 	void AttrckReset(void);
+	//アニメーション終了時の処理
 	void ChangeStateAnimeEnd(const ANIM_TYPE anim);
 
 	// デバッグ用描画

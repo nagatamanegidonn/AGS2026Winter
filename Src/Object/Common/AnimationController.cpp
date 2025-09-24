@@ -79,60 +79,66 @@ void AnimationController::SetIsBlend(int type, bool isBlend, float blendSpeed)
 {
 	animations_[type].isBlend = isBlend;
 	animations_[type].blendSpeed = blendSpeed;
+
 }
 
 
 void AnimationController::Play(int type, bool isLoop,
 	bool isStop, bool isForce)
 {
-	if (blend_.isBlending) return; // ブレンド中なら変更不可
+	//if (blend_.isBlending) return; // ブレンド中なら変更不可
+	if (blend_.isBlending) {
+		if (blend_.data.back().animType == type)
+		{
+			return; // ブレンド中なら変更不可
+		}
+	}
 
 	if (playType_ == type && !isForce) return;
 
-	// ★ここで防止：同じアニメかつ非ループ中、かつ未終了なら無視
+	//ここで防止：同じアニメかつ非ループ中、かつ未終了なら無視
 	/*if (playType_ == type && !isForce && !isLoop_ && !IsEnd()) {
 		return;
 	}*/
 
 	if (playType_ != -1 && !isForce&& animations_[type].isBlend)
 	{
+		auto bData = BlendData();
 		// ★この行の直前で現在の attachNo を保存！
-		blend_.fromAttachNo = playAnim_.attachNo;
+		bData.fromAttachNo = playAnim_.attachNo;
+		bData.animType = type;
+		bData.blendRate = 1.0f;
+		if (blend_.data.size() >= 1)
+		{
+			float mRate_ = 0.0f;
+			for (auto& data : blend_.data)
+			{
+				mRate_ += data.blendRate;
+			}
+			bData.blendRate -= mRate_;
+		}
+
+		blend_.data.push_back(bData);
+
+		//printfDx(L"データ数(attachNo=%d,ブレンド割合%.2f)\n", blend_.data.size(), blend_.data.back().blendRate);
+
 
 		// ↓ここで playAnim_ が新しいものに上書きされる
 		playAnim_ = animations_[type];
 
-
-		int animIdx = 0;
-		/*if (MV1GetAnimNum(playAnim_.model) > 1)
-			animIdx = 1;*/
-		if (MV1GetAnimNum(playAnim_.model) > 2)
-		{
-			// アニメーションが複数保存されていたら、番号1を指定
-			animIdx = animations_[type].attachNo;
-		}
-		else if (MV1GetAnimNum(playAnim_.model) > 1)
-		{
-			// アニメーションが複数保存されていたら、番号1を指定
-			animIdx = 1;
-		}
-
-		int attachNo = MV1AttachAnim(modelId_, animIdx, playAnim_.model);
-		if (attachNo == -1) {
-			printfDx(L"MV1AttachAnim failed (modelId=%d animIdx=%d)\n", modelId_, animIdx);
-			return;
-		}
+		//アタッチナンバーの取得
+		int attachNo = GetAttrchNo(type);
 
 		//アニメーションの総時間を獲得
 		float animTotal = MV1GetAttachAnimTotalTime(modelId_, attachNo);
 		if (animTotal <= 0.0f) {
-			printfDx(L"Warning: totalTime is invalid (attachNo=%d totalTime=%f)\n", attachNo, animTotal);
+			//printfDx(L"Warning: totalTime is invalid (attachNo=%d totalTime=%f)\n", attachNo, animTotal);
 			// 適当な仮の時間を設定する（もしくは return でもOK）
 			animTotal = 1.0f;
 		}
 
 		blend_.toAttachNo = attachNo;
-		blend_.blendRate = 0.0f;
+
 		blend_.isBlending = true;
 
 		blendSpeed = animations_[type].blendSpeed;
@@ -159,7 +165,6 @@ void AnimationController::Play(int type, bool isLoop,
 		//再生変数
 		stepEndLoopStart_ = animations_[type].startStep;
 		stepEndLoopEnd_ = playAnim_.totalTime;
-
 		switchLoopReverse_ = animations_[type].switchLoopReverse_;
 	}
 	else
@@ -181,19 +186,8 @@ void AnimationController::Play(int type, bool isLoop,
 		// 初期化
 		playAnim_.step = animations_[type].startStep;
 
-		// モデルにアニメーションを付ける
-		int animIdx = 0;
-		if (MV1GetAnimNum(playAnim_.model) > 2)
-		{
-			// アニメーションが複数保存されていたら、番号1を指定
-			animIdx = animations_[type].attachNo;
-		}
-		else if (MV1GetAnimNum(playAnim_.model) > 1)
-		{
-			// アニメーションが複数保存されていたら、番号1を指定
-			animIdx = 1;
-		}
-		playAnim_.attachNo = MV1AttachAnim(modelId_, animIdx, playAnim_.model);
+		//// モデルにアニメーションを付ける
+		playAnim_.attachNo = GetAttrchNo(type);
 
 
 		// アニメーション総時間の取得
@@ -224,31 +218,55 @@ void AnimationController::Play(int type, bool isLoop,
 
 void AnimationController::Update(void)
 {
-
+	//再生速度
 	float deltaTime = SceneManager::GetInstance().GetDeltaTime();
 
 	// ブレンド処理
 	if (blend_.isBlending) {
-		blend_.blendRate += blend_.blendSpeed * deltaTime * blendSpeed;
+		//ブレンド進行
+		blend_.data.front().blendRate -= blend_.blendSpeed * deltaTime * blendSpeed;
 
-		if (blend_.blendRate >= 1.0f) {
-			blend_.blendRate = 1.0f;
+		//ブレンド終了判定
+		if (blend_.data.back().blendRate <= 0.0f) {
+			blend_.data.back().blendRate = 0.0f;
 			blend_.isBlending = false;
 
 			// 前のアニメを外す
-			MV1DetachAnim(modelId_, blend_.fromAttachNo);
+			MV1DetachAnim(modelId_, blend_.data.back().fromAttachNo);
 
 			// ブレンド終了時に playAnim_ に確定させる
 			playAnim_.attachNo = blend_.toAttachNo;
 
 			// ※再生アニメーションタイプを更新（Playの変更許可に必要）
 			playType_ = playAnim_.animIndex;
+
+			blend_.data.pop_front();  // 古いものから削除
+
+		}
+		else if(blend_.data.front().blendRate <= 0.0f) {
+			blend_.data.front().blendRate = 0.0f;
+
+			// 前のアニメを外す
+			MV1DetachAnim(modelId_, blend_.data.front().fromAttachNo);
+
+			blend_.data.pop_front();  // 古いものから削除
+			// ※再生アニメーションタイプを更新（Playの変更許可に必要）
+			//playType_ = playAnim_.animIndex;
 		}
 
+		float mRate_ = 0.0f;
+		for (auto& data : blend_.data)
+		{
+			MV1SetAttachAnimBlendRate(modelId_, data.fromAttachNo, data.blendRate);
 		
-	
-		MV1SetAttachAnimBlendRate(modelId_, blend_.fromAttachNo, 1.0f - blend_.blendRate);
-		MV1SetAttachAnimBlendRate(modelId_, blend_.toAttachNo, blend_.blendRate);
+			mRate_ += data.blendRate;
+			
+		}
+
+		//最新アニメーション
+		MV1SetAttachAnimBlendRate(modelId_, blend_.toAttachNo, 1.0f - mRate_);
+
+		
 	}
 
 
@@ -295,17 +313,38 @@ void AnimationController::Update(void)
 		}
 	}
 
+	//デバッグ
 	if (playAnim_.attachNo == -1) {
 		printfDx(L"Warning: playAnim_ にアニメがアタッチされていません\n");
 		return;
 	}
 
-
+	//アニメションアタッチ
 	MV1SetAttachAnimTime(modelId_, playAnim_.attachNo, playAnim_.step);
 
 	// Root移動を打ち消す補正を入れる（ここが重要）
 	int rootFrame = MV1SearchFrame(modelId_, L"mixamorig:Hips");
 	localPos_ = MV1GetAttachAnimFrameLocalPosition(modelId_, playAnim_.attachNo, rootFrame);
+	
+	if (blend_.isBlending)
+	{
+		VECTOR mlocalPos = { 0.0f,0.0f,0.0f };
+		float mRate_ = 0.0f;
+		for (auto& data : blend_.data)
+		{
+			mlocalPos = VAdd(mlocalPos,
+				VScale(MV1GetAttachAnimFrameLocalPosition(modelId_, data.fromAttachNo, rootFrame), data.blendRate));
+
+			mRate_ += data.blendRate;
+		}
+
+
+		VECTOR blendLpos = MV1GetAttachAnimFrameLocalPosition(modelId_, blend_.toAttachNo, rootFrame);
+
+		localPos_ = VAdd(mlocalPos, VScale(blendLpos, 1.0f - mRate_));
+
+	}
+
 	//MATRIX invRootTrans = MGetTranslate(VScale(rootPos, -1.0f));
 	//MV1SetAttachAnimMatrix(modelId_, playAnim_.attachNo, invRootTrans);
 }
@@ -354,4 +393,28 @@ bool AnimationController::IsEnd(void) const
 
 	return ret;
 
+}
+
+int AnimationController::GetAttrchNo(int animType)
+{
+	auto& playAnim = animations_[animType];
+
+	int animIdx = 0;
+	if (MV1GetAnimNum(playAnim.model) > 2)
+	{
+		// アニメーションが複数保存されていたら、番号1を指定
+		animIdx = animations_[animType].attachNo;
+	}
+	else if (MV1GetAnimNum(playAnim.model) > 1)
+	{
+		// アニメーションが複数保存されていたら、番号1を指定
+		animIdx = 1;
+	}
+
+	int attachNo = MV1AttachAnim(modelId_, animIdx, playAnim.model);
+	if (attachNo == -1) {
+		printfDx(L"MV1AttachAnim failed (modelId=%d animIdx=%d)\n", modelId_, animIdx);
+		return -1;
+	}
+	return attachNo;
 }

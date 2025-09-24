@@ -27,6 +27,9 @@
 
 #include "../Statge/Planet.h"
 
+#include "../Item/ItemBase.h"
+#include "../Item/ItemPoach.h"
+
 #include "Player.h"
 
 namespace
@@ -86,6 +89,8 @@ Player::Player(int key)
 	stateChanges_.emplace(STATE::DAMAGE, std::bind(&Player::ChangeStateDamage, this));
 	stateChanges_.emplace(STATE::HI_DAMAGE, std::bind(&Player::ChangeStateHiDamage, this));
 	stateChanges_.emplace(STATE::DEAD, std::bind(&Player::ChangeStateDead, this));
+	stateChanges_.emplace(STATE::GET, std::bind(&Player::ChangeStateGet, this));
+	stateChanges_.emplace(STATE::USE, std::bind(&Player::ChangeStateUse, this));
 
 	walkTime_ = 0.0f;
 }
@@ -213,6 +218,12 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 
 	// アニメーションの設定
 	InitAnimation();
+	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 40.0f, 0, 0.0f, 210.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::GET, true, 5.0f);
+	animationController_->Add((int)ANIM_TYPE::USE, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 40.0f, 0, 40.0f, 160.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::USE, true, 5.0f);
+
+
 	//エフェクトの設定
 	InitEffect();
 	//BGM.SEの設定
@@ -260,6 +271,10 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 
 	InitPram();
 
+
+	//採取の際の情報（仮）
+	itemId_ = -1;
+	poach_ = std::make_unique<ItemPoach>();
 }
 
 
@@ -296,11 +311,13 @@ void Player::Update(void)
 		//回避処理
 		if (inputController_->IsTriggered(InputController::KEY::ROLL) && IsInputPlay()
 			&& animeType_ != (int)ANIM_TYPE::ROLL && animeType_ != (int)ANIM_TYPE::DAMAGE
+			&& animeType_ != (int)ANIM_TYPE::GET&& animeType_ != (int)ANIM_TYPE::USE
 			&& state_ != STATE::HI_DAMAGE && hp_ > 0 && stamina_ > ROLL_TAF)
 		{
 			stamina_ -= ROLL_TAF;
 			invisibleTime_ = INVISIBLE_SMALL_TIME;
 			ChangeState(STATE::ROWLING);
+
 		}
 		if (invisibleTime_ > 0.0f)
 		{
@@ -728,8 +745,10 @@ void Player::InitPram(void)
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK3, std::move(SetAtrckData(-1, 60.0f, 78.0f)));
 
 	atkData_.emplace((int)ANIM_TYPE::FLYING, std::move(SetAtrckData((int)ANIM_TYPE::DOWN)));
-	atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::BLEND_IDLE)));
-	atkData_.emplace((int)ANIM_TYPE::BLEND_IDLE, std::move(SetAtrckData(-1)));
+	atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::IDLE)));
+	atkData_.emplace((int)ANIM_TYPE::IDLE, std::move(SetAtrckData(-1)));
+	/*atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::BLEND_IDLE)));
+	atkData_.emplace((int)ANIM_TYPE::BLEND_IDLE, std::move(SetAtrckData(-1)));*/
 }
 void Player::InitAnimation(void)
 {
@@ -737,12 +756,18 @@ void Player::InitAnimation(void)
 	std::wstring path = Application::PATH_MODEL + L"Player2/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Idle.mv1", 20.0f);
-	animationController_->Add((int)ANIM_TYPE::BLEND_IDLE, path + L"Idle.mv1", 20.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::BLEND_IDLE, true, 3.0f);
+	//animationController_->Add((int)ANIM_TYPE::BLEND_IDLE, path + L"Idle.mv1", 20.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::IDLE, true, 5.0f);
 
 	animationController_->Add((int)ANIM_TYPE::RUN, path + L"Run.mv1", 30.0f);
 	animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"FastRun.mv1", 30.0f);
 	animationController_->Add((int)ANIM_TYPE::ROLL, path + L"Sprinting Forward Roll.mv1", 45.0f, -1, 0.0f, 32.0f);
+
+	//冬からの新規ブレンド
+	animationController_->SetIsBlend((int)ANIM_TYPE::RUN, true, 10.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::FAST_RUN, true, 10.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::ROLL, true);
+
 
 	animationController_->Add((int)ANIM_TYPE::DRAW, path + L"Draw Great Sword 1.mv1", 30.0f);
 	animationController_->Add((int)ANIM_TYPE::BATTLE_DRAW, path + L"Draw Great Sword 2.mv1", 30.0f);
@@ -903,6 +928,15 @@ void Player::ChangeStateHiDamage(void)
 void Player::ChangeStateDead(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateDead, this);
+}
+
+void Player::ChangeStateGet(void)
+{
+	stateUpdate_ = std::bind(&Player::UpdateGet, this);
+}
+void Player::ChangeStateUse(void)
+{
+	stateUpdate_ = std::bind(&Player::UpdateUse, this);
 }
 
 #pragma endregion
@@ -1138,6 +1172,29 @@ void Player::UpdateDead(void)
 	}
 }
 
+void Player::UpdateGet(void)
+{
+	if (animationController_->IsEnd())
+	{
+		if (itemId_ == 1)
+		{
+			poach_->AddItem(0);
+		}
+	}
+	ChangeStateAnimeEnd(ANIM_TYPE::GET);
+}
+
+void Player::UpdateUse(void)
+{
+	if (animationController_->IsEnd())
+	{
+		hp_ += 20;
+		poach_->PlayItem(0);
+
+	}
+	ChangeStateAnimeEnd(ANIM_TYPE::USE);
+}
+
 #pragma endregion
 
 
@@ -1163,6 +1220,7 @@ void Player::ProcessMove(void)
 	//抜刀じゃないなら
 	if (IsInputPlay())
 	{
+		//抜刀処理
 		if (inputController_->IsTriggered(InputController::KEY::DRAW))
 		{
 			if (!AsoUtility::EqualsVZero(movePow_))
@@ -1175,6 +1233,43 @@ void Player::ProcessMove(void)
 
 			isDrawWepon_ = true;
 			ChangeState(STATE::WEPON);
+			return;
+		}
+		bool isId = false;
+		for (const auto c : colliders_)
+		{
+			if (c.lock()->type_ == Collider::TYPE::ITEM)
+			{
+				
+				if (AsoUtility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
+				{
+					isId = true;
+				}
+				
+				//採取処理
+				if (inputController_->IsTriggered(InputController::KEY::GET)&& 
+					AsoUtility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
+				{
+					speed_ = SPEED_MOVE;
+					movePow_ = AsoUtility::VECTOR_ZERO;//抜刀時移動しない（帰るなら戻す）
+
+					ChangeState(STATE::GET);
+					return;
+				}
+			}
+		}
+		if (!isId)
+		{
+			itemId_ = -1;
+		}
+
+		//採取処理
+		if (inputController_->IsTriggered(InputController::KEY::USE))
+		{
+			speed_ = SPEED_MOVE;
+			movePow_ = AsoUtility::VECTOR_ZERO;//抜刀時移動しない（帰るなら戻す）
+
+			ChangeState(STATE::USE);
 			return;
 		}
 
@@ -1857,7 +1952,7 @@ const bool Player::IsInputPlay(void) const
 	}
 	return false;
 }
-
+//通常状態に戻す
 void Player::AttrckReset(void)
 {
 	isDrawWepon_ = false;
@@ -1870,7 +1965,7 @@ void Player::AttrckReset(void)
 //特定のアニメーションが終わったらIdleに戻す処理
 void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim)
 {
-
+	//バトル状態なら
 	if (isBattle_)
 	{
 		animationController_->Play((int)anim, false);
@@ -1881,6 +1976,7 @@ void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim)
 			ChangeState(STATE::BATTLE);
 		}
 	}
+	//通常状態なら
 	else
 	{
 		animationController_->Play((int)anim, false);

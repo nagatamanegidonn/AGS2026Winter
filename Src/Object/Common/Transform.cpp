@@ -98,7 +98,7 @@ void Transform::SetModel(int model)
 	modelId = model;
 }
 
-void Transform::MakeCollider(Collider::TYPE type)
+void Transform::MakeCollider(Collider::TYPE type, VECTOR pos, float rad)
 {
 
 	if (modelId == -1)
@@ -106,7 +106,7 @@ void Transform::MakeCollider(Collider::TYPE type)
 		return;
 	}
 
-	collider = std::make_shared<Collider>(type, modelId);
+	collider = std::make_shared<Collider>(type, modelId, pos, rad);
 	int ret = MV1SetupCollInfo(modelId, -1, 1, 1, 1);
 
 }

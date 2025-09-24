@@ -5,6 +5,7 @@
 #include "../../Manager/SceneManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "Object.h"
+#include "ItemObject.h"
 #include "../Player/Player.h"
 #include "../Enemy/Boss.h"
 #include "Planet.h"
@@ -32,8 +33,9 @@ Stage::~Stage(void)
 
 void Stage::Init(void)
 {
+	//
 	MakeMainStage();
-	//MakeWarpStar();
+	//
 	MakeFlour();
 
 	step_ = -1.0f;
@@ -90,16 +92,17 @@ void Stage::Update(void)
 void Stage::Draw(void)
 {
 
-	// オブジェクト
-	for (const auto& s : objects_)
-	{
-		s->Draw();
-	}
 
 	// 惑星
 	for (const auto& s : planets_)
 	{
 		s.second->Draw();
+	}
+	
+	// オブジェクト
+	for (const auto& s : objects_)
+	{
+		s->Draw();
 	}
 
 }
@@ -230,31 +233,44 @@ void Stage::MakeMainStage(void)
 	objects_.push_back(std::move(obj));
 	//------------------------------------------------------------------------------
 }
-void Stage::MakeWarpStar(void)
+//採取ポイントの作成
+void Stage::MakeFlour(void)
 {
 
 	Transform trans;
 	std::unique_ptr<Object> obj;
 
-	// 落とし穴惑星へのワープスター
+	// 最初の惑星
 	//------------------------------------------------------------------------------
 	trans.SetModel(
-		resMng_.LoadModelDuplicate(ResourceManager::SRC::BOSS));
-	trans.pos = { -910.0f, 200.0f, 894.0f };
-	trans.scl = { 0.6f, 0.6f, 0.6f };
-	trans.quaRot = Quaternion::Euler(
-		AsoUtility::Deg2RadF(-25.0f),
-		AsoUtility::Deg2RadF(-50.0f),
-		AsoUtility::Deg2RadF(0.0f)
-	);
+		resMng_.LoadModelDuplicate(ResourceManager::SRC::FLOUR));
+	trans.scl = AsoUtility::VECTOR_ONE;
+	trans.quaRot = Quaternion();
+	trans.pos = { 1800.0f, -335.0f, -4700.0f };
 
-	obj = std::make_unique<Object>(player_, trans, Object::STATE::PLAY);
+	// 当たり判定(コライダ)作成
+	trans.MakeCollider(Collider::TYPE::ITEM, trans.pos, 30.0f);
+	trans.Update();
+
+	obj = std::make_unique<ItemObject>(player_, trans, Object::STATE::PLAY);
 	obj->Init();
 	objects_.push_back(std::move(obj));
 	//------------------------------------------------------------------------------
 
-}
-//採取ポイントの作成
-void Stage::MakeFlour(void)
-{
+	// 周囲の岩作成
+	//------------------------------------------------------------------------------
+	trans.SetModel(
+		resMng_.LoadModelDuplicate(ResourceManager::SRC::FLOUR));
+	trans.scl = AsoUtility::VECTOR_ONE;
+	trans.quaRot = Quaternion();
+	trans.pos = { 1900.0f, -335.0f, -5000.0f };
+
+	// 当たり判定(コライダ)作成
+	trans.MakeCollider(Collider::TYPE::ITEM, trans.pos, 30.0f);
+	trans.Update();
+
+	obj = std::make_unique<ItemObject>(player_, trans, Object::STATE::PLAY);
+	obj->Init();
+	objects_.push_back(std::move(obj));
+	//------------------------------------------------------------------------------
 }

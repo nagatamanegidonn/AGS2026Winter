@@ -14,7 +14,7 @@ public:
 
 
 	//アイテムの管理メソッド
-	void AddItem(void);
+	void AddItem(int itemId);
 	void PlayItem(int itemId);
 
 private:
@@ -26,6 +26,7 @@ private:
 	/// 
 	/// </summary>
 	std::map<int, std::shared_ptr<ItemBase>> Items_;
+	std::map<int, int> ItemCount_;
 
 };
 

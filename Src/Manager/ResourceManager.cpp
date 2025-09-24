@@ -69,6 +69,11 @@ void ResourceManager::Init(void)
 	//Šâƒ‚ƒfƒ‹
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Planet/Collider.mv1");
 	resourcesMap_.emplace(SRC::COLL, std::move(res));
+
+
+	//‰Ôƒ‚ƒfƒ‹
+	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"flour/Chamomile.mv1");
+	resourcesMap_.emplace(SRC::FLOUR, std::move(res));
 	
 
 	

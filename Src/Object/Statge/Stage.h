@@ -2,6 +2,7 @@
 #include <memory>
 #include <map>
 #include "../Common/Transform.h"
+#include "../ActorBase.h"
 class ResourceManager;
 class Object;
 class Planet;
@@ -9,6 +10,7 @@ class Player;
 class Boss;
 
 class Stage
+	:public ActorBase
 {
 
 public:
@@ -39,9 +41,9 @@ public:
 	// デストラクタ
 	~Stage(void);
 
-	void Init(void);
-	void Update(void);
-	void Draw(void);
+	void Init(void)override;
+	void Update(void)override;
+	void Draw(void)override;
 
 	// ステージ変更
 	void ChangeStage(NAME type);
@@ -79,10 +81,8 @@ private:
 	// 最初の惑星
 	void MakeMainStage(void);
 
-	// ワープスター
-	void MakeWarpStar(void);
-	
 	// hana
 	void MakeFlour(void);
+
 
 };

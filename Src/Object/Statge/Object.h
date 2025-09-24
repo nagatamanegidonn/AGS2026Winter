@@ -36,7 +36,7 @@ public:
 		Player& player, const Transform& transform, STATE state);
 
 	// デストラクタ
-	~Object(void);
+	virtual ~Object(void);
 
 	virtual void Init(void) override;
 	virtual void Update(void) override;

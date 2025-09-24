@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
+#include <list>
 class SceneManager;
 
 class AnimationController
@@ -30,10 +31,17 @@ public :
 
 	};
 
-	struct BlendState {
+	//ブレンド情報
+	struct BlendData {
 		int fromAttachNo = -1;
-		int toAttachNo = -1;
+		int animType = -1;
 		float blendRate = 0.0f;
+	};
+	struct BlendState {
+		std::list<BlendData> data;
+		//int fromAttachNo = -1;
+		int toAttachNo = -1;
+		//float blendRate = 0.0f;
 		bool isBlending = false;
 		float blendSpeed = 1.0f; // 1秒で100%に
 	};
@@ -65,6 +73,7 @@ public :
 	bool IsEnd(void) const;
 
 	const float GetStepTime(void) const { return playAnim_.step; }
+	//アニメーションのモデルローカル位置
 	const VECTOR GetPos(void) const { return localPos_; }
 	const bool IsBlend(void) const { return blend_.isBlending; }
 
@@ -102,5 +111,7 @@ private :
 	float switchLoopReverse_;
 
 	VECTOR localPos_;
+
+	int GetAttrchNo(int animType);
 };
 

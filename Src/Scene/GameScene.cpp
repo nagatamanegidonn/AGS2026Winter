@@ -511,7 +511,7 @@ void GameScene::Collision(void)
 	for (auto& player : players_)
 	{
 		//ŽQÆŒ^—v‰ü‘P
-		int model = player->GetTransItem().modelId;
+		int model = player->GetTransWepon().modelId;
 
 
 		for (auto& playerVS : players_)

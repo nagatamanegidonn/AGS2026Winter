@@ -54,7 +54,7 @@ public:
 	void Update(bool isUseMat = false);
 
 	void SetModel(int modelHId);
-	void MakeCollider(Collider::TYPE type);
+	void MakeCollider(Collider::TYPE type, VECTOR pos = { 0.0f,0.0f,0.0f }, float rad = 0.0f);
 
 	// ‘O•û•ûŒü‚ðŽæ“¾
 	VECTOR GetForward(void) const;

@@ -54,8 +54,10 @@ void GreatSowrd::InitPram(void)
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK3, std::move(SetAtrckData(-1, 25.0f, 40.0f, 60.0f)));
 
 	atkData_.emplace((int)ANIM_TYPE::FLYING, std::move(SetAtrckData((int)ANIM_TYPE::DOWN)));
-	atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::BLEND_IDLE)));
-	atkData_.emplace((int)ANIM_TYPE::BLEND_IDLE, std::move(SetAtrckData(-1)));
+	atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::IDLE)));
+	atkData_.emplace((int)ANIM_TYPE::IDLE, std::move(SetAtrckData(-1)));
+	/*atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::BLEND_IDLE)));
+	atkData_.emplace((int)ANIM_TYPE::BLEND_IDLE, std::move(SetAtrckData(-1)));*/
 }
 
 void GreatSowrd::InitAnimation(void)
@@ -64,13 +66,20 @@ void GreatSowrd::InitAnimation(void)
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 
 	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Axe/Idle.mv1", 20.0f);
-	animationController_->Add((int)ANIM_TYPE::BLEND_IDLE, path + L"Axe/Idle.mv1", 20.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::BLEND_IDLE, true, 3.0f);
+	//animationController_->Add((int)ANIM_TYPE::BLEND_IDLE, path + L"Axe/Idle.mv1", 20.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::IDLE, true, 5.0f);
 	
 	//ˆÚ“®Œni‹¤’Êj
 	animationController_->Add((int)ANIM_TYPE::RUN, path + L"Run.mv1", 30.0f);
 	animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"FastRun.mv1", 30.0f);
 	animationController_->Add((int)ANIM_TYPE::ROLL, path + L"Sprinting Forward Roll.mv1", 45.0f, -1, 0.0f, 32.0f);
+
+	//“~‚©‚ç‚ÌV‹KƒuƒŒƒ“ƒh
+	animationController_->SetIsBlend((int)ANIM_TYPE::RUN, true, 10.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::FAST_RUN, true, 10.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::ROLL, true);
+
+
 	//”²“
 	animationController_->Add((int)ANIM_TYPE::DRAW, path + L"Axe/Draw Close.mv1", 30.0f, 0, 0.0f, 22.0f);
 	animationController_->Add((int)ANIM_TYPE::BATTLE_DRAW, path + L"Axe/Draw Close.mv1", 30.0f, 0, 22.0f);

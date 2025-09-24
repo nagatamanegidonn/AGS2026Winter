@@ -55,6 +55,7 @@ private:
 	std::string textId_;
 	int stepId_;
 
+
 	std::vector<std::shared_ptr<Player>> players_;
 	std::unique_ptr<Boss> boss_;
 	std::vector<std::unique_ptr<ShotBase>> shots_;

@@ -130,6 +130,19 @@ InputController::InputController(int padType)
                 //{PeripheralType::GAME_PAD,PAD_INPUT_A},                             //Aボタン
             }
         },
+        {KEY::GET,//採取コマンド
+            {
+                {PeripheralType::KEYBOARD,KEY_INPUT_G},
+                {PeripheralType::GAME_PAD_INS,(int)InputManager::JOYPAD_BTN::RIGHT}, //Aボタン
+                {PeripheralType::MOUSE,MOUSE_INPUT_RIGHT},
+            }
+        },
+        {KEY::USE,//使用コマンド
+            {
+                {PeripheralType::KEYBOARD,KEY_INPUT_V},
+                {PeripheralType::GAME_PAD_INS,(int)InputManager::JOYPAD_BTN::LEFT}, //Aボタン
+            }
+        },
     };
 
 

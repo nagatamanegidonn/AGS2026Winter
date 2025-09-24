@@ -35,6 +35,9 @@ public:
 		ROLL,
 
 		AIM,
+
+		GET,
+		USE,
 	};
 
 	enum class PeripheralType {

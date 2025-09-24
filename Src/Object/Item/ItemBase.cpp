@@ -2,6 +2,7 @@
 
 ItemBase::ItemBase(void)
 {
+	count_ = 1;
 }
 
 ItemBase::~ItemBase(void)

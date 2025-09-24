@@ -27,6 +27,8 @@ public:
 		ROCKS,
 		COLL,
 	
+		FLOUR,
+
 		FOOT_SMOKE,
 
 		SWORD,

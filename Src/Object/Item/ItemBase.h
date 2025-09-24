@@ -16,7 +16,9 @@ public:
 	void Draw(void);
 	void Release(void);
 
-	
+	const void Count(int num) { count_ += num; }
+	const int GetCount(void) const { return count_; }
+
 private:
 
 	//ƒAƒCƒeƒ€‰æ‘œ
