@@ -9,6 +9,18 @@ ItemPoach::~ItemPoach()
 {
 }
 
+void ItemPoach::Draw(int i)
+{
+	auto it = Items_.find(i);
+	if (it != Items_.end()) {
+		// ‘¶İ‚·‚é
+		Items_[i]->Draw();
+	}
+	else {
+		// ‘¶İ‚µ‚È‚¢
+	}
+}
+
 void ItemPoach::AddItem(int itemId)
 {
 	
@@ -29,10 +41,11 @@ void ItemPoach::PlayItem(int itemId)
 	auto it = Items_.find(itemId);
 	if (it != Items_.end()) {
 		// ‘¶İ‚·‚é
-		Items_[itemId]->Count(1);
+		Items_[itemId]->Count(-1);
 		if (Items_[itemId]->GetCount() <= 0)
 		{
-			Items_[itemId].reset();
+			// map ‚©‚çíœ‚·‚é
+			Items_.erase(it);
 		}
 	}
 }

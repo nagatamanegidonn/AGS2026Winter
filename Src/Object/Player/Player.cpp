@@ -218,9 +218,9 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 
 	// アニメーションの設定
 	InitAnimation();
-	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 40.0f, 0, 0.0f, 210.0f);
+	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 50.0f, 0, 0.0f, 210.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::GET, true, 5.0f);
-	animationController_->Add((int)ANIM_TYPE::USE, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 40.0f, 0, 40.0f, 160.0f);
+	animationController_->Add((int)ANIM_TYPE::USE, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::USE, true, 5.0f);
 
 
@@ -262,14 +262,22 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	capsule_->SetLocalPosTop({ 0.0f, 110.0f, 0.0f });
 	capsule_->SetLocalPosDown({ 0.0f, 30.0f, 0.0f });
 	capsule_->SetRadius(20.0f);
-
-
+	
+	
 	//ステータスの初期化
 	invisibleTime_ = 0.0f;//無敵時間
 	flyigDir_ = AsoUtility::VECTOR_ZERO;
 	flyigTime_ = downTime_ = 0.0f;
 
+	//武器ごとのパラメータ設定
 	InitPram();
+
+
+	capsuleWepon_ = std::make_unique<Capsule>(transWeapon_);
+	capsuleWepon_->SetLocalPosTop({ 0.0f, 110.0f, 0.0f });
+	capsuleWepon_->SetLocalPosDown({ 0.0f, -30.0f, 0.0f });
+	capsuleWepon_->SetRadius(10.0f);
+
 
 
 	//採取の際の情報（仮）
@@ -475,6 +483,7 @@ void Player::Update(void)
 		chageCount_ = 1.0f;
 	}
 	effectController_->Update(0, transform_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
+	effectController_->Update(0, transform_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
 	
 	//音の再生
 	if (animeAgoType_ != (int)ANIM_TYPE::DRAW 
@@ -616,6 +625,10 @@ void Player::DrawUI(int i)
 		hpRenderer_->Draw(GAGE_POS_X, GAGE_POS_Y);
 		staMaterial_->SetConstBuf(1, { stamina_ / staminaMax_, 0.0f, 1.0f, 1.0f });
 		staRenderer_->Draw(GAGE_POS_X, STA_POS_Y);
+
+		//アイテムの表示
+		poach_->Draw(0);
+
 	}
 
 	//共通描画
@@ -825,8 +838,11 @@ void Player::InitEffect(void)
 {
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
-
+	//ためアニメーション
 	effectController_->Add(0, path + L"PowerUp/PowerUp.efkefc");
+
+	effectController_->Add(1, path + L"Slash/Slash.efkefc");
+	effectController_->Play(1);
 
 }
 
@@ -1189,6 +1205,10 @@ void Player::UpdateUse(void)
 	if (animationController_->IsEnd())
 	{
 		hp_ += 20;
+		if (hp_ > hpMax_)
+		{
+			hp_ = hpMax_;
+		}
 		poach_->PlayItem(0);
 
 	}
@@ -1247,7 +1267,7 @@ void Player::ProcessMove(void)
 				}
 				
 				//採取処理
-				if (inputController_->IsTriggered(InputController::KEY::GET)&& 
+				if (inputController_->IsNew(InputController::KEY::GET)&& 
 					AsoUtility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
 				{
 					speed_ = SPEED_MOVE;
@@ -1855,11 +1875,11 @@ bool Player::CollisionCapsule(int& modelId)const
 
 	return ret;
 }
-const bool Player::CollisionSphere(const VECTOR pos, float r) const
+const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 {
 
 	// playerとの衝突判定
-	VECTOR diff = VSub(capsule_->GetCenter(), pos);
+	VECTOR diff = VSub(transform_.pos, pos);
 
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
@@ -2003,7 +2023,7 @@ void Player::DrawDebug(void)
 	DrawLine3D(gravHitPosUp, gravHitPosDown, 0xffffff);
 
 	//InputManager& ins = InputManager::GetInstance();
-
+	capsuleWepon_->Draw();
 
 	auto r = inputController_->IsNew(InputController::KEY::DASH);
 
@@ -2053,6 +2073,9 @@ void Player::AttrckUpdate(void)
 	if (atkData_[attrckType_]->sHitTime < animationController_->GetStepTime()
 		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
 	{
+
+		effectController_->Update(1, capsuleWepon_->GetCenter());
+
 		isHitCheck_ = true;
 	}
 

@@ -25,7 +25,7 @@ void ItemObject::Init(void)
 void ItemObject::Update(void)
 {
 
-	if (player_.CollisionSphere(transform_.collider->pos_, transform_.collider->radius_))
+	if (player_.CollisionUnderSphere(transform_.collider->pos_, transform_.collider->radius_))
 	{
 		player_.SetItemId(1);
 	}

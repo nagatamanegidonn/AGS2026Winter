@@ -191,7 +191,7 @@ public:
 	PLAYER_TYPE GetPlayerType(void)const;
 	bool CollisionCapsule(int& modelId)const;
 	//球体との当たり判定
-	const bool CollisionSphere(const VECTOR pos,float r)const;
+	const bool CollisionUnderSphere(const VECTOR pos,float r)const;
 
 	const bool IsAttrck(void) const;//通信プレイヤーのことは不明
 	const bool IsLoopAnim(void);//通信プレイヤー
@@ -260,6 +260,7 @@ protected:
 
 	//カプセル
 	std::unique_ptr<Capsule> capsule_;
+	std::unique_ptr<Capsule> capsuleWepon_;
 
 	// 衝突チェック
 	VECTOR gravHitPosDown_; //← 衝突用線分

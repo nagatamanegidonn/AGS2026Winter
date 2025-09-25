@@ -12,6 +12,7 @@ public:
 	ItemPoach(void);
 	~ItemPoach(void);
 
+	void Draw(int i);
 
 	//アイテムの管理メソッド
 	void AddItem(int itemId);

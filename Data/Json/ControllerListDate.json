@@ -2,7 +2,7 @@
     "Controller1": [
         {
             "ID": 1,
-            "isUse": true
+            "isUse": false
         }
     ],
     "Controller2": [
@@ -14,13 +14,13 @@
     "Controller3": [
         {
             "ID": 3,
-            "isUse": false
+            "isUse": true
         }
     ],
     "Controller4": [
         {
             "ID": 4,
-            "isUse": false
+            "isUse": true
         }
     ]
 }

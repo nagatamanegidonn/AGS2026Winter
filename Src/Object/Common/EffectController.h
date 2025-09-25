@@ -38,6 +38,7 @@ public:
 
 	void LoopUpdate(int type, const VECTOR pos, VECTOR rot = { 0.0f,0.0f,0.0f }, float scale = 1.0f);
 	void Update(int type, const VECTOR pos, VECTOR rot = { 0.0f,0.0f,0.0f }, float scale = 1.0f);
+	void RibbonUpdate(int type, const VECTOR pos, float scale = 1.0f);
 	void Update(int type = -1);
 
 private:

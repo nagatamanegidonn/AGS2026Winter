@@ -24,7 +24,7 @@ private:
 	//アイテム画像
 	int itemImage_;
 	//アイテム名
-	std::string  name_;
+	std::wstring  name_;
 		 
 	//持っている数
 	int count_;

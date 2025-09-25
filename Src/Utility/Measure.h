@@ -27,7 +27,7 @@ public:
 	void Start(void);
 
 	// 計測
-	void Watch(std::string name);
+	void Watch(std::wstring name);
 
 	// 描画
 	void Draw(void);
@@ -52,7 +52,7 @@ private:
 	std::chrono::system_clock::time_point mPreFrameTime;
 
 	// 各計測箇所の計測時間
-	std::map<std::string, double> mWatchTimes;
+	std::map<std::wstring, double> mWatchTimes;
 
 	// インスタンス生成時からの経過時間
 	std::chrono::system_clock::time_point mInitTime;

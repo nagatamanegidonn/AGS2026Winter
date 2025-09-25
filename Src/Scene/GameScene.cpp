@@ -197,7 +197,7 @@ void GameScene::Update(void)
 
 #ifdef _DEBUG
 	Measure::GetInstance().Start();
-	Measure::GetInstance().Watch("01 Application START");
+	Measure::GetInstance().Watch(L"01 Application START");
 #endif
 
 

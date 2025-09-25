@@ -75,6 +75,9 @@ void ResourceManager::Init(void)
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"flour/Chamomile.mv1");
 	resourcesMap_.emplace(SRC::FLOUR, std::move(res));
 	
+	res = std::make_unique<RES>(RES_T::IMG, PATH_MDL + L"Item/items/item489.png");
+	resourcesMap_.emplace(SRC::HEEL, std::move(res));
+	
 
 	
 	// ‘«‰Œ

@@ -116,6 +116,26 @@ void EffectController::Update(int type, const VECTOR pos, VECTOR rot, float scal
 	}
 }
 
+void EffectController::RibbonUpdate(int type, const VECTOR pos, float scale)
+{
+	// 指定されたエフェクトが存在しない場合は処理しない
+	auto it = effects_.find(type);
+	if (it == effects_.end()) {
+		return;
+	}
+
+
+	SetPosPlayingEffekseer3DEffect(effects_[type]->PlayId_, pos.x, pos.y, pos.z);
+
+	// エフェクト再生チェック
+	// 0:再生中、-1:再生されていない、もしくは再生終了
+	int ret = IsEffekseer3DEffectPlaying(effects_[type]->PlayId_);
+	if (ret == -1)
+	{
+		StopEffekseer3DEffect(effects_[type]->PlayId_);
+	}
+}
+
 void EffectController::Update(int type)
 {
 	// 指定されたエフェクトが存在しない場合は処理しない

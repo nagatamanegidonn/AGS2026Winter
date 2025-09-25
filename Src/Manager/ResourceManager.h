@@ -28,6 +28,7 @@ public:
 		COLL,
 	
 		FLOUR,
+		HEEL,
 
 		FOOT_SMOKE,
 

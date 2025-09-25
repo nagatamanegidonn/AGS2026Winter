@@ -44,7 +44,7 @@ void Measure::Start(void)
 
 }
 
-void Measure::Watch(std::string name)
+void Measure::Watch(std::wstring name)
 {
 
 	if (mWatchTimes.count(name) == 0)
