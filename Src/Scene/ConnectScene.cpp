@@ -39,6 +39,8 @@ void ConnectScene::Init(void)
 		Vector2(Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y)
 	);
 
+#pragma region プレイヤーの作成
+
 	playerNum_ = 1;
 
 	AddPlayer({ -150.0f,-50.0f,-250.0f },
@@ -49,6 +51,8 @@ void ConnectScene::Init(void)
 		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f),  AsoUtility::Deg2RadF(0.0f) });
 	AddPlayer({ 150.0f,-50.0f,-250.0f },
 		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(20.0f),  AsoUtility::Deg2RadF(0.0f) });
+
+#pragma endregion
 
 	//NetManager::GetInstance().TryConnect();
 	NetManager::GetInstance().ChangeGameState(GAME_STATE::CONNECTING);//ネット通信受け付ける状態に変更
@@ -162,11 +166,6 @@ void ConnectScene::Draw(void)
 		players_.at(i)->Draw();
 		i++;
 	}
-	/*for (const auto& users : players_)
-	{
-		users->Draw();
-		i++;
-	}*/
 
 	std::wstring msg = L"接続中";
 	if (NetManager::GetInstance().GetMode() == NET_MODE::HOST)

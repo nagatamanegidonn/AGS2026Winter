@@ -96,9 +96,9 @@ protected:
 	int attrckType_ = 0;//アタックデータ使用ID
 
 	//攻撃管理
-	bool isHitCheck_;	//攻撃判定が発生するかの判定
-	float chageAttrckTime_;
-	int attrckDamage_;		//攻撃力
+	bool isHitCheck_;			//攻撃判定が発生するかの判定
+	float chageAttrckTime_;		//攻撃チャージ時間
+	int attrckDamage_;			//攻撃力
 	float attrckRate_ = 1.0f;	//攻撃率
 
 

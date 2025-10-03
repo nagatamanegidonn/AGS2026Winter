@@ -284,18 +284,11 @@ private:
 	void UpdateDamage(void);
 	void UpdateDead(void);
 
-
-
 	//最終更新
 	void CollisionStageCapsule(void)override;
 	void CollisionGravity(void)override;
 
-
-	// モーション終了
-	//bool IsEndLanding(void);
-
 	//攻撃無効化
-	//void AttrckReset(void);
 	void AttrckUpdate(void);
 
 	// デバッグ用描画

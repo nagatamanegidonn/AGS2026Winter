@@ -206,60 +206,9 @@ void Arrow::SyncWeaponPlay()
 {
 #pragma region 武器の同期＿非戦闘時
 
-	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine");//ナイト腰
-	//プレイヤーの手の位置
-	const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
-
-	// プレイヤーの手のグローバルマトリクス
-	//MATRIX mat = MV1GetFrameLocalMatrix(transform_.modelId, frmNo);
-	MATRIX handRot = MV1GetFrameLocalWorldMatrix(transform_.modelId, frmNo);
-	// 手のワールド回転
-	Quaternion handWorldRot = Quaternion::GetRotation(handRot);
-
-	//参照元の大きさを考慮
-	auto scl = transform_.scl;
-	scl.x = 1.0f / scl.x;
-	scl.y = 1.0f / scl.y;
-	scl.z = 1.0f / scl.z;
-
-	//回転だけを取り出す（大きさも出るので考慮）
-	auto mixMat = MMult(MGetRotElem(handRot), MGetScale(scl));
-
-	//回転
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))//X回転
-				//, AsoUtility::Deg2RadF(demoRot_.x))
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))//Y回転
-				//, AsoUtility::Deg2RadF(demoRot_.y))
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))//Z回転
-				//, AsoUtility::Deg2RadF(demoRot_.z))
-			, AsoUtility::Deg2RadF(30.0f))
-	);
-
-	// 最終回転（手 + 握り補正）
-	transWeapon_.matRot = mixMat;
-
-	// 最終位置
-	transWeapon_.pos = posHand;
-	//transformItem_.pos = VAdd(transformItem_.pos, VScale(transformItem_.quaRot.GetRight(), 50.0f));//武器が斜めではないなら消す
-	//transWeapon_.pos = VAdd(transWeapon_.pos, VScale(handWorldRot.GetDown(), demoRot_.x));
-	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(handWorldRot.GetForward(), 15.0f));
-	//transWeapon_.pos = VAdd(transWeapon_.pos, VScale(handWorldRot.GetRight(), 15.0f));
-
-	//// 最終回転（手 + 握り補正）
-	//transWeapon_.quaRot = handWorldRot.Mult(transform_.quaRot);
-
-	//// モデルの更新
-	transWeapon_.Update(true);
+	// メインウェポン（背中）
+	SyncWeaponToFream(L"mixamorig:Spine", BOW_SPINE_ROT, BOW_SPINE_POS,
+		transform_, transWeapon_);
 
 #pragma endregion
 }
@@ -268,11 +217,11 @@ void Arrow::SyncWeaponBattle()
 #pragma region 武器の同期（戦闘時）
 
 	// メインウェポン（左手）
-	SyncWeaponToHand(L"mixamorig:LeftHandMiddle1", { 0.0f, 70.0f, -90.0f }, { 0.0f, 0.0f, 3.0f },
+	SyncWeaponToFream(L"mixamorig:LeftHandMiddle1", BOW_LHAND_ROT, BOW_LHAND_POS,
 		transform_, transWeapon_);
 
 	// サブウェポン（右手）
-	SyncWeaponToHand(L"mixamorig:RightHand", { 0.0f, 0.0f, -90.0f }, { 0.0f, 0.0f, 3.0f },
+	SyncWeaponToFream(L"mixamorig:RightHand", ARROW_RHAND_ROT, ARROW_RHAND_POS,
 		transform_, transSubWeapon_);
 
 #pragma endregion

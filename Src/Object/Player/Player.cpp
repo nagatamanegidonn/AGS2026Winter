@@ -181,6 +181,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 		hp_ = hpAgo_ = hpMax_ = MAX_HP;
 		break;
 	}
+
 	damage_ = 0;
 	stamina_ = staminaMax_ = MAX_STAMINA;
 	staminaDir_ = 1.0f;
@@ -483,7 +484,7 @@ void Player::Update(void)
 		chageCount_ = 1.0f;
 	}
 	effectController_->Update(0, transform_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
-	effectController_->Update(0, transform_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
+	effectController_->LoopUpdate(1, transWeapon_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
 	
 	//音の再生
 	if (animeAgoType_ != (int)ANIM_TYPE::DRAW 
@@ -745,7 +746,6 @@ void Player::InitPram(void)
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal =
 		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
-	//Quaternion::Euler({ AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(-45.0f) });
 	transWeapon_.Update();
 
 	//サブウェポン
@@ -1299,8 +1299,6 @@ void Player::ProcessMove(void)
 		{
 			//入力された方向をかめらの回転情報を使って
 			//カメラの進行方向に変換する
-			//VECTOR direction = transform_.quaRot.PosAxis(dir);
-
 			Quaternion cameraRot = SceneManager::GetInstance().GetCamera().lock()->GetQuaRotOutX();
 			dir = cameraRot.PosAxis(dir);
 
@@ -1404,8 +1402,6 @@ void Player::ProcessBattleMove(void)
 		{
 			//入力された方向をかめらの回転情報を使って
 			//カメラの進行方向に変換する
-			//VECTOR direction = transform_.quaRot.PosAxis(dir);
-
 			Quaternion cameraRot = SceneManager::GetInstance().GetCamera().lock()->GetQuaRotOutX();
 			dir = cameraRot.PosAxis(dir);
 
@@ -1546,60 +1542,9 @@ void Player::SyncWeaponPlay()
 {
 #pragma region 武器の同期＿非戦闘時
 
-	//auto frmNo = MV1SearchFrame(transform_.modelId, "mixamorig1:Spine2");//マネキン
-	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine2");//ナイト
-	//プレイヤーの手の位置
-	const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
-
-	// プレイヤーの手のグローバルマトリクス
-	//MATRIX mat = MV1GetFrameLocalMatrix(transform_.modelId, frmNo);
-	MATRIX handRot = MV1GetFrameLocalWorldMatrix(transform_.modelId, frmNo);
-	// 手のワールド回転
-	Quaternion handWorldRot = Quaternion::GetRotation(handRot);
-
-	//参照元の大きさを考慮
-	auto scl = transform_.scl;
-	scl.x = 1.0f / scl.x;
-	scl.y = 1.0f / scl.y;
-	scl.z = 1.0f / scl.z;
-
-	//回転だけを取り出す（大きさも出るので考慮）
-	auto mixMat = MMult(MGetRotElem(handRot), MGetScale(scl));
-
-	//回転
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))//X回転
-				//, AsoUtility::Deg2RadF(demoRot_.x))
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))//Y回転
-				//, AsoUtility::Deg2RadF(demoRot_.y))
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))//Z回転
-				//, AsoUtility::Deg2RadF(demoRot_.z))
-			, AsoUtility::Deg2RadF(180.0f))
-	);
-
-	// 最終回転（手 + 握り補正）
-	transWeapon_.matRot = mixMat;
-
-	// 最終位置
-	transWeapon_.pos = posHand;
-	//transformItem_.pos = VAdd(transformItem_.pos, VScale(transformItem_.quaRot.GetRight(), 50.0f));//武器が斜めではないなら消す
-	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(transWeapon_.quaRot.GetDown(), 50.0f));
-	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(transWeapon_.quaRot.GetForward(), 15.0f));
-
-	//// 最終回転（手 + 握り補正）
-	//transWeapon_.quaRot = handWorldRot.Mult(transform_.quaRot);
-	
-	//// モデルの更新
-	transWeapon_.Update(true);
+	// メインウェポン（腰）
+	SyncWeaponToFream(L"mixamorig:Spine2", GSOWRD_SPINE_ROT, GSOWRD_SPINE_POS,
+		transform_, transWeapon_);
 
 #pragma endregion
 }
@@ -1607,59 +1552,15 @@ void Player::SyncWeaponBattle()
 {
 #pragma region 武器の同期（戦闘時）
 
-	//auto frmNo = MV1SearchFrame(transform_.modelId, "mixamorig1:RightHandMiddle1");//マネキン
-	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:RightHandMiddle1");//ナイト
-	//プレイヤーの手の位置
-	const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
-
-	// プレイヤーの手のグローバルマトリクス
-	//MATRIX mat = MV1GetFrameLocalMatrix(transform_.modelId, frmNo);
-	MATRIX handRot = MV1GetFrameLocalWorldMatrix(transform_.modelId, frmNo);
-	// 手のワールド回転
-	Quaternion handWorldRot = Quaternion::GetRotation(handRot);
-
-	//参照元の大きさを考慮
-	auto scl = transform_.scl;
-	scl.x = 1.0f / scl.x;
-	scl.y = 1.0f / scl.y;
-	scl.z = 1.0f / scl.z;
-
-	//回転だけを取り出す（大きさも出るので考慮）
-	auto mixMat = MMult(MGetRotElem(handRot), MGetScale(scl));
-
-	//回転
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))//X回転
-				//, AsoUtility::Deg2RadF(demoRot_.x))
-			, AsoUtility::Deg2RadF(160.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))//Y回転
-				//, AsoUtility::Deg2RadF(demoRot_.y))
-			, AsoUtility::Deg2RadF(20.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))//Z回転
-				//, AsoUtility::Deg2RadF(demoRot_.z))
-			, AsoUtility::Deg2RadF(45.0f))
-	);
-
-	// 最終回転（手 + 握り補正）
-	//transformItem_.quaRot = Quaternion::GetRotation(mixMat);
-	transWeapon_.matRot = mixMat;
-	// 最終位置
-	transWeapon_.pos = posHand;
-
-	// モデルの更新
-	//transformItem_.Update();
-	transWeapon_.Update(true);
+	// メインウェポン（右手）
+	SyncWeaponToFream(L"mixamorig:RightHandMiddle1", GSOWRD_HAND_ROT, GSOWRD_HAND_POS,
+		transform_, transWeapon_);
 
 #pragma endregion
 }
-const void Player::SyncWeaponToHand(const TCHAR* frameName, const VECTOR& offsetRot, const VECTOR& offsetPos,
+
+//オブジェクトのフレーム追従♭
+const void Player::SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offsetRot, const VECTOR& offsetPos,
 	const Transform& modelTransform, Transform& outWeaponTransform)
 {
 	// プレイヤーモデルのスケールを逆にして、武器モデルのスケール計算に利用
@@ -1676,7 +1577,7 @@ const void Player::SyncWeaponToHand(const TCHAR* frameName, const VECTOR& offset
 	}
 
 	// 手の位置とグローバルマトリクスを取得
-	const auto& posHand = MV1GetFramePosition(modelTransform.modelId, frmNo);
+	const auto& posFream = MV1GetFramePosition(modelTransform.modelId, frmNo);
 	MATRIX handWorldMatrix = MV1GetFrameLocalWorldMatrix(modelTransform.modelId, frmNo);
 
 	// 手のワールド回転を取得
@@ -1699,12 +1600,17 @@ const void Player::SyncWeaponToHand(const TCHAR* frameName, const VECTOR& offset
 
 	// 最終的な武器の位置を設定
 	// オフセット位置は、手のワールド回転のバック方向を基準としていると仮定
-	outWeaponTransform.pos = VAdd(posHand, VScale(handWorldRot.GetBack(), offsetPos.z));
+	outWeaponTransform.pos = VAdd(posFream, VScale(handWorldRot.GetRight(), offsetPos.x));
 	// 必要に応じて offsetPos.x や offsetPos.y も handWorldRot.GetRight() などで加算
+	outWeaponTransform.pos = VAdd(outWeaponTransform.pos, VScale(handWorldRot.GetUp(), offsetPos.y));
+	outWeaponTransform.pos = VAdd(outWeaponTransform.pos, VScale(handWorldRot.GetForward(), offsetPos.z));
 
 	// モデルの更新
 	outWeaponTransform.Update(true);
 }
+
+//当たり判定
+#pragma region コリジョン関数
 
 void Player::CollisionGravity(void)
 {
@@ -1848,7 +1754,6 @@ void Player::CollisionStageCapsule(void)
 		MV1CollResultPolyDimTerminate(hits);
 	}
 }
-
 bool Player::CollisionCapsule(int& modelId)const
 {
 	// ０番目のフレームのコリジョン情報を更新する
@@ -1890,6 +1795,9 @@ const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 
 	return false;
 }
+
+#pragma endregion
+
 
 //攻撃状態の判定
 const bool Player::IsAttrck(void)const
@@ -2100,8 +2008,7 @@ void Player::AttrckUpdate(void)
 				{
 					//入力された方向をかめらの回転情報を使って
 					//カメラの進行方向に変換する
-					//VECTOR direction = transform_.quaRot.PosAxis(dir);
-
+					
 					Quaternion cameraRot = SceneManager::GetInstance().GetCamera().lock()->GetQuaRotOutX();
 					dir = cameraRot.PosAxis(dir);
 
@@ -2123,9 +2030,6 @@ void Player::AttrckUpdate(void)
 				attrckType_ = atkData_[attrckType_]->nextAttrck;
 				animeType_ = attrckType_;
 
-				/*animationController_->Play((int)ANIM_TYPE::ATTRCK1E, false);
-				animeType_ = (int)ANIM_TYPE::ATTRCK1E;
-				attrckUpdate_ = std::bind(&Player::AttrckEnd, this);*/
 				return;
 			}
 		}

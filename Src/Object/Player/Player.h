@@ -29,6 +29,13 @@ class Player : public CharaBase
 public:
 
 
+	//腰
+	static constexpr VECTOR GSOWRD_SPINE_ROT = { 0.0f, 0.0f, 180.0f };
+	static constexpr VECTOR GSOWRD_SPINE_POS = { 0.0f, 50.0f, 15.0f };
+	//右手
+	static constexpr VECTOR GSOWRD_HAND_ROT = { 160.0f, 20.0f, 45.0f };
+	static constexpr VECTOR GSOWRD_HAND_POS = { 0.0f, 0.0f, 0.0f };
+
 	// 回転完了までの時間
 	//static constexpr float TIME_ROT = 1.0f;
 	static constexpr float TIME_ROT = 0.1f;
@@ -66,12 +73,12 @@ public:
 	// 状態
 	enum class STATE
 	{
-		NONE,
-		PLAY,
-		BATTLE,
-		WEPON,
+		NONE,		
+		PLAY,		//通常状態
+		BATTLE,		//戦闘状態
+		WEPON,		//抜刀、納刀
 
-		ATTRCK,
+		ATTRCK,		//攻撃
 
 		ROWLING,	//回避
 
@@ -79,8 +86,8 @@ public:
 		HI_DAMAGE,	//ダメ―ジ（吹っ飛び）
 		DEAD,		//死亡
 
-		GET,
-		USE,
+		GET,		//採取
+		USE,		//使用
 
 		END
 	};
@@ -88,37 +95,35 @@ public:
 	// アニメーション種別
 	enum class ANIM_TYPE
 	{
+		//通常アニメーション
 		IDLE,
 		RUN,
 		FAST_RUN,
 		ROLL,
-
-		//採取
+		//採取、使用
 		GET,
 		USE,
-
 		//抜刀
 		DRAW,
 		BATTLE_DRAW,
 		//納刀
 		CLOSE,
 		BATTLE_CLOSE,
-
+		//バトル時アニメーション
 		BTLLE_IDLE,
 		BTLLE_RUN,
 		BTLLE_FAST_RUN,
-
+		//ダメージ
 		DAMAGE,
 		FLYING,
 		DOWN,
-
+		//攻撃
 		ATTRCK1S,
 		ATTRCK1STOP,
 		ATTRCK1E,
-
 		ATTRCK2,
 		ATTRCK3,
-
+		//死亡
 		DEAD,
 	};
 
@@ -219,8 +224,11 @@ protected:
 
 	// アニメーション
 	std::unique_ptr<AnimationController> animationController_;
+	//操作コントローラー
 	std::unique_ptr<InputController> inputController_;
+	//エフェクトコントローラー
 	std::unique_ptr<EffectController> effectController_;
+	//サウンドコントローラー
 	std::unique_ptr<SoundController> soundController_;
 
 	// 状態管理
@@ -244,13 +252,13 @@ protected:
 	std::function<void(void)> stateUpdate_;
 
 	//UI
-	int freamImg_;//
-	int jobImg_;//ジョブアイコン
-	int hpImg_;//
-	int hpFreamImg_;//
-	int hpMaskImg_;//
-	int staFreamImg_;//
-	int staMaskImg_;//
+	int freamImg_;		//
+	int jobImg_;		//ジョブアイコン
+	int hpImg_;			//HP画像（色を変えスタミナにも使用）
+	int hpFreamImg_;	//HPフレーム画像」
+	int hpMaskImg_;		//HPマスク画像
+	int staFreamImg_;	//スタミナフレーム画像
+	int staMaskImg_;	//スタミナマスク画像
 	std::unique_ptr<PixelMaterial> Material_;
 	std::unique_ptr<PixelRenderer> Renderer_;
 	std::unique_ptr<PixelMaterial> hpMaterial_;
@@ -277,6 +285,8 @@ protected:
 	bool isBattleDash_;
 	float walkTime_;
 
+#pragma region パラメーター
+
 	// 体力	//ダメージ系
 	int hp_;
 	int hpAgo_;
@@ -286,7 +296,9 @@ protected:
 	float stamina_;
 	float staminaMax_;
 	float staminaDir_;
-	bool isBreak_;//疲労
+	bool isBreak_;		//疲労
+
+#pragma endregion
 
 	float invisibleTime_;
 	VECTOR flyigDir_;
@@ -350,7 +362,17 @@ protected:
 	virtual void WeaponDraw();
 	virtual void SyncWeaponPlay();
 	virtual void SyncWeaponBattle();
-	const void SyncWeaponToHand(const TCHAR* frameName, const VECTOR& offsetRot, const VECTOR& offsetPos,
+
+	/// <summary>
+	/// モデルのフレーム追従
+	/// </summary>
+	/// <param name="frameName">追従フレーム</param>
+	/// <param name="offsetRot">角度オフセットR,U,F</param>
+	/// <param name="offsetPos">位置オフセットR,U,F</param>
+	/// <param name="modelTransform">追従対象</param>
+	/// <param name="outWeaponTransform">追従物</param>
+	/// <returns></returns>
+	const void SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offsetRot, const VECTOR& offsetPos,
 		const Transform& modelTransform, Transform& outWeaponTransform);
 
 	//最終更新
