@@ -133,9 +133,6 @@ void Application::Run(void)
 		SceneManager::GetInstance().Draw();
 
 
-
-
-
 		Measure::GetInstance().Draw();
 
 		// ネットワーク管理更新(フレームの最後)

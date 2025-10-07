@@ -66,16 +66,15 @@ void ConnectScene::Init(void)
 
 void ConnectScene::Update(void)
 {
+	//インスタンスクラスの取得
 	auto& nIns = NetManager::GetInstance();
-	auto& ins = InputManager::GetInstance();
-
-	auto& users = NetManager::GetInstance().GetNetUsers();
+	const auto& ins = InputManager::GetInstance();
+	const auto& users = NetManager::GetInstance().GetNetUsers();
 
 	//武器情報の送信
 	nIns.SetWeapon(NetManager::GetInstance().GetSelf().key, SceneManager::GetInstance().GetWeponId());
 
-	InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(SceneManager::GetInstance().GetControllId());
-	//ins.GetJPadInputState(jno);
+	const InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(SceneManager::GetInstance().GetControllId());
 
 	auto& players = NetManager::GetInstance().GetNetUsers();
 	if (playerNum_ < players.size())

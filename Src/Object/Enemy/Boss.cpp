@@ -42,33 +42,33 @@ Boss::Boss(int key)
 	stateChanges_.emplace(STATE::DAMAGE, std::bind(&Boss::ChangeStateDamage, this));
 	stateChanges_.emplace(STATE::DEAD, std::bind(&Boss::ChangeStateDead, this));
 
+	//攻撃情報
 	attrckCount_ = 0;
 	attrckTypeState_ = ATTRCK_TYPE::NONE;
 	attrckDamage_ = 0;
-
+	//追跡対象
 	follow_ = nullptr;
 	followTime_ = 0.0f;
-
+	//攻撃位置
 	attrckPos_ = AsoUtility::VECTOR_ZERO;
 	dameRate_ = 1.0f;
 
+	//当たり判定
 	hitParts_.clear();
 	AddHitPart(transform_.modelId, L"Chest_M",ATTRCK_BITE_RADIUS, 1.0f);//胴体
 	AddHitPart(transform_.modelId, L"Root_M",90.0f,1.5f);//お尻
 	AddHitPart(transform_.modelId, L"Spine2_M", 120.0f, 1.2f);//腰
 	AddHitPart(transform_.modelId, L"Tongue1_M",120.0f, 1.0f);//胸
-
-	//前足
+	//左前足
 	AddHitPart(transform_.modelId, L"Shoulder_L", 75.0f, 0.5f);
 	AddHitPart(transform_.modelId, L"ElbowPart1_L", 75.0f, 0.5f);
-	
+	//左前足
 	AddHitPart(transform_.modelId, L"Shoulder_R", 75.0f, 0.5f);
 	AddHitPart(transform_.modelId, L"ElbowPart1_R", 75.0f, 0.5f);
-
-	//後足
+	//左後足
 	AddHitPart(transform_.modelId, L"Hip_L", 75.0f, 1.0f);
 	AddHitPart(transform_.modelId, L"Knee_L", 75.0f, 1.0f);
-
+	//左後足
 	AddHitPart(transform_.modelId, L"Hip_R", 75.0f, 1.0f);
 	AddHitPart(transform_.modelId, L"Knee_R", 75.0f, 1.0f);
 
@@ -225,7 +225,6 @@ void Boss::Update(void)
 
 
 		// 重力方向に沿って回転させる
-		//transform_.quaRot = grvMng_.GetTransform().quaRot;
 		transform_.quaRot = Quaternion();//grvMng_がないので代わりに
 		transform_.quaRot = transform_.quaRot.Mult(playerRotY_);
 

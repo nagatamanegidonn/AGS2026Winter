@@ -967,13 +967,8 @@ void Player::UpdateNone(void)
 //state‚ªPLAY‚Ì‚ÌUpdate
 void Player::UpdatePlay(void)
 {
-
-	auto& nIns = NetManager::GetInstance();
-
-
 	// ˆÚ“®ˆ—
 	ProcessMove();
-
 }
 //state‚ªBATTLE‚Ì‚ÌUpdate
 void Player::UpdateBattle(void)
@@ -999,7 +994,7 @@ void Player::UpdateBattle(void)
 	// ˆÚ“®ˆ—(UŒ‚‚àŠÜ‚Ş)
 	ProcessBattleMove();
 
-	
+#ifdef _DEBUG
 
 	InputManager& ins = InputManager::GetInstance();
 
@@ -1010,6 +1005,7 @@ void Player::UpdateBattle(void)
 	if (ins.IsNew(KEY_INPUT_5)) { demoRot_.z += 1.0f; }
 	if (ins.IsNew(KEY_INPUT_6)) { demoRot_.z -= 1.0f; }
 
+#endif // _DEBUG
 }
 void Player::UpdateWepon(void)
 {
