@@ -54,12 +54,13 @@ void ConnectScene::Init(void)
 
 #pragma endregion
 
-	//NetManager::GetInstance().TryConnect();
+	//ネットマネージャの状態変更
 	NetManager::GetInstance().ChangeGameState(GAME_STATE::CONNECTING);//ネット通信受け付ける状態に変更
 
 	auto& nIns = NetManager::GetInstance();
 	if (nIns.GetMode() == NET_MODE::HOST)//ModeがHost(リーダー)なら
 	{
+		//音の再生
 		SoundManager::GetInstance().Play(SoundManager::SRC::CONECT_START, Sound::TIMES::ONCE, true);
 	}
 }
@@ -108,29 +109,30 @@ void ConnectScene::Update(void)
 				if (B1_S_POS.x <= moPos.x && B1_E_POS.x >= moPos.x
 					&& B1_S_POS.y <= moPos.y && B1_E_POS.y >= moPos.y)
 				{
+					//音の再生
 					SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
 					//リザルトの初期化
 					SceneManager::GetInstance().SetGameResult(SceneManager::GAME_RESULT::NONE);
-
-					//NetManager::GetInstance().TryGoToGame();
+					//ネットマネージャの状態変更
 					NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
 				}
 			}
 			else if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::RIGHT)
 				|| ins.IsTrgDown(KEY_INPUT_SPACE))
 			{
+				//音の再生
 				SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
 				//リザルトの初期化
 				SceneManager::GetInstance().SetGameResult(SceneManager::GAME_RESULT::NONE);
-
-				//NetManager::GetInstance().TryGoToGame();
+				//ネットマネージャの状態変更
 				NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
 			}
 		}
 	}
 
+	//プレイ人数が一人のみの場合タイトルに戻れる
 	if (players.size() <= 1) {
 		//タイトルへ戻る
 		if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::DOWN)
@@ -141,6 +143,7 @@ void ConnectScene::Update(void)
 		}
 	}
 
+	//ネットマネージャがGOTO_GAMEならゲームスタート
 	if (nIns.IsSameGameState(GAME_STATE::GOTO_GAME))
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::GAME_START, Sound::TIMES::ONCE, true);

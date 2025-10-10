@@ -145,6 +145,8 @@ InputController::InputController(int padType)
         },
     };
 
+    //デッドゾーンの設定
+    SetJoypadDeadZone(padType_, 0.35);
 
     for (const auto& keyValue : inputTable_)
     {
