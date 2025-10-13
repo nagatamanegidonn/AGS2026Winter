@@ -296,14 +296,14 @@ protected:
 	float stamina_;
 	float staminaMax_;
 	float staminaDir_;
-	bool isBreak_;		//疲労
+	bool isBreak_;		//疲労(スタミナが０になったか判定)
 
 #pragma endregion
 
-	float invisibleTime_;
-	VECTOR flyigDir_;
-	float flyigTime_;
-	float downTime_;
+	float invisibleTime_;	//無敵時間
+	VECTOR flyigDir_;		//吹き飛び方向
+	float flyigTime_;		//吹き飛び時間
+	float downTime_;		//起き上がり始めるまでの時間
 
 	//採取の際の情報（仮）
 	//採取行動の際にどのアイテムがとれるかをId管理（何もないときはー１）
@@ -311,6 +311,7 @@ protected:
 	//アイテムポーチ
 	std::unique_ptr <ItemPoach> poach_;
 
+	//複種の初期化処理
 	virtual void InitPram(void);
 	virtual void InitAnimation(void);
 	virtual void InitEffect(void);
@@ -344,8 +345,6 @@ protected:
 	void UpdateDead(void);
 	void UpdateGet(void);
 	void UpdateUse(void);
-
-
 
 	// 移動
 	void ProcessMove(void);
@@ -393,7 +392,7 @@ protected:
 
 	// デバッグ用描画
 	void DrawDebug(void);
-
+	//attackDataを基にした更新
 	void AttrckUpdate(void);
 
 };
