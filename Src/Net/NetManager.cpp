@@ -843,7 +843,7 @@ const NET_ACTION_HIS NetManager::GetSelfActionHis(void) const
 
 #pragma region ボスの通信関数
 
-BOSS_DATA NetManager::GetBoss(int key)
+MONSTER_DATA NetManager::GetBoss(int key)
 {
 	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
 	{
@@ -853,11 +853,57 @@ BOSS_DATA NetManager::GetBoss(int key)
 }
 void NetManager::SetBoss(int key, VECTOR pos, Quaternion rot, int anim, int state)
 {
-	pool_.selfActionHis_.boss_.bossPostion_ = pos;
-	pool_.selfActionHis_.boss_.bossRot_ = rot;
-	pool_.selfActionHis_.boss_.bossAnim_ = anim;
-	pool_.selfActionHis_.boss_.bossState_ = state;
+	pool_.selfActionHis_.boss_.postion_ = pos;
+	pool_.selfActionHis_.boss_.rot_ = rot;
+	pool_.selfActionHis_.boss_.Anim_ = anim;
+	pool_.selfActionHis_.boss_.state_ = state;
 }
+
+#pragma region 小型用の通信関数
+
+MONSTER_DATA NetManager::GetMonsData(int key, int No)
+{
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	{
+		return pool_.joinUserActionHis_[key].monsters_[No];
+	}
+	return pool_.joinUserActionHis_[pool_.selfJoinUser_.key].monsters_[No];
+}
+void NetManager::SetMonsData(int key, int No, VECTOR pos, Quaternion rot, int anim, int state)
+{
+	pool_.selfActionHis_.monsters_[No].postion_ = pos;
+	pool_.selfActionHis_.monsters_[No].rot_ = rot;
+	pool_.selfActionHis_.monsters_[No].Anim_ = anim;
+	pool_.selfActionHis_.monsters_[No].state_ = state;
+}
+
+int NetManager::GetNetMonsDamage(int key, int No)
+{
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	{
+		return pool_.joinUserActionHis_[key].smallDamage_[No];
+	}
+	return 0;
+}
+void NetManager::SetNetMonsDamage(int key, int No, int damage)
+{
+	pool_.selfActionHis_.smallDamage_[No] = damage;
+}
+
+int NetManager::GetNetMonsHp(int key, int No)
+{
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	{
+		return pool_.joinUserActionHis_[key].smallHp_[No];
+	}
+	return 0;
+}
+void NetManager::SetNetMonsHp(int key, int No, int hp)
+{
+	pool_.selfActionHis_.smallHp_[No] = hp;
+}
+
+#pragma endregion
 
 #pragma endregion
 

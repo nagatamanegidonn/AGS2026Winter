@@ -192,6 +192,8 @@ public:
 	const bool GetHit(void) const;
 	const void SetHit(bool flag);
 
+	std::weak_ptr<Capsule> GetCapsule(void);
+
 	// プレイヤー種別(1P or 2P)
 	PLAYER_TYPE GetPlayerType(void)const;
 	bool CollisionCapsule(int& modelId)const;
@@ -268,7 +270,7 @@ protected:
 
 	//カプセル
 	std::unique_ptr<Capsule> capsule_;
-	std::unique_ptr<Capsule> capsuleWepon_;
+	std::shared_ptr<Capsule> capsuleWepon_;
 
 	// 衝突チェック
 	VECTOR gravHitPosDown_; //← 衝突用線分

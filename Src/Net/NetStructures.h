@@ -103,12 +103,12 @@ struct NET_ACTION
 	unsigned int actBits;
 };
 
-struct BOSS_DATA
+struct MONSTER_DATA
 {
-	VECTOR bossPostion_ = { 0.0f,0.0f,0.0f };
-	Quaternion bossRot_ = { 0.0f,0.0f,0.0f,0.0f };
-	int bossAnim_ = 0;
-	int bossState_ = 0;
+	VECTOR postion_ = { 0.0f,0.0f,0.0f };
+	Quaternion rot_ = Quaternion::Identity();
+	int Anim_ = 0;
+	int state_ = 0;
 };
 
 //ゲームシーンで使用する通信データ
@@ -120,8 +120,8 @@ struct NET_ACTION_HIS
 	NET_ACTION actions[NUM_FRAME];
 
 	//自分の位置情報		新規
-	VECTOR selfPostion_ = { 0.0f,0.0f,0.0f };
-	Quaternion playerRot_ = { 0.0f,0.0f,0.0f,0.0f };
+	VECTOR selfPostion_ = { 0.0f,0.0f,0.0f };		//8bite×3 ?
+	Quaternion playerRot_ = Quaternion::Identity();	//8bite×4 ?
 
 	int playerAnim_ = 0;
 
@@ -129,12 +129,13 @@ struct NET_ACTION_HIS
 	int bossDamage_ = 0;//Bossに与えたdamage毎フレームリセット
 	int bossHp_ = 0;//Boss
 
+	MONSTER_DATA boss_;
 
-	VECTOR bossPostion_ = { 0.0f,0.0f,0.0f };
-	Quaternion bossRot_ = { 0.0f,0.0f,0.0f,0.0f };
-	int bossAnim_ = 0;
+	//小型用
+	MONSTER_DATA monsters_[3];
+	int smallHp_[3] = {0,0,0};
+	int smallDamage_[3] = { 0,0,0 };
 
-	BOSS_DATA boss_;
 };
 
 struct NET_USERS_ACTION_HIS

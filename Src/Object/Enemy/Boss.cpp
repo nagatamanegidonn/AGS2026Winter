@@ -9,7 +9,8 @@
 
 #include "../../Net/NetManager.h"
 
-#include "../Common/Capsule.h"
+#include "../Common/Collider/Capsule.h"
+
 #include "../Common/AnimationController.h"
 #include "../Common/EffectController.h"
 #include "../Common/SoundController.h"
@@ -23,6 +24,7 @@
 Boss::Boss(int key)
 {
 	key_ = key;
+	createNo_ = 0;
 
 	animationController_ = nullptr;
 	state_ = STATE::NONE;
@@ -213,7 +215,16 @@ void Boss::Update(void)
 		movePow_ = AsoUtility::VECTOR_ZERO;
 
 		// 更新ステップ
-		stateUpdate_();
+		bool isDebug = true;
+#ifdef _DEBUG
+
+		if (state_ != STATE::DEAD)
+		{
+			isDebug = false;
+		}
+
+#endif // DEBUG
+		if(isDebug) stateUpdate_();
 
 		// 重力による移動量
 		CalcGravityPow();
@@ -238,10 +249,10 @@ void Boss::Update(void)
 		//HPの同期
 		hp_ = nIns.GetNetBossHp(key_);
 
-		const BOSS_DATA& boss = nIns.GetBoss(key_);
+		const MONSTER_DATA& boss = nIns.GetBoss(key_);
 
-		animeType_ = boss.bossAnim_;
-		state_ = static_cast<Boss::STATE>(boss.bossState_);
+		animeType_ = boss.Anim_;
+		state_ = static_cast<Boss::STATE>(boss.state_);
 
 		if (animeType_ == (int)ANIM_TYPE::DEAD)
 		{
@@ -250,9 +261,9 @@ void Boss::Update(void)
 		else animationController_->Play(animeType_);
 
 
-		const auto& pos = boss.bossPostion_;
+		const auto& pos = boss.postion_;
 		transform_.pos = pos;
-		const auto& rot = boss.bossRot_;
+		const auto& rot = boss.rot_;
 		transform_.quaRot = rot;
 
 	}
@@ -350,9 +361,6 @@ void Boss::Draw(void)
 #endif
 }
 
-void Boss::Release(void)
-{
-}
 
 
 void Boss::Damage(int dama)
@@ -369,53 +377,82 @@ void Boss::Damage(int dama)
 
 }
 
-//武器との当たり判定
-const bool Boss::CollisionCapsule(int& modelId)
+////武器との当たり判定
+//const bool Boss::CollisionCapsule(int& modelId)
+//{
+//	// ０番目のフレームのコリジョン情報を更新する
+//	MV1RefreshCollInfo(modelId, -1);
+//
+//	//当たり判定フラグ
+//	bool ret = false;
+//	VECTOR hitPos = AsoUtility::VECTOR_ZERO;
+//
+//	for (auto& part : hitParts_)
+//	{
+//		// カプセルとの衝突判定
+//		auto hits = MV1CollCheck_Sphere(
+//			modelId, -1,
+//			part->GetPos(), part->GetRadius());
+//		
+//		// 衝突した複数のポリゴンと衝突回避するまで、
+//		// プレイヤーのdamage
+//		 // 当たったかどうかで処理を分岐
+//		if (hits.HitNum >= 1)
+//		{
+//
+//			// 当たった場合は衝突の情報を描画する
+//			ret = true;
+//			dameRate_ = part->GetDameRate();
+//
+//			// 最初に衝突したポリゴンのインデックス
+//			const auto& poly = hits.Dim[0];
+//
+//			// 頂点の平均を取ってポリゴンの中心を求める
+//			hitPos = {
+//				(poly.Position[0].x + poly.Position[1].x + poly.Position[2].x) / 3.0f,
+//				(poly.Position[0].y + poly.Position[1].y + poly.Position[2].y) / 3.0f,
+//				(poly.Position[0].z + poly.Position[1].z + poly.Position[2].z) / 3.0f
+//			};
+//
+//			// 必要であれば保存しておく（例：メンバ変数 hitPos_ に）
+//			hitDamePos_ = hitPos;
+//
+//			// 検出した地面ポリゴン情報の後始末
+//			MV1CollResultPolyDimTerminate(hits);
+//			return ret;
+//		}
+//
+//		// 検出した地面ポリゴン情報の後始末
+//		MV1CollResultPolyDimTerminate(hits);
+//	}
+//
+//	return ret;
+//}
+const bool Boss::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 {
-	// ０番目のフレームのコリジョン情報を更新する
-	MV1RefreshCollInfo(modelId, -1);
-
 	//当たり判定フラグ
 	bool ret = false;
 	VECTOR hitPos = AsoUtility::VECTOR_ZERO;
 
 	for (auto& part : hitParts_)
 	{
-		// カプセルとの衝突判定
-		auto hits = MV1CollCheck_Sphere(
-			modelId, -1,
-			part->GetPos(), part->GetRadius());
 		
 		// 衝突した複数のポリゴンと衝突回避するまで、
 		// プレイヤーのdamage
 		 // 当たったかどうかで処理を分岐
-		if (hits.HitNum >= 1)
+		if (_capsule.lock()->IsHitSphere(part->GetPos(), part->GetRadius()))
 		{
 
 			// 当たった場合は衝突の情報を描画する
 			ret = true;
 			dameRate_ = part->GetDameRate();
 
-			// 最初に衝突したポリゴンのインデックス
-			const auto& poly = hits.Dim[0];
-
-			// 頂点の平均を取ってポリゴンの中心を求める
-			hitPos = {
-				(poly.Position[0].x + poly.Position[1].x + poly.Position[2].x) / 3.0f,
-				(poly.Position[0].y + poly.Position[1].y + poly.Position[2].y) / 3.0f,
-				(poly.Position[0].z + poly.Position[1].z + poly.Position[2].z) / 3.0f
-			};
-
 			// 必要であれば保存しておく（例：メンバ変数 hitPos_ に）
-			hitDamePos_ = hitPos;
+			hitDamePos_ = part->GetPos();
 
-			// 検出した地面ポリゴン情報の後始末
-			MV1CollResultPolyDimTerminate(hits);
 			return ret;
 		}
 
-		// 検出した地面ポリゴン情報の後始末
-		MV1CollResultPolyDimTerminate(hits);
 	}
 
 	return ret;
@@ -537,11 +574,6 @@ bool Boss::IsBattle(void)
 
 
 
-void Boss::AddHitPart(int& model, std::wstring boneName, float rad, float rate)
-{
-	auto  part = std::make_unique<HitPart>(model, boneName, rad, rate);
-	hitParts_.emplace_back(std::move(part));
-}
 void Boss::InitAnimation(void)
 {
 
@@ -757,9 +789,9 @@ void Boss::UpdateBattle(void)
 
 
 	//視線の先に至らに変更予定
-	if (stateTime_ < 0.0f || (IsTargetInFOV(FOV_RADIUS) && stateTime_ < 1.0f)) {
+	if (stateTime_ < 0.0f || (IsTargetInFOV(follow_->pos, FOV_RADIUS) && stateTime_ < 1.0f)) {
 
-		if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(FOV_RADIUS))//攻撃半径×攻撃半径
+		if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))//攻撃半径×攻撃半径
 		{
 			if ((int)disPow % 2 == 0)
 			{
@@ -793,7 +825,7 @@ void Boss::UpdateFollow(void)
 	animationController_->Play((int)ANIM_TYPE::FAST_RUN);
 	animeType_ = (int)ANIM_TYPE::FAST_RUN;
 
-	if (IsTargetInFOV(FOV_RADIUS))
+	if (IsTargetInFOV(follow_->pos,FOV_RADIUS))
 	{
 		//ターゲットに向けて回転
 		TargetRotate(follow_->pos);
@@ -808,7 +840,7 @@ void Boss::UpdateFollow(void)
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
 
-	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(FOV_RADIUS))//ダメージ半径×攻撃半径
+	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))//ダメージ半径×攻撃半径
 	{
 		if ((int)disPow % 2 == 0)
 		{
@@ -864,9 +896,6 @@ void Boss::UpdateAttrckReady(void)
 		ChangeState(STATE::BATTLE);
 		break;
 	}
-
-
-	
 }
 void Boss::UpdateAttrckStamp(void)
 {
@@ -950,7 +979,7 @@ void Boss::UpdateAttrckDash(void)
 	}*/
 
 	//離れていて視線にいると
-	if (IsTargetInFOV(FOV_RADIUS) && disPow > ATTRCK_RADIUS * ATTRCK_RADIUS)
+	if (IsTargetInFOV(follow_->pos,FOV_RADIUS) && disPow > ATTRCK_RADIUS * ATTRCK_RADIUS)
 	{
 		//ターゲットに向けて回転
 		TargetRotate(follow_->pos);
@@ -1127,91 +1156,6 @@ void Boss::DrawDebug(void)
 
 	DrawFormatString(100, 400, 0x000000, L"Boss_HP(%d)", hp_);
 	DrawFormatString(100, 416, 0x000000, L"Boss_Attrck(%d)", attrckDamage_);
-}
-
-void Boss::TargetRotate(const VECTOR traPos, float rate)
-{
-	
-	VECTOR toTarget = VSub(traPos, transform_.pos);
-	toTarget.y = 0.0f;
-	toTarget = VNorm(toTarget);
-
-	VECTOR forward = transform_.GetForward();
-	forward.y = 0.0f;
-	forward = VNorm(forward);
-
-	float dot = VDot(forward, toTarget);
-	dot = std::clamp(dot, -1.0f, 1.0f);
-	float angleRad = acosf(dot);
-
-	float crossY = forward.x * toTarget.z - forward.z * toTarget.x;
-	if (crossY > 0.0f) {
-		angleRad = -angleRad;
-	}
-
-	float angleDeg = AsoUtility::Rad2DegF(angleRad);
-
-	const float maxTurnDeg = 5.0f;
-	const float deadZoneDeg = 1.0f;
-
-	if (std::abs(angleDeg) > deadZoneDeg)
-	{
-		float clampedDeg = std::clamp(angleDeg, -maxTurnDeg, maxTurnDeg);
-		clampedDeg *= rate;
-
-		playerRotY_ = playerRotY_.Mult(
-			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(clampedDeg), AsoUtility::AXIS_Y
-			));
-	}
-}
-bool Boss::IsTargetInFOV(float fovDeg)
-{
-	VECTOR toTarget = VSub(follow_->pos, transform_.pos);
-	toTarget.y = 0.0f; // 水平方向だけで判定
-	toTarget = VNorm(toTarget);
-
-	VECTOR forward = transform_.GetForward();
-	forward.y = 0.0f;
-	forward = VNorm(forward);
-
-	float dot = VDot(forward, toTarget); // コサイン角
-	float angleRad = acosf(std::clamp(dot, -1.0f, 1.0f)); // 安定化
-	float angleDeg = AsoUtility::Rad2DegF(angleRad);
-
-	// 視野角の半分以内なら true
-	return angleDeg <= (fovDeg * 0.5f);
-}
-void Boss::DrawFOV(float fovDeg, float radius, int rayCount, unsigned int color)
-{
-	//原点
-	VECTOR origin = transform_.pos;
-	origin.y += 30;
-
-	VECTOR forward = transform_.GetForward();
-	forward.y = 0.0f;
-	forward = VNorm(forward);
-
-	float halfFov = fovDeg * 0.5f;
-	float angleStep = fovDeg / (rayCount - 1);
-
-	for (int i = 0; i < rayCount; ++i)
-	{
-		float angle = -halfFov + angleStep * i;
-		float rad = AsoUtility::Deg2RadF(angle);
-
-		// Y軸回転の方向ベクトルを作成
-		VECTOR dir = {
-			forward.x * cosf(rad) - forward.z * sinf(rad),
-			0.0f,
-			forward.x * sinf(rad) + forward.z * cosf(rad)
-		};
-
-		VECTOR end = VAdd(origin, VScale(dir, radius));
-		end.y += 30;
-
-		DrawLine3D(origin, end, color);
-	}
 }
 
 

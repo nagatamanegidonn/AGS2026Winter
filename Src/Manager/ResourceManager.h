@@ -16,6 +16,7 @@ public:
 		PUSH_SPACE,
 
 		BOSS,
+		MONSTER,
 
 		PLAYER,
 		PLAYER_NIGHT,

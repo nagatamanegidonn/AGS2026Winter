@@ -3,6 +3,8 @@
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
 
+#include "../Common/Collider/Capsule.h"
+
 #include "ShotBase.h"
 
 ShotBase::ShotBase(int damage, const VECTOR birthPos, const VECTOR shotVec, int key)
@@ -40,6 +42,13 @@ void ShotBase::Create(int damage, const VECTOR birthPos, const VECTOR dir, int k
 
 	// モデル制御の基本情報更新
 	transform_.Update();
+
+	capsule_ = std::make_shared<Capsule>(transform_);
+	capsule_->SetLocalPosTop({ 0.0f, 0.0f, 110.0f });
+	capsule_->SetLocalPosDown({ 0.0f,0.0f,  -30.0f });
+	capsule_->SetRadius(10.0f);
+
+
 	// 状態遷移
 	ChangeState(STATE::SHOT);
 }
@@ -98,11 +107,20 @@ void ShotBase::Draw(void)
 			break;
 		}
 	}
+#ifdef _DEBUG
+	capsule_->Draw();
+#endif // _DEBUG
+
 }
 
 const int ShotBase::GetDamage(void)
 {
 	return (int)((float)damage_ * (timeAlive_ / 2));
+}
+
+std::weak_ptr<Capsule> ShotBase::GetCapsule(void)
+{
+	return capsule_;
 }
 
 void ShotBase::Destroy(void)

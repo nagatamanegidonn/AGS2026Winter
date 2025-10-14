@@ -1,26 +1,26 @@
 {
     "Controller1": [
-        {
-            "ID": 1,
-            "isUse": false
-        }
+      {
+        "ID": 1,
+        "isUse": false
+      }
     ],
     "Controller2": [
-        {
-            "ID": 2,
-            "isUse": true
-        }
+      {
+        "ID": 2,
+        "isUse": false
+      }
     ],
     "Controller3": [
         {
             "ID": 3,
-            "isUse": true
+            "isUse": false
         }
     ],
     "Controller4": [
         {
             "ID": 4,
-            "isUse": true
+            "isUse": false
         }
     ]
 }

@@ -19,6 +19,7 @@
 
 #include "../Object/Shot/ShotBase.h"
 #include "../Object/Enemy/Boss.h"
+#include "../Object/Enemy/SmallMonster.h"
 #include "../Object/Statge/Stage.h"
 #include "../Object/Statge/Planet.h"
 #include "../Object/Statge/SkyDome.h"
@@ -81,6 +82,13 @@ void GameScene::Init(void)
 
 	boss_ = std::make_unique<Boss>(NetManager::GetInstance().GetHost().key);
 	boss_->Init();
+	
+	Monsters_[0] = std::make_unique<SmallMonster>(NetManager::GetInstance().GetHost().key,0);
+	Monsters_[0]->Init();
+	Monsters_[1] = std::make_unique<SmallMonster>(NetManager::GetInstance().GetHost().key,1);
+	Monsters_[1]->Init();
+	Monsters_[2] = std::make_unique<SmallMonster>(NetManager::GetInstance().GetHost().key,2);
+	Monsters_[2]->Init();
 
 	textId_ = "";
 	stepId_ = 0;
@@ -269,6 +277,11 @@ void GameScene::Update(void)
 			if (disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
 			{
 				boss_->SetFollow(&player->GetTransform());
+				for (auto& mons : Monsters_)
+				{
+					mons->SetFollow(&player->GetTransform());
+				}
+
 				trans = player->GetTransform(); // BATTLEに引き継ぐ初期ターゲット
 			}
 		}
@@ -279,6 +292,10 @@ void GameScene::Update(void)
 				minDist_ = disPow;
 				closestTrans = player->GetTransform();
 				boss_->SetFollow(&player->GetTransform());
+				for (auto& mons : Monsters_)
+				{
+					mons->SetFollow(&player->GetTransform());
+				}
 			}
 		}
 		else if (boss_->IsState(Boss::STATE::FOLLOW))
@@ -342,7 +359,10 @@ void GameScene::Update(void)
 
 	//ボスの更新
 	boss_->Update();
-
+	for (auto& mons : Monsters_)
+	{
+		mons->Update();
+	}
 
 
 	// 通信を送る
@@ -402,9 +422,12 @@ void GameScene::Draw(void)
 
 	//ボスの描画]
 	boss_->Draw();
+	for (auto& mons : Monsters_)
+	{
+		mons->Draw();
+	}
 
-
-	VECTOR playerPos;
+	VECTOR playerPos{};
 	VECTOR playerDirF{};
 	// プレイヤーの描画
 	for (auto& player : players_)
@@ -529,7 +552,7 @@ void GameScene::Collision(void)
 
 
 		//最終的にボスの攻撃判定//自分だけ
-		if (boss_->CollisionCapsule(model)
+		if (boss_->CollisionCapsule(player->GetCapsule())
 			&& player->IsAttrck() && player->IsHit() && player->IsSelf())
 		{
 			player->SetHit(true);
@@ -538,7 +561,18 @@ void GameScene::Collision(void)
 			SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
 
 		}
+		for (auto& mons : Monsters_)
+		{
+			if (mons->CollisionCapsule(player->GetCapsule())
+				&& player->IsAttrck() && player->IsHit() && player->IsSelf())
+			{
+				player->SetHit(true);
+				mons->Damage(player->GetAttrckPow() * player->GetAttrckRate());
+				//音の再生
+				SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
 
+			}
+		}
 		auto& users = NetManager::GetInstance().GetNetUsers();
 
 		//プレイヤーの当たり判定（ボス攻撃）//自分だけ
@@ -579,6 +613,18 @@ void GameScene::Collision(void)
 				//playerが無敵か判定した後無敵じゃないならエフェクト
 
 			}
+			for (auto& mons : Monsters_)
+			{
+				if (mons->CollisionAttrck(player->GetTransform().modelId)
+					/*&& boss_->IsHit()*/)
+				{
+					VECTOR mixDir = AsoUtility::VECTOR_ZERO;
+					
+					player->Damage(mons->GetAttrckPow() * mons->GetAttrckRate(), mons->GetAttrckPos(), mixDir);
+					//playerが無敵か判定した後無敵じゃないならエフェクト
+
+				}
+			}
 		}
 
 
@@ -586,9 +632,8 @@ void GameScene::Collision(void)
 
 	for (auto& shot : shots_)
 	{
-		int model = shot->GetTransItem();
 		//最終的にボスの攻撃判定//自分だけ
-		if (boss_->CollisionCapsule(model)
+		if (boss_->CollisionCapsule(shot->GetCapsule())
 			&& shot->IsShot())
 		{
 			//音の再生
@@ -610,6 +655,27 @@ void GameScene::Collision(void)
 				}
 			}
 			shot->Destroy();
+		}
+		for (auto& mons : Monsters_)
+		{
+			if (mons->CollisionCapsule(shot->GetCapsule())
+				&& shot->IsShot())
+			{
+				for (auto& player : players_)
+				{
+					//攻撃が自分の放ったものならダメージ
+					if (shot->GetKey() == nIns.GetSelf().key
+						&& shot->GetKey() == player->GetKey())
+					{
+						mons->Damage(shot->GetDamage() * player->GetAttrckRate());
+					}
+					//
+					mons->SetFollow(&player->GetTransform());
+					
+				}
+				shot->Destroy();
+			}
+			mons->Draw();
 		}
 	}
 }

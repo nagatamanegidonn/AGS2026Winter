@@ -1,5 +1,8 @@
 #pragma once
+#include <memory>
 #include "../ActorBase.h"
+
+class Capsule;
 
 class ShotBase :
     public ActorBase
@@ -32,6 +35,7 @@ public:
     const bool IsEnd(void)const { return state_ == STATE::END; }
 
     const int GetDamage(void);
+    std::weak_ptr<Capsule> GetCapsule(void);
 
     void Destroy(void);
 
@@ -44,6 +48,8 @@ private:
     STATE state_;
     VECTOR shotVec_;
     int key_;
+
+    std::shared_ptr<Capsule> capsule_;
 
     void SetParam(void);
     void CheckAlive(void);

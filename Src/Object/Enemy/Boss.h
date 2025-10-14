@@ -6,7 +6,7 @@
 //#include "../Common/Vector2F.h"
 //#include "../Utility/AsoUtility.h"
 
-#include "../CharaBase.h"
+#include "EnemyBase.h"
 
 class AnimationController;
 class EffectController;
@@ -15,12 +15,11 @@ class SoundController;
 class Capsule;
 
 class HitDamage;
-class HitPart;
 
 class SceneBase;
 class GameScene;
 
-class Boss : public CharaBase
+class Boss : public EnemyBase
 {
 
 public:
@@ -137,7 +136,6 @@ public:
 	void Init(void) override;
 	void Update(void)override;
 	void Draw(void)override;
-	void Release(void);
 
 	// ＨＰの取得
 	const int GetHp(void) const { return hp_; }
@@ -147,7 +145,7 @@ public:
 	const bool IsState(STATE state)const { return (state_ == state); }
 
 	//外部クラストの当たり判定
-	const bool CollisionCapsule(int& modelId);
+	const bool CollisionCapsule(std::weak_ptr<Capsule> _capsule);
 	const bool CollisionAttrck(const int& modelId);
 
 	// プレイヤー種別(1P or 2P)
@@ -169,7 +167,7 @@ public:
 	const std::vector<std::unique_ptr<HitPart>>& GetHitParts(void) const { return hitParts_; }
 
 	//追従対象の設定
-	void SetFollow(const Transform* follow);
+	void SetFollow(const Transform* follow) override;
 
 	//バトル終了
 	void BattleCancel(void);
@@ -179,23 +177,13 @@ public:
 
 private:
 
-	//ユーザー番号
-	int key_;
-
-	// アニメーション
-	std::unique_ptr<AnimationController> animationController_;
-	std::unique_ptr<EffectController> effectController_;
-	std::unique_ptr<SoundController> soundController_;
-
+	
 	// 状態管理
 	STATE state_;
 	int animeType_;
 	int animeAgoType_;
 
 	float stateTime_;	//状態時間
-
-	float rotateTimer_ = 0.0f;          // 回転間隔のためのタイマー
-	const float rotateInterval_ = 1.6f; // 例：0.2秒ごとに向き直す
 
 	//攻撃管理
 	ATTRCK_TYPE attrckTypeState_;//攻撃種別
@@ -206,45 +194,22 @@ private:
 	VECTOR attrckPos_;		//攻撃判定中心位置
 	float attrckRadius = 0.0f;
 
-	//ダメージ表記用変数
-	std::vector<std::unique_ptr<HitDamage>> hitdamages_;
-
-
 	// 状態管理(状態遷移時初期処理)
 	std::map<STATE, std::function<void(void)>> stateChanges_;
 	// 状態管理(更新ステップ)
 	std::function<void(void)> stateUpdate_;
 
-	//ターゲットプレイヤー
-	const Transform* follow_;
-	float followTime_;
+	
 
-	//目的移動位置
+	//目的移動位置//※小型は範囲外に出たら消すので使わない
 	float lerpTime_;
 	VECTOR lerpPos_;
 	bool isLerp_;
 	int lerpId_;
 
-	//カプセル
-	std::unique_ptr<Capsule> capsule_;
 
-	// 衝突チェック
-	VECTOR gravHitPosDown_; //← 衝突用線分
-	VECTOR gravHitPosUp_;	//← 衝突用線分
-	VECTOR hitDamePos_;	//← 衝突用線分
-	int hitPart_;
-
-	//当たり判定（複数）
-	std::vector<std::unique_ptr<HitPart>> hitParts_;
-
-	// 体力
-	int hp_;
-	int hpMax_;
-
-
-	//アニメーションの追加、設定
-	void AddHitPart(int& model, std::wstring boneName, float rad, float rate);
-	//アニメーションの追加、設定
+	
+	//複数の初期化処理
 	void InitAnimation(void);
 	void InitEffect(void);
 	void InitSound(void);
@@ -294,8 +259,6 @@ private:
 	// デバッグ用描画
 	void DrawDebug(void);
 
-	void TargetRotate(const VECTOR traPos, float rate = 1.0f);
-	bool IsTargetInFOV(float fovDeg);
-	void DrawFOV(float fovDeg, float radius, int rayCount, unsigned int color);
+	
 };
 

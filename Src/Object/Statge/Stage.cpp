@@ -9,7 +9,7 @@
 #include "../Player/Player.h"
 #include "../Enemy/Boss.h"
 #include "Planet.h"
-#include "../Common/Collider.h"
+#include "../Common/Collider/Collider.h"
 #include "../Common/Transform.h"
 #include "Stage.h"
 

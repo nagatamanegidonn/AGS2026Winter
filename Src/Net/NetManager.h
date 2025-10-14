@@ -166,8 +166,16 @@ public:
 	const NET_ACTION_HIS GetSelfActionHis(void) const;
 
 	// ポジション設定
-	BOSS_DATA GetBoss(int key);
+	MONSTER_DATA GetBoss(int key);
 	void SetBoss(int key, VECTOR pos, Quaternion rot, int anim, int  state);
+	
+	// ポジション設定
+	MONSTER_DATA GetMonsData(int key,int No);
+	void SetMonsData(int key, int No, VECTOR pos, Quaternion rot, int anim, int  state);
+	int GetNetMonsDamage(int key, int No);
+	void SetNetMonsDamage(int key, int No, int damage);
+	int GetNetMonsHp(int key, int No);
+	void SetNetMonsHp(int key, int No, int hp);
 
 
 #pragma endregion

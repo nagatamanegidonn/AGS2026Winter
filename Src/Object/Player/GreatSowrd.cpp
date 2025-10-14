@@ -14,8 +14,8 @@
 #include "../Net/NetManager.h"
 #include "../Scene/GameScene.h"
 
-#include "../Common/Capsule.h"
-#include "../Common/Collider.h"
+#include "../Common/Collider/Capsule.h"
+#include "../Common/Collider/Collider.h"
 
 #include "../Common/AnimationController.h"
 #include "../Common/InputController.h"

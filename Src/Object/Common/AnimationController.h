@@ -1,4 +1,6 @@
 #pragma once
+#include <DxLib.h>
+
 #include <string>
 #include <map>
 #include <list>

@@ -14,8 +14,8 @@
 #include "../Net/NetManager.h"
 #include "../Scene/GameScene.h"
 
-#include "../Common/Capsule.h"
-#include "../Common/Collider.h"
+#include "../Common/Collider/Capsule.h"
+#include "../Common/Collider/Collider.h"
 
 #include "../Common/AnimationController.h"
 #include "../Common/InputController.h"
@@ -274,7 +274,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	InitPram();
 
 
-	capsuleWepon_ = std::make_unique<Capsule>(transWeapon_);
+	capsuleWepon_ = std::make_shared<Capsule>(transWeapon_);
 	capsuleWepon_->SetLocalPosTop({ 0.0f, 110.0f, 0.0f });
 	capsuleWepon_->SetLocalPosDown({ 0.0f, -30.0f, 0.0f });
 	capsuleWepon_->SetRadius(10.0f);
@@ -731,6 +731,12 @@ const void Player::SetHit(bool flag)
 {
 	isHit_ = flag;
 }
+
+std::weak_ptr<Capsule> Player::GetCapsule(void)
+{
+	return capsuleWepon_;
+}
+
 
 PLAYER_TYPE Player::GetPlayerType(void)const
 {
