@@ -74,8 +74,8 @@ private:
 	float minDist_ = 10000.0f;
 
 	//ゲームシーン用変数
-	int downCnt_;
-	float soundRate_;
+	int downCnt_;		//ダウンした回数
+	float soundRate_;	//音量倍率
 
 	// 衝突判定
 	void Collision(void);

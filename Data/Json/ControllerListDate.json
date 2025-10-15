@@ -1,15 +1,15 @@
 {
     "Controller1": [
-      {
-        "ID": 1,
-        "isUse": false
-      }
+        {
+            "ID": 1,
+            "isUse": false
+        }
     ],
     "Controller2": [
-      {
-        "ID": 2,
-        "isUse": false
-      }
+        {
+            "ID": 2,
+            "isUse": false
+        }
     ],
     "Controller3": [
         {

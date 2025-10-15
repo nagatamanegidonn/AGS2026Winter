@@ -147,15 +147,18 @@ void GameScene::Init(void)
 	grid_ = std::make_unique<Grid>(); 
 	grid_->Init();
 
+	//空の弾の作成
 	auto  shot = std::make_unique<ShotBase>(0, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, -1);
 	shot->Destroy();
-
 	shots_.push_back(std::move(shot));
 
+	//ゲーム開始待機時間
 	stepCountDown_ = 1.5f;
 
+	//ダウンした回数
 	downCnt_ = 0;
 
+	//音の設定
 	soundRate_ = 0.0f;
 	SoundManager::GetInstance().Play(SoundManager::SRC::BATTLE_BGM, Sound::TIMES::LOOP);
 	SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
@@ -170,7 +173,7 @@ void GameScene::Init(void)
 	bossHandle_ = LoadGraph((Application::PATH_IMAGE + L"UI/Boss.png").c_str());
 	playerHandle_ = LoadGraph((Application::PATH_IMAGE + L"UI/Player.png").c_str());
 
-
+	//ミニマップシェーダ
 	Material_ = std::make_unique<PixelMaterial>(L"Map.cso", 3);
 	Material_->AddConstBuf({ 0.5f, 0.5f, 0.2f, 0.2f });//ボス
 	Material_->AddConstBuf({ 0.5f, 0.5f, 0.2f, 0.2f });//プレイヤー
@@ -192,6 +195,7 @@ void GameScene::Update(void)
 		SceneManager::GetInstance().ForwardGameTime();//進めるゲーム時間(GameTotalTime　+=　デルタタイム)
 	}
 
+	//シーン遷移が間に合ってないプレイヤーのために待機
 	float limit = stepCountDown_ - SceneManager::GetInstance().GetTotalGameTime();
 	if (limit > 0.0f)
 	{
@@ -228,7 +232,7 @@ void GameScene::Update(void)
 	{
 		player->Update();
 
-		//BGM
+		//BGM設定
 		if (player->GetAreaId() == boss_->GetAreaId() && player->IsSelf()
 			&& boss_->IsBattle())
 		{

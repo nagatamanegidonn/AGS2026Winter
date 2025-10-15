@@ -124,7 +124,7 @@ void SmallMonster::Update(void)
 	int dame = 0;
 	for (auto& user : users)
 	{
-		const int userDame = nIns.GetNetBossDamage(user.first);
+		const int userDame = nIns.GetNetMonsDamage(user.first, createNo_);
 
 		dame += nIns.GetNetMonsDamage(user.first, createNo_);
 		//damage表記//ダメージを受けていたなら
@@ -199,10 +199,10 @@ void SmallMonster::Update(void)
 		//HPの同期
 		hp_ = nIns.GetNetMonsHp(key_,createNo_);
 
-		const MONSTER_DATA& boss = nIns.GetMonsData(key_, createNo_);
+		const MONSTER_DATA& mons = nIns.GetMonsData(key_, createNo_);
 
-		animeType_ = boss.Anim_;
-		state_ = static_cast<SmallMonster::STATE>(boss.state_);
+		animeType_ = mons.Anim_;
+		state_ = static_cast<SmallMonster::STATE>(mons.state_);
 
 		if (animeType_ == (int)ANIM_TYPE::DEAD)
 		{
@@ -211,9 +211,9 @@ void SmallMonster::Update(void)
 		else animationController_->Play(animeType_);
 
 
-		const auto& pos = boss.postion_;
+		const auto& pos = mons.postion_;
 		transform_.pos = pos;
-		const auto& rot = boss.rot_;
+		const auto& rot = mons.rot_;
 		transform_.quaRot = rot;
 
 	}
