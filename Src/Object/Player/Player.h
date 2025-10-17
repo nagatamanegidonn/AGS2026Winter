@@ -36,6 +36,10 @@ public:
 	static constexpr VECTOR GSOWRD_HAND_ROT = { 160.0f, 20.0f, 45.0f };
 	static constexpr VECTOR GSOWRD_HAND_POS = { 0.0f, 0.0f, 0.0f };
 
+	//ローカル回転
+	static constexpr VECTOR WEPON_LOCAL_ROT =
+	{ 160.0f, 180.0f,0.0f };
+
 	// 回転完了までの時間
 	//static constexpr float TIME_ROT = 1.0f;
 	static constexpr float TIME_ROT = 0.1f;
@@ -87,7 +91,7 @@ public:
 		DEAD,		//死亡
 
 		GET,		//採取
-		USE,		//使用
+		ITEM_PLAY,		//使用
 
 		END
 	};
@@ -102,7 +106,7 @@ public:
 		ROLL,
 		//採取、使用
 		GET,
-		USE,
+		ITEM_DRINK,
 		//抜刀
 		DRAW,
 		BATTLE_DRAW,
@@ -195,7 +199,7 @@ public:
 	std::weak_ptr<Capsule> GetCapsule(void);
 
 	// プレイヤー種別(1P or 2P)
-	PLAYER_TYPE GetPlayerType(void)const;
+	const PLAYER_TYPE& GetPlayerType(void)const;
 	bool CollisionCapsule(int& modelId)const;
 	//球体との当たり判定
 	const bool CollisionUnderSphere(const VECTOR pos,float r)const;
@@ -261,6 +265,7 @@ protected:
 	int hpMaskImg_;		//HPマスク画像
 	int staFreamImg_;	//スタミナフレーム画像
 	int staMaskImg_;	//スタミナマスク画像
+
 	std::unique_ptr<PixelMaterial> Material_;
 	std::unique_ptr<PixelRenderer> Renderer_;
 	std::unique_ptr<PixelMaterial> hpMaterial_;
@@ -302,6 +307,7 @@ protected:
 
 #pragma endregion
 
+	//ダメージ関係
 	float invisibleTime_;	//無敵時間
 	VECTOR flyigDir_;		//吹き飛び方向
 	float flyigTime_;		//吹き飛び時間
@@ -333,7 +339,7 @@ protected:
 	void ChangeStateHiDamage(void);
 	void ChangeStateDead(void);
 	void ChangeStateGet(void);
-	void ChangeStateUse(void);
+	void ChangeStateItemUse(void);
 
 	// 更新ステップ
 	void UpdateNone(void);
@@ -346,7 +352,7 @@ protected:
 	void UpdateHiDamage(void);
 	void UpdateDead(void);
 	void UpdateGet(void);
-	void UpdateUse(void);
+	void UpdateItemUse(void);
 
 	// 移動
 	void ProcessMove(void);

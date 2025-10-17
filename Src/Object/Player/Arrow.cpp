@@ -68,8 +68,6 @@ void Arrow::InitPram(void)
 	atkData_.emplace((int)ANIM_TYPE::FLYING, std::move(SetAtrckData((int)ANIM_TYPE::DOWN)));
 	atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::IDLE)));
 	atkData_.emplace((int)ANIM_TYPE::IDLE, std::move(SetAtrckData(-1)));
-	/*atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::BLEND_IDLE)));
-	atkData_.emplace((int)ANIM_TYPE::BLEND_IDLE, std::move(SetAtrckData(-1)));*/
 }
 
 void Arrow::InitAnimation(void)
@@ -78,7 +76,6 @@ void Arrow::InitAnimation(void)
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 
 	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Axe/Idle.mv1", 20.0f);
-	//animationController_->Add((int)ANIM_TYPE::BLEND_IDLE, path + L"Axe/Idle.mv1", 20.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::IDLE, true, 5.0f);
 
 	//移動系（共通）
@@ -110,9 +107,6 @@ void Arrow::InitAnimation(void)
 	animationController_->Add((int)ANIM_TYPE::BTLLE_RUN, path + L"Arrow/BattleRun.mv1", 30.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_RUN, true, 10.0f);
 
-	/*animationController_->Add((int)ANIM_TYPE::BTLLE_FAST_RUN, path + L"Axe/Sword And Shield Run.mv1", 30.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_FAST_RUN, true, 10.0f);*/
-
 	//ダメージ
 	animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"Axe/Damage.mv1", 30.0f);
 	//吹っ飛び（共通）
@@ -128,8 +122,6 @@ void Arrow::InitAnimation(void)
 
 	animationController_->Add((int)ANIM_TYPE::ATTRCK1STOP, path + L"Arrow/AttrckC.mv1", 20.0f);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK1E, path + L"Arrow/AttrckE.mv1", 20.0f);
-
-
 
 	animationController_->Add((int)ANIM_TYPE::ATTRCK2, path + L"Axe/Attrck2.mv1", 40.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK2, true);

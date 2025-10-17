@@ -45,6 +45,7 @@ public:
 
 private:
 
+	//ミニマップシェーダ
 	std::unique_ptr<PixelMaterial> Material_;
 	std::unique_ptr<PixelRenderer> Renderer_;
 	int mapHandle_;
@@ -56,7 +57,7 @@ private:
 	std::string textId_;
 	int stepId_;
 
-
+	//Objectクラス
 	std::vector<std::shared_ptr<Player>> players_;
 	std::unique_ptr<Boss> boss_;
 	std::unique_ptr<SmallMonster> Monsters_[3];

@@ -73,6 +73,7 @@ public:
 
 	// 追従対象の設定
 	void SetFollow(const Transform* follow);
+	//targetLookAtPosに向かって注目する
 	void LookAtSmoothly(const VECTOR& targetLookAtPos, float interpolationFactor);
 
 	// カメラ操作
@@ -86,22 +87,16 @@ private:
 
 	// カメラモード
 	MODE mode_;
-
 	// カメラの位置
 	VECTOR pos_;
-
 	// カメラ角度(rad)
 	VECTOR angles_;
-
 	// X軸回転が無い角度
 	Quaternion rotOutX_;
-
 	// カメラ角度
 	Quaternion rot_;
-
 	// 注視点
 	VECTOR targetPos_;
-
 	// カメラの上方向
 	VECTOR cameraUp_;
 

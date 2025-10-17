@@ -403,7 +403,7 @@ void GameScene::Update(void)
 
 void GameScene::Draw(void)
 {
-
+	//”wŒiAƒXƒe[ƒW‚Ì•`‰æ
 	skyDome_->Draw();
 	stage_->Draw();
 
@@ -447,8 +447,6 @@ void GameScene::Draw(void)
 		}
 	}
 
-
-	
 	// Draw“à
 	timer_->DrawNeedle(TIME_POS_X, TIME_POS_Y); // ’†SˆÊ’u (x, y)
 
@@ -540,7 +538,7 @@ void GameScene::Collision(void)
 		//ŽQÆŒ^—v‰ü‘P
 		int model = player->GetTransWepon().modelId;
 
-
+		//–¡•û‚Ö‚ÌUŒ‚”»’èi–¢ŽÀ‘•j
 		for (auto& playerVS : players_)
 		{
 			if (player == playerVS)
@@ -565,6 +563,7 @@ void GameScene::Collision(void)
 			SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
 
 		}
+		//¬Œ^‚Ìˆ—
 		for (auto& mons : Monsters_)
 		{
 			if (mons->CollisionCapsule(player->GetCapsule())
@@ -597,8 +596,8 @@ void GameScene::Collision(void)
 			VECTOR attrckPos = VAdd(eTrans.pos, VScale(eTrans.GetForward(), 410));
 			attrckPos = VAdd(attrckPos, VScale(eTrans.GetUp(), 170));
 
-			if (boss_->CollisionAttrck(player->GetTransform().modelId)
-				/*&& boss_->IsHit()*/)
+			//ƒ{ƒXUŒ‚‚Ìˆ—
+			if (boss_->CollisionAttrck(player->GetTransform().modelId))
 			{
 				VECTOR mixDir = AsoUtility::VECTOR_ZERO;
 				if (boss_->GetAnim() == (int)Boss::ANIM_TYPE::ATTRCK_DASH)
@@ -617,6 +616,7 @@ void GameScene::Collision(void)
 				//player‚ª–³“G‚©”»’è‚µ‚½Œã–³“G‚¶‚á‚È‚¢‚È‚çƒGƒtƒFƒNƒg
 
 			}
+			//¬Œ^‚Ìˆ—
 			for (auto& mons : Monsters_)
 			{
 				if (mons->CollisionAttrck(player->GetTransform().modelId)
@@ -645,21 +645,23 @@ void GameScene::Collision(void)
 
 			for (auto& player : players_)
 			{
-				//UŒ‚‚ªŽ©•ª‚Ì•ú‚Á‚½‚à‚Ì‚È‚çƒ_ƒ[ƒW
+				//UŒ‚‚ªŽ©•ª‚Ì•ú‚Á‚½‚à‚Ì‚È‚ç‘ŠŽè‚Éƒ_ƒ[ƒW
 				if (shot->GetKey() == nIns.GetSelf().key
 					&& shot->GetKey() == player->GetKey())
 				{
 					boss_->Damage(shot->GetDamage() * player->GetAttrckRate());
 
 				}
-				//
+				//ƒ{ƒX‚ª”ñí“¬ó‘Ô‚È‚ç’Ç]‚ðÝ’è‚µ‚Äí“¬ó‘Ô‚É
 				if (boss_->IsState(Boss::STATE::PLAY))
 				{
 					boss_->SetFollow(&player->GetTransform());
 				}
 			}
+			//’e‚ðÁ‚·
 			shot->Destroy();
 		}
+		//¬Œ^‚Ìˆ—
 		for (auto& mons : Monsters_)
 		{
 			if (mons->CollisionCapsule(shot->GetCapsule())
@@ -673,10 +675,11 @@ void GameScene::Collision(void)
 					{
 						mons->Damage(shot->GetDamage() * player->GetAttrckRate());
 					}
-					//
+					//’Ç]‚ðÝ’è‚µ‚Äí“¬ó‘Ô‚É
 					mons->SetFollow(&player->GetTransform());
 					
 				}
+				//’e‚ðÁ‚·
 				shot->Destroy();
 			}
 			mons->Draw();

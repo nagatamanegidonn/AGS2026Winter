@@ -90,7 +90,7 @@ Player::Player(int key)
 	stateChanges_.emplace(STATE::HI_DAMAGE, std::bind(&Player::ChangeStateHiDamage, this));
 	stateChanges_.emplace(STATE::DEAD, std::bind(&Player::ChangeStateDead, this));
 	stateChanges_.emplace(STATE::GET, std::bind(&Player::ChangeStateGet, this));
-	stateChanges_.emplace(STATE::USE, std::bind(&Player::ChangeStateUse, this));
+	stateChanges_.emplace(STATE::ITEM_PLAY, std::bind(&Player::ChangeStateItemUse, this));
 
 	walkTime_ = 0.0f;
 }
@@ -221,8 +221,8 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	InitAnimation();
 	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 50.0f, 0, 0.0f, 210.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::GET, true, 5.0f);
-	animationController_->Add((int)ANIM_TYPE::USE, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::USE, true, 5.0f);
+	animationController_->Add((int)ANIM_TYPE::ITEM_DRINK, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_DRINK, true, 5.0f);
 
 
 	//エフェクトの設定
@@ -320,7 +320,7 @@ void Player::Update(void)
 		//回避処理
 		if (inputController_->IsTriggered(InputController::KEY::ROLL) && IsInputPlay()
 			&& animeType_ != (int)ANIM_TYPE::ROLL && animeType_ != (int)ANIM_TYPE::DAMAGE
-			&& animeType_ != (int)ANIM_TYPE::GET&& animeType_ != (int)ANIM_TYPE::USE
+			&& animeType_ != (int)ANIM_TYPE::GET&& animeType_ != (int)ANIM_TYPE::ITEM_DRINK
 			&& state_ != STATE::HI_DAMAGE && hp_ > 0 && stamina_ > ROLL_TAF)
 		{
 			stamina_ -= ROLL_TAF;
@@ -660,7 +660,6 @@ void Player::DrawUI(int i)
 
 void Player::Release(void)
 {
-	//早くここから解放してくれ
 }
 
 void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
@@ -738,7 +737,7 @@ std::weak_ptr<Capsule> Player::GetCapsule(void)
 }
 
 
-PLAYER_TYPE Player::GetPlayerType(void)const
+const PLAYER_TYPE& Player::GetPlayerType(void)const
 {
 	return type_;
 }
@@ -751,7 +750,7 @@ void Player::InitPram(void)
 	transWeapon_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal =
-		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
+		Quaternion::Euler({ AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.x), AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.y), AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.z) });
 	transWeapon_.Update();
 
 	//サブウェポン
@@ -766,8 +765,6 @@ void Player::InitPram(void)
 	atkData_.emplace((int)ANIM_TYPE::FLYING, std::move(SetAtrckData((int)ANIM_TYPE::DOWN)));
 	atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::IDLE)));
 	atkData_.emplace((int)ANIM_TYPE::IDLE, std::move(SetAtrckData(-1)));
-	/*atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::BLEND_IDLE)));
-	atkData_.emplace((int)ANIM_TYPE::BLEND_IDLE, std::move(SetAtrckData(-1)));*/
 }
 void Player::InitAnimation(void)
 {
@@ -828,13 +825,6 @@ void Player::InitAnimation(void)
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK3, true);
 
 	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Dying.mv1", 30.0f);
-	//animationController_->SetIsBlend((int)ANIM_TYPE::DEAD , true);
-
-
-
-	/*animationController_->Add((int)ANIM_TYPE::ATTRCK1S, path + L"Great Sword Casting.mv1", 40.0f, -1, false, 0.0f, 30.0f);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK1STOP, path + L"Great Sword Casting.mv1", 40.0f, -1, false, 30.0f, 35.0f);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK1E, path + L"Great Sword Casting.mv1", 40.0f, -1, false, 40.0f);*/
 
 	animationController_->Play((int)ANIM_TYPE::IDLE);
 	animeType_ = (int)ANIM_TYPE::IDLE;
@@ -905,13 +895,11 @@ void Player::PlayAttrckSound(void)
 
 void Player::ChangeState(STATE state)
 {
-
 	// 状態変更
 	state_ = state;
 
 	// 各状態遷移の初期処理
 	stateChanges_[state_]();
-
 }
 void Player::ChangeStateNone(void)
 {
@@ -956,9 +944,9 @@ void Player::ChangeStateGet(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateGet, this);
 }
-void Player::ChangeStateUse(void)
+void Player::ChangeStateItemUse(void)
 {
-	stateUpdate_ = std::bind(&Player::UpdateUse, this);
+	stateUpdate_ = std::bind(&Player::UpdateItemUse, this);
 }
 
 #pragma endregion
@@ -1088,8 +1076,6 @@ void Player::UpdateWepon(void)
 	}
 	else{ movePow_ = AsoUtility::VECTOR_ZERO; }
 
-	//movePow_ = AsoUtility::VECTOR_ZERO;
-
 }
 void Player::UpdateAttrck(void)
 {
@@ -1202,7 +1188,7 @@ void Player::UpdateGet(void)
 	ChangeStateAnimeEnd(ANIM_TYPE::GET);
 }
 
-void Player::UpdateUse(void)
+void Player::UpdateItemUse(void)
 {
 	if (animationController_->IsEnd())
 	{
@@ -1214,7 +1200,7 @@ void Player::UpdateUse(void)
 		poach_->PlayItem(0);
 
 	}
-	ChangeStateAnimeEnd(ANIM_TYPE::USE);
+	ChangeStateAnimeEnd(ANIM_TYPE::ITEM_DRINK);
 }
 
 #pragma endregion
@@ -1291,7 +1277,7 @@ void Player::ProcessMove(void)
 			speed_ = SPEED_MOVE;
 			movePow_ = AsoUtility::VECTOR_ZERO;//抜刀時移動しない（帰るなら戻す）
 
-			ChangeState(STATE::USE);
+			ChangeState(STATE::ITEM_PLAY);
 			return;
 		}
 

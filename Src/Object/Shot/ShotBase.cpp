@@ -174,12 +174,4 @@ void ShotBase::UpdateShot(void)
 void ShotBase::UpdateBlast(void)
 {
 	ChangeState(STATE::END);
-	// エフェクト再生チェック
-	// 0:再生中、-1:再生されていない、もしくは再生終了
-	//int ret = IsEffekseer3DEffectPlaying(effectBlastPlayId_);
-	//if (ret == -1)
-	//{
-	//	// 終了状態へ
-	//	ChangeState(STATE::END);
-	//}
 }

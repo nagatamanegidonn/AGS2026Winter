@@ -13,7 +13,6 @@ ViewPlayer::~ViewPlayer()
 {
 	MV1DeleteModel(transform_.modelId);
 	MV1DeleteModel(transWeapon_.modelId);
-
 }
 
 void ViewPlayer::Init(void)
@@ -61,6 +60,10 @@ void ViewPlayer::Draw(void)
 	MV1DrawModel(transWeapon_.modelId);
 }
 
+void ViewPlayer::Release(void)
+{
+}
+
 
 
 void ViewPlayer::SetChar(const int charId)
@@ -92,7 +95,6 @@ void ViewPlayer::SetChar(const int charId)
 		break;
 	}
 
-	
 	transform_.Update();
 
 }
