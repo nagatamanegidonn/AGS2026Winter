@@ -286,7 +286,6 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	poach_ = std::make_unique<ItemPoach>();
 }
 
-
 void Player::Update(void)
 {
 	InputManager& ins = InputManager::GetInstance();
@@ -449,17 +448,6 @@ void Player::Update(void)
 		float volume = AsoUtility::CalcVolumeByDistance(selfPos, transform_.pos, MAX_EAR_RADIUS);
 
 		// 無音なら停止
-#pragma region 旧型
-		//soundController_->ChengeVolume((int)SE::CHAGE, volume);	// ボリュームだけ更新
-		//soundController_->ChengeVolume((int)SE::DRAW, volume);	// ボリュームだけ更新
-		//soundController_->ChengeVolume((int)SE::CLOSE, volume); // ボリュームだけ更新
-		//soundController_->ChengeVolume((int)SE::WALK, volume);	// ボリュームだけ更新
-		//soundController_->ChengeVolume((int)SE::RUN, volume);	// ボリュームだけ更新
-		//soundController_->ChengeVolume((int)SE::ROLL, volume);	// ボリュームだけ更新
-		//soundController_->ChengeVolume((int)SE::DAMAGE, volume);	// ボリュームだけ更新
-		//soundController_->ChengeVolume((int)SE::HI_DAMAGE, volume);	// ボリュームだけ更新
-		//soundController_->ChengeVolume((int)SE::DOWN, volume);		// ボリュームだけ更新
-#pragma endregion
 		for (int i = 0; i < static_cast<int>(SE::MAX); i++) {
 			SE se = static_cast<SE>(i);
 			// ここで se を使う処理を書く
@@ -535,6 +523,8 @@ void Player::Update(void)
 		walkTime_ = FAST_FOOT_SMOKE;
 		soundController_->Play((int)SE::RUN, Sound::TIMES::ONCE);
 	}
+
+	//攻撃時の音再生
 	PlayAttrckSound();
 
 #pragma endregion
@@ -772,7 +762,6 @@ void Player::InitAnimation(void)
 	std::wstring path = Application::PATH_MODEL + L"Player2/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Idle.mv1", 20.0f);
-	//animationController_->Add((int)ANIM_TYPE::BLEND_IDLE, path + L"Idle.mv1", 20.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::IDLE, true, 5.0f);
 
 	animationController_->Add((int)ANIM_TYPE::RUN, path + L"Run.mv1", 30.0f);
@@ -841,7 +830,6 @@ void Player::InitEffect(void)
 	effectController_->Play(1);
 
 }
-
 void Player::InitSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
