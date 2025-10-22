@@ -165,7 +165,7 @@ void Sound::ChengeVolume(float per)
 	{
 		per = 0.0f;
 	}
-	ChangeVolumeSoundMem(per * maxVolume_, handleId_);
+	ChangeVolumeSoundMem(static_cast<int>(per * static_cast<float>(maxVolume_)), handleId_);
 }
 //基本的にInit時のみ使用
 void Sound::ChengeMaxVolume(float per)

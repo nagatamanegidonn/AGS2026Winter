@@ -2,24 +2,24 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\x64\Release\BaseProject.exe</FullPath>
+      <FullPath>D:\Users\2316013\Desktop\AGS2026冬\x64\Release\BaseProject.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\Map.cso</FullPath>
+      <FullPath>D:\Users\2316013\Desktop\AGS2026冬\Data\Shader\Map.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\PlayerHp.cso</FullPath>
+      <FullPath>D:\Users\2316013\Desktop\AGS2026冬\Data\Shader\PlayerHp.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\PlayerStatus.cso</FullPath>
+      <FullPath>D:\Users\2316013\Desktop\AGS2026冬\Data\Shader\PlayerStatus.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\Texture.cso</FullPath>
+      <FullPath>D:\Users\2316013\Desktop\AGS2026冬\Data\Shader\Texture.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\AGS2026冬\Data\Shader\Timer.cso</FullPath>
+      <FullPath>D:\Users\2316013\Desktop\AGS2026冬\Data\Shader\Timer.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

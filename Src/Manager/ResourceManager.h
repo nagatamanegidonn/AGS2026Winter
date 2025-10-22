@@ -18,7 +18,6 @@ public:
 		BOSS,
 		MONSTER,
 
-		PLAYER,
 		PLAYER_NIGHT,
 		PLAYER_SHADOW,
 

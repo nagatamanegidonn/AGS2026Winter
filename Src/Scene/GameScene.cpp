@@ -649,8 +649,7 @@ void GameScene::Collision(void)
 				if (shot->GetKey() == nIns.GetSelf().key
 					&& shot->GetKey() == player->GetKey())
 				{
-					boss_->Damage(shot->GetDamage() * player->GetAttrckRate());
-
+					boss_->Damage(static_cast<int>(static_cast<float>(shot->GetDamage()) * player->GetAttrckRate()));
 				}
 				//ƒ{ƒX‚ª”ñí“¬ó‘Ô‚È‚ç’Ç]‚ðÝ’è‚µ‚Äí“¬ó‘Ô‚É
 				if (boss_->IsState(Boss::STATE::PLAY))
@@ -673,7 +672,7 @@ void GameScene::Collision(void)
 					if (shot->GetKey() == nIns.GetSelf().key
 						&& shot->GetKey() == player->GetKey())
 					{
-						mons->Damage(shot->GetDamage() * player->GetAttrckRate());
+						mons->Damage(static_cast<int>(static_cast<float>(shot->GetDamage()) * player->GetAttrckRate()));
 					}
 					//’Ç]‚ðÝ’è‚µ‚Äí“¬ó‘Ô‚É
 					mons->SetFollow(&player->GetTransform());

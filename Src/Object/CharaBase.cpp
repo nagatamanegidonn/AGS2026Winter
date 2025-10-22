@@ -4,6 +4,21 @@
 #include "Statge/Planet.h"
 
 CharaBase::CharaBase(void)
+	:
+	areaId_(-1),
+	attrckDamage_(10),
+	isHitCheck_(false),
+	chageAttrckTime_(0.0f),
+	speed_(0.0f),
+	stepRotTime_(0.0f),
+	goalQuaRot_(),
+	jumpPow_({ 0.0f,0.0f,0.0f }),
+	moveDir_({ 0.0f,0.0f,0.0f }),
+	movePow_({ 0.0f,0.0f,0.0f }),
+	movedPos_({ 0.0f,0.0f,0.0f }),
+	prePos_({ 0.0f,0.0f,0.0f }),
+	attrckRate_(1.0f),
+	ActorBase()
 {
 }
 

@@ -48,9 +48,6 @@ void ResourceManager::Init(void)
 	resourcesMap_.emplace(SRC::MONSTER, std::move(res));
 	
 	// ÉvÉåÉCÉÑÅ[
-	//res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Player/Player.mv1");
-	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Player1/Player.mv1");
-	resourcesMap_.emplace(SRC::PLAYER, std::move(res));
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Player2/Player2.mv1");
 	resourcesMap_.emplace(SRC::PLAYER_NIGHT, std::move(res));
 

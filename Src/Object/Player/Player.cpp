@@ -67,6 +67,46 @@ MATRIX GetFrameGlobalMatrix(int modelHandle, int frameIndex) {
 }
 
 Player::Player(int key)
+	:
+	CharaBase(),
+	type_(PLAYER_TYPE::PLAYER_1),
+	key_(0),
+	keyConfig_(),
+	itemId_(-1),
+	isHit_(false),
+	walkTime_(0.0f),
+	isBattle_(false),
+	isDrawWepon_(false),
+	isCloseWepon_(false),
+
+	hp_(0),
+	hpAgo_(0),
+	hpMax_(0),
+
+	stateChanges_(),
+	isBattleDash_(false),
+	soundController_(nullptr),
+	jobImg_(-1),
+	freamImg_(-1),
+	hpImg_(-1),
+	hpFreamImg_(-1),
+	hpMaskImg_(-1),
+	staFreamImg_(-1),
+	staMaskImg_(-1),
+	Material_(nullptr),
+	Renderer_(nullptr),
+	hpMaterial_(nullptr),
+	hpRenderer_(nullptr),
+	staMaterial_(nullptr),
+	staRenderer_(nullptr),
+	demoRot_(),
+	transWeapon_(),
+	animationController_(nullptr),
+	inputController_(nullptr),
+	effectController_(nullptr),
+	gameScene_(nullptr),
+	
+	chageCount_(0.0f)
 {
 	key_ = key;
 
@@ -1199,11 +1239,10 @@ void Player::UpdateItemUse(void)
 
 void Player::ProcessMove(void)
 {
-	InputManager& ins = InputManager::GetInstance();
 	VECTOR dir = AsoUtility::VECTOR_ZERO;
 
 	bool isAction = false;
-	auto& nIns = NetManager::GetInstance();
+	//auto& nIns = NetManager::GetInstance();
 
 	if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, AsoUtility::DIR_F); }
 	if (inputController_->IsNew(InputController::KEY::LEFT)) { dir = VAdd(dir, AsoUtility::DIR_L); }
@@ -1319,6 +1358,7 @@ void Player::ProcessMove(void)
 
 	}
 
+	InputManager& ins = InputManager::GetInstance();
 	if (ins.IsNew(KEY_INPUT_N))
 	{
 		SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FPS);
