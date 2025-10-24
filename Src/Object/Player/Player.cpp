@@ -367,6 +367,7 @@ void Player::Update(void)
 			ChangeState(STATE::ROWLING);
 
 		}
+		//無敵時間の処理
 		if (invisibleTime_ > 0.0f)
 		{
 			invisibleTime_ -= deltaTime;
@@ -568,8 +569,6 @@ void Player::Update(void)
 	PlayAttrckSound();
 
 #pragma endregion
-
-
 
 	// 描画用の位置は、Draw()でNetManagerから取るからOK
 	transform_.Update();
@@ -1499,14 +1498,14 @@ void Player::SetGoalRotate(double rotRad)
 //↑プレイヤーに向かせたい、ゴールとなる回転を設定する
 void Player::Rotate(void)
 {
+	//回転の球面補間を行う。
+	//TIME_ROT定数で指定された時間をかけて、ゆっくりゴールとなる
+	//回転に向かって近づくような回転を行う
 	stepRotTime_ -= SceneManager::GetInstance().GetDeltaTime();
 	// 回転の球面補間
 	playerRotY_ = Quaternion::Slerp(
 		playerRotY_, goalQuaRot_, (TIME_ROT - stepRotTime_) / TIME_ROT);
 }
-//↑回転の球面補間を行う。
-//TIME_ROT定数で指定された時間をかけて、ゆっくりゴールとなる
-//回転に向かって近づくような回転を行う
 float Player::CreateRad(const VECTOR& dir)
 {
 	float angle = atan2f(dir.x, dir.z);

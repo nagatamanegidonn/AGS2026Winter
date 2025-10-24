@@ -595,3 +595,18 @@ float AsoUtility::CalcVolumeByDistance(const VECTOR& listener, const VECTOR& sou
     float volume = 1.0f - (disPow / maxDisPow);
     return std::clamp(volume, 0.0f, 1.0f);
 }
+
+std::string AsoUtility::WStringToUTF8_Win(const std::wstring& wstr)
+{
+    int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    std::string result(sizeNeeded - 1, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &result[0], sizeNeeded, nullptr, nullptr);
+    return result;
+}
+std::wstring AsoUtility::UTF8ToWString_Win(const std::string& str)
+{
+    int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    std::wstring result(sizeNeeded - 1, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &result[0], sizeNeeded);
+    return result;
+}

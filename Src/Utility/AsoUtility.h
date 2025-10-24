@@ -133,4 +133,7 @@ public:
 	static float GetDisPow(const VECTOR& sPos, const VECTOR& ePos);
 	static float CalcVolumeByDistance(const VECTOR& listener, const VECTOR& source, float maxDistance);
 
+	//string•ÏŠ·
+	static std::string WStringToUTF8_Win(const std::wstring& wstr);
+	static	std::wstring UTF8ToWString_Win(const std::string& str);
 };
