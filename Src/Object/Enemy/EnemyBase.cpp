@@ -34,6 +34,7 @@ void EnemyBase::Draw(void)
 
 void EnemyBase::SetFollow(const Transform* follow)
 {
+
 }
 void EnemyBase::AddHitPart(int& model, std::wstring boneName, float rad, float rate)
 {

@@ -4,7 +4,7 @@
 #include <memory>
 #include "ActorBase.h"
 
-class CharaBase :
+class CharaBase abstract:
     public ActorBase
 {
 public:

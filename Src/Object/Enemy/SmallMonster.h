@@ -89,6 +89,9 @@ public:
 	const bool CollisionCapsule(std::weak_ptr<Capsule> _capsule);
 	const bool CollisionAttrck(const int& modelId);
 
+	//’Ç]‘ÎÛ‚Ìİ’è
+	void SetFollow(const Transform* follow) override;
+
 
 private:
 

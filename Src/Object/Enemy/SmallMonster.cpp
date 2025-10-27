@@ -104,7 +104,7 @@ void SmallMonster::Init(void)
 	auto& users = NetManager::GetInstance().GetNetUsers();
 
 	// ‚g‚o‚Ì‰Šú‰»
-	hp_ = hpMax_ = MAX_HP * users.size();
+	hp_ = hpMax_ = 1 * users.size();
 
 	isHitCheck_ = false;
 
@@ -356,6 +356,12 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 	return ret;
 }
 
+void SmallMonster::SetFollow(const Transform* follow)
+{
+	follow_ = follow;
+	ChangeState(STATE::BATTLE);
+}
+
 
 
 #pragma region ‰Šú‰»ˆ—
@@ -367,16 +373,20 @@ void SmallMonster::InitAnimation(void)
 	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Monster.mv1", 20.0f, 0);
 	animationController_->Add((int)ANIM_TYPE::RUN, path + L"Monster.mv1", 30.0f, 1);
 
-	animationController_->Add((int)ANIM_TYPE::ATTRCK_READY, path + L"Monster.mv1", 1.2f, 3, 3.0f, 0.1f);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK, path + L"Boss.mv1", 25.0f, 2);
-	animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"Boss.mv1", 40.0f, 3);
-	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Boss.mv1", 30.0f, 4);
+	animationController_->Add((int)ANIM_TYPE::ATTRCK_READY, path + L"Monster.mv1", 0.3f, 3, 3.0f, 0.1f);
+	animationController_->Add((int)ANIM_TYPE::ATTRCK, path + L"Monster.mv1", 20.0f, 2);
+	animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"Monster.mv1", 15.0f, 3);
+	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Monster.mv1", 30.0f, 4);
 
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK, true, 1.0f);
 
 	animationController_->Play((int)ANIM_TYPE::RUN);
 	animeType_ = (int)ANIM_TYPE::RUN;
 	animeAgoType_ = animeType_;
+
+	//UŒ‚î•ñ‚Ìİ’è
+	atkData_.emplace((int)ANIM_TYPE::ATTRCK, std::move(SetAtrckData(-1, 10.0f, 14.0f)));
+
 }
 void SmallMonster::InitEffect(void)
 {

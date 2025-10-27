@@ -557,7 +557,7 @@ void Boss::BattleCancel(void)
 	ChangeState(STATE::PLAY);
 }
 
-bool Boss::IsBattle(void)
+bool Boss::IsBattle(void) const
 {
 	if (
 		state_ != STATE::LERP_MOVE &&

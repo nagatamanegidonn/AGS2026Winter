@@ -173,7 +173,7 @@ public:
 	void BattleCancel(void);
 
 	//BGM—pƒoƒgƒ‹í‘Ô‰»‚Ì”»’è
-	bool IsBattle(void);
+	bool IsBattle(void) const;
 
 private:
 

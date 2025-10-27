@@ -34,7 +34,7 @@ void AnimationController::Add(int type, const std::wstring& path, float speed, i
 	//anim.model = MV1LoadModel(path.c_str());
 	// すでに同じ path が読み込まれていれば、それを再利用
 	if (animModelCache_.count(path)) {
-		anim.model = animModelCache_[path];
+		anim.model = modelId_;
 	}
 	else {
 		anim.model = MV1LoadModel(path.c_str());
@@ -399,7 +399,7 @@ int AnimationController::GetAttrchNo(int animType)
 {
 	auto& playAnim = animations_[animType];
 
-	int animIdx = 0;
+   	int animIdx = 0;
 	if (MV1GetAnimNum(playAnim.model) > 2)
 	{
 		// アニメーションが複数保存されていたら、番号1を指定
