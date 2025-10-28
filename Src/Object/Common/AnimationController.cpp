@@ -34,7 +34,7 @@ void AnimationController::Add(int type, const std::wstring& path, float speed, i
 	//anim.model = MV1LoadModel(path.c_str());
 	// ‚·‚Å‚É“¯‚¶ path ‚ª“Ç‚İ‚Ü‚ê‚Ä‚¢‚ê‚ÎA‚»‚ê‚ğÄ—˜—p
 	if (animModelCache_.count(path)) {
-		anim.model = modelId_;
+		anim.model = animModelCache_[path];
 	}
 	else {
 		anim.model = MV1LoadModel(path.c_str());

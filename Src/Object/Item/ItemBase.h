@@ -6,7 +6,7 @@ class ItemBase
 {
 public:
 	// コンストラクタ
-	ItemBase(void);
+	ItemBase(int itemId);
 
 	// デストラクタ
 	~ItemBase(void);

@@ -26,6 +26,10 @@ public:
 	//追従対象の設定
 	virtual void SetFollow(const Transform* follow);
 
+	//ダメージ関数
+	virtual void Damage(int dama) = 0;
+
+
 protected:
 
 	//ユーザー番号

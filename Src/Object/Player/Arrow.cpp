@@ -155,7 +155,7 @@ void Arrow::InitAttrckSound(void)
 }
 void Arrow::PlayAttrckSound(void)
 {
-	//ˆÊ’uƒJƒGƒ‹
+	//’e‚Ì”­ŽË
 	if (animeType_ == (int)ANIM_TYPE::ATTRCK1E
 		&& animeAgoType_ != (int)ANIM_TYPE::ATTRCK1E)
 	{

@@ -36,6 +36,7 @@ public:
 
 		AIM,
 
+		ITEM_SELECT,
 		GET,
 		USE,
 	};

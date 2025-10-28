@@ -140,7 +140,7 @@ public:
 	// ‚g‚o‚Ìæ“¾
 	const int GetHp(void) const { return hp_; }
 	//ƒ_ƒ[ƒWŠÖŒW
-	void Damage(int dama);
+	void Damage(int dama)override;
 
 	const bool IsState(STATE state)const { return (state_ == state); }
 

@@ -107,6 +107,7 @@ public:
 		//採取、使用
 		GET,
 		ITEM_DRINK,
+		ITEM_THROW,
 		//抜刀
 		DRAW,
 		BATTLE_DRAW,
@@ -214,7 +215,7 @@ public:
 	bool IsTrgAimSet(void);
 
 	//採取の際の情報（仮）
-	const void SetItemId(int id) { itemId_ = id; }
+	void SetItemId(int id) { itemId_ = id; }
 
 protected:
 

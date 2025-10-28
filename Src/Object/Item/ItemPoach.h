@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <list>
 
 class ItemBase;
 
@@ -15,19 +16,26 @@ public:
 	void Draw(int i);
 
 	//アイテムの管理メソッド
-	void AddItem(int itemId);
-	void PlayItem(int itemId);
+	void AddItem(int _itemId);
+	void PlayItem(int _itemId);
+
+	const std::list<int>& GetItemIds(void) const { return ItemIds_; }
+
+	//選択中のアイテムIDの設定、取得
+	void CountSelectId(void);
+	int GetSelectId(void) const { return slectId_; }
 
 private:
 
-	int slectCnt_;
+	/// <summary>
+	/// 選択中のアイテムID
+	int slectId_;
 
 	/// <summary>
 	/// int はポーチ番号
-	/// 
 	/// </summary>
 	std::map<int, std::shared_ptr<ItemBase>> Items_;
-	std::map<int, int> ItemCount_;
+	std::list<int> ItemIds_;
 
 };
 

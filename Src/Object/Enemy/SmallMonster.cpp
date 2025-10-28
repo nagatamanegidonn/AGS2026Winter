@@ -234,14 +234,16 @@ void SmallMonster::Update(void)
 	animationController_->Update();
 	if (animationController_->IsEnd() && animeType_ == (int)ANIM_TYPE::DEAD)
 	{
-		
+		ChangeState(STATE::NONE);
 	}
 }
 //描画処理
 void SmallMonster::Draw(void)
 {
-
-	MV1DrawModel(transform_.modelId);
+	if (state_ != STATE::NONE)
+	{
+		MV1DrawModel(transform_.modelId);
+	}
 
 	//ダメージの表記
 	for (auto& hitdamage : hitdamages_)
@@ -264,7 +266,7 @@ void SmallMonster::Damage(int dama)
 
 	const int lastDame = dama * dameRate_;
 
-	nIns.SetNetBossDamage(nIns.GetSelf().key, lastDame);
+	nIns.SetNetMonsDamage(nIns.GetSelf().key, createNo_,lastDame);
 }
 
 
@@ -370,13 +372,13 @@ void SmallMonster::InitAnimation(void)
 {
 	std::wstring path = Application::PATH_MODEL + L"Monster/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
-	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Monster.mv1", 20.0f, 0);
-	animationController_->Add((int)ANIM_TYPE::RUN, path + L"Monster.mv1", 30.0f, 1);
+	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"SmallMonster.mv1", 20.0f, 0);
+	animationController_->Add((int)ANIM_TYPE::RUN, path + L"SmallMonster.mv1", 30.0f, 1);
 
-	animationController_->Add((int)ANIM_TYPE::ATTRCK_READY, path + L"Monster.mv1", 0.3f, 3, 3.0f, 0.1f);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK, path + L"Monster.mv1", 20.0f, 2);
-	animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"Monster.mv1", 15.0f, 3);
-	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Monster.mv1", 30.0f, 4);
+	animationController_->Add((int)ANIM_TYPE::ATTRCK_READY, path + L"SmallMonster.mv1", 0.3f, 3, 3.0f, 0.1f);
+	animationController_->Add((int)ANIM_TYPE::ATTRCK, path + L"SmallMonster.mv1", 20.0f, 2);
+	animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"SmallMonster.mv1", 15.0f, 3);
+	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"SmallMonster.mv1", 30.0f, 4);
 
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK, true, 1.0f);
 

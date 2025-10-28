@@ -261,6 +261,8 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	InitAnimation();
 	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 50.0f, 0, 0.0f, 210.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::GET, true, 5.0f);
+	animationController_->Add((int)ANIM_TYPE::ITEM_THROW, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 30.0f, 60.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_THROW, true, 5.0f);
 	animationController_->Add((int)ANIM_TYPE::ITEM_DRINK, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_DRINK, true, 5.0f);
 
@@ -324,6 +326,11 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	//採取の際の情報（仮）
 	itemId_ = -1;
 	poach_ = std::make_unique<ItemPoach>();
+	poach_->AddItem(0);
+	poach_->AddItem(0);
+	poach_->AddItem(0);
+	poach_->AddItem(0);
+	poach_->AddItem(0);
 }
 
 void Player::Update(void)
@@ -348,6 +355,7 @@ void Player::Update(void)
 	hpAgo_ = hp_;
 	animeAgoType_ = animeType_;
 
+
 	// 1秒で0にするための減少速度を毎フレーム求める
 	const float deltaTime = SceneManager::GetInstance().GetDeltaTime();
 
@@ -356,10 +364,22 @@ void Player::Update(void)
 
 		inputController_->Update();
 
+		//ポーチの更新
+		if (inputController_->IsTriggered(InputController::KEY::ROLL))
+		{
+			//poach_->OpenClose();
+		}
+		// アイテム選択
+		if (inputController_->IsTriggered(InputController::KEY::ITEM_SELECT))
+		{
+			poach_->CountSelectId();
+		}
+
 		//回避処理
 		if (inputController_->IsTriggered(InputController::KEY::ROLL) && IsInputPlay()
 			&& animeType_ != (int)ANIM_TYPE::ROLL && animeType_ != (int)ANIM_TYPE::DAMAGE
 			&& animeType_ != (int)ANIM_TYPE::GET&& animeType_ != (int)ANIM_TYPE::ITEM_DRINK
+			&& animeType_ != (int)ANIM_TYPE::ITEM_THROW
 			&& state_ != STATE::HI_DAMAGE && hp_ > 0 && stamina_ > ROLL_TAF)
 		{
 			stamina_ -= ROLL_TAF;
@@ -546,6 +566,22 @@ void Player::Update(void)
 	{
 		soundController_->Play((int)SE::ROLL, Sound::TIMES::ONCE,true);
 	}
+	//弾の発射
+	else if (animeType_ == (int)ANIM_TYPE::ITEM_THROW
+		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_THROW)
+	{
+		// フレームの取得
+		int frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:RightHand");
+		if (frmNo == -1) {
+			// エラー処理またはログ出力
+			return;
+		}
+		soundController_->Play((int)SE::ATTRCK2, Sound::TIMES::ONCE);
+
+		// 手の位置とグローバルマトリクスを取得
+		const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
+		gameScene_->CreateShot(attrckDamage_, posHand, transform_.GetForward(), key_);
+	}
 
 	walkTime_ -= SceneManager::GetInstance().GetDeltaTime();
 	if (animeAgoType_ == animeType_ &&
@@ -657,7 +693,7 @@ void Player::DrawUI(int i)
 		staRenderer_->Draw(GAGE_POS_X, STA_POS_Y);
 
 		//アイテムの表示
-		poach_->Draw(0);
+		poach_->Draw(-1);
 
 	}
 
@@ -1207,9 +1243,9 @@ void Player::UpdateGet(void)
 {
 	if (animationController_->IsEnd())
 	{
-		if (itemId_ == 1)
+		if (itemId_ > 0)//獲得できる
 		{
-			poach_->AddItem(0);
+			poach_->AddItem(itemId_);
 		}
 	}
 	ChangeStateAnimeEnd(ANIM_TYPE::GET);
@@ -1217,17 +1253,37 @@ void Player::UpdateGet(void)
 
 void Player::UpdateItemUse(void)
 {
+	if (poach_->GetSelectId() == 1)
+	{
+		ChangeStateAnimeEnd(ANIM_TYPE::ITEM_DRINK);
+	}
+	else if (poach_->GetSelectId() == 0)
+	{
+		ChangeStateAnimeEnd(ANIM_TYPE::ITEM_THROW);
+	}
+
 	if (animationController_->IsEnd())
 	{
-		hp_ += 20;
-		if (hp_ > hpMax_)
+		if (poach_->GetSelectId() == 1)
 		{
-			hp_ = hpMax_;
+			//体力回復
+			hp_ += 20;
+			if (hp_ > hpMax_)
+			{
+				hp_ = hpMax_;
+			}
+			//回復アイテムのIdは１
+			poach_->PlayItem(-1);
 		}
-		poach_->PlayItem(0);
-
-	}
-	ChangeStateAnimeEnd(ANIM_TYPE::ITEM_DRINK);
+		else if (poach_->GetSelectId() == 0)
+		{
+			//投擲アイテムのIdは０
+			poach_->PlayItem(-1);
+			//投擲処理
+			/*auto thrownItem = std::make_shared<ThrownItem>(type_, transform_.pos, transform_.GetForward());
+			gameScene_->AddThrownItem(thrownItem);*/
+		}
+	}	
 }
 
 #pragma endregion
@@ -1269,19 +1325,20 @@ void Player::ProcessMove(void)
 			ChangeState(STATE::WEPON);
 			return;
 		}
+		//採取判定
 		bool isId = false;
 		for (const auto c : colliders_)
 		{
 			if (c.lock()->type_ == Collider::TYPE::ITEM)
 			{
-				
+
 				if (AsoUtility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
 				{
 					isId = true;
 				}
-				
+
 				//採取処理
-				if (inputController_->IsNew(InputController::KEY::GET)&& 
+				if (inputController_->IsNew(InputController::KEY::GET) &&
 					AsoUtility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
 				{
 					speed_ = SPEED_MOVE;
@@ -1297,8 +1354,8 @@ void Player::ProcessMove(void)
 			itemId_ = -1;
 		}
 
-		//採取処理
-		if (inputController_->IsTriggered(InputController::KEY::USE))
+		// 使用処理
+		if (inputController_->IsTriggered(InputController::KEY::USE) && !poach_->GetItemIds().empty())
 		{
 			speed_ = SPEED_MOVE;
 			movePow_ = AsoUtility::VECTOR_ZERO;//抜刀時移動しない（帰るなら戻す）
