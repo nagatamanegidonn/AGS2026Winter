@@ -2,7 +2,7 @@
 #include <DxLib.h>
 #include <EffekseerForDXLib.h>
 #include "../Utility/AsoUtility.h"
-#include "../Manager/GravityManager.h"
+//#include "../Manager/GravityManager.h"
 #include "../Object/Common/Transform.h"
 
 #include "InputManager.h"

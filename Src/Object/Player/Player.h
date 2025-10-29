@@ -108,6 +108,7 @@ public:
 		GET,
 		ITEM_DRINK,
 		ITEM_THROW,
+		ITEM_THROW_E,
 		//抜刀
 		DRAW,
 		BATTLE_DRAW,
@@ -354,6 +355,11 @@ protected:
 	void UpdateDead(void);
 	void UpdateGet(void);
 	void UpdateItemUse(void);
+#pragma region アイテムごとの関数
+	void UseItem(void);
+#pragma endregion
+
+
 
 	// 移動
 	void ProcessMove(void);
@@ -397,7 +403,7 @@ protected:
 	//攻撃キャンセル時の処理
 	void AttrckReset(void);
 	//アニメーション終了時の処理
-	void ChangeStateAnimeEnd(const ANIM_TYPE anim);
+	void ChangeStateAnimeEnd(const ANIM_TYPE anim, std::function<void(void)> function = {});
 
 	// デバッグ用描画
 	void DrawDebug(void);

@@ -28,6 +28,8 @@ public:
 		COLL,
 	
 		FLOUR,
+		ROCK,
+
 		HEEL,
 
 		FOOT_SMOKE,

@@ -11,7 +11,7 @@ public:
 
 	// コンストラクタ
 	ItemObject(
-		Player& player, const Transform& transform, STATE state);
+		Player& player, const Transform& transform, STATE state,int itemId);
 
 	// デストラクタ
 	~ItemObject(void);
@@ -22,6 +22,6 @@ public:
 
 private:
 
-
+	int itemId_;
 };
 

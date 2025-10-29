@@ -240,7 +240,7 @@ void Stage::MakeFlour(void)
 	Transform trans;
 	std::unique_ptr<Object> obj;
 
-	// Å‰‚Ì˜f¯
+	// ‰Ôì¬
 	//------------------------------------------------------------------------------
 	trans.SetModel(
 		resMng_.LoadModelDuplicate(ResourceManager::SRC::FLOUR));
@@ -252,12 +252,12 @@ void Stage::MakeFlour(void)
 	trans.MakeCollider(Collider::TYPE::ITEM, trans.pos, 30.0f);
 	trans.Update();
 
-	obj = std::make_unique<ItemObject>(player_, trans, Object::STATE::PLAY);
+	obj = std::make_unique<ItemObject>(player_, trans, Object::STATE::PLAY,1);
 	obj->Init();
 	objects_.push_back(std::move(obj));
 	//------------------------------------------------------------------------------
 
-	// üˆÍ‚ÌŠâì¬
+	// ‰Ôì¬
 	//------------------------------------------------------------------------------
 	trans.SetModel(
 		resMng_.LoadModelDuplicate(ResourceManager::SRC::FLOUR));
@@ -269,7 +269,24 @@ void Stage::MakeFlour(void)
 	trans.MakeCollider(Collider::TYPE::ITEM, trans.pos, 30.0f);
 	trans.Update();
 
-	obj = std::make_unique<ItemObject>(player_, trans, Object::STATE::PLAY);
+	obj = std::make_unique<ItemObject>(player_, trans, Object::STATE::PLAY,1);
+	obj->Init();
+	objects_.push_back(std::move(obj));
+	//------------------------------------------------------------------------------
+
+	// ‰Ôì¬
+	//------------------------------------------------------------------------------
+	trans.SetModel(
+		resMng_.LoadModelDuplicate(ResourceManager::SRC::ROCK));
+	trans.scl = VScale(AsoUtility::VECTOR_ONE, 0.08f);
+	trans.quaRot = Quaternion();
+	trans.pos = { 700.0f, -335.0f, -4500.0f };
+
+	// “–‚½‚è”»’è(ƒRƒ‰ƒCƒ_)ì¬
+	trans.MakeCollider(Collider::TYPE::ITEM, trans.pos, 30.0f);
+	trans.Update();
+
+	obj = std::make_unique<ItemObject>(player_, trans, Object::STATE::PLAY,0);
 	obj->Init();
 	objects_.push_back(std::move(obj));
 	//------------------------------------------------------------------------------

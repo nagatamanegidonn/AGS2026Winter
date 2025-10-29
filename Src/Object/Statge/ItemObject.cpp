@@ -6,9 +6,10 @@
 
 #include "ItemObject.h"
 
-ItemObject::ItemObject(Player& player, const Transform& transform, STATE state)
+ItemObject::ItemObject(Player& player, const Transform& transform, STATE state, int itemId)
 	: Object(player, transform, state)
 {
+	itemId_ = itemId;
 }
 
 ItemObject::~ItemObject(void)
@@ -24,10 +25,10 @@ void ItemObject::Init(void)
 
 void ItemObject::Update(void)
 {
-
+	//ƒvƒŒƒCƒ„[‚Ì‰º‚É‚¢‚é‚©
 	if (player_.CollisionUnderSphere(transform_.collider->pos_, transform_.collider->radius_))
 	{
-		player_.SetItemId(1);
+		player_.SetItemId(itemId_);
 	}
 
 }

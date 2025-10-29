@@ -82,10 +82,15 @@ Player::Player(int key)
 	hp_(0),
 	hpAgo_(0),
 	hpMax_(0),
+	damage_(0.0f),
+	stamina_(0.0f),
+	staminaMax_(0.0f),
+	staminaDir_(0.0f),
 
 	stateChanges_(),
 	isBattleDash_(false),
 	soundController_(nullptr),
+
 	jobImg_(-1),
 	freamImg_(-1),
 	hpImg_(-1),
@@ -93,6 +98,7 @@ Player::Player(int key)
 	hpMaskImg_(-1),
 	staFreamImg_(-1),
 	staMaskImg_(-1),
+
 	Material_(nullptr),
 	Renderer_(nullptr),
 	hpMaterial_(nullptr),
@@ -133,6 +139,8 @@ Player::Player(int key)
 	stateChanges_.emplace(STATE::ITEM_PLAY, std::bind(&Player::ChangeStateItemUse, this));
 
 	walkTime_ = 0.0f;
+
+	attrckDamage_ = 0;
 }
 
 Player::~Player(void)
@@ -259,10 +267,12 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 
 	// アニメーションの設定
 	InitAnimation();
-	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 50.0f, 0, 0.0f, 210.0f);
+	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 55.0f, 0, 0.0f, 210.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::GET, true, 5.0f);
-	animationController_->Add((int)ANIM_TYPE::ITEM_THROW, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 30.0f, 60.0f);
+	animationController_->Add((int)ANIM_TYPE::ITEM_THROW, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 30.0f, 50.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_THROW, true, 5.0f);
+	animationController_->Add((int)ANIM_TYPE::ITEM_THROW_E, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 50.0f, 60.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_THROW_E, true, 5.0f);
 	animationController_->Add((int)ANIM_TYPE::ITEM_DRINK, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_DRINK, true, 5.0f);
 
@@ -567,8 +577,8 @@ void Player::Update(void)
 		soundController_->Play((int)SE::ROLL, Sound::TIMES::ONCE,true);
 	}
 	//弾の発射
-	else if (animeType_ == (int)ANIM_TYPE::ITEM_THROW
-		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_THROW)
+	else if (animeType_ == (int)ANIM_TYPE::ITEM_THROW_E
+		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_THROW_E)
 	{
 		// フレームの取得
 		int frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:RightHand");
@@ -1243,7 +1253,7 @@ void Player::UpdateGet(void)
 {
 	if (animationController_->IsEnd())
 	{
-		if (itemId_ > 0)//獲得できる
+		if (itemId_ >= 0)//獲得できる
 		{
 			poach_->AddItem(itemId_);
 		}
@@ -1255,38 +1265,65 @@ void Player::UpdateItemUse(void)
 {
 	if (poach_->GetSelectId() == 1)
 	{
-		ChangeStateAnimeEnd(ANIM_TYPE::ITEM_DRINK);
+		ChangeStateAnimeEnd(ANIM_TYPE::ITEM_DRINK, [this]() { UseItem(); });
 	}
+	//使用アイテムが投擲アイテムなら
 	else if (poach_->GetSelectId() == 0)
 	{
-		ChangeStateAnimeEnd(ANIM_TYPE::ITEM_THROW);
+		if (animeType_ != (int)ANIM_TYPE::ITEM_THROW_E)
+		{
+			animationController_->Play((int)ANIM_TYPE::ITEM_THROW, false);
+			animeType_ = (int)ANIM_TYPE::ITEM_THROW;
+			if (animationController_->IsEnd())
+			{
+				animeType_ = (int)ANIM_TYPE::ITEM_THROW_E;
+			}
+		}
+		else
+		{
+			ChangeStateAnimeEnd(ANIM_TYPE::ITEM_THROW_E, [this]() { UseItem(); });
+		}
 	}
 
-	if (animationController_->IsEnd())
+	/*if (animationController_->IsEnd())
 	{
-		if (poach_->GetSelectId() == 1)
+		if (poach_->GetSelectId() == 0 && animeType_ == (int)ANIM_TYPE::ITEM_THROW)
 		{
-			//体力回復
-			hp_ += 20;
-			if (hp_ > hpMax_)
+			if (animationController_->IsEnd())
 			{
-				hp_ = hpMax_;
+				animeType_ = (int)ANIM_TYPE::ITEM_THROW_E;
 			}
-			//回復アイテムのIdは１
-			poach_->PlayItem(-1);
 		}
-		else if (poach_->GetSelectId() == 0)
-		{
-			//投擲アイテムのIdは０
-			poach_->PlayItem(-1);
-			//投擲処理
-			/*auto thrownItem = std::make_shared<ThrownItem>(type_, transform_.pos, transform_.GetForward());
-			gameScene_->AddThrownItem(thrownItem);*/
-		}
-	}	
+		
+	}*/
 }
 
 #pragma endregion
+
+//使用回復系アイテム
+void Player::UseItem(void)
+{
+	//回復アイテムのIdは１
+	if (poach_->GetSelectId() == 1)
+	{
+		//体力回復
+		hp_ += 20;
+		if (hp_ > hpMax_)
+		{
+			hp_ = hpMax_;
+		}
+	}
+	//投擲アイテムのIdは０
+	else if (poach_->GetSelectId() == 0)
+	{
+		//投擲処理
+		/*auto thrownItem = std::make_shared<ThrownItem>(type_, transform_.pos, transform_.GetForward());
+		gameScene_->AddThrownItem(thrownItem);*/
+	}
+
+	//アイテム使用処理
+	poach_->PlayItem(-1);
+}
 
 
 
@@ -1963,31 +2000,26 @@ void Player::AttrckReset(void)
 }
 
 //特定のアニメーションが終わったらIdleに戻す処理
-void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim)
+void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim, std::function<void(void)> function)
 {
-	//バトル状態なら
-	if (isBattle_)
+	animationController_->Play((int)anim, false);
+	animeType_ = (int)anim;
+
+	if (animationController_->IsEnd())
 	{
-		animationController_->Play((int)anim, false);
-		animeType_ = (int)anim;
-
-		if (animationController_->IsEnd())
+		//追加処理
+		if (function != nullptr)
 		{
-			ChangeState(STATE::BATTLE);
+			function();
 		}
-	}
-	//通常状態なら
-	else
-	{
-		animationController_->Play((int)anim, false);
-		animeType_ = (int)anim;
-
-		if (animationController_->IsEnd())
+		STATE nextState = STATE::PLAY;
+		//バトル状態なら
+		if (isBattle_)
 		{
-			ChangeState(STATE::PLAY);
+			nextState = STATE::BATTLE;
 		}
+		ChangeState(nextState);
 	}
-
 }
 
 void Player::DrawDebug(void)
