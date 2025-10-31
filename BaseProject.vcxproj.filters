@@ -141,7 +141,7 @@
     <ClCompile Include="Src\Object\Common\Collider\Capsule.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Statge\Grid.cpp">
+    <ClCompile Include="Src\Object\Stage\Grid.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\ActorBase.cpp">
@@ -153,13 +153,13 @@
     <ClCompile Include="Src\Object\Enemy\Boss.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Statge\SkyDome.cpp">
+    <ClCompile Include="Src\Object\Stage\SkyDome.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Statge\Stage.cpp">
+    <ClCompile Include="Src\Object\Stage\Stage.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Statge\Planet.cpp">
+    <ClCompile Include="Src\Object\Stage\Planet.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\CharaBase.cpp">
@@ -186,13 +186,13 @@
     <ClCompile Include="Src\Object\Common\EffectController.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Statge\Object.cpp">
+    <ClCompile Include="Src\Object\Stage\Object.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Player\ViewPlayer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Player\GreatSowrd.cpp">
+    <ClCompile Include="Src\Object\Player\GreatSword.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Common\SoundController.cpp">
@@ -228,13 +228,19 @@
     <ClCompile Include="Src\Object\Item\ItemPoach.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Statge\ItemObject.cpp">
+    <ClCompile Include="Src\Object\Stage\ItemObject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Enemy\EnemyBase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Enemy\SmallMonster.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Item\RecoveryItem.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Item\ShotItem.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -326,7 +332,7 @@
     <ClInclude Include="Src\Object\Common\Collider\Capsule.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Statge\Grid.h">
+    <ClInclude Include="Src\Object\Stage\Grid.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\ActorBase.h">
@@ -338,13 +344,13 @@
     <ClInclude Include="Src\Object\Enemy\Boss.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Statge\SkyDome.h">
+    <ClInclude Include="Src\Object\Stage\SkyDome.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Statge\Stage.h">
+    <ClInclude Include="Src\Object\Stage\Stage.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Statge\Planet.h">
+    <ClInclude Include="Src\Object\Stage\Planet.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\CharaBase.h">
@@ -506,13 +512,13 @@
     <ClInclude Include="Src\Object\Common\EffectController.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Statge\Object.h">
+    <ClInclude Include="Src\Object\Stage\Object.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Player\ViewPlayer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Player\GreatSowrd.h">
+    <ClInclude Include="Src\Object\Player\GreatSword.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Common\SoundController.h">
@@ -548,13 +554,19 @@
     <ClInclude Include="Src\Object\Item\ItemPoach.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Statge\ItemObject.h">
+    <ClInclude Include="Src\Object\Stage\ItemObject.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Enemy\EnemyBase.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Enemy\SmallMonster.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Item\RecoveryItem.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Item\ShotItem.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

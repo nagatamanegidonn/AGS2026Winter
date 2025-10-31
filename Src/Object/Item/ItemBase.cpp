@@ -1,27 +1,32 @@
 #include <DxLib.h>
 #include "../../Application.h"
+#include <typeinfo>
 
 #include "ItemBase.h"
 
 
 
-ItemBase::ItemBase(int itemId)
+ItemBase::ItemBase(std::wstring _name)
+	:
+	selectId_(-1),
+	count_(1)
 {
-	count_ = 1;
-	switch (itemId)
-	{
-	case 0:
-		name_ = L"攻撃";
+	// アイテム名を設定
+	name_ = _name;
+
+	// アイテム名に応じて画像を読み込む
+	if (name_ == L"攻撃") {
 		itemImage_ = LoadGraph((Application::PATH_IMAGE + L"Item/items/item283.png").c_str());
-		break;
-	case 1:
-		name_ = L"回復";
+	}
+	else if (name_ == L"回復") {
 		itemImage_ = LoadGraph((Application::PATH_IMAGE + L"Item/items/item489.png").c_str());
-		break;
-	default:
-		name_ = L"回復";
+	}
+	else if (name_ == L"設置") {
+		itemImage_ = LoadGraph((Application::PATH_IMAGE + L"Item/items/item345.png").c_str());
+	}
+	else {
+		// "回復" 以外はデフォルトで回復
 		itemImage_ = LoadGraph((Application::PATH_IMAGE + L"Item/items/item489.png").c_str());
-		break;
 	}
 }
 
@@ -30,8 +35,9 @@ ItemBase::~ItemBase(void)
 	DeleteGraph(itemImage_);
 }
 
-void ItemBase::Init(void)
+void ItemBase::Init( int _id)
 {
+	selectId_ = _id;
 }
 
 void ItemBase::Update(void)
@@ -46,4 +52,9 @@ void ItemBase::Draw(void)
 
 void ItemBase::Release(void)
 {
+}
+
+bool ItemBase::IsSameItem(const ItemBase _item) const
+{
+	return typeid(*this) == typeid(_item);
 }

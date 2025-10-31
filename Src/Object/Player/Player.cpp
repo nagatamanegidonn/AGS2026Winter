@@ -25,7 +25,7 @@
 #include "../Renderer/PixelMaterial.h"
 #include "../Renderer/PixelRenderer.h"
 
-#include "../Statge/Planet.h"
+#include "../Stage/Planet.h"
 
 #include "../Item/ItemBase.h"
 #include "../Item/ItemPoach.h"
@@ -269,10 +269,17 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	InitAnimation();
 	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 55.0f, 0, 0.0f, 210.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::GET, true, 5.0f);
+	//投げるモーション
 	animationController_->Add((int)ANIM_TYPE::ITEM_THROW, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 30.0f, 50.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_THROW, true, 5.0f);
 	animationController_->Add((int)ANIM_TYPE::ITEM_THROW_E, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 50.0f, 60.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_THROW_E, true, 5.0f);
+	//設置するモーション
+	animationController_->Add((int)ANIM_TYPE::ITEM_SET, Application::PATH_MODEL + L"Player2/Normal/Tender Placement.mv1", 35.0f, 0, 40.0f, 170.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_SET, true, 5.0f);
+	animationController_->Add((int)ANIM_TYPE::ITEM_SET_E, Application::PATH_MODEL + L"Player2/Normal/Tender Placement.mv1", 35.0f, 0, 170.0f, 250.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_SET_E, true, 5.0f);
+	//飲むモーション
 	animationController_->Add((int)ANIM_TYPE::ITEM_DRINK, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_DRINK, true, 5.0f);
 
@@ -296,7 +303,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	//攻撃管理
 	isHit_ = false;
 	isHitCheck_ = false;
-	chageAttrckTime_ = 0.0f;
+	changeAttrckTime_ = 0.0f;
 
 	//位置情報の変数
 	movedPos_ = AsoUtility::VECTOR_ZERO;
@@ -336,11 +343,13 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	//採取の際の情報（仮）
 	itemId_ = -1;
 	poach_ = std::make_unique<ItemPoach>();
-	poach_->AddItem(0);
-	poach_->AddItem(0);
-	poach_->AddItem(0);
-	poach_->AddItem(0);
-	poach_->AddItem(0);
+	poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
+	poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
+	poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
+	poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
+	poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
+	poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
+	poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
 }
 
 void Player::Update(void)
@@ -382,7 +391,7 @@ void Player::Update(void)
 		// アイテム選択
 		if (inputController_->IsTriggered(InputController::KEY::ITEM_SELECT))
 		{
-			poach_->CountSelectId();
+			poach_->NextItem();
 		}
 
 		//回避処理
@@ -390,6 +399,7 @@ void Player::Update(void)
 			&& animeType_ != (int)ANIM_TYPE::ROLL && animeType_ != (int)ANIM_TYPE::DAMAGE
 			&& animeType_ != (int)ANIM_TYPE::GET&& animeType_ != (int)ANIM_TYPE::ITEM_DRINK
 			&& animeType_ != (int)ANIM_TYPE::ITEM_THROW
+			&& animeType_ != (int)ANIM_TYPE::ITEM_SET
 			&& state_ != STATE::HI_DAMAGE && hp_ > 0 && stamina_ > ROLL_TAF)
 		{
 			stamina_ -= ROLL_TAF;
@@ -501,12 +511,12 @@ void Player::Update(void)
 		//チャージ処理
 		if (animeType_ == (int)ANIM_TYPE::ATTRCK1STOP)
 		{
-			chageAttrckTime_ += SceneManager::GetInstance().GetDeltaTime();
+			changeAttrckTime_ += SceneManager::GetInstance().GetDeltaTime();
 			//printfDx("( count=%f,chageAttrckTime_=%f)\n", chageCount_,chageAttrckTime_);
 		}
 		else
 		{
-			chageAttrckTime_ = 0.0f;
+			changeAttrckTime_ = 0.0f;
 			chageCount_ = 1.0f;
 		}
 
@@ -530,7 +540,7 @@ void Player::Update(void)
 	//エフェクト処理
 #pragma region エフェクト処理
 
-	float rate = chageAttrckTime_ / (CHAGE_MAX_TIME / 4);
+	float rate = changeAttrckTime_ / (CHAGE_MAX_TIME / 4);
 	if (rate >= chageCount_ && animeType_ == (int)ANIM_TYPE::ATTRCK1STOP)
 	{
 		effectController_->Play(0);
@@ -591,6 +601,28 @@ void Player::Update(void)
 		// 手の位置とグローバルマトリクスを取得
 		const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
 		gameScene_->CreateShot(attrckDamage_, posHand, transform_.GetForward(), key_);
+	}
+	//設置の完了
+	else if (animeType_ == (int)ANIM_TYPE::ITEM_SET_E
+		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_SET_E)
+	{
+		Transform trans;
+
+		trans.SetModel(
+			ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::BOM));
+		trans.scl = AsoUtility::VECTOR_ONE;
+		trans.quaRot = Quaternion();
+		trans.pos = transform_.pos;
+		trans.pos = VAdd(trans.pos
+			, VScale(transform_.GetForward()
+				, (capsule_->GetRadius() * 3)));
+		trans.pos.y += 50.0f;
+
+		// 当たり判定(コライダ)作成
+		trans.MakeCollider(Collider::TYPE::WALL);
+		trans.Update();
+
+		gameScene_->CreateObject(trans);
 	}
 
 	walkTime_ -= SceneManager::GetInstance().GetDeltaTime();
@@ -1255,7 +1287,18 @@ void Player::UpdateGet(void)
 	{
 		if (itemId_ >= 0)//獲得できる
 		{
-			poach_->AddItem(itemId_);
+			switch (itemId_)
+			{
+				case 0://投擲アイテム
+					poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
+					break;
+				case 1://回復アイテム
+					poach_->AddItem(std::make_shared<ItemBase>(L"回復"));
+					break;
+				case 2://設置アイテム
+					poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
+					break;
+			}
 		}
 	}
 	ChangeStateAnimeEnd(ANIM_TYPE::GET);
@@ -1263,12 +1306,12 @@ void Player::UpdateGet(void)
 
 void Player::UpdateItemUse(void)
 {
-	if (poach_->GetSelectId() == 1)
+	if (poach_->IsSelectedItemName(L"回復"))
 	{
 		ChangeStateAnimeEnd(ANIM_TYPE::ITEM_DRINK, [this]() { UseItem(); });
 	}
 	//使用アイテムが投擲アイテムなら
-	else if (poach_->GetSelectId() == 0)
+	else if (poach_->IsSelectedItemName(L"攻撃"))
 	{
 		if (animeType_ != (int)ANIM_TYPE::ITEM_THROW_E)
 		{
@@ -1284,11 +1327,28 @@ void Player::UpdateItemUse(void)
 			ChangeStateAnimeEnd(ANIM_TYPE::ITEM_THROW_E, [this]() { UseItem(); });
 		}
 	}
+	//使用アイテムが投擲アイテムなら
+	else if (poach_->IsSelectedItemName(L"設置"))
+	{
+		if (animeType_ != (int)ANIM_TYPE::ITEM_SET_E)
+		{
+			animationController_->Play((int)ANIM_TYPE::ITEM_SET, false);
+			animeType_ = (int)ANIM_TYPE::ITEM_SET;
+			if (animationController_->IsEnd())
+			{
+				animeType_ = (int)ANIM_TYPE::ITEM_SET_E;
+			}
+		}
+		else
+		{
+			ChangeStateAnimeEnd(ANIM_TYPE::ITEM_SET_E, [this]() { UseItem(); });
+		}
+	}
 
 	/*if (animationController_->IsEnd())
 	{
 		if (poach_->GetSelectId() == 0 && animeType_ == (int)ANIM_TYPE::ITEM_THROW)
-		{
+		{v
 			if (animationController_->IsEnd())
 			{
 				animeType_ = (int)ANIM_TYPE::ITEM_THROW_E;
@@ -1304,7 +1364,7 @@ void Player::UpdateItemUse(void)
 void Player::UseItem(void)
 {
 	//回復アイテムのIdは１
-	if (poach_->GetSelectId() == 1)
+	if (poach_->IsSelectedItemName(L"回復"))
 	{
 		//体力回復
 		hp_ += 20;
@@ -1314,7 +1374,14 @@ void Player::UseItem(void)
 		}
 	}
 	//投擲アイテムのIdは０
-	else if (poach_->GetSelectId() == 0)
+	else if (poach_->IsSelectedItemName(L"攻撃"))
+	{
+		//投擲処理
+		/*auto thrownItem = std::make_shared<ThrownItem>(type_, transform_.pos, transform_.GetForward());
+		gameScene_->AddThrownItem(thrownItem);*/
+	}
+	//設置アイテムのIdは２
+	else if (poach_->IsSelectedItemName(L"設置"))
 	{
 		//投擲処理
 		/*auto thrownItem = std::make_shared<ThrownItem>(type_, transform_.pos, transform_.GetForward());
@@ -1322,7 +1389,7 @@ void Player::UseItem(void)
 	}
 
 	//アイテム使用処理
-	poach_->PlayItem(-1);
+	poach_->UseSelectedItem();
 }
 
 
@@ -1392,7 +1459,7 @@ void Player::ProcessMove(void)
 		}
 
 		// 使用処理
-		if (inputController_->IsTriggered(InputController::KEY::USE) && !poach_->GetItemIds().empty())
+		if (inputController_->IsTriggered(InputController::KEY::USE) && poach_->HasSelectedItem())
 		{
 			speed_ = SPEED_MOVE;
 			movePow_ = AsoUtility::VECTOR_ZERO;//抜刀時移動しない（帰るなら戻す）
@@ -1994,13 +2061,13 @@ void Player::AttrckReset(void)
 {
 	isDrawWepon_ = false;
 	isCloseWepon_ = false;
-
-	chageAttrckTime_ = 0.0f;
+		
+	changeAttrckTime_ = 0.0f;
 
 }
 
 //特定のアニメーションが終わったらIdleに戻す処理
-void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim, std::function<void(void)> function)
+void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim, const std::function<void(void)> function)
 {
 	animationController_->Play((int)anim, false);
 	animeType_ = (int)anim;
@@ -2042,9 +2109,9 @@ void Player::DrawDebug(void)
 	//DrawFormatString(100, 132, 0xFFFFFF, "Draw : %s", isDrawWepon_ ? "true" : "false");
 	//DrawFormatString(100, 116, 0xFFFFFF, "Close: %s", isCloseWepon_ ? "true" : "false");
 	DrawFormatString(100, 116, 0xFFFFFF, L"Attrck: %s", inputController_->IsNew(InputController::KEY::ATTRCK) ? L"true" : L"false");
-	DrawFormatString(100, 132, 0xFFFFFF, L"ChageT: %.2f", chageAttrckTime_);
+	DrawFormatString(100, 132, 0xFFFFFF, L"ChageT: %.2f", changeAttrckTime_);
 	//倍率設定
-	int rate = chageAttrckTime_ / (CHAGE_MAX_TIME / 4.0f);
+	int rate = changeAttrckTime_ / (CHAGE_MAX_TIME / 4.0f);
 	
 	DrawFormatString(100, 148, 0xFFFFFF, L"ChageR: %d", rate);
 	DrawFormatString(100, 164, 0xFFFFFF, L"Damage: %.2f", attrckDamage_ * attrckRate_);
@@ -2073,7 +2140,7 @@ void Player::AttrckUpdate(void)
 		{
 			stamina_ -= ROLL_TAF;
 			isHitCheck_ = false;
-			chageAttrckTime_ = 0.0f;
+			changeAttrckTime_ = 0.0f;
 
 			invisibleTime_ = INVISIBLE_SMALL_TIME;
 			ChangeState(STATE::ROWLING);
@@ -2096,7 +2163,7 @@ void Player::AttrckUpdate(void)
 		//チャージするものか
 		if (atkData_[attrckType_]->isCharge)
 		{
-			if (inputController_->IsNew(InputController::KEY::ATTRCK) && chageAttrckTime_ <= CHAGE_MAX_TIME)
+			if (inputController_->IsNew(InputController::KEY::ATTRCK) && changeAttrckTime_ <= CHAGE_MAX_TIME)
 			{
 				//チャージ中なら回転可能
 				VECTOR dir = AsoUtility::VECTOR_ZERO;
@@ -2120,13 +2187,13 @@ void Player::AttrckUpdate(void)
 					SetGoalRotate(rotRad);
 				}
 				//チャージ処理
-				chageAttrckTime_ += SceneManager::GetInstance().GetDeltaTime();
+				changeAttrckTime_ += SceneManager::GetInstance().GetDeltaTime();
 				animeType_ = atkData_[attrckType_]->chargeId;
 			}
 			else//チャージ終了なら次のアニメへ(攻撃へ)
 			{
 				//倍率設定
-				float rate = chageAttrckTime_ / (CHAGE_MAX_TIME / 4);
+				float rate = changeAttrckTime_ / (CHAGE_MAX_TIME / 4);
 				if (rate >= 4)rate = 0.5f;
 				attrckRate_ = 1.0f + (rate * 0.3f);
 
@@ -2142,7 +2209,7 @@ void Player::AttrckUpdate(void)
 			animationController_->Play((int)ANIM_TYPE::BTLLE_IDLE);
 			animeType_ = (int)ANIM_TYPE::BTLLE_IDLE;
 
-			chageAttrckTime_ = 0.0f;
+			changeAttrckTime_ = 0.0f;
 			ChangeState(STATE::BATTLE);
 			return;
 

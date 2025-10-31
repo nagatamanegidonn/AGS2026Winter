@@ -29,6 +29,7 @@ public:
 	
 		FLOUR,
 		ROCK,
+		BOM,
 
 		HEEL,
 

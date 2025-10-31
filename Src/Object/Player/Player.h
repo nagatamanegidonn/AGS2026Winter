@@ -109,6 +109,8 @@ public:
 		ITEM_DRINK,
 		ITEM_THROW,
 		ITEM_THROW_E,
+		ITEM_SET,
+		ITEM_SET_E,
 		//抜刀
 		DRAW,
 		BATTLE_DRAW,
@@ -403,7 +405,7 @@ protected:
 	//攻撃キャンセル時の処理
 	void AttrckReset(void);
 	//アニメーション終了時の処理
-	void ChangeStateAnimeEnd(const ANIM_TYPE anim, std::function<void(void)> function = {});
+	void ChangeStateAnimeEnd(const ANIM_TYPE anim, const std::function<void(void)> function = {});
 
 	// デバッグ用描画
 	void DrawDebug(void);

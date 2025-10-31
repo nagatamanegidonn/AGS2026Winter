@@ -418,4 +418,8 @@ void Camera::SetBeforeDrawSelfShot(void)
 {
 }
 
+void Camera::SetBeforeDrawShake(void)
+{
+}
+
 

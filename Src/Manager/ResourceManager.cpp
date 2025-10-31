@@ -61,24 +61,28 @@ void ResourceManager::Init(void)
 
 
 
-	//床モデル
+	// 床モデル
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Planet/Plane.mv1");
 	resourcesMap_.emplace(SRC::PLANE, std::move(res));
-	//岩モデル
+	// 岩モデル
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Planet/Rocks.mv1");
 	resourcesMap_.emplace(SRC::ROCKS, std::move(res));
-	//岩モデル
+	// 岩モデル
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Planet/Collider.mv1");
 	resourcesMap_.emplace(SRC::COLL, std::move(res));
 
 
-	//花モデル
+	// 花モデル
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"flour/Chamomile.mv1");
 	resourcesMap_.emplace(SRC::FLOUR, std::move(res));
-	//花モデル
+	// 岩モデル
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Rock/rock1_LOD0.mv1");
 	resourcesMap_.emplace(SRC::ROCK, std::move(res));
+	// 爆弾モデル
+	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Bom/Barrel Dry Highpoly.mv1");
+	resourcesMap_.emplace(SRC::BOM, std::move(res));
 	
+	// ヒールアイテム画像
 	res = std::make_unique<RES>(RES_T::IMG, PATH_MDL + L"Item/items/item489.png");
 	resourcesMap_.emplace(SRC::HEEL, std::move(res));
 	

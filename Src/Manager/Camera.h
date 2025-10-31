@@ -44,6 +44,7 @@ public:
 		FOLLOW,
 		FPS,
 		SELF_SHOTD,
+		SHAKE,
 	};
 
 	Camera(void);
@@ -115,6 +116,7 @@ private:
 	void SetBeforeDrawFollow(void);
 	void SyncFollowFPS(void);
 	void SetBeforeDrawSelfShot(void);
+	void SetBeforeDrawShake(void);
 
 };
 

@@ -15,7 +15,7 @@
 #include "../Common/EffectController.h"
 #include "../Common/SoundController.h"
 
-#include "../Statge/Planet.h"
+#include "../Stage/Planet.h"
 
 #include "HitDamage.h"
 #include "HitPart.h"

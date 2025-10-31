@@ -14,16 +14,16 @@
 #include "../Object/Common/Timer.h"
 
 #include "../Object/Player/Player.h"
-#include "../Object/Player/GreatSowrd.h"
+#include "../Object/Player/GreatSword.h"
 #include "../Object/Player/Arrow.h"
 
 #include "../Object/Shot/ShotBase.h"
 #include "../Object/Enemy/Boss.h"
 #include "../Object/Enemy/SmallMonster.h"
-#include "../Object/Statge/Stage.h"
-#include "../Object/Statge/Planet.h"
-#include "../Object/Statge/SkyDome.h"
-#include "../Object/Statge/Grid.h"
+#include "../Object/Stage/Stage.h"
+#include "../Object/Stage/Planet.h"
+#include "../Object/Stage/SkyDome.h"
+#include "../Object/Stage/Grid.h"
 
 #include "../Renderer/PixelMaterial.h"
 #include "../Renderer/PixelRenderer.h"
@@ -101,7 +101,7 @@ void GameScene::Init(void)
 		switch (nIns.GetWeapon(user.first))
 		{
 		case 0:
-			player = std::make_shared<GreatSowrd>(user.first);
+			player = std::make_shared<GreatSword>(user.first);
 			break;
 		case 1:
 			player = std::make_shared<Player>(user.first);
@@ -526,6 +526,11 @@ void GameScene::CreateShot(int damage, const VECTOR birthPos, const VECTOR dir, 
 		shots_.push_back(std::move(shot));
 	}
 
+}
+//ステージオブジェクトの生成
+void GameScene::CreateObject(const Transform& _trans)
+{
+	stage_->AddBom(_trans);
 }
 
 void GameScene::Collision(void)

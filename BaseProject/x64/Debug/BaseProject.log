@@ -1,5 +1,2 @@
-﻿  Player.cpp
-D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\Player.cpp(783,9): warning C4244: '-=': 'float' から 'int' への変換です。データが失われる可能性があります。
-D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\Player.cpp(1607,12): warning C4305: '+=': 'double' から 'float' へ切り詰めます。
-D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\Player.cpp(2047,11): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+﻿  Stage.cpp
   BaseProject.vcxproj -> D:\Users\2316013\Desktop\AGS2026冬\x64\Debug\BaseProject.exe

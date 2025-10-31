@@ -2,6 +2,7 @@
 #include<memory>  // shared_ptrを使うために必要
 #include <vector>
 #include "../Common/Vector2.h"
+#include "../Object/Common/Transform.h"
 
 #include "SceneBase.h"
 
@@ -41,7 +42,11 @@ public:
 	void DownCountPuls(void);
 	const int GetDownCount(void)const { return downCnt_; }
 
+	//弾の生成
 	void CreateShot(int damage,const VECTOR birthPos, const VECTOR dir, int key);
+
+	//ステージオブジェクトの生成
+	void CreateObject(const Transform& _trans);
 
 private:
 

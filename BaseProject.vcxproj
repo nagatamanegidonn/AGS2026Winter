@@ -19,16 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Item\RecoveryItem.cpp" />
+    <ClCompile Include="Src\Object\Item\ShotItem.cpp" />
     <ClCompile Include="Src\Object\Enemy\SmallMonster.cpp" />
     <ClCompile Include="Src\Object\Enemy\EnemyBase.cpp" />
-    <ClCompile Include="Src\Object\Statge\ItemObject.cpp" />
+    <ClCompile Include="Src\Object\Stage\ItemObject.cpp" />
     <ClCompile Include="Src\Object\Item\ItemPoach.cpp" />
     <ClCompile Include="Src\Scene\Sub\MenuScene.cpp" />
     <ClCompile Include="Src\Object\Item\ItemBase.cpp" />
     <ClCompile Include="Src\Object\Player\Arrow.cpp" />
     <ClCompile Include="Src\Object\Shot\ShotBase.cpp" />
     <ClCompile Include="Src\Object\Common\SoundController.cpp" />
-    <ClCompile Include="Src\Object\Player\GreatSowrd.cpp" />
+    <ClCompile Include="Src\Object\Player\GreatSword.cpp" />
     <ClCompile Include="Src\Object\Common\EffectController.cpp" />
     <ClCompile Include="Src\Manager\Sound.cpp" />
     <ClCompile Include="Src\Manager\SoundManager.cpp" />
@@ -38,10 +40,10 @@
     <ClCompile Include="Src\Object\Common\InputController.cpp" />
     <ClCompile Include="Src\Object\CharaBase.cpp" />
     <ClCompile Include="Src\Object\Enemy\Boss.cpp" />
-    <ClCompile Include="Src\Object\Statge\Object.cpp" />
-    <ClCompile Include="Src\Object\Statge\Planet.cpp" />
-    <ClCompile Include="Src\Object\Statge\SkyDome.cpp" />
-    <ClCompile Include="Src\Object\Statge\Stage.cpp" />
+    <ClCompile Include="Src\Object\Stage\Object.cpp" />
+    <ClCompile Include="Src\Object\Stage\Planet.cpp" />
+    <ClCompile Include="Src\Object\Stage\SkyDome.cpp" />
+    <ClCompile Include="Src\Object\Stage\Stage.cpp" />
     <ClCompile Include="Src\Renderer\ModelMaterial.cpp" />
     <ClCompile Include="Src\Renderer\ModelRenderer.cpp" />
     <ClCompile Include="Src\Renderer\PixelMaterial.cpp" />
@@ -76,21 +78,23 @@
     <ClCompile Include="Src\Scene\TitleScene.cpp" />
     <ClCompile Include="Src\Utility\AsoUtility.cpp" />
     <ClCompile Include="Src\Utility\Measure.cpp" />
-    <ClCompile Include="Src\Object\Statge\Grid.cpp" />
+    <ClCompile Include="Src\Object\Stage\Grid.cpp" />
     <ClCompile Include="Src\Object\Player\ViewPlayer.cpp" />
     <ClCompile Include="Src\Object\Common\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Item\RecoveryItem.h" />
+    <ClInclude Include="Src\Object\Item\ShotItem.h" />
     <ClInclude Include="Src\Object\Enemy\SmallMonster.h" />
     <ClInclude Include="Src\Object\Enemy\EnemyBase.h" />
-    <ClInclude Include="Src\Object\Statge\ItemObject.h" />
+    <ClInclude Include="Src\Object\Stage\ItemObject.h" />
     <ClInclude Include="Src\Object\Item\ItemPoach.h" />
     <ClInclude Include="Src\Scene\Sub\MenuScene.h" />
     <ClInclude Include="Src\Object\Item\ItemBase.h" />
     <ClInclude Include="Src\Object\Player\Arrow.h" />
     <ClInclude Include="Src\Object\Shot\ShotBase.h" />
     <ClInclude Include="Src\Object\Common\SoundController.h" />
-    <ClInclude Include="Src\Object\Player\GreatSowrd.h" />
+    <ClInclude Include="Src\Object\Player\GreatSword.h" />
     <ClInclude Include="Src\Object\Common\EffectController.h" />
     <ClInclude Include="Src\Manager\Sound.h" />
     <ClInclude Include="Src\Manager\SoundManager.h" />
@@ -145,10 +149,10 @@
     <ClInclude Include="Src\Lib\nlohmann\thirdparty\hedley\hedley_undef.hpp" />
     <ClInclude Include="Src\Object\CharaBase.h" />
     <ClInclude Include="Src\Object\Enemy\Boss.h" />
-    <ClInclude Include="Src\Object\Statge\Object.h" />
-    <ClInclude Include="Src\Object\Statge\Planet.h" />
-    <ClInclude Include="Src\Object\Statge\SkyDome.h" />
-    <ClInclude Include="Src\Object\Statge\Stage.h" />
+    <ClInclude Include="Src\Object\Stage\Object.h" />
+    <ClInclude Include="Src\Object\Stage\Planet.h" />
+    <ClInclude Include="Src\Object\Stage\SkyDome.h" />
+    <ClInclude Include="Src\Object\Stage\Stage.h" />
     <ClInclude Include="Src\Renderer\ModelMaterial.h" />
     <ClInclude Include="Src\Renderer\ModelRenderer.h" />
     <ClInclude Include="Src\Renderer\PixelMaterial.h" />
@@ -184,7 +188,7 @@
     <ClInclude Include="Src\Scene\TitleScene.h" />
     <ClInclude Include="Src\Utility\AsoUtility.h" />
     <ClInclude Include="Src\Utility\Measure.h" />
-    <ClInclude Include="Src\Object\Statge\Grid.h" />
+    <ClInclude Include="Src\Object\Stage\Grid.h" />
     <ClInclude Include="Src\Object\Player\ViewPlayer.h" />
     <ClInclude Include="Src\Object\Common\Timer.h" />
   </ItemGroup>

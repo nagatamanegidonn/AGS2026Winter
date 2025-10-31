@@ -6,21 +6,35 @@ class ItemBase
 {
 public:
 	// コンストラクタ
-	ItemBase(int itemId);
+	ItemBase(std::wstring _name);
 
 	// デストラクタ
 	~ItemBase(void);
 
-	void Init(void);
-	void Update(void);
-	void Draw(void);
-	void Release(void);
+	virtual void Init(int _id);
+	virtual void Update(void);
+	virtual void Draw(void);
+	virtual void Release(void);
 
-	const void Count(int num) { count_ += num; }
-	const int GetCount(void) const { return count_; }
+	// 格納IDの取得
+	const int GetId(void) const { return selectId_; }
+	// アイテム名の取得
+	const std::wstring& GetName(void) const { return name_; }
+
+	// アイテム数の取得、変更
+	void Count(int num) { count_ += num; }
+	int GetCount(void) const { return count_; }
+
+	// 同じ派生クラスかどうかを判定するメソッド
+	virtual bool IsSameItem(const ItemBase _item) const;
+	virtual bool IsSameName(const ItemBase& other) const {
+		return name_ == other.name_; // 同じアイテムかどうか
+	}
 
 private:
 
+	//格納ID
+	int selectId_;
 	//アイテム画像
 	int itemImage_;
 	//アイテム名

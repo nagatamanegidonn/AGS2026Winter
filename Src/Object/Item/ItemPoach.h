@@ -16,26 +16,27 @@ public:
 	void Draw(int i);
 
 	//アイテムの管理メソッド
-	void AddItem(int _itemId);
-	void PlayItem(int _itemId);
-
-	const std::list<int>& GetItemIds(void) const { return ItemIds_; }
+	void AddItem(std::shared_ptr<ItemBase> _item);
+	void UseSelectedItem(void);
 
 	//選択中のアイテムIDの設定、取得
-	void CountSelectId(void);
-	int GetSelectId(void) const { return slectId_; }
+	void NextItem(void);
+	int GetSelectId(void) const { return selectIndex_; }
+
+	//ポーチに選択中のアイテムがあるかどうか
+	bool HasSelectedItem(void) const;
+
+	//選択中のアイテムが引数の名前かどうか
+	bool IsSelectedItemName(const std::wstring& _name) const;
+	bool IsSelectedItem(ItemBase _item) const;
 
 private:
 
 	/// <summary>
 	/// 選択中のアイテムID
-	int slectId_;
+	int selectIndex_;
 
-	/// <summary>
-	/// int はポーチ番号
-	/// </summary>
-	std::map<int, std::shared_ptr<ItemBase>> Items_;
-	std::list<int> ItemIds_;
+	std::list<std::shared_ptr<ItemBase>> ItemList_;
 
 };
 

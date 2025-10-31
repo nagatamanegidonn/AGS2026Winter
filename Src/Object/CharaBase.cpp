@@ -1,14 +1,14 @@
 #include "CharaBase.h"
 #include "../Manager/SceneManager.h"
 #include "../Utility/AsoUtility.h"
-#include "Statge/Planet.h"
+#include "Stage/Planet.h"
 
 CharaBase::CharaBase(void)
 	:
 	areaId_(-1),
 	attrckDamage_(10),
 	isHitCheck_(false),
-	chageAttrckTime_(0.0f),
+	changeAttrckTime_(0.0f),
 	speed_(0.0f),
 	stepRotTime_(0.0f),
 	goalQuaRot_(),

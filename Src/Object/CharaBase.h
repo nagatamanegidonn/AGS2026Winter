@@ -97,7 +97,7 @@ protected:
 
 	//UŒ‚ŠÇ—
 	bool isHitCheck_;			//UŒ‚”»’è‚ª”­¶‚·‚é‚©‚Ì”»’è
-	float chageAttrckTime_;		//UŒ‚ƒ`ƒƒ[ƒWŠÔ
+	float changeAttrckTime_;		//UŒ‚ƒ`ƒƒ[ƒWŠÔ
 	int attrckDamage_;			//UŒ‚—Í
 	float attrckRate_ = 1.0f;	//UŒ‚—¦
 
