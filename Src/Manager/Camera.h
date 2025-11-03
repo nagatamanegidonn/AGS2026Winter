@@ -36,6 +36,10 @@ public:
 	
 	const float INTERPOLATION_SPEED = 0.1f; // 補間の速さ
 
+	//カメラシェイク
+	const float SPEED_SHAKE = 0.1f; // 横の幅
+	const float WIDTH_SHAKE = 0.1f; // 横の幅
+
 	// カメラモード
 	enum class MODE
 	{
@@ -100,6 +104,19 @@ private:
 	VECTOR targetPos_;
 	// カメラの上方向
 	VECTOR cameraUp_;
+
+#pragma region カメラシェイク用
+	//画面揺らし用
+	float stepShake_;
+
+	//画面揺れが終わったか
+	bool finishShake_;
+	//演出前位置
+	VECTOR defaultPos_;
+	//揺れ方向
+	VECTOR shakeDir_;
+#pragma endregion
+
 
 	// カメラを初期位置に戻す
 	void SetDefault(void);

@@ -19,6 +19,10 @@ Camera::Camera(void)
 	pos_ = AsoUtility::VECTOR_ZERO;
 	targetPos_ = AsoUtility::VECTOR_ZERO;
 	followTransform_ = nullptr;
+
+	stepShake_ = 1.0f;
+	finishShake_ = false;
+	shakeDir_ = { 0.0f,0.0f,0.0f };
 }
 
 Camera::~Camera(void)
@@ -58,6 +62,9 @@ void Camera::SetBeforeDraw(void)
 		break;
 	case Camera::MODE::FPS:
 		SyncFollowFPS();
+		break;
+	case Camera::MODE::SHAKE:
+		SetBeforeDrawShake();
 		break;
 	}
 
@@ -171,6 +178,12 @@ void Camera::ChangeMode(MODE mode)
 		break;
 	case Camera::MODE::SELF_SHOTD:
 		SetMouseDispFlag(true);
+		break;
+	case Camera::MODE::SHAKE:
+		defaultPos_ = pos_;
+		stepShake_ = 1.0f;
+		finishShake_ = false;
+		shakeDir_ = { 0.0f,0.0f,0.0f };
 		break;
 	}
 
@@ -417,9 +430,45 @@ void Camera::SyncFollowFPS(void)
 void Camera::SetBeforeDrawSelfShot(void)
 {
 }
-
+//カメラシェイク
 void Camera::SetBeforeDrawShake(void)
 {
+	// 一定時間カメラを揺らす
+	//stepShake_ -= SceneManager::GetInstance().GetDeltaTime();
+	stepShake_ -= 0.01f;
+
+	//カメラシェイク終了
+	if (stepShake_ < 0.0f)
+	{
+		pos_ = defaultPos_;
+		ChangeMode(MODE::FIXED_POINT);
+		finishShake_ = true;
+		return;
+	}
+
+	// -1.0f～1.0f
+	float f = sinf(stepShake_ * SPEED_SHAKE);
+
+	// -1000.0f～1000.0f
+	f *= 1000.0f;
+
+	// -1000 or 1000
+	int d = static_cast<int>(f);
+
+	// 0 or 1
+	int shake = d % 2;
+
+	// 0 or 2
+	shake *= 2;
+
+	// -1 or 1
+	shake -= 1;
+
+	// 移動量
+	VECTOR velocity = VScale(shakeDir_, (float)(shake)*WIDTH_SHAKE);
+
+	// 移動先座標
+	pos_ = VAdd(defaultPos_, velocity);
 }
 
 
