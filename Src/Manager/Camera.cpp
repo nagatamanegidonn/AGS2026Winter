@@ -21,7 +21,7 @@ Camera::Camera(void)
 	followTransform_ = nullptr;
 
 	stepShake_ = 1.0f;
-	finishShake_ = false;
+	isShaking_ = false;
 	shakeDir_ = { 0.0f,0.0f,0.0f };
 }
 
@@ -63,9 +63,12 @@ void Camera::SetBeforeDraw(void)
 	case Camera::MODE::FPS:
 		SyncFollowFPS();
 		break;
-	case Camera::MODE::SHAKE:
-		SetBeforeDrawShake();
-		break;
+	}
+
+	// シェイク効果を上乗せ
+	if (isShaking_)
+	{
+		UpdateShake();
 	}
 
 	// カメラの設定(位置と注視点による制御)
@@ -74,6 +77,11 @@ void Camera::SetBeforeDraw(void)
 		targetPos_, 
 		cameraUp_
 	);
+
+#ifdef _DEBUG
+	DrawSphere3D(targetPos_, 10, 10, 0xff00ff, 0xff00ff, true);
+#endif // _DEBUG
+
 
 	// DXライブラリのカメラとEffekseerのカメラを同期する。
 	Effekseer_Sync3DSetting();
@@ -88,6 +96,7 @@ void Camera::SetFollow(const Transform* follow)
 {
 	followTransform_ = follow;
 }
+// targetLookAtPosに向かって注目する
 void Camera::LookAtSmoothly(const VECTOR& targetLookAtPos, float interpolationFactor)
 {
 	// 目的位置への方向ベクトル（ターゲット - カメラ位置）
@@ -125,6 +134,7 @@ void Camera::LookAtSmoothly(const VECTOR& targetLookAtPos, float interpolationFa
 	cameraUp_ = gRot.GetUp();
 }
 
+#pragma region カメラ情報取得
 
 VECTOR Camera::GetPos(void) const
 {
@@ -156,11 +166,13 @@ VECTOR Camera::GetForward(void) const
 	return VNorm(VSub(targetPos_, pos_));
 }
 
+#pragma endregion
+
 void Camera::ChangeMode(MODE mode)
 {
 
 	// カメラの初期設定
-	SetDefault();
+	//SetDefault();
 
 	// カメラモードの変更
 	mode_ = mode;
@@ -169,6 +181,8 @@ void Camera::ChangeMode(MODE mode)
 	switch (mode_)
 	{
 	case Camera::MODE::FIXED_POINT:
+		// カメラの初期設定
+		SetDefault();
 		SetMouseDispFlag(true);
 		break;
 	case Camera::MODE::FPS:
@@ -179,14 +193,19 @@ void Camera::ChangeMode(MODE mode)
 	case Camera::MODE::SELF_SHOTD:
 		SetMouseDispFlag(true);
 		break;
-	case Camera::MODE::SHAKE:
-		defaultPos_ = pos_;
-		stepShake_ = 1.0f;
-		finishShake_ = false;
-		shakeDir_ = { 0.0f,0.0f,0.0f };
-		break;
 	}
 
+}
+
+void Camera::StartShake(float _time, float power)
+{
+	if (isShaking_) return; // 二重発動防止（必要に応じて外してもOK）
+	isShaking_ = true;
+	//shakePower_ = power;
+	shakeDir_ = { 1.0f,0.0f,0.0f };
+
+	stepShake_ = stepMaxShake_ = _time;
+	defaultPos_ = pos_;
 }
 
 void Camera::SetDefault(void)
@@ -241,7 +260,7 @@ void Camera::SyncFollow(void)
 	cameraUp_ = gRot.GetUp();
 
 }
-
+// カメラ操作
 void Camera::ProcessRot(void)
 {
 	//演習① カメラの要件に沿って、カメラ操作を実装してください
@@ -297,6 +316,7 @@ void Camera::ProcessRot(void)
 	}
 
 }
+// カメラ操作(FPS用)
 void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, const bool left)
 {
 
@@ -344,7 +364,7 @@ void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, co
 
 	}
 }
-
+// カメラ操作(マウス)
 void Camera::ProcessRotMause(float& x_m, float& y_m, const float fov_per)
 {
 	
@@ -374,6 +394,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 {
 	// 何もしない
 }
+// 追従モードのカメラ同期
 void Camera::SetBeforeDrawFollow(void)
 {
 
@@ -384,6 +405,7 @@ void Camera::SetBeforeDrawFollow(void)
 	SyncFollow();
 
 }
+// FPSモードのカメラ同期
 void Camera::SyncFollowFPS(void)
 {
 	ProcessRotMause(angles_.y, angles_.x, 0.2f);;
@@ -430,19 +452,88 @@ void Camera::SyncFollowFPS(void)
 void Camera::SetBeforeDrawSelfShot(void)
 {
 }
-//カメラシェイク
-void Camera::SetBeforeDrawShake(void)
+// カメラシェイク
+void Camera::UpdateShake(void)
 {
+	if (!isShaking_) return;
+
+	// シェイク強度・減衰パラメータ
+	float shakePower_ = 1.0f;      // 初期の揺れの大きさ
+	float shakeDuration_ = 1.0f;     // 揺れる時間
+
+
+	stepShake_ -= 0.016f; // Δt
+
+	if (stepShake_ <= 0.0f)
+	{
+		pos_ = defaultPos_;
+		isShaking_ = false;
+		return;
+	}
+
+	// 減衰係数（0～1）// 経過時間/総時間
+	float t = stepShake_ / shakeDuration_;
+	float currentPower = shakePower_ * t * t;
+
+	float dx = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+	float dy = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+	float dz = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+
+	//  -1～1 のランダム方向
+	VECTOR randomDir = VNorm({ dx, dy, dz });
+	pos_ = VAdd(defaultPos_, VScale(randomDir, currentPower));
+	return;
+
+
+	if (stepShake_ > 0.0f)
+	{
+		stepShake_ -= 0.016f; // Δt（固定フレーム時間）
+
+		// 減衰係数（0～1）
+		float t = stepShake_ / shakeDuration_;
+
+		// 現在の揺れ強度（徐々に減る）
+		float currentPower = shakePower_ * t * t;
+
+		// -1～1 のランダム方向
+		float dx = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+		float dy = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+		float dz = 0.0f;
+
+		VECTOR randomDir = VNorm({ dx, dy, dz });
+
+		// カメラ位置更新
+		pos_ = VAdd(defaultPos_, VScale(randomDir, currentPower));
+	}
+	else
+	{
+		pos_ = defaultPos_; // 元の位置へ戻す
+		if (followTransform_ != nullptr) {
+			ChangeMode(MODE::FOLLOW);
+		}
+		else {
+			ChangeMode(MODE::FIXED_POINT);
+		}
+		isShaking_ = false;
+	}
+
+	return;
+
 	// 一定時間カメラを揺らす
-	//stepShake_ -= SceneManager::GetInstance().GetDeltaTime();
+	// stepShake_ -= SceneManager::GetInstance().GetDeltaTime();
 	stepShake_ -= 0.01f;
 
-	//カメラシェイク終了
+	// カメラシェイク終了
 	if (stepShake_ < 0.0f)
 	{
 		pos_ = defaultPos_;
-		ChangeMode(MODE::FIXED_POINT);
-		finishShake_ = true;
+		if (followTransform_ != nullptr){
+			ChangeMode(MODE::FOLLOW);
+		}
+		else {
+			ChangeMode(MODE::FIXED_POINT);
+		}
+		isShaking_ = true;
 		return;
 	}
 
@@ -455,7 +546,7 @@ void Camera::SetBeforeDrawShake(void)
 	// -1000 or 1000
 	int d = static_cast<int>(f);
 
-	// 0 or 1
+	// 0 or 1//揺れ方向
 	int shake = d % 2;
 
 	// 0 or 2

@@ -6,7 +6,7 @@
 
 #include "../Common/Collider/Capsule.h"
 
-#include "../Statge/Planet.h"
+#include "../Stage/Planet.h"
 
 #include "HitPart.h"
 #include "HitDamage.h"

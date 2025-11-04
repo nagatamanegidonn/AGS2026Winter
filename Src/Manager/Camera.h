@@ -37,8 +37,8 @@ public:
 	const float INTERPOLATION_SPEED = 0.1f; // 補間の速さ
 
 	//カメラシェイク
-	const float SPEED_SHAKE = 0.1f; // 横の幅
-	const float WIDTH_SHAKE = 0.1f; // 横の幅
+	const float SPEED_SHAKE = 0.3f; // 揺れの速さ
+	const float WIDTH_SHAKE = 1.0f; // 横の幅
 
 	// カメラモード
 	enum class MODE
@@ -48,7 +48,6 @@ public:
 		FOLLOW,
 		FPS,
 		SELF_SHOTD,
-		SHAKE,
 	};
 
 	Camera(void);
@@ -75,6 +74,8 @@ public:
 
 	// カメラモードの変更
 	void ChangeMode(MODE mode);
+
+	void StartShake(float _time = 1.0f, float _power = 1.0f);
 
 	// 追従対象の設定
 	void SetFollow(const Transform* follow);
@@ -108,9 +109,10 @@ private:
 #pragma region カメラシェイク用
 	//画面揺らし用
 	float stepShake_;
+	float stepMaxShake_;
 
 	//画面揺れが終わったか
-	bool finishShake_;
+	bool isShaking_;
 	//演出前位置
 	VECTOR defaultPos_;
 	//揺れ方向
@@ -133,7 +135,8 @@ private:
 	void SetBeforeDrawFollow(void);
 	void SyncFollowFPS(void);
 	void SetBeforeDrawSelfShot(void);
-	void SetBeforeDrawShake(void);
+
+	void UpdateShake(void);
 
 };
 

@@ -563,6 +563,8 @@ void GameScene::Collision(void)
 			&& player->IsAttrck() && player->IsHit() && player->IsSelf())
 		{
 			player->SetHit(true);
+			SceneManager::GetInstance().GetCamera().lock()->StartShake();
+
 			boss_->Damage(player->GetAttrckPow() * player->GetAttrckRate());
 			//音の再生
 			SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
@@ -575,6 +577,9 @@ void GameScene::Collision(void)
 				&& player->IsAttrck() && player->IsHit() && player->IsSelf())
 			{
 				player->SetHit(true);
+				
+				SceneManager::GetInstance().GetCamera().lock()->StartShake();
+
 				mons->Damage(player->GetAttrckPow() * player->GetAttrckRate());
 				//音の再生
 				SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
@@ -583,17 +588,21 @@ void GameScene::Collision(void)
 		}
 		auto& users = NetManager::GetInstance().GetNetUsers();
 
-		//プレイヤーの当たり判定（ボス攻撃）//自分だけ
+		// プレイヤーの当たり判定（ボス攻撃）//自分だけ
 		if (player->IsSelf())
 		{
-			//ボスに注目
-			if (player->IsAimSet() && player->GetAreaId() == boss_->GetAreaId())
+			// ボスに注目
+			//if (player->IsAimSet() && player->GetAreaId() == boss_->GetAreaId())
+			//{
+			//	if (player->IsTrgAimSet())
+			//	{
+			//		SoundManager::GetInstance().Play(SoundManager::SRC::LOCKON, Sound::TIMES::ONCE);
+			//	}
+			//	SceneManager::GetInstance().GetCamera().lock()->LookAtSmoothly(boss_->GetTransform().pos, 0.5f);
+			//}
+			if (player->IsAimSet())
 			{
-				if (player->IsTrgAimSet())
-				{
-					SoundManager::GetInstance().Play(SoundManager::SRC::LOCKON, Sound::TIMES::ONCE);
-				}
-				SceneManager::GetInstance().GetCamera().lock()->LookAtSmoothly(boss_->GetTransform().pos, 0.5f);
+				SceneManager::GetInstance().GetCamera().lock()->StartShake();
 			}
 
 			auto& eTrans = boss_->GetTransform();
@@ -601,7 +610,7 @@ void GameScene::Collision(void)
 			VECTOR attrckPos = VAdd(eTrans.pos, VScale(eTrans.GetForward(), 410));
 			attrckPos = VAdd(attrckPos, VScale(eTrans.GetUp(), 170));
 
-			//ボス攻撃の処理
+			// ボス攻撃の処理
 			if (boss_->CollisionAttrck(player->GetTransform().modelId))
 			{
 				VECTOR mixDir = AsoUtility::VECTOR_ZERO;
@@ -618,19 +627,19 @@ void GameScene::Collision(void)
 					mixDir = VScale(boss_->GetTransform().GetLeft(), 0.3f);
 				}
 				player->Damage(boss_->GetAttrckPow() * boss_->GetAttrckRate(), boss_->GetAttrckPos(), mixDir);
-				//playerが無敵か判定した後無敵じゃないならエフェクト
+				// playerが無敵か判定した後無敵じゃないならエフェクト
 
 			}
-			//小型の処理
+			// 小型の処理(攻撃)
 			for (auto& mons : Monsters_)
 			{
 				if (mons->CollisionAttrck(player->GetTransform().modelId)
 					/*&& boss_->IsHit()*/)
 				{
 					VECTOR mixDir = AsoUtility::VECTOR_ZERO;
-					
+
 					player->Damage(mons->GetAttrckPow() * mons->GetAttrckRate(), mons->GetAttrckPos(), mixDir);
-					//playerが無敵か判定した後無敵じゃないならエフェクト
+					// playerが無敵か判定した後無敵じゃないならエフェクト
 
 				}
 			}
@@ -654,6 +663,8 @@ void GameScene::Collision(void)
 				if (shot->GetKey() == nIns.GetSelf().key
 					&& shot->GetKey() == player->GetKey())
 				{
+					SceneManager::GetInstance().GetCamera().lock()->StartShake();
+
 					boss_->Damage(static_cast<int>(static_cast<float>(shot->GetDamage()) * player->GetAttrckRate()));
 				}
 				//ボスが非戦闘状態なら追従を設定して戦闘状態に
@@ -677,6 +688,8 @@ void GameScene::Collision(void)
 					if (shot->GetKey() == nIns.GetSelf().key
 						&& shot->GetKey() == player->GetKey())
 					{
+						SceneManager::GetInstance().GetCamera().lock()->StartShake();
+						
 						mons->Damage(static_cast<int>(static_cast<float>(shot->GetDamage()) * player->GetAttrckRate()));
 					}
 					//追従を設定して戦闘状態に
