@@ -324,7 +324,7 @@ protected:
 	std::unique_ptr <ItemPoach> poach_;
 
 	//•¡í‚Ì‰Šú‰»ˆ—
-	virtual void InitPram(void);
+	virtual void InitParam(void);
 	virtual void InitAnimation(void);
 	virtual void InitEffect(void);
 	virtual void InitSound(void);

@@ -102,17 +102,17 @@ void Camera::LookAtSmoothly(const VECTOR& targetLookAtPos, float interpolationFa
 	// 目的位置への方向ベクトル（ターゲット - カメラ位置）
 	VECTOR targetDir = VSub(targetLookAtPos, pos_);
 	targetDir.y = 0.0f; // 高さを無視する（XZ平面のみで方向を求める）
-	targetDir = VNorm(targetDir);
+	targetDir = VNorm(targetDir);// 正規化
 
 	// 現在の forward ベクトル（XZ平面）
 	VECTOR currentDir = VSub(targetPos_, pos_);
 	currentDir.y = 0.0f;
-	currentDir = VNorm(currentDir);
+	currentDir = VNorm(currentDir);// 正規化
 
 	// スムーズに方向ベクトルを補間する（XZ方向のみ）
 	VECTOR smoothDir = VAdd(VScale(currentDir, 1.0f - interpolationFactor),
 		VScale(targetDir, interpolationFactor));
-	smoothDir = VNorm(smoothDir);
+	smoothDir = VNorm(smoothDir);// 正規化
 
 	// 注視点を補間した方向に更新（高さはカメラと同じにする）
 	targetPos_ = VAdd(pos_, smoothDir);
@@ -458,7 +458,7 @@ void Camera::UpdateShake(void)
 	if (!isShaking_) return;
 
 	// シェイク強度・減衰パラメータ
-	float shakePower_ = 1.0f;      // 初期の揺れの大きさ
+	float shakePower_ = 2.0f;      // 初期の揺れの大きさ
 	float shakeDuration_ = 1.0f;     // 揺れる時間
 
 

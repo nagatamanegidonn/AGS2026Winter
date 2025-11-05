@@ -27,7 +27,7 @@ private:
 
     Transform transSubWeapon_;
 
-    void InitPram(void)override;
+    void InitParam(void)override;
     void InitAnimation(void) override;
     void InitEffect(void) override;
 

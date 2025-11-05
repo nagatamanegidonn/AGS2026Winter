@@ -32,7 +32,7 @@ GreatSword::~GreatSword(void)
 {
 }
 
-void GreatSword::InitPram(void)
+void GreatSword::InitParam(void)
 {
 	//メインウェポン
 	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);

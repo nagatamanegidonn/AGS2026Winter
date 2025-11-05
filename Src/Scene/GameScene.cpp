@@ -17,7 +17,10 @@
 #include "../Object/Player/GreatSword.h"
 #include "../Object/Player/Arrow.h"
 
+#include "../Object/Shot/ItemShot.h"
+#include "../Object/Shot/ArrowShot.h"
 #include "../Object/Shot/ShotBase.h"
+
 #include "../Object/Enemy/Boss.h"
 #include "../Object/Enemy/SmallMonster.h"
 #include "../Object/Stage/Stage.h"
@@ -148,7 +151,7 @@ void GameScene::Init(void)
 	grid_->Init();
 
 	//空の弾の作成
-	auto  shot = std::make_unique<ShotBase>(0, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, -1);
+	auto  shot = std::make_unique<ItemShot>(0, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, -1);
 	shot->Destroy();
 	shots_.push_back(std::move(shot));
 
@@ -276,6 +279,8 @@ void GameScene::Update(void)
 		VECTOR diff = VSub(pPos, ePos);
 		float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
+		// 状態別処理
+		// PLAY状態でプレイヤーが近づいたらターゲットにする
 		if (boss_->IsState(Boss::STATE::PLAY))
 		{
 			if (disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
@@ -289,6 +294,7 @@ void GameScene::Update(void)
 				trans = player->GetTransform(); // BATTLEに引き継ぐ初期ターゲット
 			}
 		}
+		// BATTLE状態で一番近いプレイヤーをターゲットにする
 		else if (boss_->IsState(Boss::STATE::BATTLE))
 		{
 			if (disPow < minDist_)
@@ -501,19 +507,17 @@ void GameScene::Release(void)
 
 }
 
-void GameScene::DownCountPuls(void)
-{
-	downCnt_ += 1;
-}
 
-void GameScene::CreateShot(int damage, const VECTOR birthPos, const VECTOR dir, int key)
+
+
+void GameScene::CreateShot(ShotBase::TYPE type, int damage, const VECTOR& birthPos, const VECTOR& dir, int key)
 {
 	bool isEnd = false;
 
-
+	// 既存の弾を再利用
 	for (auto& shot : shots_)
 	{
-		if (shot->IsEnd())
+		if (shot->IsEnd() && shot->GetType() == type)
 		{
 			shot->Create(damage, birthPos, dir, key);
 			isEnd = true;
@@ -522,10 +526,21 @@ void GameScene::CreateShot(int damage, const VECTOR birthPos, const VECTOR dir, 
 	}
 	if (!isEnd)
 	{
-		auto  shot = std::make_unique<ShotBase>(damage, birthPos, dir, key);
+		std::unique_ptr<ShotBase> shot = nullptr;
+		switch (type)
+		{
+			case ShotBase::TYPE::ARROW:
+				shot = std::make_unique<ArrowShot>(damage, birthPos, dir, key);
+				break;
+			case ShotBase::TYPE::ITEM:
+				shot = std::make_unique<ItemShot>(damage, birthPos, dir, key);
+				break;
+			default:
+				break;
+		}
+		//auto shot = std::make_unique<ShotBase>(damage, birthPos, dir, key);
 		shots_.push_back(std::move(shot));
 	}
-
 }
 //ステージオブジェクトの生成
 void GameScene::CreateObject(const Transform& _trans)

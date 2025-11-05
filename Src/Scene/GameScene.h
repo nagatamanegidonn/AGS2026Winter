@@ -3,6 +3,7 @@
 #include <vector>
 #include "../Common/Vector2.h"
 #include "../Object/Common/Transform.h"
+#include "../Object/Shot/ShotBase.h"
 
 #include "SceneBase.h"
 
@@ -39,11 +40,12 @@ public:
 	void Draw(void) override;
 	void Release(void) override;
 
-	void DownCountPuls(void);
+	void DownCountPuls(void) { downCnt_ += 1; }
 	const int GetDownCount(void)const { return downCnt_; }
 
 	//弾の生成
-	void CreateShot(int damage,const VECTOR birthPos, const VECTOR dir, int key);
+	void CreateShot(ShotBase::TYPE type,int damage
+		,const VECTOR& birthPos, const VECTOR& dir, int key);
 
 	//ステージオブジェクトの生成
 	void CreateObject(const Transform& _trans);

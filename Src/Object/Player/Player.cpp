@@ -330,7 +330,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 	flyigTime_ = downTime_ = 0.0f;
 
 	//武器ごとのパラメータ設定
-	InitPram();
+	InitParam();
 
 
 	capsuleWepon_ = std::make_shared<Capsule>(transWeapon_);
@@ -600,7 +600,8 @@ void Player::Update(void)
 
 		// 手の位置とグローバルマトリクスを取得
 		const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
-		gameScene_->CreateShot(attrckDamage_, posHand, transform_.GetForward(), key_);
+		gameScene_->CreateShot(ShotBase::TYPE::ITEM, attrckDamage_
+			, posHand, transform_.GetForward(), key_);
 	}
 	//設置の完了
 	else if (animeType_ == (int)ANIM_TYPE::ITEM_SET_E
@@ -849,7 +850,7 @@ const PLAYER_TYPE& Player::GetPlayerType(void)const
 	return type_;
 }
 
-void Player::InitPram(void)
+void Player::InitParam(void)
 {
 	//メインウェポン
 	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);

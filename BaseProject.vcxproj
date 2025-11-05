@@ -23,6 +23,8 @@
     <ClCompile Include="Src\Object\Item\ShotItem.cpp" />
     <ClCompile Include="Src\Object\Enemy\SmallMonster.cpp" />
     <ClCompile Include="Src\Object\Enemy\EnemyBase.cpp" />
+    <ClCompile Include="Src\Object\Shot\ArrowShot.cpp" />
+    <ClCompile Include="Src\Object\Shot\ItemShot.cpp" />
     <ClCompile Include="Src\Object\Stage\ItemObject.cpp" />
     <ClCompile Include="Src\Object\Item\ItemPoach.cpp" />
     <ClCompile Include="Src\Scene\Sub\MenuScene.cpp" />
@@ -87,6 +89,8 @@
     <ClInclude Include="Src\Object\Item\ShotItem.h" />
     <ClInclude Include="Src\Object\Enemy\SmallMonster.h" />
     <ClInclude Include="Src\Object\Enemy\EnemyBase.h" />
+    <ClInclude Include="Src\Object\Shot\ArrowShot.h" />
+    <ClInclude Include="Src\Object\Shot\ItemShot.h" />
     <ClInclude Include="Src\Object\Stage\ItemObject.h" />
     <ClInclude Include="Src\Object\Item\ItemPoach.h" />
     <ClInclude Include="Src\Scene\Sub\MenuScene.h" />

@@ -7,7 +7,7 @@
 
 #include "ShotBase.h"
 
-ShotBase::ShotBase(int damage, const VECTOR birthPos, const VECTOR shotVec, int key)
+ShotBase::ShotBase(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key)
 {
 	Create(damage,birthPos, shotVec, key);
 }
@@ -16,17 +16,13 @@ ShotBase::~ShotBase(void)
 	MV1DeleteModel(transform_.modelId);
 }
 
-void ShotBase::Create(int damage, const VECTOR birthPos, const VECTOR dir, int key)
+
+void ShotBase::Create(int damage, const VECTOR& birthPos, const VECTOR& dir, int key)
 {
 	damage_ = damage;
 	key_ = key;
 
 	// モデル制御の基本情報
-	transform_.modelId =
-		ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::ARROW);
-	float scale = 2.0f;
-	transform_.scl = { scale, scale, scale };
-
 	// パラメータ設定
 	SetParam();
 	// 再利用可能なようにする
@@ -43,28 +39,13 @@ void ShotBase::Create(int damage, const VECTOR birthPos, const VECTOR dir, int k
 	// モデル制御の基本情報更新
 	transform_.Update();
 
-	capsule_ = std::make_shared<Capsule>(transform_);
-	capsule_->SetLocalPosTop({ 0.0f, 0.0f, 110.0f });
-	capsule_->SetLocalPosDown({ 0.0f,0.0f,  -30.0f });
-	capsule_->SetRadius(10.0f);
-
-
+	
 	// 状態遷移
 	ChangeState(STATE::SHOT);
 }
 
 void ShotBase::Init(void)
 {
-	// モデル制御の基本情報
-	transform_.modelId =
-		ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::ARROW);
-	float scale = 2.0f;
-	transform_.scl = { scale, scale, scale };
-	transform_.pos = AsoUtility::VECTOR_ZERO;
-	transform_.quaRot = Quaternion();
-	transform_.quaRotLocal = 
-		Quaternion::Euler({ 0.0f, AsoUtility::Deg2RadF(90.0f), 0.0f });
-	transform_.Update();
 }
 
 void ShotBase::Update(void)

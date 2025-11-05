@@ -26,7 +26,7 @@ public:
     // デストラクタ
     ~GreatSword(void);
 
-    void InitPram(void)override;
+    void InitParam(void)override;
     void InitAnimation(void) override;
     void InitEffect(void) override;
 

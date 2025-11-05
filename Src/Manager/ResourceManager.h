@@ -26,10 +26,11 @@ public:
 		PLANE,
 		ROCKS,
 		COLL,
-	
+		// アイテムオブジェクト
 		FLOUR,
 		ROCK,
 		BOM,
+		SMALL_BAG,
 
 		HEEL,
 

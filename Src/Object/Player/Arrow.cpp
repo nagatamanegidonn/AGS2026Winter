@@ -33,7 +33,7 @@ Arrow::~Arrow(void)
 	MV1DeleteModel(transSubWeapon_.modelId);
 }
 
-void Arrow::InitPram(void)
+void Arrow::InitParam(void)
 {
 	//メインウェポン
 	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
@@ -169,7 +169,8 @@ void Arrow::PlayAttrckSound(void)
 
 		// 手の位置とグローバルマトリクスを取得
 		const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
-		gameScene_->CreateShot(attrckDamage_, posHand, transform_.GetForward(), key_);
+		gameScene_->CreateShot(ShotBase::TYPE::ARROW,attrckDamage_
+			, posHand, transform_.GetForward(), key_);
 	}
 
 	//弦を引っ張る音

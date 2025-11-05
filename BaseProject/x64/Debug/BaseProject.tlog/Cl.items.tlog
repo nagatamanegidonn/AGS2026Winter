@@ -2,6 +2,8 @@ D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Item\RecoveryItem.cpp;D:\Users\23
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Item\ShotItem.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\ShotItem.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\SmallMonster.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\SmallMonster.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\EnemyBase.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\EnemyBase.obj
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Shot\ArrowShot.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\ArrowShot.obj
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Shot\ItemShot.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\ItemShot.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Stage\ItemObject.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\ItemObject.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Item\ItemPoach.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\ItemPoach.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\Sub\MenuScene.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\MenuScene.obj
