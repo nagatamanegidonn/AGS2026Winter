@@ -46,7 +46,7 @@ public:
     const bool IsShot(void)const { return state_ == STATE::SHOT; }
     const bool IsEnd(void)const { return state_ == STATE::END; }
 
-    const int GetDamage(void);
+    int GetDamage(void) const;
     std::weak_ptr<Capsule> GetCapsule(void);
 
     void Destroy(void);

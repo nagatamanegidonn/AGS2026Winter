@@ -11,5 +11,10 @@ public:
     ~ArrowShot(void) override;
 
 	void Update(void) override;
+
+protected:
+
+    // ƒpƒ‰ƒ[ƒ^‚Ìİ’è
+    void SetParam(void)override;
 };
 

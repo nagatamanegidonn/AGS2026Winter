@@ -43,3 +43,11 @@ void ArrowShot::Update(void)
 	// モデル制御の基本情報更新
 	transform_.Update();
 }
+
+void ArrowShot::SetParam(void)
+{
+	speed_ = 20.0f;
+	// 生存時間
+	// 生存フラグ、時間の初期化
+	timeAlive_ = 5.0f;
+}

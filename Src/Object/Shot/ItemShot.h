@@ -11,5 +11,14 @@ public:
 	~ItemShot(void);
 
     void Update(void) override;
+
+protected:
+
+    // ƒpƒ‰ƒ[ƒ^‚Ìİ’è
+    void SetParam(void)override;
+
+    void UpdateShot(void)override;
+    void UpdateBlast(void)override;
+                        
 };
 

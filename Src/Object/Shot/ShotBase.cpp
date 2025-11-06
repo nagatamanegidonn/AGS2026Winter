@@ -94,7 +94,7 @@ void ShotBase::Draw(void)
 
 }
 
-const int ShotBase::GetDamage(void)
+int ShotBase::GetDamage(void) const
 {
 	return (int)((float)damage_ * (timeAlive_ / 2));
 }
@@ -123,7 +123,7 @@ void ShotBase::CheckAlive(void)
 	timeAlive_ -= SceneManager::GetInstance().GetDeltaTime();
 	if (timeAlive_ < 0.0f)
 	{
-		ChangeState(STATE::END);
+		ChangeState(STATE::BLAST);
 	}
 }
 
