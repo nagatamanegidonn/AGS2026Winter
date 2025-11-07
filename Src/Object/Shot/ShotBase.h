@@ -18,33 +18,38 @@ public:
         END,
     };
 
-	// 種類
+    // 種類
     enum class TYPE
     {
         NONE,
         ARROW,
         ITEM,
-	};
+        BOM,
+    };
 
-	// コンストラクタ
+    // コンストラクタ
     ShotBase(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key);
-	// デストラクタ
+    // デストラクタ
     virtual ~ShotBase(void);
 
-    void Create(int damage,const VECTOR& birthPos, const VECTOR& dir, int key);
+    void Create(int damage, const VECTOR& birthPos, const VECTOR& dir, int key);
     virtual void Init(void) override;
     virtual void Update(void);
 
     void Draw(void);
 
-	// 種類の取得
-	const TYPE& GetType(void) const { return type_; }
+    // 種類の取得
+    const TYPE& GetType(void) const { return type_; }
     // 座標の取得
     const int& GetTransItem(void) const { return transform_.modelId; }
-	// 弾を発射したプレイヤーのキー取得
-    const int GetKey(void)const { return key_; }
-    const bool IsShot(void)const { return state_ == STATE::SHOT; }
-    const bool IsEnd(void)const { return state_ == STATE::END; }
+	// 半径の取得
+	const float& GetRadius(void) const { return radius_; }
+
+    // 弾を発射したプレイヤーのキー取得
+    int GetKey(void)const { return key_; }
+    bool IsShot(void)const { return state_ == STATE::SHOT; }
+    bool IsBlast(void)const { return state_ == STATE::BLAST; }
+    bool IsEnd(void)const { return state_ == STATE::END; }
 
     int GetDamage(void) const;
     std::weak_ptr<Capsule> GetCapsule(void);
@@ -52,13 +57,13 @@ public:
     void Destroy(void);
 
 protected:
-	// 種類
-	TYPE type_;
-	// ダメージ量
+    // 種類
+    TYPE type_;
+    // ダメージ量
     int damage_;
-	// 速度
+    // 速度
     float speed_;
-	// 生存時間
+    // 生存時間
     float timeAlive_;
 
     STATE state_;
@@ -66,6 +71,7 @@ protected:
     int key_;
 
     std::shared_ptr<Capsule> capsule_;
+    float radius_;
 
     // パラメータの設定
     virtual void SetParam(void);
@@ -74,8 +80,8 @@ protected:
     // 状態遷移
     void ChangeState(STATE state);
 
-   virtual void UpdateShot(void);
-   virtual void UpdateBlast(void);
+    virtual void UpdateShot(void);
+    virtual void UpdateBlast(void);
 
 };
 

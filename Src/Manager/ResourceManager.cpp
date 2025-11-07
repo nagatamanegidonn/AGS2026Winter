@@ -40,11 +40,10 @@ void ResourceManager::Init(void)
 	resourcesMap_.emplace(SRC::PUSH_SPACE, std::move(res));
 
 	// ボス
-	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Boss/Boss.mv1");
+	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Enemy/Boss/Boss.mv1");
 	resourcesMap_.emplace(SRC::BOSS, std::move(res));
-	
 	// 小型モンスター
-	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Monster/SmallMonster.mv1");
+	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Enemy/Monster/SmallMonster.mv1");
 	resourcesMap_.emplace(SRC::MONSTER, std::move(res));
 	
 	// プレイヤー

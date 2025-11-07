@@ -16,9 +16,10 @@ ArrowShot::ArrowShot(int damage, const VECTOR& birthPos, const VECTOR& shotVec, 
 	capsule_ = std::make_shared<Capsule>(transform_);
 	capsule_->SetLocalPosTop({ 0.0f, 0.0f, 110.0f });
 	capsule_->SetLocalPosDown({ 0.0f,0.0f,  -30.0f });
-	capsule_->SetRadius(10.0f);
+	radius_ = 10.0f;
+	capsule_->SetRadius(radius_);
 
-
+	type_ = TYPE::ARROW;
 }
 ArrowShot::~ArrowShot(void)
 {

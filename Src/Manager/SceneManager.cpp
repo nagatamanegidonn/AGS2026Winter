@@ -64,7 +64,7 @@ void SceneManager::Init(void)
 	sceneId_ = SCENE_ID::TITLE;
 	waitSceneId_ = SCENE_ID::NONE;
 
-	fader_ = std::make_unique<Fader>();
+	fader_ = std::make_unique<Fader>(0x000000);
 	fader_->Init();
 
 	// ƒJƒƒ‰

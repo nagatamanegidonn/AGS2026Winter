@@ -89,7 +89,8 @@ void ShotBase::Draw(void)
 		}
 	}
 #ifdef _DEBUG
-	capsule_->Draw();
+	if (capsule_ != nullptr)capsule_->Draw();
+	else DrawSphere3D(transform_.pos, radius_, 16, 0xff0000ff, 0x00ff00ff, FALSE);
 #endif // _DEBUG
 
 }

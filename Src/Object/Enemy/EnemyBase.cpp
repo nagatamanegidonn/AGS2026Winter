@@ -36,6 +36,23 @@ void EnemyBase::SetFollow(const Transform* follow)
 {
 
 }
+bool EnemyBase::IsTargetInFOV(const VECTOR& followPos, float fovDeg)
+{
+	VECTOR toTarget = VSub(followPos, transform_.pos);
+	toTarget.y = 0.0f; // 水平方向だけで判定
+	toTarget = VNorm(toTarget);
+
+	VECTOR forward = transform_.GetForward();
+	forward.y = 0.0f;
+	forward = VNorm(forward);
+
+	float dot = VDot(forward, toTarget); // コサイン角
+	float angleRad = acosf(std::clamp(dot, -1.0f, 1.0f)); // 安定化
+	float angleDeg = AsoUtility::Rad2DegF(angleRad);
+
+	// 視野角の半分以内なら true
+	return angleDeg <= (fovDeg * 0.5f);
+}
 void EnemyBase::AddHitPart(int& model, std::wstring boneName, float rad, float rate)
 {
 	auto  part = std::make_unique<HitPart>(model, boneName, rad, rate);
@@ -208,23 +225,6 @@ void EnemyBase::TargetRotate(const VECTOR& traPos, float rate)
 				AsoUtility::Deg2RadF(clampedDeg), AsoUtility::AXIS_Y
 			));
 	}
-}
-bool EnemyBase::IsTargetInFOV(const VECTOR& followPos, float fovDeg)
-{
-	VECTOR toTarget = VSub(followPos, transform_.pos);
-	toTarget.y = 0.0f; // 水平方向だけで判定
-	toTarget = VNorm(toTarget);
-
-	VECTOR forward = transform_.GetForward();
-	forward.y = 0.0f;
-	forward = VNorm(forward);
-
-	float dot = VDot(forward, toTarget); // コサイン角
-	float angleRad = acosf(std::clamp(dot, -1.0f, 1.0f)); // 安定化
-	float angleDeg = AsoUtility::Rad2DegF(angleRad);
-
-	// 視野角の半分以内なら true
-	return angleDeg <= (fovDeg * 0.5f);
 }
 void EnemyBase::DrawFOV(float fovDeg, float radius, int rayCount, unsigned int color)
 {

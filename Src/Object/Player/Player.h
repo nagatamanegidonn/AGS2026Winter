@@ -173,7 +173,7 @@ public:
 	// デストラクタ
 	~Player(void);
 
-	void Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config);
+	void Init(GameScene* scene, PLAYER_TYPE type);
 	// Player.h or Player.cpp に追加
 	void Init(void) override 
 	{
@@ -288,9 +288,6 @@ protected:
 
 	// プレイヤー種別(1P or 2P)
 	PLAYER_TYPE type_;
-
-	// キー設定
-	KEY_CONFIG keyConfig_;
 
 	//キャラごとの固有起動フラグ
 	bool isBattleDash_;

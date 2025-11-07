@@ -7,9 +7,11 @@
 
 #include "SceneBase.h"
 
+class Fader;
 class Player;
 class Boss;
 class SmallMonster;
+class EnemyBase;
 class ShotBase;
 class Stage;
 class SkyDome;
@@ -52,6 +54,9 @@ public:
 
 private:
 
+	// フェード
+	std::unique_ptr<Fader> fader_;
+
 	//ミニマップシェーダ
 	std::unique_ptr<PixelMaterial> Material_;
 	std::unique_ptr<PixelRenderer> Renderer_;
@@ -87,6 +92,8 @@ private:
 
 	// 衝突判定
 	void Collision(void);
+
+	void ShotHitEnemy(ShotBase& shot, EnemyBase& enemy);
 
 };
 

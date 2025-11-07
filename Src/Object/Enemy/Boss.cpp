@@ -41,6 +41,7 @@ Boss::Boss(int key)
 	stateChanges_.emplace(STATE::ATTRCK_R_CLOW, std::bind(&Boss::ChangeStateAttrckRightClaw, this));
 	stateChanges_.emplace(STATE::ATTRCK_DASH, std::bind(&Boss::ChangeStateAttrckDash, this));
 
+	stateChanges_.emplace(STATE::STUNNED, std::bind(&Boss::ChangeStateStunned, this));
 	stateChanges_.emplace(STATE::DAMAGE, std::bind(&Boss::ChangeStateDamage, this));
 	stateChanges_.emplace(STATE::DEAD, std::bind(&Boss::ChangeStateDead, this));
 
@@ -220,7 +221,7 @@ void Boss::Update(void)
 
 		if (state_ != STATE::DEAD)
 		{
-			isDebug = false;
+			//isDebug = false;
 		}
 
 #endif // DEBUG
@@ -545,17 +546,21 @@ void Boss::StartLerp(void)
 	lerpId_ = 0;
 	ChangeState(STATE::LERP_MOVE);
 }
-
 void Boss::SetFollow(const Transform* follow)
 {
 	follow_ = follow;
-	ChangeState(STATE::BATTLE);
+	if (state_ != STATE::STUNNED)ChangeState(STATE::BATTLE);
 }
-void Boss::BattleCancel(void)
+void Boss::SetBattleCancel(void)
 {
 	lerpTime_ = MAX_LERP_TIME;
-	ChangeState(STATE::PLAY);
+	if (state_ != STATE::STUNNED)ChangeState(STATE::PLAY);
 }
+void Boss::StartStunned(void)
+{
+	if (state_ != STATE::STUNNED)ChangeState(STATE::STUNNED);
+}
+
 
 bool Boss::IsBattle(void) const
 {
@@ -577,28 +582,31 @@ bool Boss::IsBattle(void) const
 void Boss::InitAnimation(void)
 {
 
-	std::wstring path = Application::PATH_MODEL + L"Boss/";
+	std::wstring path = Application::PATH_MODEL + L"Enemy/Boss/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Boss.mv1", 20.0f, 0);
 	animationController_->Add((int)ANIM_TYPE::RUN, path + L"Boss.mv1", 30.0f, 6);
 	animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"Boss.mv1", 30.0f, 2);
 
-	animationController_->Add((int)ANIM_TYPE::READY_BITE, path + L"Boss.mv1", 1.2f, 12, 0.0f, 1.5f);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK_BITE, path + L"Boss.mv1", 30.0f, 9);
+	animationController_->Add((int)ANIM_TYPE::READY_ATTRCK, path + L"Boss.mv1", 1.2f, 12, 0.0f, 1.5f);
+	//animationController_->Add((int)ANIM_TYPE::ATTRCK_BITE, path + L"Boss.mv1", 30.0f, 9);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK_STAMP, path + L"Boss.mv1", 25.0f, 10);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK_L_CLOW, path + L"Boss.mv1", 20.0f, 8);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK_R_CLOW, path + L"Boss.mv1", 20.0f, 5);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK_DASH, path + L"Boss.mv1", 40.0f, 2);
 	
+	animationController_->Add((int)ANIM_TYPE::STUNNED, path + L"Boss.mv1", 30.0f, 14);
 	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Boss.mv1", 30.0f, 13);
 
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK_BITE, std::move(SetAtrckData(-1, 4.0f, 15.0f)));
+	//atkData_.emplace((int)ANIM_TYPE::ATTRCK_BITE, std::move(SetAtrckData(-1, 4.0f, 15.0f)));
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK_STAMP, std::move(SetAtrckData(-1, 17.0f, 24.0f)));
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK_L_CLOW, std::move(SetAtrckData(-1, 9.0f, 17.0f)));
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK_R_CLOW, std::move(SetAtrckData(-1, 9.0f, 17.0f)));
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK_DASH, std::move(SetAtrckData(-1, 0.0f, 22.5f)));
 
+	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_IDLE, true, 5.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK_STAMP, true, 1.0f);
+	animationController_->SetIsBlend((int)ANIM_TYPE::STUNNED, true, 3.0f);
 
 	//animationController_->Play((int)ANIM_TYPE::IDLE);
 	animationController_->Play((int)ANIM_TYPE::RUN);
@@ -682,6 +690,11 @@ void Boss::ChangeStateAttrckRightClaw(void)
 void Boss::ChangeStateAttrckDash(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateAttrckDash, this);
+}
+void Boss::ChangeStateStunned(void)
+{
+	stateTime_ = 4.0f;
+	stateUpdate_ = std::bind(&Boss::UpdateStunned, this);
 }
 void Boss::ChangeStateDamage(void)
 {
@@ -784,9 +797,7 @@ void Boss::UpdateBattle(void)
 	attrckTypeState_ = ATTRCK_TYPE::NONE;
 
 	// playerとの衝突判定
-	const VECTOR diff = VSub(transform_.pos, follow_->pos);
-	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
-
+	float disPow = AsoUtility::GetDisPow(transform_.pos, follow_->pos);
 
 	//視線の先に至らに変更予定
 	if (stateTime_ < 0.0f || (IsTargetInFOV(follow_->pos, FOV_RADIUS) && stateTime_ < 1.0f)) {
@@ -836,9 +847,7 @@ void Boss::UpdateFollow(void)
 		VScale(transform_.GetForward(), SPEED_FOLLOW);
 
 	// playerとの衝突判定
-	VECTOR diff = VSub(transform_.pos, follow_->pos);
-	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
-
+	float disPow = AsoUtility::GetDisPow(transform_.pos, follow_->pos);
 
 	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))//ダメージ半径×攻撃半径
 	{
@@ -867,8 +876,8 @@ void Boss::UpdateAttrckReady(void)
 	switch (attrckTypeState_)
 	{
 	case ATTRCK_TYPE::BITE:
-		animationController_->Play((int)ANIM_TYPE::READY_BITE, false);
-		animeType_ = (int)ANIM_TYPE::READY_BITE;
+		animationController_->Play((int)ANIM_TYPE::READY_ATTRCK, false);
+		animeType_ = (int)ANIM_TYPE::READY_ATTRCK;
 
 		if (animationController_->IsEnd())
 		{
@@ -882,8 +891,8 @@ void Boss::UpdateAttrckReady(void)
 		ChangeState(STATE::BATTLE);
 		break;
 	case ATTRCK_TYPE::CLOW_R:
-		animationController_->Play((int)ANIM_TYPE::READY_BITE, false);
-		animeType_ = (int)ANIM_TYPE::READY_BITE;
+		animationController_->Play((int)ANIM_TYPE::READY_ATTRCK, false);
+		animeType_ = (int)ANIM_TYPE::READY_ATTRCK;
 
 		if (animationController_->IsEnd())
 		{
@@ -990,9 +999,21 @@ void Boss::UpdateAttrckDash(void)
 		ChangeState(STATE::BATTLE);
 	}
 }
+void Boss::UpdateStunned(void)
+{
+	animationController_->Play((int)ANIM_TYPE::STUNNED);
+	animeType_ = (int)ANIM_TYPE::STUNNED;
+
+
+	if (stateTime_ < 0.0f)
+	{
+		if (follow_ != nullptr)ChangeState(STATE::BATTLE);
+		else ChangeState(STATE::PLAY);
+	}
+}
 void Boss::UpdateDamage(void)
 {
-
+	
 }
 void Boss::UpdateDead(void)
 {

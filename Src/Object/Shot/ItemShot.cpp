@@ -13,12 +13,14 @@ ItemShot::ItemShot(int damage, const VECTOR& birthPos, const VECTOR& shotVec, in
 	transform_.Update();
 
 	// カプセルコライダの作成
-	capsule_ = std::make_shared<Capsule>(transform_);
+	capsule_ = nullptr;
+	/*capsule_ = std::make_shared<Capsule>(transform_);
 	capsule_->SetLocalPosTop({ 0.0f, 0.0f, 10.0f });
-	capsule_->SetLocalPosDown({ 0.0f,0.0f,  -10.0f });
-	capsule_->SetRadius(30.0f);
+	capsule_->SetLocalPosDown({ 0.0f,0.0f,  -10.0f });*/
+	radius_ = 30.0f;
+	//capsule_->SetRadius(radius_);
 
-	
+	type_ = TYPE::ITEM;
 }
 
 ItemShot::~ItemShot(void)
@@ -50,6 +52,8 @@ void ItemShot::SetParam(void)
 	// 生存時間
 	// 生存フラグ、時間の初期化
 	timeAlive_ = 0.5f;
+	
+	radius_ = 30.0f;
 }
 
 void ItemShot::UpdateShot(void)
@@ -71,5 +75,6 @@ void ItemShot::UpdateShot(void)
 }
 void ItemShot::UpdateBlast(void)
 {
-	ChangeState(STATE::END);
+	radius_ += 100.0f;
+	if (radius_ >= 1000.0f)ChangeState(STATE::END);
 }

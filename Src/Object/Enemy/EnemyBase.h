@@ -23,12 +23,14 @@ public:
 	virtual void Update(void)override;
 	virtual void Draw(void)override;
 
-	//追従対象の設定
+	// 追従対象の設定
 	virtual void SetFollow(const Transform* follow);
 
-	//ダメージ関数
+	// ダメージ関数
 	virtual void Damage(int dama) = 0;
 
+	// 視野内にターゲットがいるか
+	bool IsTargetInFOV(const VECTOR& followPos, float fovDeg);
 
 protected:
 
@@ -78,7 +80,6 @@ protected:
 	virtual void CollisionGravity(void)override;
 
 	void TargetRotate(const VECTOR& traPos, float rate = 1.0f);
-	bool IsTargetInFOV(const VECTOR& followPos, float fovDeg);
 	void DrawFOV(float fovDeg, float radius, int rayCount, unsigned int color);
 
 };

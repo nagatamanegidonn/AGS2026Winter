@@ -26,7 +26,13 @@ public:
 	// 指定フェードを開始する
 	void SetFade(NET_STATE state);
 
-	void Init(void);
+
+	// コンストラクタ
+	Fader(int color);
+	// デストラクタ
+	~Fader(void) {}
+
+	void Init(float _speed= SPEED_ALPHA);
 	void Update(void);
 	void Draw(void);
 
@@ -38,7 +44,10 @@ private:
 
 	// 透明度
 	float alpha_;
-
+	// 速度
+	float speed_;
+	// カラー
+	int color_;
 
 	// 状態(STATE)を保ったまま終了判定を行うため、
 	// Update->Draw->Updateの1フレーム判定用

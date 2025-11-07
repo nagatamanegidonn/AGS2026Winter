@@ -71,7 +71,6 @@ Player::Player(int key)
 	CharaBase(),
 	type_(PLAYER_TYPE::PLAYER_1),
 	key_(0),
-	keyConfig_(),
 	itemId_(-1),
 	isHit_(false),
 	walkTime_(0.0f),
@@ -157,7 +156,7 @@ Player::~Player(void)
 	MV1DeleteModel(transWeapon_.modelId);
 }
 
-void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
+void Player::Init(GameScene* scene, PLAYER_TYPE type)
 {
 	demoRot_ = AsoUtility::VECTOR_ZERO;
 
@@ -167,10 +166,6 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type, KEY_CONFIG config)
 
 	// プレイヤー種別(プレイヤー番号)
 	type_ = type;
-
-	// キー設定
-	keyConfig_ = config;
-
 
 	// 移動速度の初期化
 	speed_ = 0.0f;
@@ -596,7 +591,8 @@ void Player::Update(void)
 			// エラー処理またはログ出力
 			return;
 		}
-		soundController_->Play((int)SE::ATTRCK2, Sound::TIMES::ONCE);
+		// 音再生
+		//soundController_->Play((int)SE::ATTRCK2, Sound::TIMES::ONCE);
 
 		// 手の位置とグローバルマトリクスを取得
 		const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);

@@ -24,13 +24,19 @@ void Fader::SetFade(NET_STATE state)
 	}
 }
 
-void Fader::Init(void)
+Fader::Fader(int color)
+{
+	color_ = color;
+	Init();
+}
+
+void Fader::Init(float _speed)
 {
 	state_ = NET_STATE::FADE_STOP;
 	alpha_ = 0;
+	speed_ = _speed;
 	isPreEnd_ = true;
 	isEnd_ = true;
-
 }
 
 void Fader::Update(void)
@@ -46,7 +52,7 @@ void Fader::Update(void)
 	case NET_STATE::NONE:
 		return;
 
-	case NET_STATE::FADE_OUT:
+	case NET_STATE::FADE_OUT:// èôÅXÇ…à√ì]
 		alpha_ += SPEED_ALPHA;
 		if (alpha_ > 255)
 		{
@@ -61,7 +67,7 @@ void Fader::Update(void)
 		}
 
 		break;
-	case NET_STATE::FADE_IN:
+	case NET_STATE::FADE_IN:// èôÅXÇ…ñæì]
 		alpha_ -= SPEED_ALPHA;
 		if (alpha_ < 0)
 		{
@@ -102,7 +108,7 @@ void Fader::Draw(void)
 			0, 0,
 			Application::SCREEN_SIZE_X,
 			Application::SCREEN_SIZE_Y,
-			0x000000, true);
+			color_, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		break;
 	}

@@ -8,6 +8,8 @@
 #include "../Manager/SceneManager.h"
 #include "../Manager/Camera.h"
 
+#include "../Common/Fader.h"
+
 #include "../Net/NetStructures.h"
 #include "../Net/NetManager.h"
 
@@ -82,6 +84,9 @@ void GameScene::Init(void)
 
 	auto& users = NetManager::GetInstance().GetNetUsers();
 	auto& nIns = NetManager::GetInstance();
+
+	fader_ = std::make_unique<Fader>(0xffffff);
+	fader_->Init(15.0f);
 
 	boss_ = std::make_unique<Boss>(NetManager::GetInstance().GetHost().key);
 	boss_->Init();
@@ -196,6 +201,26 @@ void GameScene::Update(void)
 	{
 		// ゲーム時間進行
 		SceneManager::GetInstance().ForwardGameTime();//進めるゲーム時間(GameTotalTime　+=　デルタタイム)
+	}
+
+	// フェード更新
+	fader_->Update();
+	Fader::NET_STATE fState = fader_->GetState();
+	switch (fState)
+	{
+	case Fader::NET_STATE::FADE_OUT:
+		if (fader_->IsEnd())
+		{
+			fader_->SetFade(Fader::NET_STATE::FADE_IN);
+		}
+		break;
+	case Fader::NET_STATE::FADE_IN:
+		if (fader_->IsEnd())
+		{
+			// 明転後、シーン遷移終了
+			fader_->SetFade(Fader::NET_STATE::NONE);
+		}
+		break;
 	}
 
 	//シーン遷移が間に合ってないプレイヤーのために待機
@@ -325,7 +350,7 @@ void GameScene::Update(void)
 	//バトル中同じリアにいるプレイヤーが1人もいなかったら
 	if (!isBattle && boss_->IsState(Boss::STATE::BATTLE))
 	{
-		boss_->BattleCancel();//バトル中止
+		boss_->SetBattleCancel();//バトル中止
 	}
 	//体力が減ったら移動（線形補間）
 	//LerpMove中は使用不可
@@ -363,7 +388,7 @@ void GameScene::Update(void)
 		else
 		{
 			stepId_ = 0;
-			boss_->BattleCancel();//バトル中止
+			boss_->SetBattleCancel();//バトル中止
 		}
 	}
 
@@ -500,6 +525,9 @@ void GameScene::Draw(void)
 
 #endif // DEBUG
 
+	// 最後
+	fader_->Draw();
+
 }
 
 void GameScene::Release(void)
@@ -607,17 +635,13 @@ void GameScene::Collision(void)
 		if (player->IsSelf())
 		{
 			// ボスに注目
-			//if (player->IsAimSet() && player->GetAreaId() == boss_->GetAreaId())
-			//{
-			//	if (player->IsTrgAimSet())
-			//	{
-			//		SoundManager::GetInstance().Play(SoundManager::SRC::LOCKON, Sound::TIMES::ONCE);
-			//	}
-			//	SceneManager::GetInstance().GetCamera().lock()->LookAtSmoothly(boss_->GetTransform().pos, 0.5f);
-			//}
-			if (player->IsAimSet())
+			if (player->IsAimSet() && player->GetAreaId() == boss_->GetAreaId())
 			{
-				SceneManager::GetInstance().GetCamera().lock()->StartShake();
+				if (player->IsTrgAimSet())
+				{
+					SoundManager::GetInstance().Play(SoundManager::SRC::LOCKON, Sound::TIMES::ONCE);
+				}
+				SceneManager::GetInstance().GetCamera().lock()->LookAtSmoothly(boss_->GetTransform().pos, 0.5f);
 			}
 
 			auto& eTrans = boss_->GetTransform();
@@ -663,59 +687,84 @@ void GameScene::Collision(void)
 
 	}
 
+	// 弾の当たり判定
 	for (auto& shot : shots_)
 	{
-		//最終的にボスの攻撃判定//自分だけ
-		if (boss_->CollisionCapsule(shot->GetCapsule())
-			&& shot->IsShot())
+		// 矢の処理
+		if (shot->GetType() == ShotBase::TYPE::ARROW)
 		{
-			//音の再生
-			SoundManager::GetInstance().Play(SoundManager::SRC::SHOT_DAMAGE, Sound::TIMES::ONCE, true);
-
-			for (auto& player : players_)
-			{
-				//攻撃が自分の放ったものなら相手にダメージ
-				if (shot->GetKey() == nIns.GetSelf().key
-					&& shot->GetKey() == player->GetKey())
-				{
-					SceneManager::GetInstance().GetCamera().lock()->StartShake();
-
-					boss_->Damage(static_cast<int>(static_cast<float>(shot->GetDamage()) * player->GetAttrckRate()));
-				}
-				//ボスが非戦闘状態なら追従を設定して戦闘状態に
-				if (boss_->IsState(Boss::STATE::PLAY))
-				{
-					boss_->SetFollow(&player->GetTransform());
-				}
-			}
-			//弾を消す
-			shot->Destroy();
-		}
-		//小型の処理
-		for (auto& mons : Monsters_)
-		{
-			if (mons->CollisionCapsule(shot->GetCapsule())
+			// --- ボスとの判定 ---
+			if (boss_->CollisionCapsule(shot->GetCapsule())
 				&& shot->IsShot())
 			{
-				for (auto& player : players_)
+				if (boss_->IsState(Boss::STATE::PLAY))
 				{
-					//攻撃が自分の放ったものならダメージ
-					if (shot->GetKey() == nIns.GetSelf().key
-						&& shot->GetKey() == player->GetKey())
-					{
-						SceneManager::GetInstance().GetCamera().lock()->StartShake();
-						
-						mons->Damage(static_cast<int>(static_cast<float>(shot->GetDamage()) * player->GetAttrckRate()));
-					}
-					//追従を設定して戦闘状態に
-					mons->SetFollow(&player->GetTransform());
-					
+					boss_->SetFollow(&players_.front()->GetTransform());
 				}
-				//弾を消す
-				shot->Destroy();
+				ShotHitEnemy(*shot, *boss_);
 			}
-			mons->Draw();
+
+			// --- 小型モンスターとの判定 ---
+			for (auto& mons : Monsters_)
+			{
+				if (mons->CollisionCapsule(shot->GetCapsule()))
+				{
+					ShotHitEnemy(*shot, *mons);
+				}
+			}
+		}
+		else if (shot->GetType() == ShotBase::TYPE::ITEM
+			&& shot->IsBlast())
+		{
+			// 敵ならスタン
+			// playerとの衝突判定
+			float disPow = AsoUtility::GetDisPow(boss_->GetTransform().pos, shot->GetTransform().pos);
+
+			if(boss_->IsTargetInFOV(shot->GetTransform().pos, Boss::FOV_RADIUS_FLASH)
+				&& disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
+			{
+				boss_->StartStunned();
+			}
+
+			// プレイヤーが半径内に入っているなら画面を明転
+			// フェードアウト(暗転)を開始する
+			for (auto& player : players_)
+			{
+				if (nIns.GetSelf().key == player->GetKey())
+				{
+					float disPow = AsoUtility::GetDisPow(player->GetTransform().pos, shot->GetTransform().pos);
+
+					if (disPow < shot->GetRadius() * shot->GetRadius())
+					{
+						// 画面を暗転
+						fader_->SetFade(Fader::NET_STATE::FADE_OUT);
+						shot->Destroy();
+					}
+				}
+			}
 		}
 	}
+}
+
+void GameScene::ShotHitEnemy(ShotBase& shot, EnemyBase& enemy)
+{
+	auto& nIns = NetManager::GetInstance();
+
+	for (auto& player : players_)
+	{
+		if (shot.GetKey() == nIns.GetSelf().key && shot.GetKey() == player->GetKey())
+		{
+			// 音・カメラ・ダメージ
+			SoundManager::GetInstance().Play(SoundManager::SRC::SHOT_DAMAGE, Sound::TIMES::ONCE, true);
+			SceneManager::GetInstance().GetCamera().lock()->StartShake();
+
+			enemy.Damage(static_cast<int>(static_cast<float>(shot.GetDamage()) * player->GetAttrckRate()));
+		}
+
+		// 戦闘状態へ（Follow設定など）
+		enemy.SetFollow(&player->GetTransform());
+	}
+
+	shot.Destroy();
 }
 

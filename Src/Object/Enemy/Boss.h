@@ -57,6 +57,7 @@ public:
 	//static constexpr float ATTRCK_DASH_RADIUS = 300.0f;
 
 	static constexpr float FOV_RADIUS = 30.0f;//視野角
+	static constexpr float FOV_RADIUS_FLASH = 180.0f;//視野角
 
 	static constexpr float MAX_LERP_TIME = 20.0f;//在中時間
 
@@ -82,12 +83,13 @@ public:
 		FOLLOW,			//近づく
 
 		ATTRCK_READY,	//予備動作
-		ATTRCK_STAMP,	//牙攻撃
+		ATTRCK_STAMP,	//スタンプ	攻撃
 		ATTRCK_L_CLOW,	//爪攻撃
 		ATTRCK_R_CLOW,	//爪攻撃
 		ATTRCK_DASH,	//攻撃
 
 		HOWLING,		//咆哮
+		STUNNED,		//スタン
 		DAMAGE,
 
 		DEAD,
@@ -104,13 +106,14 @@ public:
 		BTLLE_IDLE,
 		BTLLE_RUN,
 
-		READY_BITE,		//予備動作
-		ATTRCK_BITE,
+		READY_ATTRCK,		//予備動作
+		//ATTRCK_BITE,
 		ATTRCK_STAMP,
 		ATTRCK_L_CLOW,
 		ATTRCK_R_CLOW,
 		ATTRCK_DASH,
 
+		STUNNED,
 		DEAD,
 	};
 
@@ -161,16 +164,18 @@ public:
 	const bool IsLerp(void)const { return isLerp_; }
 	const int GetLerpId(void)const { return lerpId_; }
 
-	void SetLerpPos(const VECTOR pos);
-	void StartLerp(void);
-
 	const std::vector<std::unique_ptr<HitPart>>& GetHitParts(void) const { return hitParts_; }
 
-	//追従対象の設定
+	void SetLerpPos(const VECTOR pos);
+	// LERP移動開始
+	void StartLerp(void);
+	// 追従対象の設定
 	void SetFollow(const Transform* follow) override;
+	// バトル終了
+	void SetBattleCancel(void);
+	// スタン状態開始
+	void StartStunned(void);
 
-	//バトル終了
-	void BattleCancel(void);
 
 	//BGM用バトル常態化の判定
 	bool IsBattle(void) const;
@@ -228,6 +233,7 @@ private:
 	void ChangeStateAttrckRightClaw(void);
 	void ChangeStateAttrckDash(void);
 
+	void ChangeStateStunned(void);
 	void ChangeStateDamage(void);
 	void ChangeStateDead(void);
 
@@ -246,6 +252,7 @@ private:
 	//突進攻撃
 	void UpdateAttrckDash(void);
 
+	void UpdateStunned(void);
 	void UpdateDamage(void);
 	void UpdateDead(void);
 
