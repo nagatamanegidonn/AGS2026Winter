@@ -67,11 +67,11 @@ void BomObject::UpdateShot(void)
 	}
 
 	// ‘½­‰º‚É”ò‚Î‚·
-	if (shotVec_.y > -1.0f)shotVec_.y += -0.02f;
+	//if (shotVec_.y > -1.0f)shotVec_.y += -0.02f;
 
 	// ˆÚ“®ˆ—
-	VECTOR velocity = VScale(shotVec_, speed_);
-	transform_.pos = VAdd(transform_.pos, velocity);
+	/*VECTOR velocity = VScale(shotVec_, speed_);
+	transform_.pos = VAdd(transform_.pos, velocity);*/
 }
 void BomObject::UpdateBlast(void)
 {

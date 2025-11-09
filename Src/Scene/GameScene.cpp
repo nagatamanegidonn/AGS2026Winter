@@ -124,7 +124,7 @@ void GameScene::Init(void)
 		Player::KEY_CONFIG keyP1 = {
 			KEY_INPUT_UP, KEY_INPUT_DOWN, KEY_INPUT_LEFT, KEY_INPUT_RIGHT, KEY_INPUT_SPACE, KEY_INPUT_M
 		};
-		player->Init(this, user.second.playerType, keyP1);
+		player->Init(this, user.second.playerType);
 
 		//自分用のクラス	
 		if (user.first== NetManager::GetInstance().GetSelf().key)
@@ -563,6 +563,9 @@ void GameScene::CreateShot(ShotBase::TYPE type, int damage, const VECTOR& birthP
 			case ShotBase::TYPE::ITEM:
 				shot = std::make_unique<ItemShot>(damage, birthPos, dir, key);
 				break;
+			case ShotBase::TYPE::BOM:
+				shot = std::make_unique<ItemShot>(damage, birthPos, dir, key);
+				break;
 			default:
 				break;
 		}
@@ -742,6 +745,46 @@ void GameScene::Collision(void)
 					}
 				}
 			}
+		}
+		// 爆弾の処理
+		else if (shot->GetType() == ShotBase::TYPE::BOM)
+		{
+			//　通常状態(設置状態)
+			if (shot->IsShot())
+			{
+
+			}
+			// 爆発してるとき
+			else if(shot->IsBlast())
+			{
+				// プレイヤーが半径内に入っているなら画面を明転
+				// フェードアウト(暗転)を開始する
+				for (auto& player : players_)
+				{
+					if (nIns.GetSelf().key == player->GetKey())
+					{
+						float disPow = AsoUtility::GetDisPow(player->GetTransform().pos, shot->GetTransform().pos);
+
+						if (disPow < shot->GetRadius() * shot->GetRadius())
+						{
+							// 画面を暗転
+							fader_->SetFade(Fader::NET_STATE::FADE_OUT);
+							shot->Destroy();
+						}
+					}
+				}
+			}
+			// 敵ならスタン
+			// playerとの衝突判定
+			float disPow = AsoUtility::GetDisPow(boss_->GetTransform().pos, shot->GetTransform().pos);
+
+			if(boss_->IsTargetInFOV(shot->GetTransform().pos, Boss::FOV_RADIUS_FLASH)
+				&& disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
+			{
+				boss_->StartStunned();
+			}
+
+			
 		}
 	}
 }

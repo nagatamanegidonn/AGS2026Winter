@@ -603,23 +603,29 @@ void Player::Update(void)
 	else if (animeType_ == (int)ANIM_TYPE::ITEM_SET_E
 		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_SET_E)
 	{
-		Transform trans;
+		/*Transform trans;
 
 		trans.SetModel(
 			ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::BOM));
 		trans.scl = AsoUtility::VECTOR_ONE;
 		trans.quaRot = Quaternion();
 		trans.pos = transform_.pos;
-		trans.pos = VAdd(trans.pos
+		trans.pos = VAdd(transform_.pos
 			, VScale(transform_.GetForward()
 				, (capsule_->GetRadius() * 3)));
-		trans.pos.y += 50.0f;
+		trans.pos.y += 50.0f;*/
 
 		// “–‚½‚è”»’è(ƒRƒ‰ƒCƒ_)ì¬
-		trans.MakeCollider(Collider::TYPE::WALL);
-		trans.Update();
+		/*trans.MakeCollider(Collider::TYPE::WALL);
+		trans.Update();*/
 
-		gameScene_->CreateObject(trans);
+		//gameScene_->CreateObject(trans);
+
+		gameScene_->CreateShot(ShotBase::TYPE::BOM, attrckDamage_
+			, VAdd(transform_.pos
+				, VScale(transform_.GetForward()
+					, (capsule_->GetRadius() * 3)))
+			, transform_.GetForward(), key_);
 	}
 
 	walkTime_ -= SceneManager::GetInstance().GetDeltaTime();
