@@ -370,7 +370,7 @@ void SmallMonster::SetFollow(const Transform* follow)
 
 void SmallMonster::InitAnimation(void)
 {
-	std::wstring path = Application::PATH_MODEL + L"Enemy/aawaMonster/";
+	std::wstring path = Application::PATH_MODEL + L"Enemy/Monster/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"SmallMonster.mv1", 20.0f, 0);
 	animationController_->Add((int)ANIM_TYPE::RUN, path + L"SmallMonster.mv1", 30.0f, 1);

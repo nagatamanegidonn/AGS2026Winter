@@ -105,9 +105,36 @@ std::weak_ptr<Capsule> ShotBase::GetCapsule(void)
 	return capsule_;
 }
 
-void ShotBase::Destroy(void)
+bool ShotBase::CollisionCapsule(std::weak_ptr<Capsule> _capsule) const
 {
-	ChangeState(STATE::END);
+	//当たり判定フラグ
+	bool ret = false;
+
+	// 衝突した複数のポリゴンと衝突回避するまで、
+	// プレイヤーのdamage
+	 // 当たったかどうかで処理を分岐
+	if (_capsule.lock()->IsHitSphere(transform_.pos, radius_))
+	{
+		// 当たった場合は衝突の情報を描画する
+		ret = true;
+
+
+		return ret;
+	}
+
+
+	return ret;
+}
+
+void ShotBase::ChangeState(STATE _state )
+{
+	if (state_ == _state)
+	{
+		// 同じ状態なら処理しない
+		return;
+	}
+	// 状態更新
+	state_ = _state;
 }
 
 
@@ -126,18 +153,6 @@ void ShotBase::CheckAlive(void)
 	{
 		ChangeState(STATE::BLAST);
 	}
-}
-
-void ShotBase::ChangeState(STATE state)
-{
-	if (state_ == state)
-	{
-		// 同じ状態なら処理しない
-		return;
-	}
-	// 状態更新
-	state_ = state;
-	
 }
 
 void ShotBase::UpdateShot(void)

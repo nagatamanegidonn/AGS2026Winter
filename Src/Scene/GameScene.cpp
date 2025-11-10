@@ -19,6 +19,7 @@
 #include "../Object/Player/GreatSword.h"
 #include "../Object/Player/Arrow.h"
 
+#include "../Object/Shot/BomObject.h"
 #include "../Object/Shot/ItemShot.h"
 #include "../Object/Shot/ArrowShot.h"
 #include "../Object/Shot/ShotBase.h"
@@ -157,7 +158,7 @@ void GameScene::Init(void)
 
 	//空の弾の作成
 	auto  shot = std::make_unique<ItemShot>(0, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, -1);
-	shot->Destroy();
+	shot->ChangeState();
 	shots_.push_back(std::move(shot));
 
 	//ゲーム開始待機時間
@@ -564,7 +565,7 @@ void GameScene::CreateShot(ShotBase::TYPE type, int damage, const VECTOR& birthP
 				shot = std::make_unique<ItemShot>(damage, birthPos, dir, key);
 				break;
 			case ShotBase::TYPE::BOM:
-				shot = std::make_unique<ItemShot>(damage, birthPos, dir, key);
+				shot = std::make_unique<BomObject>(damage, birthPos, dir, key);
 				break;
 			default:
 				break;
@@ -741,48 +742,67 @@ void GameScene::Collision(void)
 					{
 						// 画面を暗転
 						fader_->SetFade(Fader::NET_STATE::FADE_OUT);
-						shot->Destroy();
+						// 他プレイヤーとは別なので消す
+						shot->ChangeState();
 					}
 				}
 			}
 		}
 		// 爆弾の処理
-		else if (shot->GetType() == ShotBase::TYPE::BOM)
+		else if (shot->GetType() == ShotBase::TYPE::BOM)//ここでほしいのは全てのプレイヤーの攻撃判定と自分の管理しているクラスの判定
 		{
 			//　通常状態(設置状態)
 			if (shot->IsShot())
 			{
-
+				for (auto& player : players_)
+				{
+					// playerとの衝突判定	
+					if (shot->CollisionCapsule(player->GetCapsule()))
+					{ 
+						// 爆発開始
+						shot->ChangeState(ShotBase::STATE::BLAST);
+						// 音・カメラ
+						//SoundManager::GetInstance().Play(SoundManager::SRC::BOM_BLAST, Sound::TIMES::ONCE, true);
+					}
+				}
 			}
 			// 爆発してるとき
 			else if(shot->IsBlast())
 			{
+				const VECTOR& ShotPos = shot->GetTransform().pos;
+
 				// プレイヤーが半径内に入っているなら画面を明転
 				// フェードアウト(暗転)を開始する
 				for (auto& player : players_)
 				{
 					if (nIns.GetSelf().key == player->GetKey())
 					{
-						float disPow = AsoUtility::GetDisPow(player->GetTransform().pos, shot->GetTransform().pos);
+						float disPow = AsoUtility::GetDisPow(player->GetTransform().pos, ShotPos);
 
 						if (disPow < shot->GetRadius() * shot->GetRadius())
 						{
 							// 画面を暗転
 							fader_->SetFade(Fader::NET_STATE::FADE_OUT);
-							shot->Destroy();
+							shot->ChangeState();
 						}
+						//	吹き飛び方向
+						VECTOR mixDir = VScale(VNorm(VSub(player->GetTransform().pos, ShotPos)),0.1f);
+						// ダメージ
+						player->Damage(shot->GetDamage() * 0.1f, ShotPos, mixDir);
+						// 音・カメラ
+						SceneManager::GetInstance().GetCamera().lock()->StartShake();
 					}
 				}
-			}
-			// 敵ならスタン
-			// playerとの衝突判定
-			float disPow = AsoUtility::GetDisPow(boss_->GetTransform().pos, shot->GetTransform().pos);
+				// 敵ならダメージ
+				float disPow = AsoUtility::GetDisPow(boss_->GetTransform().pos, ShotPos);
 
-			if(boss_->IsTargetInFOV(shot->GetTransform().pos, Boss::FOV_RADIUS_FLASH)
-				&& disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
-			{
-				boss_->StartStunned();
+				if (disPow < shot->GetRadius() * shot->GetRadius())
+				{
+					boss_->Damage(shot->GetDamage());
+				}
+
 			}
+			
 
 			
 		}
@@ -808,6 +828,6 @@ void GameScene::ShotHitEnemy(ShotBase& shot, EnemyBase& enemy)
 		enemy.SetFollow(&player->GetTransform());
 	}
 
-	shot.Destroy();
+	shot.ChangeState();
 }
 

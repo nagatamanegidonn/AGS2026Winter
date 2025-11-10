@@ -51,10 +51,17 @@ public:
     bool IsBlast(void)const { return state_ == STATE::BLAST; }
     bool IsEnd(void)const { return state_ == STATE::END; }
 
+	// ダメージ量の取得
     int GetDamage(void) const;
+	// カプセルコライダの取得
     std::weak_ptr<Capsule> GetCapsule(void);
 
-    void Destroy(void);
+
+    //外部クラストの当たり判定
+    bool CollisionCapsule(std::weak_ptr<Capsule> _capsule)const;
+
+	// 状態遷移
+    void ChangeState(STATE _state= STATE::END);
 
 protected:
     // 種類
@@ -76,9 +83,6 @@ protected:
     // パラメータの設定
     virtual void SetParam(void);
     void CheckAlive(void);
-
-    // 状態遷移
-    void ChangeState(STATE state);
 
     virtual void UpdateShot(void);
     virtual void UpdateBlast(void);

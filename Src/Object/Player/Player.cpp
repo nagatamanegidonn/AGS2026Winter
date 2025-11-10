@@ -622,10 +622,10 @@ void Player::Update(void)
 		//gameScene_->CreateObject(trans);
 
 		gameScene_->CreateShot(ShotBase::TYPE::BOM, attrckDamage_
-			, VAdd(transform_.pos
-				, VScale(transform_.GetForward()
-					, (capsule_->GetRadius() * 3)))
-			, transform_.GetForward(), key_);
+			, VAdd(VAdd(transform_.pos
+				, VScale(transform_.GetForward(), (capsule_->GetRadius() * 3)))
+				, VScale(AsoUtility::DIR_U, 40.0f))
+			, AsoUtility::VECTOR_ZERO, key_);
 	}
 
 	walkTime_ -= SceneManager::GetInstance().GetDeltaTime();

@@ -453,7 +453,6 @@ const bool Boss::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 
 			return ret;
 		}
-
 	}
 
 	return ret;

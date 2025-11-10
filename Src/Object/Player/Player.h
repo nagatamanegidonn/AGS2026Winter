@@ -217,6 +217,9 @@ public:
 	bool IsAimSet(void);
 	bool IsTrgAimSet(void);
 
+	// 通信専用の攻撃アニメーション判定
+	bool IsAnim(ANIM_TYPE _anim)const { return (animeType_ == (int)_anim); }
+
 	//採取の際の情報（仮）
 	void SetItemId(int id) { itemId_ = id; }
 

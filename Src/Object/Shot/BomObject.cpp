@@ -10,6 +10,7 @@ BomObject::BomObject(int damage, const VECTOR& birthPos, const VECTOR& shotVec, 
 		ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::BOM);
 	float scale = 1.0f;
 	transform_.scl = { scale, scale, scale };
+	transform_.pos = VAdd(birthPos, VScale({0.0f,1.0f,0.0f}, 30.0f));
 	transform_.Update();
 
 	// カプセルコライダの作成
@@ -17,10 +18,12 @@ BomObject::BomObject(int damage, const VECTOR& birthPos, const VECTOR& shotVec, 
 	/*capsule_ = std::make_shared<Capsule>(transform_);
 	capsule_->SetLocalPosTop({ 0.0f, 0.0f, 10.0f });
 	capsule_->SetLocalPosDown({ 0.0f,0.0f,  -10.0f });*/
-	radius_ = 30.0f;
+	radius_ = 60.0f;
 	//capsule_->SetRadius(radius_);
 
 	type_ = TYPE::BOM;
+
+	SetParam();
 }
 
 BomObject::~BomObject(void)
@@ -51,15 +54,27 @@ void BomObject::SetParam(void)
 	speed_ = 15.0f;
 	// 生存時間
 	// 生存フラグ、時間の初期化
-	timeAlive_ = 0.5f;
+	timeAlive_ = 10.5f;
 
-	radius_ = 30.0f;
+	radius_ = 60.0f;
+
+	damage_ = 100;
 }
 
 void BomObject::UpdateShot(void)
 {
 	// 生存チェック
 	CheckAlive();
+	// 大きさ変化
+	float t = 10.5f - timeAlive_;
+	float val = fabs(sin(t * t)) * 0.3f;
+	float scale = val + 1.0f;
+	transform_.scl = { scale, scale, scale };
+
+	if (timeAlive_ <= 0.0f)
+	{
+		radius_ = 30.0f;
+	}
 	if (state_ != STATE::SHOT)
 	{
 		// 処理中断
