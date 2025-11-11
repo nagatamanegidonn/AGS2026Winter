@@ -27,7 +27,7 @@ public:
 	virtual void SetFollow(const Transform* follow);
 
 	// ダメージ関数
-	virtual void Damage(int dama) = 0;
+	virtual void Damage(int _dama, bool _isConst = false) = 0;
 
 	// 視野内にターゲットがいるか
 	bool IsTargetInFOV(const VECTOR& followPos, float fovDeg);

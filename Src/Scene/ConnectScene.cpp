@@ -3,6 +3,7 @@
 #include "../Application.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
+#include "../Manager/GameManager.h"
 #include "../Manager/SoundManager.h"
 
 #include "../Net/NetManager.h"
@@ -73,9 +74,9 @@ void ConnectScene::Update(void)
 	const auto& users = NetManager::GetInstance().GetNetUsers();
 
 	//武器情報の送信
-	nIns.SetWeapon(NetManager::GetInstance().GetSelf().key, SceneManager::GetInstance().GetWeponId());
+	nIns.SetWeapon(NetManager::GetInstance().GetSelf().key, GameManager::GetInstance().GetWeponId());
 
-	const InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(SceneManager::GetInstance().GetControllId());
+	const InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(GameManager::GetInstance().GetControllId());
 
 	auto& players = NetManager::GetInstance().GetNetUsers();
 	if (playerNum_ < players.size())
@@ -113,7 +114,7 @@ void ConnectScene::Update(void)
 					SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
 					//リザルトの初期化
-					SceneManager::GetInstance().SetGameResult(SceneManager::GAME_RESULT::NONE);
+					GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
 					//ネットマネージャの状態変更
 					NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
 				}
@@ -125,7 +126,7 @@ void ConnectScene::Update(void)
 				SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
 				//リザルトの初期化
-				SceneManager::GetInstance().SetGameResult(SceneManager::GAME_RESULT::NONE);
+				GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
 				//ネットマネージャの状態変更
 				NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
 			}
@@ -251,7 +252,7 @@ void ConnectScene::AddPlayer(const VECTOR pos, const VECTOR rot)
 	auto player_ = std::make_unique<ViewPlayer>();
 	player_->Init();
 	player_->SetChar(0);
-	player_->SetWepon(SceneManager::GetInstance().GetWeponId());
+	player_->SetWepon(GameManager::GetInstance().GetWeponId());
 	player_->SetPos(pos);
 	player_->SetLocalQua(rot);
 	player_->Update();

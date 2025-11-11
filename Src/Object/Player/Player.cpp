@@ -5,6 +5,7 @@
 #include "../Common/Vector2.h"
 
 #include "../Manager/SceneManager.h"
+#include "../Manager/GameManager.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/ResourceManager.h"
 //#include "../Manager/SoundManager.h"
@@ -286,7 +287,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	InitAttrckSound();
 
 	//コントローラーの登録
-	inputController_ = std::make_unique<InputController>(SceneManager::GetInstance().GetControllId());
+	inputController_ = std::make_unique<InputController>(GameManager::GetInstance().GetControllId());
 
 
 	// 初期状態
@@ -660,8 +661,8 @@ void Player::Update(void)
 		&& gameScene_->GetDownCount() >= GameScene::MAX_DOWN_COUNT)
 	{
 		// ゲームの勝敗判定
-		SceneManager::GAME_RESULT result = SceneManager::GAME_RESULT::GAME_OVER;
-		SceneManager::GetInstance().SetGameResult(result);
+		GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_OVER;
+		GameManager::GetInstance().SetGameResult(result);
 		SceneManager::GetInstance().CaptureMainScreen();
 	}
 
@@ -2024,6 +2025,14 @@ bool Player::IsAimSet(void)
 bool Player::IsTrgAimSet(void)
 {
 	return inputController_->IsTriggered(InputController::KEY::AIM);
+}
+
+bool Player::IsSyncAttrck(void)
+{
+	return (animationController_->GetPlayType() == (int)ANIM_TYPE::ATTRCK1E
+		|| animationController_->GetPlayType() == (int)ANIM_TYPE::ATTRCK2
+		|| animationController_->GetPlayType() == (int)ANIM_TYPE::ATTRCK3		
+		);
 }
 
 //操作をしなくても終わるまで動くモーションのときに使用

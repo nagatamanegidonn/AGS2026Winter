@@ -33,6 +33,11 @@ Arrow::~Arrow(void)
 	MV1DeleteModel(transSubWeapon_.modelId);
 }
 
+bool Arrow::IsSyncAttrck()
+{
+	return false;
+}
+
 void Arrow::InitParam(void)
 {
 	//メインウェポン

@@ -97,7 +97,7 @@ void ShotBase::Draw(void)
 
 int ShotBase::GetDamage(void) const
 {
-	return (int)((float)damage_ * (timeAlive_ / 2));
+	return damage_;
 }
 
 std::weak_ptr<Capsule> ShotBase::GetCapsule(void)

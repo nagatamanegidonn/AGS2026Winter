@@ -12,6 +12,8 @@ public:
 
 	void Update(void) override;
 
+    int GetDamage(void) const override;
+
 protected:
 
     // ƒpƒ‰ƒ[ƒ^‚Ìİ’è

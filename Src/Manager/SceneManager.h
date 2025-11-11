@@ -1,12 +1,9 @@
 #pragma once
 #include <chrono>
 #include <memory>
+#include <list>
 #include <DxLib.h>
 
-#include "../Lib/nlohmann/json.hpp"
-
-// 長いのでnamespaceの省略
-using json = nlohmann::json;
 
 class Fader;
 class SceneBase;
@@ -29,15 +26,6 @@ public:
 		RSULT,
 	};
 
-	// ゲーム結果
-	enum class GAME_RESULT
-	{
-		NONE,
-		GAME_CLEAR,
-		GAME_OVER,
-		TIME_OVER,
-		DRAW
-	};
 
 	// インスタンスの生成
 	static void CreateInstance(void);
@@ -64,20 +52,12 @@ public:
 	void SetTotalGameTime(float time);
 	void ForwardGameTime(void);
 
-	// ゲーム結果の取得
-	GAME_RESULT GetGameResult(void);
-
-	// ゲーム結果の設定
-	void SetGameResult(GAME_RESULT result);
+	
 
 	// カメラの取得
 	std::weak_ptr<Camera> GetCamera(void) const;
 	//スクリーンの取得
 	const int& GetMainScreen(void);
-
-	const int GetControllId(void)const { return ControllerId_; }
-	const int GetWeponId(void)const { return weponId_; }
-	const void SetWeponId(int weponId) { weponId_ = weponId; }
 
 	//シーンを画像保存
 	const void CaptureMainScreen(void);
@@ -93,10 +73,6 @@ public:
 	/// 最後に追加したシーンを削除する
 	/// </summary>
 	void PopScene();
-
-	//接続モードについて
-	const bool IsHost(void)const { return IsHost_; }
-	void SetHost(bool value);
 
 
 private:
@@ -127,20 +103,8 @@ private:
 	std::chrono::system_clock::time_point preTime_;
 	float deltaTime_;
 
-	// ゲームの総時間
+	// 総ゲーム時間
 	float totalGameTime_;
-
-	// ゲーム結果
-	GAME_RESULT gameResult_;
-
-	//プレイヤー設定
-	int charId_;
-	int weponId_;
-
-	//接続モード
-	bool IsHost_;
-
-	int ControllerId_;
 
 	// コンストラクタ
 	SceneManager(void);
@@ -154,7 +118,5 @@ private:
 	// フェード処理
 	void Fade(void);
 
-	void Load(void);
-	void Save(bool isUse);
 
 };

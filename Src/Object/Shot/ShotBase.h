@@ -52,7 +52,7 @@ public:
     bool IsEnd(void)const { return state_ == STATE::END; }
 
 	// ダメージ量の取得
-    int GetDamage(void) const;
+    virtual int GetDamage(void) const;
 	// カプセルコライダの取得
     std::weak_ptr<Capsule> GetCapsule(void);
 

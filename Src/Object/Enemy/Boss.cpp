@@ -4,6 +4,7 @@
 #include "../../Utility/AsoUtility.h"
 
 #include "../../Manager/SceneManager.h"
+#include "../../Manager/GameManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/Camera.h"
 
@@ -329,8 +330,8 @@ void Boss::Update(void)
 	if (animationController_->IsEnd() && animeType_ == (int)ANIM_TYPE::DEAD)
 	{
 		// ゲームの勝敗判定
-		SceneManager::GAME_RESULT result = SceneManager::GAME_RESULT::GAME_CLEAR;
-		SceneManager::GetInstance().SetGameResult(result);
+		GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_CLEAR;
+		GameManager::GetInstance().SetGameResult(result);
 	}
 
 }
@@ -364,7 +365,7 @@ void Boss::Draw(void)
 
 
 
-void Boss::Damage(int dama)
+void Boss::Damage(int _dama,bool _isConst)
 {
 	//無敵中はない
 
@@ -372,7 +373,10 @@ void Boss::Damage(int dama)
 
 	auto& nIns = NetManager::GetInstance();
 
-	const int lastDame = dama * dameRate_;
+	float dameRate = dameRate_;
+	if (_isConst)dameRate = 1.0f;//固定ダメージなら倍率無効
+
+	const int lastDame = _dama * dameRate;
 
 	nIns.SetNetBossDamage(nIns.GetSelf().key, lastDame);
 

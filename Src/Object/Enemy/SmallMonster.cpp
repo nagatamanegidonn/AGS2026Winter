@@ -258,13 +258,16 @@ void SmallMonster::Draw(void)
 #endif // DEBUG
 }
 
-void SmallMonster::Damage(int dama)
+void SmallMonster::Damage(int _dama, bool _isConst)
 {
 	//–³“G’†‚Í‚È‚¢
 
 	auto& nIns = NetManager::GetInstance();
 
-	const int lastDame = dama * dameRate_;
+	float dameRate = dameRate_;
+	if (_isConst)dameRate = 1.0f;//ŒÅ’èƒ_ƒ[ƒW‚È‚ç”{—¦–³Œø
+
+	const int lastDame = _dama * dameRate;
 
 	nIns.SetNetMonsDamage(nIns.GetSelf().key, createNo_,lastDame);
 }

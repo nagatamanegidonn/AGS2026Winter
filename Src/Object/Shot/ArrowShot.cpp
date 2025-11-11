@@ -45,6 +45,11 @@ void ArrowShot::Update(void)
 	transform_.Update();
 }
 
+int ArrowShot::GetDamage(void) const
+{
+	return (int)((float)damage_ * (timeAlive_ / 2));
+}
+
 void ArrowShot::SetParam(void)
 {
 	speed_ = 20.0f;

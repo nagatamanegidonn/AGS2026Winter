@@ -8,6 +8,7 @@
 #include "Manager/InputManager.h"
 #include "Manager/InputTextManager.h"
 #include "Manager/SceneManager.h"
+#include "Manager/GameManager.h"
 #include "Manager/ResourceManager.h"
 #include "Manager/SoundManager.h"
 
@@ -102,6 +103,9 @@ void Application::Init(void)
 	// ネットワーク管理初期化////////////////////////////////////////
 	NetManager::CreateInstance();
 
+	// ゲーム管理初期化
+	GameManager::CreateInstance();
+
 	// シーン管理初期化
 	SceneManager::CreateInstance();
 
@@ -150,6 +154,7 @@ void Application::Destroy(void)
 	InputManager::GetInstance().Destroy();
 	ResourceManager::GetInstance().Destroy();//なんかエラー出る
 	SoundManager::GetInstance().Destroy(); 
+	GameManager::GetInstance().Destroy();
 	SceneManager::GetInstance().Destroy();
 
 	// Effekseerを終了する。

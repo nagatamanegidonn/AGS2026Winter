@@ -32,6 +32,14 @@ GreatSword::~GreatSword(void)
 {
 }
 
+bool GreatSword::IsSyncAttrck()
+{
+	return (animationController_->GetPlayType() == (int)ANIM_TYPE::ATTRCK1S
+		|| animationController_->GetPlayType() == (int)ANIM_TYPE::ATTRCK2
+		|| animationController_->GetPlayType() == (int)ANIM_TYPE::ATTRCK3
+		);
+}
+
 void GreatSword::InitParam(void)
 {
 	//メインウェポン

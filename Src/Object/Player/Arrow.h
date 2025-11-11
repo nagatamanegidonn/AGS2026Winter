@@ -22,6 +22,7 @@ public:
     // デストラクタ
     ~Arrow(void);
 
+	bool IsSyncAttrck() override;
 
 private:
 

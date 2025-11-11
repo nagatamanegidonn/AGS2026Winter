@@ -2,6 +2,7 @@
 #include <DxLib.h>
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
+#include "../Manager/GameManager.h"
 #include "../Manager/SoundManager.h"
 #include "../Manager/Camera.h"
 
@@ -17,8 +18,32 @@
 #include "TitleScene.h"
 
 TitleScene::TitleScene(void)
+	:
+	SceneBase(),
+	player_(nullptr),
+	inputTextArea_(nullptr),
+	cursorMaterial_(nullptr),
+	cursorRenderer_(nullptr),
+	Material_(nullptr),
+	Renderer_(nullptr),
+	titleMaterial_(nullptr),
+	titleRenderer_(nullptr),
+	isTitle_(false),
+	selectId_(0),
+	weponId_(0),
+	isWpSelect_(false),
+	typeUpdate_(nullptr),
+	padUpdate_(nullptr),
+	mouseUpdate_(nullptr),
+	isPad_(false),
+	agoMouseTrg_(false),
+	agoMousePos_(),
+	cursorImg_(-1),
+	backImg_(-1),
+	titleImg_(-1),
+	inputController_(nullptr)
 {
-	inputController_ = nullptr;
+	//inputController_ = nullptr;
 }
 
 TitleScene::~TitleScene(void)
@@ -35,7 +60,7 @@ void TitleScene::Init(void)
 	SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FIXED_POINT);
 
 	//コントローラーの登録
-	inputController_ = std::make_unique<InputController>(SceneManager::GetInstance().GetControllId());
+ 	inputController_ = std::make_unique<InputController>(GameManager::GetInstance().GetControllId());
 
 	cursorImg_ = LoadGraph((Application::PATH_IMAGE + L"tile_0072.png").c_str());
 	backImg_ = LoadGraph((Application::PATH_IMAGE + L"img.png").c_str());
@@ -59,11 +84,11 @@ void TitleScene::Init(void)
 	player_ = std::make_unique<ViewPlayer>();
 	player_->Init();
 	player_->SetChar(0);
-	player_->SetWepon(SceneManager::GetInstance().GetWeponId());
+	player_->SetWepon(GameManager::GetInstance().GetWeponId());
 
 	//選択中の項目
 	selectId_ = (int)MENU::GAME_START;
-	weponId_ = SceneManager::GetInstance().GetWeponId();
+	weponId_ = GameManager::GetInstance().GetWeponId();
 	isWpSelect_ = false;
 
 	//
@@ -138,8 +163,10 @@ void TitleScene::Draw(void)
 {
 	auto& ins = InputManager::GetInstance();
 
+	// 背景描画
 	Renderer_->Draw();
 	
+	// タイトル画面
 	if (isTitle_)
 	{
 		titleRenderer_->Draw();
@@ -153,6 +180,7 @@ void TitleScene::Draw(void)
 		return;
 	}
 
+	// プレイヤー描画
 	player_->Draw();
 
 
@@ -160,9 +188,12 @@ void TitleScene::Draw(void)
 	// ホストorクライアント
 	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0x000000, true);
 	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0xffffff, false);
-	if (SceneManager::GetInstance().IsHost())
+	if (GameManager::GetInstance().IsHost())
 	{
 		DrawString(B1_S_POS.x + 50, B1_S_POS.y + 7, L"HOST", 0xffffff);
+
+		// 挑戦クエスト描画
+
 	}
 	else
 	{
@@ -192,7 +223,7 @@ void TitleScene::Draw(void)
 
 #endif // DEBUG
 
-
+	// カーソル描画
 	if (!isWpSelect_)
 	{
 		if (!isPad_) { return; }
@@ -215,8 +246,10 @@ void TitleScene::Draw(void)
 			break;
 		}
 	}
+	// 武器選択中
 	else
 	{
+		// 武器選択肢描画
 		for (const auto& wPos : weponsPos_)
 		{
 
@@ -226,7 +259,7 @@ void TitleScene::Draw(void)
 				, wPos.second->Name.c_str(), 0xffffff);
 
 		}
-
+		// カーソル描画
 		if (isPad_)
 		{
 			cursorRenderer_->Draw(weponsPos_.at(weponId_)->StartPos.x - HEIGHT
@@ -328,13 +361,13 @@ void TitleScene::MouseUpdate(void)
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
 			selectId_ = (int)MENU::USER_SELECT;
-			if (SceneManager::GetInstance().IsHost())
+			if (GameManager::GetInstance().IsHost())
 			{
-				SceneManager::GetInstance().SetHost(false);
+				GameManager::GetInstance().SetHost(false);
 			}
 			else
 			{
-				SceneManager::GetInstance().SetHost(true);
+				GameManager::GetInstance().SetHost(true);
 			}
 		}
 		// ゲームスタート
@@ -344,7 +377,7 @@ void TitleScene::MouseUpdate(void)
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
 			selectId_ = (int)MENU::GAME_START;
-			if (SceneManager::GetInstance().IsHost())
+			if (GameManager::GetInstance().IsHost())
 			{
 				NetManager::GetInstance().Run(NET_MODE::HOST);
 				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::CONNECT);
@@ -398,6 +431,7 @@ void TitleScene::MWeponUpdate(void)
 {
 	auto& ins = InputManager::GetInstance();
 	auto& sns = SceneManager::GetInstance();
+	auto& gns = GameManager::GetInstance();
 
 	if (IsTrggerdMleft())
 	{
@@ -413,8 +447,8 @@ void TitleScene::MWeponUpdate(void)
 
 				isSlect = true;
 				weponId_ = wPos.first;
-				sns.SetWeponId(weponId_);
-				player_->SetWepon(SceneManager::GetInstance().GetWeponId());
+				gns.SetWeponId(weponId_);
+				player_->SetWepon(GameManager::GetInstance().GetWeponId());
 				break;
 			}
 			else
@@ -464,13 +498,13 @@ void TitleScene::PNormalUpdate(void)
 		{
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
-			if (SceneManager::GetInstance().IsHost())
+			if (GameManager::GetInstance().IsHost())
 			{
-				SceneManager::GetInstance().SetHost(false);
+				GameManager::GetInstance().SetHost(false);
 			}
 			else
 			{
-				SceneManager::GetInstance().SetHost(true);
+				GameManager::GetInstance().SetHost(true);
 			}
 		}
 		break;
@@ -482,7 +516,7 @@ void TitleScene::PNormalUpdate(void)
 			SetMouseDispFlag(true);
 			//SetMouseDispFlag(false);
 
-			if (SceneManager::GetInstance().IsHost())
+			if (GameManager::GetInstance().IsHost())
 			{
 				NetManager::GetInstance().Run(NET_MODE::HOST);
 				SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::CONNECT);
@@ -525,6 +559,7 @@ void TitleScene::PWeponUpdate(void)
 {
 	auto& ins = InputManager::GetInstance();
 	auto& sns = SceneManager::GetInstance();
+	auto& gns = GameManager::GetInstance();
 
 	if (inputController_->IsTriggered(InputController::KEY::OK_SECOND))
 	{
@@ -542,8 +577,8 @@ void TitleScene::PWeponUpdate(void)
 		weponId_ = (weponId_ - 1 + (int)WEPON_ID::MAX) % ((int)WEPON_ID::MAX);
 		//weponId_--;
 
-		sns.SetWeponId(weponId_);
-		player_->SetWepon(SceneManager::GetInstance().GetWeponId());
+		gns.SetWeponId(weponId_);
+		player_->SetWepon(GameManager::GetInstance().GetWeponId());
 	}
 	else if (inputController_->IsTriggered(InputController::KEY::BACK)/* && weponId_ < (int)WEPON_ID::MAX - 1*/)
 	{
@@ -551,8 +586,8 @@ void TitleScene::PWeponUpdate(void)
 		weponId_ = (weponId_ + 1) % ((int)WEPON_ID::MAX);
 		//weponId_++;
 
-		sns.SetWeponId(weponId_);
-		player_->SetWepon(SceneManager::GetInstance().GetWeponId());
+		gns.SetWeponId(weponId_);
+		player_->SetWepon(GameManager::GetInstance().GetWeponId());
 	}
 
 

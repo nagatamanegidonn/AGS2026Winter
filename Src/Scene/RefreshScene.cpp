@@ -5,6 +5,7 @@
 
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
+#include "../Manager/GameManager.h"
 #include "../Manager/Camera.h"
 
 #include "../Net/NetStructures.h"
@@ -69,6 +70,7 @@ void RefreshScene::Draw(void)
 
 
 	SceneManager& sns = SceneManager::GetInstance();
+	GameManager& gns = GameManager::GetInstance();
 
 	sns.DrawCapturedScreen(0, 0);
 
@@ -79,15 +81,15 @@ void RefreshScene::Draw(void)
 	
 	SetFontSize(64);
 
-	switch (sns.GetGameResult())
+	switch (gns.GetGameResult())
 	{
-	case SceneManager::GAME_RESULT::NONE:
+	case GameManager::GAME_RESULT::NONE:
 		msg3 = L"TIME UP";
 		break;
-	case SceneManager::GAME_RESULT::GAME_CLEAR:
+	case GameManager::GAME_RESULT::GAME_CLEAR:
 		msg3 = L"GAME_CLEAR";
 		break;
-	case SceneManager::GAME_RESULT::GAME_OVER:
+	case GameManager::GAME_RESULT::GAME_OVER:
 		msg3 = L"GAME_OVER";
 		break;
 	}

@@ -1,8 +1,6 @@
 #include <EffekseerForDXLib.h>
 #include <DxLib.h>
 
-#include <string>
-#include <fstream>
 #include "../Lib/nlohmann/json.hpp"
 
 #include "../Application.h"
@@ -26,17 +24,10 @@ SceneManager::SceneManager(void)
 	sceneId_ = SCENE_ID::NONE;
 	waitSceneId_ = SCENE_ID::NONE;
 
-	charId_ = 0;
-	weponId_ = 0;
-
-	ControllerId_ = DX_INPUT_PAD1;
-
-
 	isSceneChanging_ = false;
 
 	camera_ = nullptr;
 
-	IsHost_ = true;
 }
 
 SceneManager::~SceneManager(void)
@@ -75,14 +66,10 @@ void SceneManager::Init(void)
 
 	totalGameTime_ = 0.0f;
 
-	Load();
-	Save(true);
+	
 
 	// 3D用の設定
 	Init3D();
-
-	//接続はHost
-	IsHost_ = true;
 
 	// 初期シーンの設定
 	DoChangeScene(SCENE_ID::TITLE);
@@ -180,7 +167,6 @@ void SceneManager::Draw(void)
 
 void SceneManager::Destroy(void)
 {
-	Save(false);
 
 	DeleteGraph(mainScreen_);
 
@@ -230,16 +216,6 @@ void SceneManager::ForwardGameTime(void)
 	totalGameTime_ += GetDeltaTime();
 }
 
-SceneManager::GAME_RESULT SceneManager::GetGameResult(void)
-{
-	return gameResult_;
-}
-
-void SceneManager::SetGameResult(GAME_RESULT result)
-{
-	gameResult_ = result;
-}
-
 std::weak_ptr<Camera> SceneManager::GetCamera(void) const
 {
 	return camera_;
@@ -282,16 +258,6 @@ void SceneManager::PopScene()
 	if (scene_.size() > 1) {
 		scene_.pop_back();
 	}
-}
-
-void SceneManager::SetHost(bool value)
-{
-	//タイトル以外は変更不可
-	if (sceneId_ != SCENE_ID::TITLE) {
-		return;
-	}
-
-	IsHost_ = value;
 }
 
 void SceneManager::DoChangeScene(SCENE_ID sceneId)
@@ -370,77 +336,4 @@ void SceneManager::Fade(void)
 		break;
 	}
 
-}
-
-void SceneManager::Load(void)
-{
-	std::ifstream ifs(Application::PATH_JSON + L"ControllerListDate.json");
-	json ControllerData;
-	if (ifs)
-	{
-		ifs >> ControllerData;
-	}
-	else { return; }
-
-	// 連想配列の値を順にチェックする
-	for (const auto& [key, valueArray] : ControllerData.items()) {
-		for (const auto& controller : valueArray) {
-			if (!controller["isUse"]) {
-				ControllerId_ = controller["ID"];
-				return;
-			}
-		}
-	}
-}
-void SceneManager::Save(bool isUse)
-{
-	// JSON読み込み（既存ファイル）
-	std::ifstream ifs(Application::PATH_JSON + L"ControllerListDate.json");
-	if (!ifs.is_open()) {
-		printfDx(L"Save失敗: ファイルが開けませんでした\n");
-		return;
-	}
-
-	json LoadData;
-	try {
-		ifs >> LoadData;
-	}
-	catch (const json::parse_error& e) {
-		printfDx(L"Save失敗: JSON構文エラー (%s)\n", e.what());
-		return;
-	}
-	ifs.close();
-
-	// 保存データ作成
-	json saveData;
-
-	for (const auto& [key, valueArray] : LoadData.items()) {
-		// 配列でない or 空ならスキップ
-		if (!valueArray.is_array() || valueArray.empty()) continue;
-
-		const auto& Data = valueArray[0];
-
-		json ControllerData;
-
-		if (Data.contains("ID") && Data["ID"].get<int>() == ControllerId_) {
-			ControllerData["ID"] = ControllerId_;
-			ControllerData["isUse"] = isUse;
-		}
-		else {
-			ControllerData["ID"] = Data.contains("ID") ? Data["ID"].get<int>() : -1;
-			ControllerData["isUse"] = Data.contains("isUse") ? Data["isUse"].get<bool>() : false;
-		}
-
-		saveData[key].push_back(ControllerData);
-	}
-
-	// 書き込み
-	std::ofstream ofs(Application::PATH_JSON + L"ControllerListDate.json");
-	if (!ofs.is_open()) {
-		printfDx(L"Save失敗: 書き込み用ファイルを開けませんでした\n");
-		return;
-	}
-
-	ofs << saveData.dump(4);
-	ofs.close();
 }

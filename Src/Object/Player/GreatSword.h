@@ -26,6 +26,10 @@ public:
     // デストラクタ
     ~GreatSword(void);
 
+	bool IsSyncAttrck() override;
+
+private:
+
     void InitParam(void)override;
     void InitAnimation(void) override;
     void InitEffect(void) override;

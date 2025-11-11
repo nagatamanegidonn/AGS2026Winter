@@ -6,6 +6,7 @@
 #include "../Manager/SoundManager.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
+#include "../Manager/GameManager.h"
 #include "../Manager/Camera.h"
 
 #include "../Common/Fader.h"
@@ -51,6 +52,25 @@ namespace
 
 
 GameScene::GameScene(void)
+	:
+	SceneBase(),
+	playerHandle_(-1),
+	bossHandle_(-1),
+	mapHandle_(-1),
+	timer_(nullptr),
+	stage_(nullptr),
+	boss_(nullptr),
+	soundRate_(0.0f),
+	fader_(nullptr),
+	textId_(""),
+	stepId_(0),
+	downCnt_(0),
+	minDist_(10000.0f),
+	Material_(nullptr),
+	Renderer_(nullptr),
+	stepCountDown_(0.0f),
+	grid_(nullptr),
+	skyDome_(nullptr)
 {
 	stepCountDown_ = 0;
 	players_.clear();
@@ -81,7 +101,7 @@ GameScene::~GameScene(void)
 void GameScene::Init(void)
 {
 	//初期化
-	SceneManager::GetInstance().SetGameResult(SceneManager::GAME_RESULT::NONE);
+	GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
 
 	auto& users = NetManager::GetInstance().GetNetUsers();
 	auto& nIns = NetManager::GetInstance();
@@ -411,16 +431,16 @@ void GameScene::Update(void)
 
 
 	// ゲームの勝敗判定
-	SceneManager::GAME_RESULT result = SceneManager::GAME_RESULT::NONE;
+	GameManager::GAME_RESULT result = GameManager::GAME_RESULT::NONE;
 
 	if (timer_->IsTimeUp())
 	{
 		// ゲームの勝敗判定
-		SceneManager::GAME_RESULT result = SceneManager::GAME_RESULT::GAME_OVER;
-		SceneManager::GetInstance().SetGameResult(result);
+		GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_OVER;
+		GameManager::GetInstance().SetGameResult(result);
 		SceneManager::GetInstance().CaptureMainScreen();
 	}
-	if (SceneManager::GetInstance().GetGameResult() != SceneManager::GAME_RESULT::NONE)
+	if (GameManager::GetInstance().GetGameResult() != GameManager::GAME_RESULT::NONE)
 	{
 
 		// ゲームオーバーシーンへ遷移
@@ -757,12 +777,27 @@ void GameScene::Collision(void)
 				for (auto& player : players_)
 				{
 					// playerとの衝突判定	
-					if (shot->CollisionCapsule(player->GetCapsule()))
+					if (shot->CollisionCapsule(player->GetCapsule())&& player->IsSyncAttrck())
 					{ 
 						// 爆発開始
 						shot->ChangeState(ShotBase::STATE::BLAST);
 						// 音・カメラ
 						//SoundManager::GetInstance().Play(SoundManager::SRC::BOM_BLAST, Sound::TIMES::ONCE, true);
+						break;
+					}
+					for (auto& arrowShot : shots_)
+					{
+						if (arrowShot->GetType() == ShotBase::TYPE::ARROW)
+						{
+							if (shot->CollisionCapsule(arrowShot->GetCapsule()) && arrowShot->IsShot())
+							{
+								// 爆発開始
+								shot->ChangeState(ShotBase::STATE::BLAST);
+								// 音・カメラ
+								//SoundManager::GetInstance().Play(SoundManager::SRC::BOM_BLAST, Sound::TIMES::ONCE, true);
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -782,23 +817,25 @@ void GameScene::Collision(void)
 						if (disPow < shot->GetRadius() * shot->GetRadius())
 						{
 							// 画面を暗転
-							fader_->SetFade(Fader::NET_STATE::FADE_OUT);
 							shot->ChangeState();
+
+							//	吹き飛び方向
+							VECTOR mixDir = VScale(VNorm(VSub(player->GetTransform().pos, ShotPos)), 0.001f);
+							// ダメージ
+							player->Damage(shot->GetDamage() * 0.1f, ShotPos, mixDir);
+							// 音・カメラ
+							SceneManager::GetInstance().GetCamera().lock()->StartShake();
 						}
-						//	吹き飛び方向
-						VECTOR mixDir = VScale(VNorm(VSub(player->GetTransform().pos, ShotPos)),0.1f);
-						// ダメージ
-						player->Damage(shot->GetDamage() * 0.1f, ShotPos, mixDir);
-						// 音・カメラ
-						SceneManager::GetInstance().GetCamera().lock()->StartShake();
 					}
 				}
 				// 敵ならダメージ
 				float disPow = AsoUtility::GetDisPow(boss_->GetTransform().pos, ShotPos);
 
-				if (disPow < shot->GetRadius() * shot->GetRadius())
+				if (disPow < shot->GetRadius() * shot->GetRadius()
+					&& shot->GetKey() == nIns.GetSelf().key)
 				{
-					boss_->Damage(shot->GetDamage());
+					boss_->Damage(shot->GetDamage(), true);
+					shot->ChangeState();
 				}
 
 			}
