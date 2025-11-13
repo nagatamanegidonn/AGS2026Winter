@@ -22,17 +22,9 @@ void SoundManager::Init(void)
 {
 	Sound res;
 
-	/*res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"TitleBGM.mp3");
-	res.ChengeMaxVolume(0.8f);
-	soundMap_.emplace(SRC::TITLE_BGM, res);
-
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"SelectBGM.mp3");
-	res.ChengeMaxVolume(1.0f);
-	soundMap_.emplace(SRC::SELECT_BGM, res);
-	*/
-
 	//ƒoƒgƒ‹‚a‚f‚l
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"PerituneMaterial_Breakthrough.mp3");
+	//res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"PerituneMaterial_Breakthrough.mp3");
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"BGM/Battle1.mp3");
 	res.ChengeMaxVolume(0.6f);
 	soundMap_.emplace(SRC::BATTLE_BGM, res);
 
