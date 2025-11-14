@@ -840,6 +840,7 @@ const bool Player::GetHit(void) const
 const void Player::SetHit(bool flag)
 {
 	isHit_ = flag;
+	animationController_->SetHitStop(0.2f);
 }
 
 std::weak_ptr<Capsule> Player::GetCapsule(void)

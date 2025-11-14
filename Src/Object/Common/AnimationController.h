@@ -79,6 +79,9 @@ public :
 	const VECTOR GetPos(void) const { return localPos_; }
 	const bool IsBlend(void) const { return blend_.isBlending; }
 
+	// ヒットストップ設定
+	void SetHitStop(float time);
+
 private :
 
 	std::map<std::wstring, int> animModelCache_;
@@ -89,14 +92,18 @@ private :
 	// 種類別のアニメーションデータ
 	std::map<int, Animation> animations_;
 
+	// 再生中のアニメーションデータ
 	int playType_;
 	Animation playAnim_;
 
-
+	// ブレンド情報
 	BlendState blend_;
 	float blendSpeed = 1.0f;
 	int nextAnimType_ = -1; // ブレンド完了後に移行するアニメ（未使用なら -1）
 
+	// ヒットストップ
+	float hitStopTime_;
+	bool isHitStop_;// ヒットストップ中かどうか
 
 	// アニメーションをループするかしないか
 	bool isLoop_;

@@ -329,10 +329,21 @@ void Boss::Update(void)
 	animationController_->Update();
 	if (animationController_->IsEnd() && animeType_ == (int)ANIM_TYPE::DEAD)
 	{
-		// ゲームの勝敗判定
+		// ゲームの勝敗判定//シーン遷移
 		GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_CLEAR;
 		GameManager::GetInstance().SetGameResult(result);
 	}
+	//　クエストがボス討伐ならカウントする
+	if (animeAgoType_ != (int)ANIM_TYPE::DEAD
+		&& animeType_ == (int)ANIM_TYPE::DEAD)
+	{
+		/*if (GameManager::GetInstance().)
+		{
+			GameManager::GetInstance().SetClearCount(
+				GameManager::GetInstance().GetClearCount() + 1);
+		}*/
+	}
+
 
 }
 void Boss::Draw(void)
@@ -367,8 +378,9 @@ void Boss::Draw(void)
 
 void Boss::Damage(int _dama,bool _isConst)
 {
-	//無敵中はない
+	// 無敵中はない
 
+	// ダメージエフェクト再生
 	effectController_->Play(1, hitDamePos_, { 0.0f,0.0f,0.0f }, 7.5f);
 
 	auto& nIns = NetManager::GetInstance();

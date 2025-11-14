@@ -447,7 +447,7 @@ void GameScene::Update(void)
 		//SceneManager::GetInstance().SetGameResult(result);
 		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::RSULT);
 	}
-	//if (!nIns.IsSameGameState(GAME_STATE::GAME_PLAYING))//最初の一回目がダメ
+	//if (!nIns.IsSameGameState(GAME_STATE::GAME_PLAYING))//最初の一回目が、フレームがずれてるからダメ
 	//{
 	//	SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);//ゲームスタート！
 	//}

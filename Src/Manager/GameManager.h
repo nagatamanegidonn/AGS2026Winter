@@ -45,6 +45,12 @@ public:
 	const bool IsHost(void)const { return IsHost_; }
 	void SetHost(bool value);
 
+	//クリア回数の取得、設定
+	const int GetClearCount(void)const { return clearCount_; }
+	void SetClearCount(int count) { clearCount_ = count; }
+
+	bool IsClear(void)const { return clearCount_ >= clearMaxCount_; }
+
 private:
 
 	// 静的インスタンス
@@ -68,6 +74,13 @@ private:
 
 	// コントローラーID
 	int ControllerId_;
+
+
+	//ゲーム内容
+	int clearCount_; 
+	int clearMaxCount_;
+
+
 
 	//コントローラーの読み込み、保存
 	void LoadController(void);

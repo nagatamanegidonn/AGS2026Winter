@@ -27,7 +27,9 @@ GameManager::GameManager(void)
 	charId_(0),
 	weponId_(0),
 	IsHost_(true),
-	ControllerId_(DX_INPUT_PAD1)
+	ControllerId_(DX_INPUT_PAD1),
+	clearCount_(0),
+	clearMaxCount_(0)
 {
 }
 GameManager::~GameManager(void)

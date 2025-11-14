@@ -15,6 +15,9 @@ AnimationController::AnimationController(int modelId)
 	endLoopSpeed_ = 0.0f;
 	stepEndLoopStart_ = 0.0f;
 	stepEndLoopEnd_ = 0.0f;
+
+	hitStopTime_ = 0.0f;
+	isHitStop_ = false;
 }
 
 AnimationController::~AnimationController(void)
@@ -269,7 +272,7 @@ void AnimationController::Update(void)
 		
 	}
 
-
+	//アニメーション再生
 	if (!isStop_) {
 		playAnim_.step += (deltaTime * playAnim_.speed * switchLoopReverse_);
 
@@ -316,6 +319,18 @@ void AnimationController::Update(void)
 	//デバッグ
 	if (playAnim_.attachNo == -1) {
 		printfDx(L"Warning: playAnim_ にアニメがアタッチされていません\n");
+		return;
+	}
+
+	//ヒットストップ処理
+	if (isHitStop_)
+	{
+		hitStopTime_ -= 0.01f;
+		if (hitStopTime_ <= 0.0f)
+		{
+			isHitStop_ = false;
+			hitStopTime_ = 0.0f;
+		}
 		return;
 	}
 
@@ -393,6 +408,12 @@ bool AnimationController::IsEnd(void) const
 
 	return ret;
 
+}
+
+void AnimationController::SetHitStop(float time)
+{
+	hitStopTime_ = time;
+	isHitStop_ = true;
 }
 
 int AnimationController::GetAttrchNo(int animType)

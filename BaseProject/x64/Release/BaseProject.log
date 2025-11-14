@@ -1,8 +1,40 @@
-﻿  SoundManager.cpp
+﻿  Camera.cpp
+  SceneManager.cpp
+  Boss.cpp
+  SmallMonster.cpp
+  Arrow.cpp
+  GreatSword.cpp
+  Player.cpp
+  Object.cpp
+  GameScene.cpp
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\SmallMonster.cpp(107,19): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\SmallMonster.cpp(270,29): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\SmallMonster.cpp(270,21): warning C4244: '初期化中': 'float' から 'const int' への変換です。データが失われる可能性があります。
+  RefreshScene.cpp
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\Boss.cpp(137,24): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  TitleScene.cpp
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\Boss.cpp(391,29): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\Boss.cpp(391,21): warning C4244: '初期化中': 'float' から 'const int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\Player.cpp(819,9): warning C4244: '-=': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\Player.cpp(1679,12): warning C4305: '+=': 'double' から 'float' へ切り詰めます。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\Player.cpp(2127,11): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\GameScene.cpp(635,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\GameScene.cpp(650,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\GameScene.cpp(692,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\GameScene.cpp(704,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\GameScene.cpp(825,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\TitleScene.cpp(390,21): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\TitleScene.cpp(390,25): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\TitleScene.cpp(390,29): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\TitleScene.cpp(390,33): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\TitleScene.cpp(529,21): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\TitleScene.cpp(529,25): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\TitleScene.cpp(529,29): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
+D:\Users\2316013\Desktop\AGS2026冬\Src\Scene\TitleScene.cpp(529,33): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
   コード生成しています。
-  1 of 7232 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  2 of 7233 functions (<0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    8 functions had inline decision re-evaluated but remain unchanged
+    7 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
 EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj) : warning LNK4099: PDB 'EffekseerForDXLib_vs2019_x64.pdb' が 'EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj)' で、または 'D:\Users\2316013\Desktop\AGS2026冬\x64\Release\EffekseerForDXLib_vs2019_x64.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
   BaseProject.vcxproj -> D:\Users\2316013\Desktop\AGS2026冬\x64\Release\BaseProject.exe
