@@ -329,14 +329,23 @@ void Boss::Update(void)
 	animationController_->Update();
 	if (animationController_->IsEnd() && animeType_ == (int)ANIM_TYPE::DEAD)
 	{
-		// ゲームの勝敗判定//シーン遷移
-		GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_CLEAR;
-		GameManager::GetInstance().SetGameResult(result);
+		//// ゲームの勝敗判定//シーン遷移
+		//GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_CLEAR;
+		//GameManager::GetInstance().SetGameResult(result);
 	}
-	//　クエストがボス討伐ならカウントする
+	//　クエストがボス討伐ならカウントする//bossの死亡アニメーション開始時に1回だけ
 	if (animeAgoType_ != (int)ANIM_TYPE::DEAD
 		&& animeType_ == (int)ANIM_TYPE::DEAD)
 	{
+		//クエストがボス討伐ならカウントアップ
+		GameManager::GetInstance().SetClearCount(
+		GameManager::GetInstance().GetClearCount() + 1);
+
+		if (GameManager::GetInstance().IsClear())
+		{
+			GameManager::GetInstance().SetClearTime(10.0f);
+		}
+
 		/*if (GameManager::GetInstance().)
 		{
 			GameManager::GetInstance().SetClearCount(

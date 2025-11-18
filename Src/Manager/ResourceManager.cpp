@@ -106,8 +106,8 @@ void ResourceManager::Init(void)
 	resourcesMap_.emplace(SRC::ARROW, std::move(res));
 
 	// Clear
-	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"Congratulations.png");
-	resourcesMap_.emplace(SRC::CLEAR, std::move(res));
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"Quest/Clear.png");
+	resourcesMap_.emplace(SRC::CLEAR_LOGO, std::move(res));
 
 }
 

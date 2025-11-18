@@ -84,13 +84,15 @@ void RefreshScene::Draw(void)
 	switch (gns.GetGameResult())
 	{
 	case GameManager::GAME_RESULT::NONE:
-		msg3 = L"TIME UP";
+		msg3 = L"ERROR";
 		break;
 	case GameManager::GAME_RESULT::GAME_CLEAR:
 		msg3 = L"GAME_CLEAR";
 		break;
 	case GameManager::GAME_RESULT::GAME_OVER:
 		msg3 = L"GAME_OVER";
+	case GameManager::GAME_RESULT::TIME_OVER:
+		msg3 = L"TIME_UP";
 		break;
 	}
 

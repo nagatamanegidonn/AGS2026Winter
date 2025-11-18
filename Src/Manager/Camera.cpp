@@ -20,7 +20,8 @@ Camera::Camera(void)
 	targetPos_ = AsoUtility::VECTOR_ZERO;
 	followTransform_ = nullptr;
 
-	stepShake_ = 1.0f;
+	stepShake_ = stepMaxShake_ = 1.0f;
+	shakePower_ = 0.0f;
 	isShaking_ = false;
 	shakeDir_ = { 0.0f,0.0f,0.0f };
 }
@@ -197,11 +198,12 @@ void Camera::ChangeMode(MODE mode)
 
 }
 
-void Camera::StartShake(float _time, float power)
+void Camera::StartShake(float _time, float _power)
 {
 	if (isShaking_) return; // 二重発動防止（必要に応じて外してもOK）
 	isShaking_ = true;
-	//shakePower_ = power;
+	shakePower_ = _power;
+
 	shakeDir_ = { 1.0f,0.0f,0.0f };
 
 	stepShake_ = stepMaxShake_ = _time;
@@ -458,8 +460,8 @@ void Camera::UpdateShake(void)
 	if (!isShaking_) return;
 
 	// シェイク強度・減衰パラメータ
-	float shakePower_ = 2.0f;      // 初期の揺れの大きさ
-	float shakeDuration_ = 1.0f;     // 揺れる時間
+	//float shakePower_ = 2.0f;      // 初期の揺れの大きさ
+	//float shakeDuration_ = 1.0f;     // 揺れる時間
 
 
 	stepShake_ -= 0.016f; // Δt
@@ -472,7 +474,7 @@ void Camera::UpdateShake(void)
 	}
 
 	// 減衰係数（0～1）// 経過時間/総時間
-	float t = stepShake_ / shakeDuration_;
+	float t = stepShake_ / stepMaxShake_;
 	float currentPower = shakePower_ * t * t;
 
 	float dx = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
@@ -488,12 +490,6 @@ void Camera::UpdateShake(void)
 	if (stepShake_ > 0.0f)
 	{
 		stepShake_ -= 0.016f; // Δt（固定フレーム時間）
-
-		// 減衰係数（0～1）
-		float t = stepShake_ / shakeDuration_;
-
-		// 現在の揺れ強度（徐々に減る）
-		float currentPower = shakePower_ * t * t;
 
 		// -1～1 のランダム方向
 		float dx = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;

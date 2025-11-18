@@ -24,6 +24,7 @@ GameManager& GameManager::GetInstance(void)
 GameManager::GameManager(void)
 	:
 	gameResult_(GAME_RESULT::NONE),
+	clearFlag_(false),
 	charId_(0),
 	weponId_(0),
 	IsHost_(true),
@@ -39,6 +40,9 @@ GameManager::~GameManager(void)
 
 void GameManager::Init(void)
 {
+	// 初期化
+	clearFlag_ = false;//クリアフラグ
+
 	charId_ = 0;
 	weponId_ = 0;
 	ControllerId_ = DX_INPUT_PAD1;
@@ -71,7 +75,7 @@ void GameManager::SetGameResult(GAME_RESULT result)
 }
 void GameManager::SetHost(bool value)
 {
-	//タイトル以外は変更不可
+	// タイトル以外は変更不可
 	if (SceneManager::GetInstance().GetSceneID()
 		!= SceneManager::SCENE_ID::TITLE) {
 		return;
@@ -81,6 +85,7 @@ void GameManager::SetHost(bool value)
 }
 	
 
+#pragma region 使用コントローラID保存・読み込み
 
 void GameManager::Load(void)
 {
@@ -154,3 +159,5 @@ void GameManager::Save(bool isUse)
 	ofs << saveData.dump(4);
 	ofs.close();
 }
+
+#pragma endregion

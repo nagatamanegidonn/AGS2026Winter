@@ -75,7 +75,7 @@ public:
 	// カメラモードの変更
 	void ChangeMode(MODE mode);
 
-	void StartShake(float _time = 1.0f, float _power = 1.0f);
+	void StartShake(float _time = 1.0f, float _power = 2.0f);
 
 	// 追従対象の設定
 	void SetFollow(const Transform* follow);
@@ -107,15 +107,17 @@ private:
 	VECTOR cameraUp_;
 
 #pragma region カメラシェイク用
-	//画面揺らし用
+	// 画面揺らし用
 	float stepShake_;
 	float stepMaxShake_;
+	// 揺れの強さ
+	float shakePower_;
 
-	//画面揺れが終わったか
+	// 画面揺れが終わったか
 	bool isShaking_;
-	//演出前位置
+	// 演出前位置
 	VECTOR defaultPos_;
-	//揺れ方向
+	// 揺れ方向
 	VECTOR shakeDir_;
 #pragma endregion
 

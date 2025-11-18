@@ -41,7 +41,7 @@ public:
 		BOW,
 		ARROW,
 
-		CLEAR,
+		CLEAR_LOGO,
 
 	};
 

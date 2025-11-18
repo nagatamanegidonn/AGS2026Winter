@@ -19,6 +19,7 @@ public:
 
     float GetRemainingTime() const; // 残り時間（0以下にならない）
     bool IsTimeUp() const;          // 制限時間を過ぎたかどうか
+	bool IsRunning() const { return isRunning_; }// タイマーが動作中かどうか
 
      // 針を描画する（中心座標と画像を指定）
     void SetNeedleImage(int handle);

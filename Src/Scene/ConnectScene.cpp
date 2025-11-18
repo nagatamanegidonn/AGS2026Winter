@@ -103,6 +103,7 @@ void ConnectScene::Update(void)
 		auto& players = NetManager::GetInstance().GetNetUsers();
 		if (players.size() >= 1)//自分のほかにつながっているプレイヤーがいるなら
 		{
+			// マウスでの操作
 			if (ins.IsClickMouseLeft())//左クリックで
 			{
 				Vector2 moPos = ins.GetMousePos();//リーダーだけがスタート可能
@@ -115,10 +116,13 @@ void ConnectScene::Update(void)
 
 					//リザルトの初期化
 					GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
+					GameManager::GetInstance().InitQuest(1);
+
 					//ネットマネージャの状態変更
 					NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
 				}
 			}
+			//キーボード、コントローラーでの操作
 			else if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::RIGHT)
 				|| ins.IsTrgDown(KEY_INPUT_SPACE))
 			{
@@ -127,6 +131,8 @@ void ConnectScene::Update(void)
 
 				//リザルトの初期化
 				GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
+				GameManager::GetInstance().InitQuest(1);
+
 				//ネットマネージャの状態変更
 				NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
 			}
@@ -148,6 +154,9 @@ void ConnectScene::Update(void)
 	if (nIns.IsSameGameState(GAME_STATE::GOTO_GAME))
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::GAME_START, Sound::TIMES::ONCE, true);
+		//リザルトの初期化
+		GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
+		GameManager::GetInstance().InitQuest(1);
 
 		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);//ゲームスタート！
 	}

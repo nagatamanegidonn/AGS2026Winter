@@ -433,16 +433,30 @@ void GameScene::Update(void)
 	// ゲームの勝敗判定
 	GameManager::GAME_RESULT result = GameManager::GAME_RESULT::NONE;
 
-	if (timer_->IsTimeUp())
+	if (GameManager::GetInstance().IsClear()) {
+		if (timer_->IsRunning())timer_->Reset();//タイマーが動いてたら止める
+		// クリア時間の更新
+		GameManager::GetInstance().UpdateClearTime(SceneManager::GetInstance().GetDeltaTime());
+
+		if (GameManager::GetInstance().GetClearTime() <= 0.0f)
+		{
+			// ゲームの勝敗判定//シーン遷移
+			GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_CLEAR;
+			GameManager::GetInstance().SetGameResult(result);
+		}
+	}
+
+	// タイムアップ判定
+	if (timer_->IsTimeUp()&&!GameManager::GetInstance().IsClear())
 	{
 		// ゲームの勝敗判定
-		GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_OVER;
+		result = GameManager::GAME_RESULT::TIME_OVER;
 		GameManager::GetInstance().SetGameResult(result);
 		SceneManager::GetInstance().CaptureMainScreen();
 	}
+	// ボス撃破判定
 	if (GameManager::GetInstance().GetGameResult() != GameManager::GAME_RESULT::NONE)
-	{
-
+	{ 
 		// ゲームオーバーシーンへ遷移
 		//SceneManager::GetInstance().SetGameResult(result);
 		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::RSULT);
@@ -630,7 +644,7 @@ void GameScene::Collision(void)
 			&& player->IsAttrck() && player->IsHit() && player->IsSelf())
 		{
 			player->SetHit(true);
-			SceneManager::GetInstance().GetCamera().lock()->StartShake();
+			SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
 
 			boss_->Damage(player->GetAttrckPow() * player->GetAttrckRate());
 			//音の再生
@@ -645,7 +659,7 @@ void GameScene::Collision(void)
 			{
 				player->SetHit(true);
 				
-				SceneManager::GetInstance().GetCamera().lock()->StartShake();
+				SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
 
 				mons->Damage(player->GetAttrckPow() * player->GetAttrckRate());
 				//音の再生
@@ -824,7 +838,7 @@ void GameScene::Collision(void)
 							// ダメージ
 							player->Damage(shot->GetDamage() * 0.1f, ShotPos, mixDir);
 							// 音・カメラ
-							SceneManager::GetInstance().GetCamera().lock()->StartShake();
+							SceneManager::GetInstance().GetCamera().lock()->StartShake(1.0f, 2.0f);
 						}
 					}
 				}
@@ -846,6 +860,7 @@ void GameScene::Collision(void)
 	}
 }
 
+// 弾が敵に当たったときの処理
 void GameScene::ShotHitEnemy(ShotBase& shot, EnemyBase& enemy)
 {
 	auto& nIns = NetManager::GetInstance();
@@ -856,7 +871,7 @@ void GameScene::ShotHitEnemy(ShotBase& shot, EnemyBase& enemy)
 		{
 			// 音・カメラ・ダメージ
 			SoundManager::GetInstance().Play(SoundManager::SRC::SHOT_DAMAGE, Sound::TIMES::ONCE, true);
-			SceneManager::GetInstance().GetCamera().lock()->StartShake();
+			SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
 
 			enemy.Damage(static_cast<int>(static_cast<float>(shot.GetDamage()) * player->GetAttrckRate()));
 		}

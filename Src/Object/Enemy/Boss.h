@@ -63,7 +63,8 @@ public:
 
 
 	// Å‘å‚g‚o
-	static constexpr int MAX_HP = 200;
+	//static constexpr int MAX_HP = 200;
+	static constexpr int MAX_HP = 20;
 
 	//UŒ‚ŠÖŒW
 	static constexpr int ATTRCK_CLOW = 28;
