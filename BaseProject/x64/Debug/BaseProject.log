@@ -1,2 +1,5 @@
-﻿  GameManager.cpp
+﻿  Boss.cpp
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\Boss.cpp(137,24): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\Boss.cpp(400,29): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\Boss.cpp(400,21): warning C4244: '初期化中': 'float' から 'const int' への変換です。データが失われる可能性があります。
   BaseProject.vcxproj -> D:\Users\2316013\Desktop\AGS2026冬\x64\Debug\BaseProject.exe

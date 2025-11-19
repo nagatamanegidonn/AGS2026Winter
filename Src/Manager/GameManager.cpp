@@ -3,10 +3,17 @@
 
 #include "GameManager.h"
 #include "SceneManager.h"
+#include "ResourceManager.h"
 #include "../Application.h"
 
 
 GameManager* GameManager::instance_ = nullptr;
+
+namespace {
+	constexpr float CLEAR_TIME_DEFAULT = 3.0f; // クリア演出のデフォルト時間
+	constexpr GameManager::ClearParam FIRST_PRAM = { 0, 1.0f, 0.98f ,20.0f };
+	constexpr GameManager::ClearParam SECOND_PRAM = { 1, FIRST_PRAM.eValue, 1.05f,7.5f };
+}
 
 void GameManager::CreateInstance(void)
 {
@@ -25,12 +32,19 @@ GameManager::GameManager(void)
 	:
 	gameResult_(GAME_RESULT::NONE),
 	clearFlag_(false),
+	clearCount_(0),
+	clearMaxCount_(0),
+	clearTime_(0.0f),
+
+	paramRate_(0.0f),
+	clearPramList_(),
+	currentParam_({ 0,1.0f,1.0f,1.0f }),
+	clearImg_(-1),
+
 	charId_(0),
 	weponId_(0),
 	IsHost_(true),
-	ControllerId_(DX_INPUT_PAD1),
-	clearCount_(0),
-	clearMaxCount_(0)
+	ControllerId_(DX_INPUT_PAD1)
 {
 }
 GameManager::~GameManager(void)
@@ -50,6 +64,14 @@ void GameManager::Init(void)
 	Load();
 	Save(true);
 
+	//　クリアロゴの読み込み
+	clearImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::CLEAR_LOGO).handleId_;
+
+	clearPramList_.push_back(FIRST_PRAM);
+	clearPramList_.push_back(SECOND_PRAM);
+
+	currentParam_ = clearPramList_.front();
+
 	//接続はHost
 	IsHost_ = true;
 }
@@ -58,6 +80,42 @@ void GameManager::Update(void)
 }
 void GameManager::Draw(void)
 {
+}
+//　clearTime_が一定の数値以下になったときに呼ばれる
+void GameManager::ClearDraw(void)
+{
+	if(clearTime_ <= 2.5f&&IsClear())
+	{
+		// クリア演出
+		float ExRate = std::lerp(currentParam_.sValue, currentParam_.eValue, paramRate_);
+		DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2,
+			ExRate, 0.0f, clearImg_, true);
+
+		// パラメーターの割合更新
+		paramRate_ += currentParam_.speed * SceneManager::GetInstance().GetDeltaTime();
+
+		// 次のパラメーターへ
+		if(paramRate_ >= 1.0f)
+		{
+			paramRate_ = 0.0f;
+			for(const auto& param : clearPramList_)
+			{
+				// 現在のパラメーターと最後のパラメーターが同じなら終了
+				if(clearPramList_.back().type == currentParam_.type)
+				{
+					// パラメーターの割合
+					paramRate_ = 1.0f;
+					break;
+				}
+				// 次のパラメーターへ
+				else if (param.type == currentParam_.type + 1)
+				{
+					currentParam_ = param;
+					break;
+				}
+			}
+		}
+	}
 }
 void GameManager::Destroy(void)
 {

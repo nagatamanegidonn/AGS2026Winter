@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <list>
 #include <DxLib.h>
 
 #include "../Lib/nlohmann/json.hpp"
@@ -10,6 +11,15 @@ using json = nlohmann::json;
 class GameManager
 {
 public:
+
+	// クリアパラメータ
+	struct ClearParam
+	{
+		int type;
+		float sValue;
+		float eValue;
+		float speed;
+	};
 
 	// ゲーム結果
 	enum class GAME_RESULT
@@ -30,6 +40,7 @@ public:
 	void Init(void);
 	void Update(void);
 	void Draw(void);
+	void ClearDraw(void);
 	void Destroy(void);
 
 	// ゲーム結果の取得
@@ -91,6 +102,12 @@ private:
 	int clearCount_; 
 	int clearMaxCount_;
 	float clearTime_;
+
+	
+	float paramRate_;
+	std::list<ClearParam> clearPramList_;
+	ClearParam currentParam_;
+	int clearImg_;
 
 	// プレイヤー設定
 	int charId_; // キャラクターID

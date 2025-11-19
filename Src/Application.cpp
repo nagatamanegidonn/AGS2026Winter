@@ -103,14 +103,14 @@ void Application::Init(void)
 	// ネットワーク管理初期化////////////////////////////////////////
 	NetManager::CreateInstance();
 
+	// リソース管理初期化
+	ResourceManager::CreateInstance();
+
 	// ゲーム管理初期化
 	GameManager::CreateInstance();
 
 	// シーン管理初期化
 	SceneManager::CreateInstance();
-
-	// リソース管理初期化
-	ResourceManager::CreateInstance();
 
 	//音の初期化
 	SoundManager::CreateInstance();

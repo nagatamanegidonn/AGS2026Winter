@@ -540,6 +540,8 @@ void GameScene::Draw(void)
 	Renderer_->Draw(MAP_POS_X, MAP_POS_Y);
 	SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);*/
 
+	GameManager::GetInstance().ClearDraw();
+
 #ifdef _DEBUG
 
 	float remaining = timer_->GetRemainingTime();

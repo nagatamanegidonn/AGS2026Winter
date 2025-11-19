@@ -1,7 +1,8 @@
-﻿  コード生成しています。
-  0 of 7242 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+﻿  GameManager.cpp
+  コード生成しています。
+  204 of 7309 functions ( 2.8%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    199 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
 EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj) : warning LNK4099: PDB 'EffekseerForDXLib_vs2019_x64.pdb' が 'EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj)' で、または 'D:\Users\2316013\Desktop\AGS2026冬\x64\Release\EffekseerForDXLib_vs2019_x64.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
   BaseProject.vcxproj -> D:\Users\2316013\Desktop\AGS2026冬\x64\Release\BaseProject.exe

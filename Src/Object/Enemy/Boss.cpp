@@ -158,7 +158,7 @@ void Boss::Update(void)
 
 		dame += nIns.GetNetBossDamage(user.first);
 		//damage表記//ダメージを受けていたなら
-		if (userDame > 0)
+		if (userDame > 0 && hp_ > 0)
 		{
 			bool isEnd = false;
 			for (auto& hitdamage : hitdamages_)
