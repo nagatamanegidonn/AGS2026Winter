@@ -69,7 +69,9 @@ void GameManager::Init(void)
 
 	clearPramList_.push_back(FIRST_PRAM);
 	clearPramList_.push_back(SECOND_PRAM);
+	
 
+	paramRate_ = 0.0f;
 	currentParam_ = clearPramList_.front();
 
 	//接続はHost
@@ -84,7 +86,7 @@ void GameManager::Draw(void)
 //　clearTime_が一定の数値以下になったときに呼ばれる
 void GameManager::ClearDraw(void)
 {
-	if(clearTime_ <= 2.5f&&IsClear())
+	if (clearTime_ <= 2.5f && IsClear())
 	{
 		// クリア演出
 		float ExRate = std::lerp(currentParam_.sValue, currentParam_.eValue, paramRate_);
@@ -95,13 +97,13 @@ void GameManager::ClearDraw(void)
 		paramRate_ += currentParam_.speed * SceneManager::GetInstance().GetDeltaTime();
 
 		// 次のパラメーターへ
-		if(paramRate_ >= 1.0f)
+		if (paramRate_ >= 1.0f)
 		{
 			paramRate_ = 0.0f;
-			for(const auto& param : clearPramList_)
+			for (const auto& param : clearPramList_)
 			{
 				// 現在のパラメーターと最後のパラメーターが同じなら終了
-				if(clearPramList_.back().type == currentParam_.type)
+				if (clearPramList_.back().type == currentParam_.type)
 				{
 					// パラメーターの割合
 					paramRate_ = 1.0f;
@@ -122,7 +124,7 @@ void GameManager::Destroy(void)
 	Save(false);
 }
 
-GameManager::GAME_RESULT GameManager::GetGameResult(void)
+GameManager::GAME_RESULT GameManager::GetGameResult(void) const
 {
 	return gameResult_;
 }
@@ -131,7 +133,7 @@ void GameManager::SetGameResult(GAME_RESULT result)
 {
 	gameResult_ = result;
 }
-void GameManager::SetHost(bool value)
+void GameManager::SetHost(bool _value)
 {
 	// タイトル以外は変更不可
 	if (SceneManager::GetInstance().GetSceneID()
@@ -139,7 +141,7 @@ void GameManager::SetHost(bool value)
 		return;
 	}
 
-	IsHost_ = value;
+	IsHost_ = _value;
 }
 	
 

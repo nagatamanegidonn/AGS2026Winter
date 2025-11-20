@@ -46,11 +46,23 @@ namespace
 	constexpr int HP_SIZE_Y = 16;
 
 
-	constexpr int GAGE_POS_X = 60 + 40 + HP_SIZE_X / 2;
-	constexpr int GAGE_POS_Y = 60 - 2 - HP_SIZE_Y / 2;
-	constexpr int STA_POS_Y = 60 + 2 + HP_SIZE_Y / 2;
+	constexpr int SWORD_ID = 0;
+	constexpr int GREAT_SWORD_ID = 1;
+	constexpr int BOW_ID = 2;
 
+	// 初期座標
+	constexpr VECTOR START_POS = { 1200.0f,0.0f,-5000.0f };
 
+	// ゲージ関連
+	constexpr int GAGE_X_BASE_OFFSET = 60; // ゲージの基準X座標
+	constexpr int GAGE_X_ALIGN_OFFSET = 40; // ゲージの追加Xオフセット (アイコン幅など)
+	constexpr int GAGE_Y_BASE_OFFSET = 60; // ゲージの基準Y座標 (画面上部からの距離)
+	constexpr int GAGE_Y_HALF_GAP = 2; // HPとSTAの間の隙間を計算するためのオフセット
+
+	// HP,スタミナ表示位置
+	constexpr int GAGE_POS_X = GAGE_X_BASE_OFFSET + GAGE_X_ALIGN_OFFSET + HP_SIZE_X / 2;
+	constexpr int GAGE_POS_Y = GAGE_Y_BASE_OFFSET - GAGE_Y_HALF_GAP - HP_SIZE_Y / 2;
+	constexpr int STA_POS_Y = GAGE_Y_BASE_OFFSET + GAGE_Y_HALF_GAP + HP_SIZE_Y / 2;
 }
 
 
@@ -176,8 +188,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 		ResourceManager::SRC::PLAYER_NIGHT));
 	transform_.scl = AsoUtility::VECTOR_ONE;
 	// 初期座標
-	//transform_.pos = { -500.0f, -30.0f, -1500.0f };
-	transform_.pos = { 1200.0f,0.0f,-5000.0f };
+	transform_.pos = START_POS;
 	transform_.quaRot = Quaternion();
 	transform_.quaRotLocal =
 		Quaternion::Euler({ 0.0f, AsoUtility::Deg2RadF(180.0f), 0.0f });
@@ -197,27 +208,28 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	// モデルの基本設定//武器の設定
 	switch (nIns.GetWeapon(key_))
 	{
-	case 0:
+	case SWORD_ID:
 		jobImg_ = LoadGraph((Application::PATH_IMAGE + L"Job/Sowrd.png").c_str());
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::SWORD));
 		attrckDamage_ = 10;
 		hp_ = hpAgo_ = hpMax_ = MAX_HP + 20;
 		break;
-	case 1:
+	case GREAT_SWORD_ID:
 		jobImg_ = LoadGraph((Application::PATH_IMAGE + L"Job/GreatSowrd.png").c_str());
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::SWORD2));
 		attrckDamage_ = 20;
 		hp_ = hpAgo_ = hpMax_ = MAX_HP;
 		break;
-	case 2:
+	case BOW_ID:
 		jobImg_ = LoadGraph((Application::PATH_IMAGE + L"Job/Arrow.png").c_str());
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::BOW));
 		attrckDamage_ = 5;
 		hp_ = hpAgo_ = hpMax_ = MAX_HP;
 		break;
+	// デフォルトは大剣
 	default:
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::SWORD2));
@@ -339,13 +351,12 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	//採取の際の情報（仮）
 	itemId_ = -1;
 	poach_ = std::make_unique<ItemPoach>();
-	poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
-	poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
-	poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
-	poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
-	poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
-	poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
-	poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
+	for (int i = 0; i < 2; i++) {
+		poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
+	}
+	for (int i = 0; i < 3; i++) {
+		poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
+	}
 }
 
 void Player::Update(void)
@@ -415,6 +426,7 @@ void Player::Update(void)
 			if (damage_ < 0.0f)
 				damage_ = 0.0f;
 		}
+
 		//スタミナ
 		stamina_ += staminaDir_ * deltaTime;
 		if (staminaMax_ < stamina_) {
@@ -444,11 +456,6 @@ void Player::Update(void)
 		// 移動方向に応じた回転
 		Rotate();
 
-		// ジャンプ処理
-		//ProcessJump();
-
-		//スロープ移動量の判定
-		//CalcSlope();
 		// 重力による移動量
 		CalcGravityPow();
 
@@ -457,7 +464,6 @@ void Player::Update(void)
 
 		// 歩きエフェクト
 		//EffectFootSmoke();
-
 
 		//カメラ操作
 		SceneManager::GetInstance().GetCamera().lock()->ProcessPlayRot(
@@ -604,24 +610,6 @@ void Player::Update(void)
 	else if (animeType_ == (int)ANIM_TYPE::ITEM_SET_E
 		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_SET_E)
 	{
-		/*Transform trans;
-
-		trans.SetModel(
-			ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::BOM));
-		trans.scl = AsoUtility::VECTOR_ONE;
-		trans.quaRot = Quaternion();
-		trans.pos = transform_.pos;
-		trans.pos = VAdd(transform_.pos
-			, VScale(transform_.GetForward()
-				, (capsule_->GetRadius() * 3)));
-		trans.pos.y += 50.0f;*/
-
-		// 当たり判定(コライダ)作成
-		/*trans.MakeCollider(Collider::TYPE::WALL);
-		trans.Update();*/
-
-		//gameScene_->CreateObject(trans);
-
 		gameScene_->CreateShot(ShotBase::TYPE::BOM, attrckDamage_
 			, VAdd(VAdd(transform_.pos
 				, VScale(transform_.GetForward(), (capsule_->GetRadius() * 3)))
@@ -675,8 +663,6 @@ void Player::Draw(void)
 {
 	auto& nIns = NetManager::GetInstance();
 
-	//const auto& pos = nIns.GetPostion(key_);
-
 	transform_.pos = VAdd(transform_.pos, VScale(transform_.GetForward(), animationController_->GetPos().z));
 	transform_.pos = VAdd(transform_.pos, VScale(transform_.GetRight(), animationController_->GetPos().x));
 	transform_.Update();
@@ -684,20 +670,8 @@ void Player::Draw(void)
 	SyncWeapon();
 
 	// モデルの描画
-	switch (nIns.GetWeapon(key_))
-	{
-	case 0:
-		MV1DrawModel(transform_.modelId);
-		break;
-	case 1:
-		MV1DrawModel(transform_.modelId);
+	MV1DrawModel(transform_.modelId);
 
-		//MV1DrawFrame(transform_.modelId, 67);
-		break;
-	default:
-		MV1DrawModel(transform_.modelId);
-		break;
-	}
 	//武器の描画
 	WeaponDraw();
 
@@ -721,14 +695,8 @@ void Player::Draw(void)
 }
 void Player::DrawUI(int i)
 {
-	
 	auto& nIns = NetManager::GetInstance();
 
-
-	int x = 16;
-	int dy = (i * 16);
-	int scale = 3;
-	int scaleY = 10;
 
 	//自身のUI（他描画なし）
 	if (key_ == nIns.GetSelf().key)
@@ -1279,7 +1247,7 @@ void Player::UpdateDead(void)
 
 	if (animationController_->IsEnd())
 	{
-		transform_.pos = { 1200.0f,0.0f,-5000.0f };
+		transform_.pos = START_POS;
 		hp_ = hpAgo_ = hpMax_ = MAX_HP;
 		AttrckReset();
 		ChangeState(STATE::PLAY);

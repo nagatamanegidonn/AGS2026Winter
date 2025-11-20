@@ -155,7 +155,7 @@ void Boss::Update(void)
 	for (auto& user : users)
 	{
 		const int userDame = nIns.GetNetBossDamage(user.first);
-
+                                      
 		dame += nIns.GetNetBossDamage(user.first);
 		//damage表記//ダメージを受けていたなら
 		if (userDame > 0 && hp_ > 0)

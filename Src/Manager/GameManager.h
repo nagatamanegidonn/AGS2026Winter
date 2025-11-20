@@ -44,7 +44,7 @@ public:
 	void Destroy(void);
 
 	// ゲーム結果の取得
-	GAME_RESULT GetGameResult(void);
+	GAME_RESULT GetGameResult(void) const;
 	// ゲーム結果の設定
 	void SetGameResult(GAME_RESULT result);
 	
@@ -63,7 +63,11 @@ public:
 	// クリア時間の更新
 	void UpdateClearTime(float _deltaTime) { clearTime_ -= _deltaTime; }
 	// クリア時間の取得、設定
-	void SetClearTime(float _time) { clearTime_ = _time; }
+	void SetClearTime(float _time) {
+		clearTime_ = _time;
+		paramRate_ = 0.0f;
+		currentParam_ = clearPramList_.front();
+	}
 	const float GetClearTime(void)const { return clearTime_; }
 
 	// クリア回数の取得、設定
@@ -76,11 +80,11 @@ public:
 	// プレイヤー設定について
 	const int GetControllId(void)const { return ControllerId_; }
 	const int GetWeponId(void)const { return weponId_; }
-	const void SetWeponId(int weponId) { weponId_ = weponId; }
+	const void SetWeponId(int _weponId) { weponId_ = _weponId; }
 
 	// 接続モードについて
 	const bool IsHost(void)const { return IsHost_; }
-	void SetHost(bool value);
+	void SetHost(bool _value);
 
 	
 private:
