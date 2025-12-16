@@ -4,6 +4,17 @@
 #include "../Common/Transform.h"
 #include "Planet.h"
 
+namespace
+{
+	constexpr VECTOR AREA_POS_0 = { 1200.0f,0.0f,-5000.0f };
+	constexpr VECTOR AREA_POS_1 = { 0.0f,0.0f,0.0f };
+	constexpr VECTOR AREA_POS_2 = { 5500.0f,0.0f,4250.0f };
+
+	constexpr VECTOR AREA_MOVE_POS_1to2_0 = { 1600.0f,0.0f,1800.0f };
+	constexpr VECTOR AREA_MOVE_POS_1to2_1 = { 2700.0f,0.0f,3600.0f };
+	constexpr VECTOR AREA_MOVE_POS_1to2_2 = { 4300.0f,0.0f,4300.0f };
+}
+
 Planet::Planet(const Stage::NAME& name, const TYPE& type, const Transform& transform)
 {
 
@@ -20,32 +31,32 @@ Planet::~Planet(void)
 
 void Planet::Init(void)
 {
-	SetArea({ 1200.0f,0.0f,-5000.0f }, 1000.0f, 0);//ベースキャンプ
-	SetArea({ 0.0f,0.0f,0.0f }, 3500.0f, 1);	   //エリア１
-	SetArea({ 5500.0f,0.0f,4250.0f }, 3000.0f, 2); //エリア２
+	SetArea(AREA_POS_0, 1000.0f, 0);	// ベースキャンプ
+	SetArea(AREA_POS_1, 3500.0f, 1);	// エリア１
+	SetArea(AREA_POS_2, 3000.0f, 2);	// エリア２
 
 	lerpPosMap_ = {
 		// エリア１からエリア２へ
 	{"1to2",{
-		{0,{MakeLerpPos({ 1600.0f,0.0f,  1800.0f},0)}},
-		{1,{MakeLerpPos({ 2700.0f,0.0f,3600.0f},1)}},
-		{2,{MakeLerpPos({ 4300.0f,0.0f,4300.0f},2)}},
-		{3,{MakeLerpPos({ 5500.0f,0.0f,4250.0f },3)}}
+		{0,{MakeLerpPos(AREA_MOVE_POS_1to2_0,0)}},
+		{1,{MakeLerpPos(AREA_MOVE_POS_1to2_1,1)}},
+		{2,{MakeLerpPos(AREA_MOVE_POS_1to2_2,2)}},
+		{3,{MakeLerpPos(AREA_POS_2,3)}}
 	}},
 		// エリア２からエリア１へ
 	{"2to1",{
-		{0,{MakeLerpPos({ 4300.0f,0.0f,4300.0f},0)}},
-		{1,{MakeLerpPos({ 2700.0f,0.0f,3600.0f},1)}},
-		{2,{MakeLerpPos({ 1600.0f,0.0f,  1800.0f},2)}},
-		{3,{MakeLerpPos({ 0.0f,0.0f,0.0f },3)}}
+		{0,{MakeLerpPos(AREA_MOVE_POS_1to2_2,0)}},
+		{1,{MakeLerpPos(AREA_MOVE_POS_1to2_1,1)}},
+		{2,{MakeLerpPos(AREA_MOVE_POS_1to2_0,2)}},
+		{3,{MakeLerpPos(AREA_POS_1,3)}}
 	}},
 		// エリア１の位置
 	{"1",{
-		{0,{MakeLerpPos({ 0.0f,0.0f,0.0f},0)}}
+		{0,{MakeLerpPos(AREA_POS_1,0)}}
 	}},
 		// エリア２の位置
 	{"2",{
-		{0,{MakeLerpPos({5500.0f,0.0f,4250.0f},0)}}
+		{0,{MakeLerpPos(AREA_POS_2,0)}}
 	}}
 	};
 }
@@ -60,9 +71,9 @@ void Planet::Draw(void)
 	//std::lerp()
 
 #ifdef _DEBUG
-	DrawSphere3D({1200.0f,0.0f,-5000.0f}, 1000.0f, 10, 0xff0000, 0xff0000, false);
-	DrawSphere3D({0.0f,0.0f,0.0f}, 3500.0f, 10, 0xff0000, 0xff0000, false);
-	DrawSphere3D({5500.0f,0.0f,4250.0f}, 3000.0f, 10, 0xff0000, 0xff0000, false);
+	DrawSphere3D(AREA_POS_0, 1000.0f, 10, 0xff0000, 0xff0000, false);
+	DrawSphere3D(AREA_POS_1, 3500.0f, 10, 0xff0000, 0xff0000, false);
+	DrawSphere3D(AREA_POS_2, 3000.0f, 10, 0xff0000, 0xff0000, false);
 #endif
 }
 
@@ -97,10 +108,9 @@ void Planet::SetArea(VECTOR pos, float rad, int areaId)
 }
 int Planet::CheckAreaId(const VECTOR& pos)
 {
-	//エリアの設定
+	// エリアの設定
 	for (const auto& s : stageArea_)
 	{
-
 		// playerとの衝突判定
 		VECTOR diff = VSub(pos, s.second->pos);
 		float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
@@ -109,18 +119,16 @@ int Planet::CheckAreaId(const VECTOR& pos)
 		{
 			return s.second->areaId;
 		}
-
 	}
-	//エリアに入っていなかったら―１を返す
+	// エリアに入っていなかったら―１を返す
 	return -1;
 }
 
 const bool Planet::CheckArea(const VECTOR pos)
 {
-	//エリアの設定
+	// エリアの設定
 	for (const auto& s : stageArea_)
 	{
-
 		// playerとの衝突判定
 		VECTOR diff = VSub(pos, s.second->pos);
 		float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
@@ -129,9 +137,8 @@ const bool Planet::CheckArea(const VECTOR pos)
 		{
 			return true;
 		}
-
 	}
-	//エリアに入っていなかったら―１を返す
+	// エリアに入っていなかったら―１を返す
 	return false;
 }
 

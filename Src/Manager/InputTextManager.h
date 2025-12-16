@@ -5,6 +5,7 @@ class InputTextArea;
 
 class InputTextManager
 {
+
 public:
 
 	// 明示的にインステンスを生成する

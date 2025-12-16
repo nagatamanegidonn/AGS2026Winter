@@ -84,7 +84,7 @@ void GameManager::Draw(void)
 {
 }
 //@clearTime_‚ªˆê’è‚Ì”’lˆÈ‰º‚É‚È‚Á‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
-void GameManager::ClearDraw(void)
+void GameManager::DrawClear(void)
 {
 	if (clearTime_ <= 2.5f && IsClear())
 	{

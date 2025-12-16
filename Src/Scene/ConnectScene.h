@@ -10,7 +10,8 @@ using json = nlohmann::json;
 class PixelMaterial;
 class PixelRenderer;
 
-class ConnectScene : public SceneBase
+class ConnectScene : 
+	public SceneBase
 {
 
 public:
@@ -18,9 +19,8 @@ public:
 	// ボタンサイズ
 	const int WIDTH = 200;
 	const int HEIGHT = 30;
-
-	int HX = Application::SCREEN_SIZE_X / 2;
-
+	// 画面中心X座標
+	const int HX = Application::SCREEN_SIZE_X / 2;
 	// ボタン位置
 	const int B1_Y = Application::SCREEN_SIZE_Y - 100;
 	const Vector2 B1_S_POS = Vector2(HX - WIDTH / 2, B1_Y - HEIGHT / 2);
@@ -28,7 +28,6 @@ public:
 
 	// コンストラクタ
 	ConnectScene(void);
-
 	// デストラクタ
 	~ConnectScene(void);
 

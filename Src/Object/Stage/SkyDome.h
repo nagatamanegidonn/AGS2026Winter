@@ -3,7 +3,8 @@
 #include "../Common/Transform.h"
 #include "../ActorBase.h"
 
-class SkyDome : public ActorBase
+class SkyDome : 
+	public ActorBase
 {
 
 public:

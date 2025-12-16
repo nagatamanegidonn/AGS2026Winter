@@ -58,8 +58,6 @@ void ResourceManager::Init(void)
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"SkyDome/SkyDome.mv1");
 	resourcesMap_.emplace(SRC::SKY_DOME, std::move(res));
 
-
-
 	// è∞ÉÇÉfÉã
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Planet/Plane.mv1");
 	resourcesMap_.emplace(SRC::PLANE, std::move(res));
@@ -69,7 +67,6 @@ void ResourceManager::Init(void)
 	// ä‚ÉÇÉfÉã
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Planet/Collider.mv1");
 	resourcesMap_.emplace(SRC::COLL, std::move(res));
-
 
 	// â‘ÉÇÉfÉã
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"ItemObject/flour/Chamomile.mv1");
@@ -88,8 +85,6 @@ void ResourceManager::Init(void)
 	res = std::make_unique<RES>(RES_T::IMG, PATH_MDL + L"Item/items/item489.png");
 	resourcesMap_.emplace(SRC::HEEL, std::move(res));
 	
-
-	
 	// ë´âå
 	res = std::make_unique<RES>(RES_T::EFFEKSEER, PATH_EFF + L"Smoke/Smoke.efkefc");
 	resourcesMap_.emplace(SRC::FOOT_SMOKE, std::move(res));
@@ -100,9 +95,9 @@ void ResourceManager::Init(void)
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Sword/Sword Two-Hander Base.mv1");
 	resourcesMap_.emplace(SRC::SWORD2, std::move(res));
 
-	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Wepon/Bow/Bow.mv1");
+	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Weapon/Bow/Bow.mv1");
 	resourcesMap_.emplace(SRC::BOW, std::move(res));	
-	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Wepon/Bow/Arrow.mv1");
+	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"Weapon/Bow/Arrow.mv1");
 	resourcesMap_.emplace(SRC::ARROW, std::move(res));
 
 	// Clear

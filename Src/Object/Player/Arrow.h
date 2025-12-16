@@ -4,6 +4,7 @@
 class Arrow :
     public Player
 {
+
 public:
 
     // ”w’†
@@ -28,14 +29,15 @@ private:
 
     Transform transSubWeapon_;
 
+	// ‰Šú‰»
     void InitParam(void)override;
     void InitAnimation(void) override;
     void InitEffect(void) override;
-
     void InitAttrckSound(void) override;
+    // UŒ‚‰¹Ä¶
     void PlayAttrckSound(void) override;
 
-    void WeaponDraw()override;
+    void DrawWeapon()override;
     void SyncWeaponPlay()override;
     void SyncWeaponBattle()override;
 

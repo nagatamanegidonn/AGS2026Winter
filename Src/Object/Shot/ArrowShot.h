@@ -4,6 +4,7 @@
 class ArrowShot :
     public ShotBase
 {
+
 public:
     // コンストラクタ
     ArrowShot(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key);

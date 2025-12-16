@@ -4,6 +4,7 @@
 
 class HitPart
 {
+
 public:
 
 	HitPart(int& model, std::wstring boneName, float rad, float rate);

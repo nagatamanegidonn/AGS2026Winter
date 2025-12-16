@@ -11,6 +11,7 @@ class AnimationController;
 class ViewPlayer :
     public ActorBase
 {
+
 public:
 
     ViewPlayer();
@@ -23,7 +24,7 @@ public:
 	void Release(void);
 
 	void SetChar(const int charId);
-	void SetWepon(const int weponId);
+	void SetWeapon(const int weponId);
 
 	const void SetPos(const VECTOR pos);
 	const void SetLocalQua(const VECTOR rot);
@@ -33,11 +34,9 @@ private:
 	// ƒ‚ƒfƒ‹§Œä‚ÌŠî–{î•ñ(•Ší—p)
 	Transform transWeapon_;
 
-
-
 	// ó‘ÔŠÇ—(ó‘Ô‘JˆÚ‰Šúˆ—)
-	std::map<int, std::function<void(void)>> SetWepon_;
-	std::function<void(void)> weponUpdate_;
+	std::map<int, std::function<void(void)>> SetWeapon_;
+	std::function<void(void)> updateWeapon_;
 
 	std::unique_ptr<AnimationController> animationController_;
 

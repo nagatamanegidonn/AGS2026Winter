@@ -5,6 +5,7 @@
 
 class HitDamage
 {
+
 public:
 
 	// ƒ‰ƒ“ƒ_ƒ€ˆÊ’u•â³‚Ì”ÍˆÍ

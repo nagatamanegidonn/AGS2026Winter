@@ -30,11 +30,9 @@ Object::~Object(void)
 
 void Object::Init(void)
 {
-
 	transform_.Update();
 
 	ChangeState(state_);
-
 }
 
 void Object::Update(void)
@@ -43,7 +41,6 @@ void Object::Update(void)
 
 	// 更新ステップ
 	stateUpdate_();
-
 }
 
 void Object::Draw(void)
@@ -54,13 +51,11 @@ void Object::Draw(void)
 
 void Object::ChangeState(STATE state)
 {
-
 	// 状態変更
 	state_ = state;
 
 	// 各状態遷移の初期処理
 	stateChanges_[state_]();
-
 }
 
 void Object::ChangeStateNone(void)

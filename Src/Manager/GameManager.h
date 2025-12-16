@@ -10,6 +10,7 @@ using json = nlohmann::json;
 
 class GameManager
 {
+
 public:
 
 	// クリアパラメータ
@@ -40,7 +41,7 @@ public:
 	void Init(void);
 	void Update(void);
 	void Draw(void);
-	void ClearDraw(void);
+	void DrawClear(void);
 	void Destroy(void);
 
 	// ゲーム結果の取得
@@ -79,8 +80,8 @@ public:
 
 	// プレイヤー設定について
 	const int GetControllId(void)const { return ControllerId_; }
-	const int GetWeponId(void)const { return weponId_; }
-	const void SetWeponId(int _weponId) { weponId_ = _weponId; }
+	const int GetWeaponId(void)const { return weponId_; }
+	const void SetWeaponId(int _weponId) { weponId_ = _weponId; }
 
 	// 接続モードについて
 	const bool IsHost(void)const { return IsHost_; }

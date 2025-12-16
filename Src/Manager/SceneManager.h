@@ -4,7 +4,6 @@
 #include <list>
 #include <DxLib.h>
 
-
 class Fader;
 class SceneBase;
 class Camera;

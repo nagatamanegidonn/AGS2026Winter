@@ -8,6 +8,7 @@ class ItemBase;
 
 class ItemPoach
 {
+
 public:
 
 	ItemPoach(void);

@@ -4,6 +4,7 @@
 
 class SoundManager
 {
+
 public:
 	//ƒŠƒ\[ƒX–¼
 	enum class SRC

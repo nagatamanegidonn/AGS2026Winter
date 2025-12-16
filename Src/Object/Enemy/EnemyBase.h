@@ -14,6 +14,7 @@ class HitDamage;
 class EnemyBase :
     public CharaBase
 {
+
 public:
 
 	EnemyBase(void);
@@ -43,7 +44,6 @@ protected:
 	std::unique_ptr<EffectController> effectController_;
 	std::unique_ptr<SoundController> soundController_;
 
-
 	//当たり判定（複数）
 	std::vector<std::unique_ptr<HitPart>> hitParts_;
 	//ダメージ表記用変数
@@ -52,11 +52,9 @@ protected:
 	//アニメーションの追加、設定
 	void AddHitPart(int& model, std::wstring boneName, float rad, float rate);
 
-
 	// 体力
 	int hp_;
 	int hpMax_;
-
 
 	//ターゲットプレイヤー
 	const Transform* follow_;
@@ -65,7 +63,6 @@ protected:
 	//ターゲット回転
 	float rotateTimer_ = 0.0f;          // 回転間隔のためのタイマー
 	const float rotateInterval_ = 1.6f; // 例：0.2秒ごとに向き直す
-
 
 	//カプセル
 	std::unique_ptr<Capsule> capsule_;

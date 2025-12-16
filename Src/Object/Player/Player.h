@@ -23,7 +23,8 @@ class PixelRenderer;
 class SceneBase;
 class GameScene;
 
-class Player : public CharaBase
+class Player : 
+	public CharaBase
 {
 
 public:
@@ -35,42 +36,33 @@ public:
 	// 右手
 	static constexpr VECTOR GSOWRD_HAND_ROT = { 160.0f, 20.0f, 45.0f };
 	static constexpr VECTOR GSOWRD_HAND_POS = { 0.0f, 0.0f, 0.0f };
-
 	// ローカル回転
-	static constexpr VECTOR WEPON_LOCAL_ROT =
-	{ 160.0f, 180.0f,0.0f };
-
+	static constexpr VECTOR WEPON_LOCAL_ROT = { 160.0f, 180.0f,0.0f };
 	// 回転完了までの時間
 	static constexpr float TIME_ROT = 0.1f;
 	static constexpr float TIME_ROT2 = 10.0f;
-
 	static constexpr float CHAGE_MAX_TIME = 3.0f;
 	static constexpr float INVISIBLE_SMALL_TIME = 0.5f;
 	static constexpr float INVISIBLE_BIG_TIME = 2.5f;
-
 	// スピード
 	static constexpr float SPEED_MOVE = 5.0f;
 	static constexpr float SPEED_RUN = 10.0f;
 	static constexpr float SPEED_JUMP = SPEED_RUN * 8;
 	static constexpr float SPEED_ROLL = 15.0f;
-
-
 	// 煙エフェクト発生間隔
 	static constexpr float FOOT_SMOKE = 0.3f;
 	static constexpr float FAST_FOOT_SMOKE = 0.4f;
-
 	// 最大ＨＰ
 	static constexpr int MAX_HP = 100;
 	static constexpr int MAX_STAMINA = 100;
 	static constexpr float UP_TAF = 12.0f;	//スタミナ回復量
 	static constexpr float DOWN_TAF = -3.0f;//スタミナ減少量
 	static constexpr float ROLL_TAF = 25.0f;//スタミナ消費量（回避）
-
-	static constexpr float COLL_LEG_RATE = 40;
-	static constexpr float DOWN_MAX = 1.2f;
-
+	// 当たり判定倍率
+	static constexpr float COLL_LEG_RATE = 40;	// 脚当たり判定倍率
+	static constexpr float DOWN_MAX = 1.2f;		// ダウン最大時間
+	// 索敵範囲
 	static constexpr float MAX_EAR_RADIUS = 1000.0f;
-
 
 	// 状態
 	enum class STATE
@@ -170,10 +162,8 @@ public:
 	virtual void DrawUI(int i);
 	void Release(void);
 
-	
-
 	// 座標の取得
-	const Transform& GetTransWepon(void) const { return transWeapon_; }
+	const Transform& GetTransWeapon(void) const { return transWeapon_; }
 
 	const int GetKey(void) const { return key_; }
 
@@ -237,8 +227,8 @@ protected:
 
 	// 抜刀状態管理
 	bool isBattle_;		// 抜刀中か判断する
-	bool isDrawWepon_;	// 抜刀動作中か判断する
-	bool isCloseWepon_;	// 納刀動作中か判断する
+	bool isDrawWeapon_;	// 抜刀動作中か判断する
+	bool isCloseWeapon_;	// 納刀動作中か判断する
 
 	// 攻撃管理
 	bool isHit_;		// ダメージが連続で入らないための判定//攻撃中一度ダメージを与えてらtrueに
@@ -267,7 +257,7 @@ protected:
 
 	// カプセル
 	std::unique_ptr<Capsule> capsule_;
-	std::shared_ptr<Capsule> capsuleWepon_;
+	std::shared_ptr<Capsule> capsuleWeapon_;
 
 	// 衝突チェック
 	VECTOR gravHitPosDown_; //← 衝突用線分
@@ -314,13 +304,14 @@ protected:
 	virtual void InitEffect(void);
 	virtual void InitSound(void);
 	virtual void InitAttrckSound(void);
+	// 攻撃音再生
 	virtual void PlayAttrckSound(void);
 
 	// 状態遷移
 	void ChangeState(STATE state);
 	void ChangeStateNone(void);
 	void ChangeStatePlay(void);
-	void ChangeStateWepon(void);
+	void ChangeStateWeapon(void);
 	void ChangeStateBattle(void);
 	void ChangeStateAttrck(void);
 	void ChangeStateRowling(void);
@@ -334,7 +325,7 @@ protected:
 	void UpdateNone(void);
 	void UpdatePlay(void);
 	void UpdateBattle(void);
-	void UpdateWepon(void);
+	void UpdateWeapon(void);
 	void UpdateAttrck(void);
 	void UpdateRowling(void);
 	void UpdateDamage(void);
@@ -355,9 +346,10 @@ protected:
 	void Rotate(void);
 	float CreateRad(const VECTOR& dir);
 
-	//武器の同期
+	// 武器の描画
+	virtual void DrawWeapon();
+	// 武器の同期
 	const void SyncWeapon();
-	virtual void WeaponDraw();
 	virtual void SyncWeaponPlay();
 	virtual void SyncWeaponBattle();
 
@@ -373,11 +365,10 @@ protected:
 	const void SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offsetRot, const VECTOR& offsetPos,
 		const Transform& modelTransform, Transform& outWeaponTransform);
 
-	//最終更新
+	// 最終更新
 	void CollisionStageCapsule(void)override;
 	void CollisionGravity(void)override;
 
-	
 	// モーション終了
 	bool IsEndLanding(void);
 	// 操作可能か

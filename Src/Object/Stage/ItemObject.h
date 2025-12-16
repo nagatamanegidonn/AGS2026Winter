@@ -4,9 +4,10 @@
 #include "Stage.h"
 
 
-class ItemObject
-	:public Object
+class ItemObject :
+	public Object
 {
+
 public:
 
 	// コンストラクタ

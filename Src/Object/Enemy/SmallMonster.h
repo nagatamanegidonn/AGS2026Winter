@@ -5,19 +5,18 @@
 class SmallMonster :
     public EnemyBase
 {
+
 public:
 
 	// 回転完了までの時間
 	static constexpr float TIME_ROT = 1.0f;
 	static constexpr float TIME_ROT2 = 10.0f;
-
+	// スケールサイズ
 	static constexpr float SCALE_SIZE = 2.0f;
-
 	// スピード
 	static constexpr float SPEED_MOVE = 4.5f;
 	static constexpr float SPEED_FOLLOW = 12.0f;
 	static constexpr float SPEED_RUN = 15.0f;
-
 	// 判定用半径
 	static constexpr float MOVE_RADIUS = 2250.0f;
 	static constexpr float DASH_RADIUS = 1500.0f;
@@ -25,12 +24,9 @@ public:
 	static constexpr float ATTRCK_BITE_RADIUS = 150.0f;
 	static constexpr float ATTRCK_STAMP_RADIUS = 300.0f;
 	// 視野関係
-	static constexpr float FOV_RADIUS = 30.0f;		// 視野角
-
-
+	static constexpr float FOV_RADIUS = 30.0f;	// 視野角
 	// 最大ＨＰ
 	static constexpr int MAX_HP = 75;
-
 	// 攻撃関係
 	static constexpr int ATTRCK_STAMP = 34;
 

@@ -5,6 +5,7 @@
 
 class Sound
 {
+
 public:
 
 	// サウンドタイプ

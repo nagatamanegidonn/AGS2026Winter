@@ -30,7 +30,6 @@ void ItemObject::Update(void)
 	{
 		player_.SetItemId(itemId_);
 	}
-
 }
 
 void ItemObject::Draw(void)

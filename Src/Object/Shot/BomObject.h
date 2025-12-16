@@ -4,6 +4,7 @@
 class BomObject :
     public ShotBase
 {
+
 public:
     // コンストラクタ
     BomObject(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key);

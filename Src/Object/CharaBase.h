@@ -4,10 +4,23 @@
 #include <memory>
 #include "ActorBase.h"
 
-class CharaBase abstract:
-    public ActorBase
+class CharaBase abstract :
+	public ActorBase
 {
+
 public:
+
+
+	// アニメーション情報構造体
+	struct AnimationInfo
+	{
+		int type;
+		std::wstring name;
+		float speed;
+		int loopNum;
+		float startFrame;
+		float endFrame;
+	};
 	// アニメーションデータ
 	struct AttrckData
 	{

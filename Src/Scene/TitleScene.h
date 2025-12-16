@@ -15,11 +15,13 @@ class ViewPlayer;
 class PixelMaterial;
 class PixelRenderer;
 
-class TitleScene : public SceneBase
+class TitleScene : 
+	public SceneBase
 {
 
 public:
 
+	// メニュー選択肢
 	enum class MENU
 	{
 		USER_SELECT,
@@ -28,7 +30,8 @@ public:
 		GAME_START,
 		MAX,
 	};
-	
+
+	// 武器選択肢
 	enum class WEPON_ID
 	{
 		BLONZ_SOERD,
@@ -37,12 +40,12 @@ public:
 		MAX,
 	};
 
+	// ボタン位置情報
 	struct PosTri
 	{
 		std::wstring  Name = L"";
 		int WIDTH = 0;
 		int HEIGHT = 0;
-
 		Vector2 CenterPos;
 		Vector2 StartPos;
 		Vector2 EndPos;
@@ -51,25 +54,22 @@ public:
 	// ボタンサイズ
 	const int WIDTH = 200;
 	const int HEIGHT = 30;
-
+	// 画面中心位置
 	int HX = Application::SCREEN_SIZE_X / 2;
 	int HY = Application::SCREEN_SIZE_Y / 2;
-
 	// ボタン位置
 	const int B1_Y = Application::SCREEN_SIZE_Y - 100;
 	const Vector2 B1_C_POS = Vector2(845, 80 );
 	const Vector2 B1_S_POS = Vector2(B1_C_POS.x - WIDTH / 2, B1_C_POS.y - HEIGHT / 2);
 	const Vector2 B1_E_POS = Vector2(B1_C_POS.x + WIDTH / 2, B1_C_POS.y + HEIGHT / 2);
-
-
+	// IPアドレスボタンPos
 	const Vector2 IP_C_POS = Vector2(845, 80 + 60);
 	const Vector2 IP_S_POS = Vector2(IP_C_POS.x - WIDTH / 2, IP_C_POS.y - HEIGHT / 2);
 	const Vector2 IP_E_POS = Vector2(IP_C_POS.x + WIDTH / 2, IP_C_POS.y + HEIGHT / 2);
-	
+	// weaponボタンPos
 	const Vector2 WP_C_POS = Vector2(IP_C_POS.x, IP_C_POS.y + 60);
 	const Vector2 WP_S_POS = Vector2(WP_C_POS.x - WIDTH / 2, WP_C_POS.y - HEIGHT / 2);
 	const Vector2 WP_E_POS = Vector2(WP_C_POS.x + WIDTH / 2, WP_C_POS.y + HEIGHT / 2);
-
 	// startボタンPos
 	const int B2_Y = B1_Y + 40;
 	const Vector2 B2_C_POS = Vector2(HX, B2_Y);
@@ -78,7 +78,6 @@ public:
 
 	// コンストラクタ
 	TitleScene(void);
-
 	// デストラクタ
 	~TitleScene(void);
 
@@ -107,13 +106,13 @@ private:
 	// パッド操作
 	std::function<void(void)> padUpdate_;
 	void PNormalUpdate(void);
-	void PWeponUpdate(void);
+	void PWeaponUpdate(void);
 	void PIpUpdate(void);
 
 	// マウス操作
 	std::function<void(void)> mouseUpdate_;
 	void MouseUpdate(void);
-	void MWeponUpdate(void);
+	void MWeaponUpdate(void);
 	// 前回のマウス情報
 	Vector2 agoMousePos_;
 	bool agoMouseTrg_;
@@ -143,6 +142,7 @@ private:
 
 	const bool IsTrggerdMleft(void)const;
 
+	// ボタン位置追加
 	void AddPosTri(std::wstring name, int weponId, const Vector2 size
 		, const Vector2 cPos);
 };

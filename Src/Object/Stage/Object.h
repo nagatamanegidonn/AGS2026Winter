@@ -11,11 +11,11 @@ class ModelMaterial;
 class ModelRenderer;
 
 class Object :
-    public ActorBase
+	public ActorBase
 {
 
 public:
-	
+
 	// 回転速度
 	static constexpr float SPEED_ROT_IDLE = 3.0f;
 	static constexpr float SPEED_ROT_RESERVE = 15.0f;
@@ -44,7 +44,7 @@ public:
 
 protected:
 
-	
+
 	// プレイヤー
 	Player& player_;
 

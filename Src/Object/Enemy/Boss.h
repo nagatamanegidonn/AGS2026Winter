@@ -16,7 +16,8 @@ class HitDamage;
 class SceneBase;
 class GameScene;
 
-class Boss : public EnemyBase
+class Boss : 
+	public EnemyBase
 {
 
 public:
@@ -24,20 +25,16 @@ public:
 	// 回転完了までの時間
 	static constexpr float TIME_ROT = 1.0f;
 	static constexpr float TIME_ROT2 = 10.0f;
-
 	// スケールサイズ
 	static constexpr float SCALE_SIZE = 3.0f;
-
 	// スピード
 	static constexpr float SPEED_MOVE = 4.5f;
 	static constexpr float SPEED_FOLLOW= 12.0f;
 	static constexpr float SPEED_RUN = 15.0f;
-
 	// 加速(accelerator=アクセレレーター)
 	static constexpr float MOVE_ACC = 0.25f;
 	// 減速(decelerate=ディセラレイト)
 	static constexpr float MOVE_DEC = 0.05f;
-
 	//判定用半径
 	static constexpr float MOVE_RADIUS = 2250.0f;
 	static constexpr float DASH_RADIUS = 1500.0f;
@@ -50,17 +47,12 @@ public:
 	static constexpr float FOV_RADIUS_FLASH = 180.0f;	// 視野
 	// LERP移動関係(エリア移動)
 	static constexpr float MAX_LERP_TIME = 20.0f;		// 在中時間
-
-
 	// 最大ＨＰ
 	static constexpr int MAX_HP = 200;
-
 	// 攻撃関係
 	static constexpr int ATTRCK_CLOW = 28;
 	static constexpr int ATTRCK_STAMP= 34;
 	static constexpr int ATTRCK_DASH = 25;
-
-
 
 	// 状態
 	enum class STATE
@@ -115,9 +107,6 @@ public:
 		TACKLE,
 	};
 
-
-
-
 	// コンストラクタ
 	Boss(int key);
 
@@ -163,13 +152,11 @@ public:
 	// スタン状態開始
 	void StartStunned(void);
 
-
 	// BGM用バトル常態化の判定
 	bool IsBattle(void) const;
 
 private:
 
-	
 	// 状態管理
 	STATE state_;
 	int animeType_;

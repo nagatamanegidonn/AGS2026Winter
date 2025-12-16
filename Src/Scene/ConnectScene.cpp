@@ -74,7 +74,7 @@ void ConnectScene::Update(void)
 	const auto& users = NetManager::GetInstance().GetNetUsers();
 
 	// •Šíî•ñ‚Ì‘—M
-	nIns.SetWeapon(NetManager::GetInstance().GetSelf().key, GameManager::GetInstance().GetWeponId());
+	nIns.SetWeapon(NetManager::GetInstance().GetSelf().key, GameManager::GetInstance().GetWeaponId());
 
 	const InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(GameManager::GetInstance().GetControllId());
 
@@ -88,7 +88,7 @@ void ConnectScene::Update(void)
 	int i = 0;
 	for (const auto& users : players)
 	{
-		players_.at(i)->SetWepon(nIns.GetWeapon(users.second.key));
+		players_.at(i)->SetWeapon(nIns.GetWeapon(users.second.key));
 		i++;
 	}
 
@@ -258,7 +258,7 @@ void ConnectScene::AddPlayer(const VECTOR pos, const VECTOR rot)
 	auto player_ = std::make_unique<ViewPlayer>();
 	player_->Init();
 	player_->SetChar(0);
-	player_->SetWepon(GameManager::GetInstance().GetWeponId());
+	player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 	player_->SetPos(pos);
 	player_->SetLocalQua(rot);
 	player_->Update();

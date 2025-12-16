@@ -60,6 +60,8 @@ void Camera::SetBeforeDraw(void)
 		break;
 	case Camera::MODE::FOLLOW:
 		SetBeforeDrawFollow();
+		// 注視点を前方方向に設定
+		ChangeLightTypeDir(VNorm(VSub(targetPos_, pos_)));
 		break;
 	case Camera::MODE::FPS:
 		SyncFollowFPS();
@@ -71,7 +73,7 @@ void Camera::SetBeforeDraw(void)
 	{
 		UpdateShake();
 	}
-
+	
 	// カメラの設定(位置と注視点による制御)
 	SetCameraPositionAndTargetAndUpVec(
 		pos_, 

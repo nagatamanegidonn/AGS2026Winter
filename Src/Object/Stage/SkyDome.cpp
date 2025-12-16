@@ -6,9 +6,7 @@
 
 SkyDome::SkyDome(const Transform& syncTransform) : syncTransform_(syncTransform)
 {
-
 	state_ = STATE::NONE;
-	
 }
 
 SkyDome::~SkyDome(void)
@@ -65,7 +63,6 @@ void SkyDome::Update(void)
 		UpdateFollow();
 		break;
 	}
-
 }
 
 void SkyDome::Draw(void)
@@ -92,7 +89,6 @@ void SkyDome::ChangeState(STATE state)
 		ChangeStateFollow();
 		break;
 	}
-
 }
 
 void SkyDome::ChangeStateNone(void)

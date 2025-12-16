@@ -3,7 +3,8 @@
 #include "../ActorBase.h"
 #include "Stage.h"
 
-class Planet : public ActorBase
+class Planet : 
+	public ActorBase
 {
 
 public:

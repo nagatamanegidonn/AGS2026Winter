@@ -25,7 +25,6 @@ RefreshScene::~RefreshScene(void)
 
 void RefreshScene::Init(void)
 {
-
 	stepCountDown_ = 3.0f;
 
 	SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FIXED_POINT);
@@ -64,10 +63,7 @@ void RefreshScene::Draw(void)
 {
 
 #ifdef _DEBUG
-
-
 #endif
-
 
 	SceneManager& sns = SceneManager::GetInstance();
 	GameManager& gns = GameManager::GetInstance();
@@ -78,7 +74,6 @@ void RefreshScene::Draw(void)
 	int cx = Application::SCREEN_SIZE_X / 2;
 	int cy = Application::SCREEN_SIZE_Y / 2;
 
-	
 	SetFontSize(64);
 
 	switch (gns.GetGameResult())
@@ -95,7 +90,6 @@ void RefreshScene::Draw(void)
 		msg3 = L"TIME_UP";
 		break;
 	}
-
 
 	int len = (int)wcslen(msg3.c_str());
 	int width = GetDrawStringWidth(msg3.c_str(), len);

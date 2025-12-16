@@ -38,8 +38,8 @@ void ViewPlayer::Init(void)
 	transWeapon_.quaRotLocal =
 		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
 	transWeapon_.Update();
-	weponUpdate_ = std::bind(&ViewPlayer::SyncWeaponAxe, this);
-	weponUpdate_();
+	updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponAxe, this);
+	updateWeapon_();
 
 	weponId_ = -1;
 }
@@ -48,7 +48,7 @@ void ViewPlayer::Update(void)
 	transform_.Update();
 
 	animationController_->Update();
-	weponUpdate_();
+	updateWeapon_();
 }
 void ViewPlayer::Draw(void)
 {
@@ -95,7 +95,7 @@ void ViewPlayer::SetChar(const int charId)
 
 }
 
-void ViewPlayer::SetWepon(const int weponId)
+void ViewPlayer::SetWeapon(const int weponId)
 {
 	if (weponId_ == weponId) { return; }
 
@@ -118,7 +118,7 @@ void ViewPlayer::SetWepon(const int weponId)
 			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
 		transWeapon_.Update();
 
-		weponUpdate_ = std::bind(&ViewPlayer::SyncWeaponAxe, this);
+		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponAxe, this);
 		break;
 	case 1:// óºéËåï
 		transWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Sword/Sword Two-Hander Base.mv1").c_str());
@@ -131,10 +131,10 @@ void ViewPlayer::SetWepon(const int weponId)
 			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
 		transWeapon_.Update();
 
-		weponUpdate_ = std::bind(&ViewPlayer::SyncWeaponGreatSowrd, this);
+		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponGreatSowrd, this);
 		break;
 	case 2:// ã|
-		transWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Wepon/Bow/Bow.mv1").c_str());
+		transWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Weapon/Bow/Bow.mv1").c_str());
 
 		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
 		// èâä˙ç¿ïW
@@ -144,13 +144,13 @@ void ViewPlayer::SetWepon(const int weponId)
 			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
 		transWeapon_.Update();
 
-		weponUpdate_ = std::bind(&ViewPlayer::SyncWeaponBow, this);
+		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponBow, this);
 		break;
 	case 3:
 		break;
 	}
 	
-	weponUpdate_();
+	updateWeapon_();
 }
 
 const void ViewPlayer::SetPos(const VECTOR pos)

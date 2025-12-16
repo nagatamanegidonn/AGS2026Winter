@@ -24,6 +24,7 @@
 
 namespace
 {
+
 	constexpr float ROT_RATE = 3.0f;//2.0f;
 }
 
@@ -51,36 +52,37 @@ Boss::Boss(int key)
 	stateChanges_.emplace(STATE::DAMAGE, std::bind(&Boss::ChangeStateDamage, this));
 	stateChanges_.emplace(STATE::DEAD, std::bind(&Boss::ChangeStateDead, this));
 
-	//攻撃情報
+	// 攻撃情報
 	attrckCount_ = 0;
 	attrckTypeState_ = ATTRCK_TYPE::NONE;
 	attrckDamage_ = 0;
-	//追跡対象
+	// 追跡対象
 	follow_ = nullptr;
 	followTime_ = 0.0f;
-	//攻撃位置
+	// 攻撃位置
 	attrckPos_ = AsoUtility::VECTOR_ZERO;
 	dameRate_ = 1.0f;
 
-	//当たり判定
+	// 当たり判定
 	hitParts_.clear();
-	AddHitPart(transform_.modelId, L"Chest_M",ATTRCK_BITE_RADIUS, 1.0f);//胴体
-	AddHitPart(transform_.modelId, L"Root_M",90.0f,1.5f);//お尻
-	AddHitPart(transform_.modelId, L"Spine2_M", 120.0f, 1.2f);//腰
-	AddHitPart(transform_.modelId, L"Tongue1_M",120.0f, 1.0f);//胸
-	//左前足
+	AddHitPart(transform_.modelId, L"Chest_M",ATTRCK_BITE_RADIUS, 1.0f);// 胴体
+	AddHitPart(transform_.modelId, L"Root_M",90.0f,1.5f);				// 尻
+	AddHitPart(transform_.modelId, L"Spine2_M", 120.0f, 1.2f);			// 腰
+	AddHitPart(transform_.modelId, L"Tongue1_M",120.0f, 1.0f);			// 胸
+	// 左前足
 	AddHitPart(transform_.modelId, L"Shoulder_L", 75.0f, 0.5f);
 	AddHitPart(transform_.modelId, L"ElbowPart1_L", 75.0f, 0.5f);
-	//左前足
+	// 左前足
 	AddHitPart(transform_.modelId, L"Shoulder_R", 75.0f, 0.5f);
 	AddHitPart(transform_.modelId, L"ElbowPart1_R", 75.0f, 0.5f);
-	//左後足
+	// 左後足
 	AddHitPart(transform_.modelId, L"Hip_L", 75.0f, 1.0f);
 	AddHitPart(transform_.modelId, L"Knee_L", 75.0f, 1.0f);
-	//左後足
+	// 左後足
 	AddHitPart(transform_.modelId, L"Hip_R", 75.0f, 1.0f);
 	AddHitPart(transform_.modelId, L"Knee_R", 75.0f, 1.0f);
 
+	// LERP移動関係
 	lerpTime_ = MAX_LERP_TIME;
 	waypoint_ = AsoUtility::VECTOR_ZERO;
 	isLerp_ = false;
@@ -241,11 +243,9 @@ void Boss::Update(void)
 
 		if (stateTime_ >= 0.0f)stateTime_ -= SceneManager::GetInstance().GetDeltaTime();
 
-
 		// 重力方向に沿って回転させる
 		transform_.quaRot = Quaternion();//grvMng_がないので代わりに
 		transform_.quaRot = transform_.quaRot.Mult(playerRotY_);
-
 
 		// 位置送信もここでOK（ProcessMove内でも呼ばれてるけど念のため）
 		nIns.SetBoss(key_, transform_.pos, transform_.quaRot, animeType_, (int)state_);
@@ -470,7 +470,7 @@ const bool Boss::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 		
 		// 衝突した複数のポリゴンと衝突回避するまで、
 		// プレイヤーのdamage
-		 // 当たったかどうかで処理を分岐
+		// 当たったかどうかで処理を分岐
 		if (_capsule.lock()->IsHitSphere(part->GetPos(), part->GetRadius()))
 		{
 
@@ -491,12 +491,6 @@ const bool Boss::CollisionAttrck(const int& modelId)
 {
 
 	auto& nIns = NetManager::GetInstance();
-	/*if (animeType_==(int)ANIM_TYPE::ATTRCK_BITE)
-	{
-		attrckType_ = (int)ANIM_TYPE::ATTRCK_BITE;
-		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, "TongueEnd_M");//牙攻撃用
-		attrckRadius = ATTRCK_BITE_RADIUS;
-	}*/
 	if (animeType_==(int)ANIM_TYPE::ATTRCK_STAMP)
 	{
 		attrckType_ = (int)ANIM_TYPE::ATTRCK_STAMP;
@@ -551,7 +545,7 @@ const bool Boss::CollisionAttrck(const int& modelId)
 
 	// 衝突した複数のポリゴンと衝突回避するまで、
 	// プレイヤーのdamage
-	 // 当たったかどうかで処理を分岐
+	// 当たったかどうかで処理を分岐
 	if (hits.HitNum >= 1)
 	{
 		// 当たった場合は衝突の情報を描画する
@@ -613,31 +607,31 @@ void Boss::InitAnimation(void)
 
 	std::wstring path = Application::PATH_MODEL + L"Enemy/Boss/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
+	// 通常アニメーション
 	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Boss.mv1", 20.0f, 0);
 	animationController_->Add((int)ANIM_TYPE::RUN, path + L"Boss.mv1", 30.0f, 6);
 	animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"Boss.mv1", 30.0f, 2);
-
+	// 攻撃アニメーション
 	animationController_->Add((int)ANIM_TYPE::READY_ATTRCK, path + L"Boss.mv1", 1.2f, 12, 0.0f, 1.5f);
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK_BITE, path + L"Boss.mv1", 30.0f, 9);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK_STAMP, path + L"Boss.mv1", 25.0f, 10);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK_L_CLOW, path + L"Boss.mv1", 20.0f, 8);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK_R_CLOW, path + L"Boss.mv1", 20.0f, 5);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK_DASH, path + L"Boss.mv1", 40.0f, 2);
-	
+	// 被ダメージアニメーション
 	animationController_->Add((int)ANIM_TYPE::STUNNED, path + L"Boss.mv1", 30.0f, 14);
 	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Boss.mv1", 30.0f, 13);
 
-	//atkData_.emplace((int)ANIM_TYPE::ATTRCK_BITE, std::move(SetAtrckData(-1, 4.0f, 15.0f)));
+	// 攻撃データの設定
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK_STAMP, std::move(SetAtrckData(-1, 17.0f, 24.0f)));
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK_L_CLOW, std::move(SetAtrckData(-1, 9.0f, 17.0f)));
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK_R_CLOW, std::move(SetAtrckData(-1, 9.0f, 17.0f)));
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK_DASH, std::move(SetAtrckData(-1, 0.0f, 22.5f)));
 
+	// ブレンド設定
 	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_IDLE, true, 5.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK_STAMP, true, 1.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::STUNNED, true, 3.0f);
 
-	//animationController_->Play((int)ANIM_TYPE::IDLE);
 	animationController_->Play((int)ANIM_TYPE::RUN);
 	animeType_ = (int)ANIM_TYPE::RUN;
 	animeAgoType_ = animeType_;
@@ -646,7 +640,6 @@ void Boss::InitEffect(void)
 {
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
-
 
 	effectController_->Add(0, path + L"Dash/Dash.efkefc");
 	effectController_->Add(1, path + L"Damage/Damage.efkefc");
@@ -666,7 +659,6 @@ void Boss::InitSound(void)
 
 void Boss::ChangeState(STATE state)
 {
-
 	// 状態変更
 	state_ = state;
 
@@ -674,7 +666,6 @@ void Boss::ChangeState(STATE state)
 
 	// 各状態遷移の初期処理
 	stateChanges_[state_]();
-
 }
 void Boss::ChangeStateNone(void)
 {
@@ -739,11 +730,11 @@ void Boss::ChangeStateDead(void)
 
 #pragma region StateごとのUpdate
 
-//stateがNONEの時のUpdate
+// stateがNONEの時のUpdate
 void Boss::UpdateNone(void)
 {
 }
-//stateがPLAYの時のUpdate
+// stateがPLAYの時のUpdate
 void Boss::UpdatePlay(void)
 {
 	animationController_->Play((int)ANIM_TYPE::RUN);
@@ -752,7 +743,7 @@ void Boss::UpdatePlay(void)
 	VECTOR axis = AsoUtility::VECTOR_ZERO;
 	axis.y = 1.0f;
 
-	//回転
+	// 回転
 	if (!AsoUtility::EqualsVZero(axis)){
 		playerRotY_ = playerRotY_.Mult(
 			Quaternion::AngleAxis(
@@ -785,7 +776,7 @@ void Boss::UpdateLerpMove(void)
 	const VECTOR diff = VSub(transform_.pos, waypoint_);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
-	//視線の先に至らに変更予定
+	// 視線の先に至らに変更予定
 	if (disPow < ATTRCK_RADIUS * ATTRCK_BITE_RADIUS)//攻撃半径×攻撃半径
 	{
 		isLerp_ = false;
@@ -795,27 +786,26 @@ void Boss::UpdateLerpMove(void)
 		isLerp_ = true;
 	}
 }
-//stateがBATTLEの時のUpdate
+// stateがBATTLEの時のUpdate
 void Boss::UpdateBattle(void)
 {
 
 	// タイマー更新
 	rotateTimer_ -= SceneManager::GetInstance().GetDeltaTime(); // フレームの経過時間を使う（環境によって異なります）
-	if (lerpTime_ >= 0.0f)lerpTime_ -= SceneManager::GetInstance().GetDeltaTime()*2.0f;
+	if (lerpTime_ >= 0.0f)lerpTime_ -= SceneManager::GetInstance().GetDeltaTime() * 2.0f;
 
 	// 一定時間ごとに回転処理
 	if (rotateTimer_ <= 1.0f)
 	{
-		//ターゲットに向けて回転
+		// ターゲットに向けて回転
 		TargetRotate(follow_->pos, 0.3f);
 		if (rotateTimer_ <= 0.0f)
 		{
 			rotateTimer_ = rotateInterval_; // リセット
 		}
-		//この時の回転は歩く
+		// この時の回転は歩く
 		animationController_->Play((int)ANIM_TYPE::RUN);
 		animeType_ = (int)ANIM_TYPE::RUN;
-
 	}
 	else
 	{
@@ -824,36 +814,36 @@ void Boss::UpdateBattle(void)
 	}
 
 
-	//攻撃方法
+	// 攻撃方法
 	attrckTypeState_ = ATTRCK_TYPE::NONE;
 
 	// playerとの衝突判定
 	float disPow = AsoUtility::GetDisPow(transform_.pos, follow_->pos);
 
-	//視線の先に至らに変更予定
-	if (stateTime_ < 0.0f || (IsTargetInFOV(follow_->pos, FOV_RADIUS) && stateTime_ < 1.0f)) {
-
-		if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))//攻撃半径×攻撃半径
+	// 視線の先に至らに変更予定
+	if (stateTime_ < 0.0f || (IsTargetInFOV(follow_->pos, FOV_RADIUS) && stateTime_ < 1.0f)) 
+	{
+		if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))
 		{
 			if ((int)disPow % 2 == 0)
 			{
-				//攻撃方法
+				// 攻撃方法
 				attrckTypeState_ = ATTRCK_TYPE::BITE;
 			}
 			else
 			{
-				//攻撃方法
+				// 攻撃方法
 				attrckTypeState_ = ATTRCK_TYPE::CLOW_R;
 				attrckCount_ = 3;
 			}
-
+			// 攻撃準備へ
 			ChangeState(STATE::ATTRCK_READY);
 		}
-		//プレイヤーが索敵範囲内	//回り続けると回転だけなので突進を絡める
+		// プレイヤーが索敵範囲内	// 回り続けると回転だけなので突進を絡める
 		else if (disPow > DASH_RADIUS * DASH_RADIUS) {
 			ChangeState(STATE::ATTRCK_DASH);//接近
 		}
-		//プレイヤーが索敵範囲内	//回り続けると回転だけなので突進を絡める
+		// プレイヤーが索敵範囲内	// 回り続けると回転だけなので突進を絡める
 		else if (disPow < MOVE_RADIUS * MOVE_RADIUS) {
 			ChangeState(STATE::FOLLOW);//接近
 		}
@@ -1018,10 +1008,10 @@ void Boss::UpdateAttrckDash(void)
 
 	}*/
 
-	//離れていて視線にいると
+	// 離れていて視線にいると
 	if (IsTargetInFOV(follow_->pos,FOV_RADIUS) && disPow > ATTRCK_RADIUS * ATTRCK_RADIUS)
 	{
-		//ターゲットに向けて回転
+		// ターゲットに向けて回転
 		TargetRotate(follow_->pos);
 	}
 
@@ -1193,14 +1183,14 @@ void Boss::DrawDebug(void)
 	// カプセルコライダ
 	//capsule_->Draw();
 
-	//索敵範囲
+	// 索敵範囲
 	DrawSphere3D(transform_.pos, MOVE_RADIUS, 20, 0x0000ff, 0x0000ff, false);
 	DrawSphere3D(transform_.pos, ATTRCK_RADIUS, 20, 0xff0000, 0xff0000, false);
 	DrawSphere3D(transform_.pos, DASH_RADIUS, 20, 0xff0000, 0x00ff00, false);
-	//攻撃範囲
+	// 攻撃範囲
 	DrawSphere3D(attrckPos_, attrckRadius, 20, 0xff0000, 0xff0000, false);
 
-	//当たり判定
+	// 当たり判定
 	for (const auto& part:hitParts_)
 	{
 		part->Draw();
@@ -1215,9 +1205,7 @@ void Boss::AttrckUpdate(void)
 {
 	animationController_->Play(attrckType_, false);
 
-	
-
-	//当たり判定が発生するか
+	// 当たり判定が発生するか
 	if (atkData_[attrckType_]->sHitTime < animationController_->GetStepTime()
 		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
 	{
@@ -1226,6 +1214,5 @@ void Boss::AttrckUpdate(void)
 	else
 	{
 		isHitCheck_ = false;
-	}
-		
+	}	
 }

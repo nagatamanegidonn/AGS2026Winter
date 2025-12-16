@@ -24,6 +24,40 @@
 
 #include "Arrow.h"
 
+namespace
+{
+	// アニメーションリスト
+	const std::vector<CharaBase::AnimationInfo> animList =
+	{
+		{ (int)Player::ANIM_TYPE::IDLE, L"Axe/Idle.mv1", 20.0f, -1, 0.0f, -1.0f },
+		{ (int)Player::ANIM_TYPE::RUN, L"Run.mv1", 30.0f, -1, 0.0f, -1.0f },
+		{ (int)Player::ANIM_TYPE::FAST_RUN, L"FastRun.mv1", 30.0f, -1, 0.0f, -1.0f },
+		{ (int)Player::ANIM_TYPE::ROLL, L"Sprinting Forward Roll.mv1", 45.0f, 0, 0.0f, 32.0f },
+		// 抜刀、納刀
+		{ (int)Player::ANIM_TYPE::DRAW, L"Arrow/Draw.mv1", 20.0f, 0, 0.0f, 8.0f },
+		{ (int)Player::ANIM_TYPE::BATTLE_DRAW, L"Arrow/Draw.mv1", 20.0f, 0, 8.0f, -1.0f },
+		{ (int)Player::ANIM_TYPE::CLOSE, L"Arrow/Draw.mv1", 20.0f, 0, 8.0f, 0.1f },
+		{ (int)Player::ANIM_TYPE::BATTLE_CLOSE, L"Arrow/Draw.mv1", 30.0f, 0, 27.0f, 8.0f },
+		// バトル時アニメーション
+		{ (int)Player::ANIM_TYPE::BTLLE_IDLE, L"Arrow/BattleIdle.mv1", 20.0f, -1, 0.0f, -1.0f },
+		{ (int)Player::ANIM_TYPE::BTLLE_RUN, L"Arrow/BattleRun.mv1", 30.0f, -1, 0.0f, -1.0f },
+		// ダメージ
+		{ (int)Player::ANIM_TYPE::DAMAGE, L"Axe/Damage.mv1", 30.0f, 0, 0.0f, -1.0f },
+		{ (int)Player::ANIM_TYPE::FLYING, L"Flying.mv1", 20.0f, -1, 20.0f, 0.1f },
+		{ (int)Player::ANIM_TYPE::DOWN, L"Down.mv1", 20.0f, -1, 0.0f, -1.0f },
+		// 攻撃
+		{ (int)Player::ANIM_TYPE::ATTRCK1S, L"Arrow/AttrckS.mv1", 20, 0, 0.0f, -1.0f },
+		{ (int)Player::ANIM_TYPE::ATTRCK1STOP, L"Arrow/AttrckC.mv1", 20, 0, 0.0f, -1.0f },
+		{ (int)Player::ANIM_TYPE::ATTRCK1E, L"Arrow/AttrckE.mv1", 20, 0, 0.0f, -1.0f },
+		// 2段攻撃
+		{ (int)Player::ANIM_TYPE::ATTRCK2, L"Attrck2.mv1", 30.0f, 0, 0.0f, -1.0f },
+		// 3段攻撃
+		{ (int)Player::ANIM_TYPE::ATTRCK3, L"Attrck3.mv1", 30.0f, 0, 0.0f, -1.0f },
+		// 死亡
+		{ (int)Player::ANIM_TYPE::DEAD, L"Dying.mv1",30.0f, 0, 0.0f, -1.0f },	
+	};
+}
+
 Arrow::Arrow(int key) :Player(key)
 {
 }
@@ -51,7 +85,7 @@ void Arrow::InitParam(void)
 
 	// サブウェポン
 	const std::wstring PATH_MDL = Application::PATH_MODEL;
-	transSubWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Wepon/Bow/Arrow.mv1").c_str());
+	transSubWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Weapon/Bow/Arrow.mv1").c_str());
 	transSubWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);
 	// 初期座標
 	transSubWeapon_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
@@ -59,17 +93,12 @@ void Arrow::InitParam(void)
 	transSubWeapon_.quaRotLocal = Quaternion();
 	transSubWeapon_.Update();
 
-
-
-
 	isBattleDash_ = false;
-
 
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK1S, std::move(SetAtrckData((int)ANIM_TYPE::ATTRCK1E, -1.0f, -1.0f
 		, -1.0f, true, (int)ANIM_TYPE::ATTRCK1STOP)));
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK1E, std::move(SetAtrckData((int)ANIM_TYPE::ATTRCK1S, -1.0f, -1.0f, 4.0f)));
 	
-
 	atkData_.emplace((int)ANIM_TYPE::FLYING, std::move(SetAtrckData((int)ANIM_TYPE::DOWN)));
 	atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::IDLE)));
 	atkData_.emplace((int)ANIM_TYPE::IDLE, std::move(SetAtrckData(-1)));
@@ -80,62 +109,65 @@ void Arrow::InitAnimation(void)
 	std::wstring path = Application::PATH_MODEL + L"Player2/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 
-	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Axe/Idle.mv1", 20.0f);
+	//// 待機
+	//animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Axe/Idle.mv1", 20.0f);
+	//// 移動系（共通）
+	//animationController_->Add((int)ANIM_TYPE::RUN, path + L"Run.mv1", 30.0f);
+	//animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"FastRun.mv1", 30.0f);
+	//animationController_->Add((int)ANIM_TYPE::ROLL, path + L"Sprinting Forward Roll.mv1", 45.0f, -1, 0.0f, 32.0f);
+	//// 抜刀
+	//animationController_->Add((int)ANIM_TYPE::DRAW, path + L"Arrow/Draw.mv1", 20.0f, 0, 0.0f, 8.0f);
+	//animationController_->Add((int)ANIM_TYPE::BATTLE_DRAW, path + L"Arrow/Draw.mv1", 20.0f, 0, 8.0f);
+	//// 納刀
+	//animationController_->Add((int)ANIM_TYPE::CLOSE, path + L"Arrow/Draw.mv1", 20.0f, 0, 8.0f, 0.1f);
+	//animationController_->Add((int)ANIM_TYPE::BATTLE_CLOSE, path + L"Arrow/Draw.mv1", 30.0f, 0, 27.0f, 8.0f);
+	//// 戦闘時待機
+	//animationController_->Add((int)ANIM_TYPE::BTLLE_IDLE, path + L"Arrow/BattleIdle.mv1", 20.0f);
+	//// 武器持ち移動
+	//animationController_->Add((int)ANIM_TYPE::BTLLE_RUN, path + L"Arrow/BattleRun.mv1", 30.0f);
+	//// ダメージ
+	//animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"Axe/Damage.mv1", 30.0f);
+	//// 吹っ飛び（共通）
+	//animationController_->Add((int)ANIM_TYPE::FLYING, path + L"Flying.mv1", 20.0f, -1, 20.0f, 0.1f);
+	//animationController_->Add((int)ANIM_TYPE::DOWN, path + L"Down.mv1", 20.0f);
+	//// 攻撃
+	//animationController_->Add((int)ANIM_TYPE::ATTRCK1S, path + L"Arrow/AttrckS.mv1", 20.0f);
+	//animationController_->Add((int)ANIM_TYPE::ATTRCK1STOP, path + L"Arrow/AttrckC.mv1", 20.0f);
+	//animationController_->Add((int)ANIM_TYPE::ATTRCK1E, path + L"Arrow/AttrckE.mv1", 20.0f);
+	//// 通常攻撃２
+	//animationController_->Add((int)ANIM_TYPE::ATTRCK2, path + L"Axe/Attrck2.mv1", 40.0f);
+	//// 通常攻撃３
+	//animationController_->Add((int)ANIM_TYPE::ATTRCK3, path + L"Axe/Attrck3.mv1", 40.0f);
+	//// 死亡（共通）
+	//animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Dying.mv1", 30.0f);
+
+	for (const auto& anim : animList)
+	{
+		animationController_
+			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);
+	}
+
+	// 待機ブレンド
 	animationController_->SetIsBlend((int)ANIM_TYPE::IDLE, true, 5.0f);
-
-	//移動系（共通）
-	animationController_->Add((int)ANIM_TYPE::RUN, path + L"Run.mv1", 30.0f);
-	animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"FastRun.mv1", 30.0f);
-	animationController_->Add((int)ANIM_TYPE::ROLL, path + L"Sprinting Forward Roll.mv1", 45.0f, -1, 0.0f, 32.0f);
-
-	//冬からの新規ブレンド
+	// 冬からの新規ブレンド
 	animationController_->SetIsBlend((int)ANIM_TYPE::RUN, true, 10.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::FAST_RUN, true, 10.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ROLL, true);
-
-
-	//抜刀
-	animationController_->Add((int)ANIM_TYPE::DRAW, path + L"Arrow/Draw.mv1", 20.0f, 0, 0.0f, 8.0f);
-	animationController_->Add((int)ANIM_TYPE::BATTLE_DRAW, path + L"Arrow/Draw.mv1", 20.0f, 0, 8.0f);
-	//納刀
-	animationController_->Add((int)ANIM_TYPE::CLOSE, path + L"Arrow/Draw.mv1", 20.0f, 0, 8.0f, 0.1f);
-	animationController_->Add((int)ANIM_TYPE::BATTLE_CLOSE, path + L"Arrow/Draw.mv1", 30.0f, 0, 27.0f, 8.0f);
-
+	animationController_->SetIsBlend((int)ANIM_TYPE::ROLL, true);	
+	// 抜刀、納刀ブレンド
 	animationController_->SetIsBlend((int)ANIM_TYPE::DRAW, true);
 	animationController_->SetIsBlend((int)ANIM_TYPE::BATTLE_CLOSE, true);
-
-
-	animationController_->Add((int)ANIM_TYPE::BTLLE_IDLE, path + L"Arrow/BattleIdle.mv1", 20.0f);
+	// 戦闘時待機ブレンド
 	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_IDLE, true, 10.0f);
-
-	//武器持ち移動
-	animationController_->Add((int)ANIM_TYPE::BTLLE_RUN, path + L"Arrow/BattleRun.mv1", 30.0f);
+	// 武器持ち移動ブレンド
 	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_RUN, true, 10.0f);
-
-	//ダメージ
-	animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"Axe/Damage.mv1", 30.0f);
-	//吹っ飛び（共通）
-	animationController_->Add((int)ANIM_TYPE::FLYING, path + L"Flying.mv1", 20.0f, -1, 20.0f, 0.1f);
+	// ダメージブレンド
 	animationController_->SetIsBlend((int)ANIM_TYPE::FLYING, true);
-
-	animationController_->Add((int)ANIM_TYPE::DOWN, path + L"Down.mv1", 20.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::DOWN, true, 3.0f);
-
-	//攻撃
-	animationController_->Add((int)ANIM_TYPE::ATTRCK1S, path + L"Arrow/AttrckS.mv1", 20.0f);
+	// 攻撃ブレンド
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK1S, true);
-
-	animationController_->Add((int)ANIM_TYPE::ATTRCK1STOP, path + L"Arrow/AttrckC.mv1", 20.0f);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK1E, path + L"Arrow/AttrckE.mv1", 20.0f);
-
-	animationController_->Add((int)ANIM_TYPE::ATTRCK2, path + L"Axe/Attrck2.mv1", 40.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK2, true);
-
-	animationController_->Add((int)ANIM_TYPE::ATTRCK3, path + L"Axe/Attrck3.mv1", 40.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK3, true);
-	//死亡（共通）
-	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Dying.mv1", 30.0f);
-
+	
 	animationController_->Play((int)ANIM_TYPE::IDLE);
 	animeType_ = (int)ANIM_TYPE::IDLE;
 }
@@ -160,7 +192,7 @@ void Arrow::InitAttrckSound(void)
 }
 void Arrow::PlayAttrckSound(void)
 {
-	//弾の発射
+	// 弾の発射
 	if (animeType_ == (int)ANIM_TYPE::ATTRCK1E
 		&& animeAgoType_ != (int)ANIM_TYPE::ATTRCK1E)
 	{
@@ -178,7 +210,7 @@ void Arrow::PlayAttrckSound(void)
 			, posHand, transform_.GetForward(), key_);
 	}
 
-	//弦を引っ張る音
+	// 弦を引っ張る音
 	if (animeType_ == (int)ANIM_TYPE::ATTRCK1STOP
 		&& animeAgoType_ != (int)ANIM_TYPE::ATTRCK1S)
 	{
@@ -187,7 +219,7 @@ void Arrow::PlayAttrckSound(void)
 	
 }
 
-void Arrow::WeaponDraw()
+void Arrow::DrawWeapon()
 {
 	auto& nIns = NetManager::GetInstance();
 	if (animeType_ == (int)ANIM_TYPE::ATTRCK1S

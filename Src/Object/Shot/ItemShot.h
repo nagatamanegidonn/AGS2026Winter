@@ -4,6 +4,7 @@
 class ItemShot :
     public ShotBase
 {
+
 public:
     // コンストラクタ
     ItemShot(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key);

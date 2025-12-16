@@ -20,20 +20,19 @@ class Timer;
 class PixelMaterial;
 class PixelRenderer;
 
-class GameScene : public SceneBase
+class GameScene : 
+	public SceneBase
 {
 
 public:
 
 	// ゲームプレイヤー数
 	static constexpr int GAME_PLAYER_NUM = 2;
-
 	// プレイヤーダウンカウント限界数
 	static constexpr int MAX_DOWN_COUNT = 2;
 
 	// コンストラクタ
 	GameScene(void);
-
 	// デストラクタ
 	~GameScene(void);
 

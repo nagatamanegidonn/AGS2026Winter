@@ -20,14 +20,12 @@ SceneManager* SceneManager::instance_ = nullptr;
 
 SceneManager::SceneManager(void)
 {
-
 	sceneId_ = SCENE_ID::NONE;
 	waitSceneId_ = SCENE_ID::NONE;
 
 	isSceneChanging_ = false;
 
 	camera_ = nullptr;
-
 }
 
 SceneManager::~SceneManager(void)
@@ -51,7 +49,6 @@ SceneManager& SceneManager::GetInstance(void)
 
 void SceneManager::Init(void)
 {
-
 	sceneId_ = SCENE_ID::TITLE;
 	waitSceneId_ = SCENE_ID::NONE;
 
@@ -64,16 +61,13 @@ void SceneManager::Init(void)
 
 	isSceneChanging_ = false;
 
-	totalGameTime_ = 0.0f;
-
-	
+	totalGameTime_ = 0.0f;	
 
 	// 3D—p‚Ìİ’è
 	Init3D();
 
 	// ‰ŠúƒV[ƒ“‚Ìİ’è
 	DoChangeScene(SCENE_ID::TITLE);
-
 }
 void SceneManager::Init3D(void)
 {

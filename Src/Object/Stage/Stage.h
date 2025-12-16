@@ -9,8 +9,8 @@ class Planet;
 class Player;
 class Boss;
 
-class Stage
-	:public ActorBase
+class Stage: 
+	public ActorBase
 {
 
 public:

@@ -519,7 +519,7 @@ void GameScene::Draw(void)
 	Renderer_->Draw(MAP_POS_X, MAP_POS_Y);
 	SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);*/
 
-	GameManager::GetInstance().ClearDraw();
+	GameManager::GetInstance().DrawClear();
 
 #ifdef _DEBUG
 
@@ -602,7 +602,7 @@ void GameScene::Collision(void)
 	for (auto& player : players_)
 	{
 		// 参照型要改善
-		int model = player->GetTransWepon().modelId;
+		int model = player->GetTransWeapon().modelId;
 
 		// 味方への攻撃判定（未実装）
 		for (auto& playerVS : players_)

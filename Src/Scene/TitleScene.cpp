@@ -83,11 +83,11 @@ void TitleScene::Init(void)
 	player_ = std::make_unique<ViewPlayer>();
 	player_->Init();
 	player_->SetChar(0);
-	player_->SetWepon(GameManager::GetInstance().GetWeponId());
+	player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 
 	// ‘I‘ð’†‚Ì€–Ú
 	selectId_ = (int)MENU::GAME_START;
-	weponId_ = GameManager::GetInstance().GetWeponId();
+	weponId_ = GameManager::GetInstance().GetWeaponId();
 	isWpSelect_ = false;
 
 	// •Ší‘I‘ð—p‚ÌˆÊ’u“o˜^
@@ -399,8 +399,8 @@ void TitleScene::MouseUpdate(void)
 
 			selectId_ = (int)MENU::WEPON_SELECT;
 			isWpSelect_ = true;
-			padUpdate_ = std::bind(&TitleScene::PWeponUpdate, this);
-			mouseUpdate_ = std::bind(&TitleScene::MWeponUpdate, this);
+			padUpdate_ = std::bind(&TitleScene::PWeaponUpdate, this);
+			mouseUpdate_ = std::bind(&TitleScene::MWeaponUpdate, this);
 		}
 	}
 	else if (inputTextArea_->IsActive() && IsTrggerdMleft())
@@ -423,7 +423,7 @@ void TitleScene::MouseUpdate(void)
 	}
 
 }
-void TitleScene::MWeponUpdate(void)
+void TitleScene::MWeaponUpdate(void)
 {
 	auto& ins = InputManager::GetInstance();
 	auto& sns = SceneManager::GetInstance();
@@ -444,8 +444,8 @@ void TitleScene::MWeponUpdate(void)
 
 				isSlect = true;
 				weponId_ = wPos.first;
-				gns.SetWeponId(weponId_);
-				player_->SetWepon(GameManager::GetInstance().GetWeponId());
+				gns.SetWeaponId(weponId_);
+				player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 				break;
 			}
 			else
@@ -535,8 +535,8 @@ void TitleScene::PNormalUpdate(void)
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
 			isWpSelect_ = true;
-			padUpdate_ = std::bind(&TitleScene::PWeponUpdate, this);
-			mouseUpdate_ = std::bind(&TitleScene::MWeponUpdate, this);
+			padUpdate_ = std::bind(&TitleScene::PWeaponUpdate, this);
+			mouseUpdate_ = std::bind(&TitleScene::MWeaponUpdate, this);
 			break;
 		case (int)MENU::IP_SET:
 			SoundManager::GetInstance().Play(SoundManager::SRC::SELECT, Sound::TIMES::ONCE, true);
@@ -551,7 +551,7 @@ void TitleScene::PNormalUpdate(void)
 
 	}
 }
-void TitleScene::PWeponUpdate(void)
+void TitleScene::PWeaponUpdate(void)
 {
 	auto& ins = InputManager::GetInstance();
 	auto& sns = SceneManager::GetInstance();
@@ -572,16 +572,16 @@ void TitleScene::PWeponUpdate(void)
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT, Sound::TIMES::ONCE, true);
 		weponId_ = (weponId_ - 1 + (int)WEPON_ID::MAX) % ((int)WEPON_ID::MAX);
 		
-		gns.SetWeponId(weponId_);
-		player_->SetWepon(GameManager::GetInstance().GetWeponId());
+		gns.SetWeaponId(weponId_);
+		player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 	}
 	else if (inputController_->IsTriggered(InputController::KEY::BACK))
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT, Sound::TIMES::ONCE, true);
 		weponId_ = (weponId_ + 1) % ((int)WEPON_ID::MAX);
 
-		gns.SetWeponId(weponId_);
-		player_->SetWepon(GameManager::GetInstance().GetWeponId());
+		gns.SetWeaponId(weponId_);
+		player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 	}
 
 

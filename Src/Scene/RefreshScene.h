@@ -2,13 +2,14 @@
 #include "SceneBase.h"
 
 
-class RefreshScene : public SceneBase
+class RefreshScene : 
+	public SceneBase
 {
+
 public:
 
 	// コンストラクタ
 	RefreshScene(void);
-
 	// デストラクタ
 	~RefreshScene(void);
 

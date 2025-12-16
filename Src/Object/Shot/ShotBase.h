@@ -7,6 +7,7 @@ class Capsule;
 class ShotBase :
     public ActorBase
 {
+
 public:
 
     // ó‘Ô
