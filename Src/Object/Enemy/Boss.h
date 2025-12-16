@@ -1,6 +1,10 @@
 
 #pragma once
+
 #include <functional>
+#include <vector>
+#include <memory>
+#include <map>
 #include "../../Net/NetStructures.h"
 
 #include "EnemyBase.h"

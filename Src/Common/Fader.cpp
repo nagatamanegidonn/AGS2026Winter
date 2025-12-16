@@ -103,7 +103,7 @@ void Fader::Draw(void)
 	case NET_STATE::FADE_IN:
 	case NET_STATE::FADE_STOP:
 
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)alpha_);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(alpha_));
 		DrawBox(
 			0, 0,
 			Application::SCREEN_SIZE_X,

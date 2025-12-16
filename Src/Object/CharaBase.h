@@ -26,13 +26,10 @@ public:
 	{
 		bool isCharge = false;	// チャージ攻撃か
 		int chargeId = -1;		// charge中のナンバー
-
 		float sHitTime = 0.0f;	// 判定発生時間
 		float HitTime = 0.0f;
-
 		float sNewTime = 0.0f;	// n入力受付時間
 		float NewTime = 0.0f;	// n入力受付終了時間
-
 		int nextAttrck = -1;	// 次の攻撃ID 
 	};
 
@@ -128,5 +125,6 @@ protected:
 	/// <returns></returns>
 	std::unique_ptr<AttrckData> SetAtrckData(int nextAtkId, float sHitTim = -1.0f, float HitTim = -1.0f,
 		float sNewTime = -1.0f, bool isChage = false, int chargeId = -1);
+	void SetAtrckData(int id,const AttrckData& data);
 };
 

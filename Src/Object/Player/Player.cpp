@@ -36,7 +36,7 @@
 namespace
 {
 	// アニメーションリスト
-	const std::vector<CharaBase::AnimationInfo> animList =
+	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
 		{ (int)Player::ANIM_TYPE::IDLE, L"Idle.mv1", 20.0f, -1, 0.0f, -1.0f },
 		{ (int)Player::ANIM_TYPE::RUN, L"Run.mv1", 30.0f, -1, 0.0f, -1.0f },
@@ -861,36 +861,9 @@ void Player::InitAnimation(void)
 {
 	std::wstring path = Application::PATH_MODEL + L"Player2/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
-	//animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Idle.mv1", 20.0f);
 
-	//animationController_->Add((int)ANIM_TYPE::RUN, path + L"Run.mv1", 30.0f);
-	//animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"FastRun.mv1", 30.0f);
-	//animationController_->Add((int)ANIM_TYPE::ROLL, path + L"Sprinting Forward Roll.mv1", 45.0f, -1, 0.0f, 32.0f);
-
-	//animationController_->Add((int)ANIM_TYPE::DRAW, path + L"Draw Great Sword 1.mv1", 30.0f);
-	//animationController_->Add((int)ANIM_TYPE::BATTLE_DRAW, path + L"Draw Great Sword 2.mv1", 30.0f);
-	//// 抜刀納刀
-	//animationController_->Add((int)ANIM_TYPE::CLOSE, path + L"Draw Great Sword 1.mv1", 30.0f, -1, 13.0f, 0.1f);
-	//animationController_->Add((int)ANIM_TYPE::BATTLE_CLOSE, path + L"Draw Great Sword 2.mv1", 30.0f, -1, 24.0f, 0.1f);
-
-	//animationController_->Add((int)ANIM_TYPE::BTLLE_IDLE, path + L"BattleIdle.mv1", 20.0f);
-
-	//animationController_->Add((int)ANIM_TYPE::BTLLE_RUN, path + L"BattleRun.mv1", 30.0f);
-	//animationController_->Add((int)ANIM_TYPE::BTLLE_FAST_RUN, path + L"Sword And Shield Run.mv1", 30.0f);
-	//// 吹き飛びモーション
-	//animationController_->Add((int)ANIM_TYPE::FLYING, path + L"Flying.mv1", 20.0f, -1, 20.0f, 0.1f);
-	//animationController_->Add((int)ANIM_TYPE::DOWN, path + L"Down.mv1", 20.0f);
-	//// 攻撃
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK1S, path + L"Great Sword Slash (1).mv1", 20.0f, -1, 0.0f, 13.0f);
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK1STOP, path + L"Great Sword Slash (1).mv1", 20.0f, -1, 13.0f, 13.0f);
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK1E, path + L"Great Sword Slash (1).mv1", 20.0f, -1, 13.0f);
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK2, path + L"Great Sword Slash (2).mv1", 30.0f, -1, 10.0f);
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK3, path + L"Great Sword Casting.mv1", 40.0f);
-	//// ダメージモーション
-	//animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"Great Sword Impact.mv1", 30.0f);
-	//animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Dying.mv1", 30.0f);
-
-	for (const auto& anim : animList)
+	// アニメーションの登録
+	for (const auto& anim : ANIM_LIST)
 	{
 		animationController_
 			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);
@@ -978,7 +951,6 @@ void Player::PlayAttrckSound(void)
 	}
 }
 
-
 #pragma region StateによるUpdateの切り替え
 
 void Player::ChangeState(STATE state)
@@ -989,40 +961,49 @@ void Player::ChangeState(STATE state)
 	// 各状態遷移の初期処理
 	stateChanges_[state_]();
 }
+
 void Player::ChangeStateNone(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateNone, this);
 }
+
 void Player::ChangeStatePlay(void)
 {
 	isBattle_ = false;
 	stateUpdate_ = std::bind(&Player::UpdatePlay, this);
 }
+
 void Player::ChangeStateWeapon(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateWeapon, this);
 }
+
 void Player::ChangeStateBattle(void)
 {
 	isBattle_ = true;
 	stateUpdate_ = std::bind(&Player::UpdateBattle, this);
 }
+
 void Player::ChangeStateAttrck(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateAttrck, this);
 }
+
 void Player::ChangeStateRowling(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateRowling, this);
 }
+
 void Player::ChangeStateDamage(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateDamage, this);
 }
+
 void Player::ChangeStateHiDamage(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateHiDamage, this);
 }
+
 void Player::ChangeStateDead(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateDead, this);
@@ -1032,6 +1013,7 @@ void Player::ChangeStateGet(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateGet, this);
 }
+
 void Player::ChangeStateItemUse(void)
 {
 	stateUpdate_ = std::bind(&Player::UpdateItemUse, this);
@@ -1039,19 +1021,20 @@ void Player::ChangeStateItemUse(void)
 
 #pragma endregion
 
-
 #pragma region StateごとのUpdate
 
 // stateがNONEの時のUpdate
 void Player::UpdateNone(void)
 {
 }
+
 // stateがPLAYの時のUpdate
 void Player::UpdatePlay(void)
 {
 	// 移動処理
 	ProcessNormal();
 }
+
 // stateがBATTLEの時のUpdate
 void Player::UpdateBattle(void)
 {
@@ -1072,7 +1055,6 @@ void Player::UpdateBattle(void)
 
 #pragma endregion
 
-
 	// 移動処理(攻撃も含む)
 	ProcessBattle();
 
@@ -1089,6 +1071,7 @@ void Player::UpdateBattle(void)
 
 #endif // _DEBUG
 }
+
 void Player::UpdateWeapon(void)
 {
 	if (isBattle_)
@@ -1164,10 +1147,12 @@ void Player::UpdateWeapon(void)
 	}
 	else{ movePow_ = AsoUtility::VECTOR_ZERO; }
 }
+
 void Player::UpdateAttrck(void)
 {
 	AttrckUpdate();
 }
+
 void Player::UpdateRowling(void)
 {
 	staminaDir_ = 0.0f;
@@ -1177,11 +1162,13 @@ void Player::UpdateRowling(void)
 
 
 }
+
 void Player::UpdateDamage(void)
 {
 	// アニメーションが終わったらPLAYかBATTLEに...
 	ChangeStateAnimeEnd(ANIM_TYPE::DAMAGE);
 }
+
 void Player::UpdateHiDamage(void)
 {
 	if (flyigTime_ > 0.0f)
@@ -1245,6 +1232,7 @@ void Player::UpdateHiDamage(void)
 		animeType_ = attrckType_;
 	}
 }
+
 void Player::UpdateDead(void)
 {
 	isBattle_ = false;

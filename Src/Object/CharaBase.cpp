@@ -42,21 +42,23 @@ void CharaBase::Collision(void)
 	// 移動
 	transform_.pos = movedPos_;
 
-
 	if (transform_.pos.y <= -1000.0f)
 	{
 		transform_.pos = { 0.0f, -30.0f, 0.0f };
 	}
 
-	// 移動誤判定
+	// 移動判定
 	CollisionMoveEnd();
 }
+
 void CharaBase::CollisionStageCapsule(void)
 {
 }
+
 void CharaBase::CollisionGravity(void)
 {
 }
+
 void CharaBase::CollisionMoveEnd(void)
 {
 	for (const auto c : colliders_)
@@ -83,13 +85,13 @@ void CharaBase::CollisionMoveEnd(void)
 	}
 }
 
-
 #pragma region 衝突関係
 
 void CharaBase::AddCollider(std::weak_ptr<Collider> collider)
 {
 	colliders_.push_back(collider);
 }
+
 void CharaBase::ClearCollider(void)
 {
 	colliders_.clear();
@@ -97,12 +99,10 @@ void CharaBase::ClearCollider(void)
 
 #pragma endregion
 
-
 void CharaBase::SetAreaId(int id)
 {
 	areaId_ = id;
 }
-
 
 void CharaBase::CalcGravityPow(void)
 {
@@ -153,4 +153,21 @@ std::unique_ptr<CharaBase::AttrckData> CharaBase::SetAtrckData(
 	atk->nextAttrck = nextAtkId;
 	 
 	return atk;
+}
+void CharaBase::SetAtrckData(int id, const AttrckData& data)
+{
+	auto atk = std::make_unique<AttrckData>();
+
+	// チャージ関連
+	atk->isCharge = data.isCharge;	// チャージ攻撃か
+	atk->chargeId = data.chargeId;	// ナンバー
+	// 判定時間
+	atk->sHitTime = data.sHitTime;	// 判定発生時間
+	atk->HitTime = data.HitTime;	// 判定終了時間
+	atk->sNewTime = data.sNewTime;	// n入力受付時間
+	atk->NewTime = 0.0f;			// n入力受付終了時間
+	// 次の攻撃ID
+	atk->nextAttrck = data.nextAttrck;
+
+	atkData_.emplace(id, std::move(atk));
 }

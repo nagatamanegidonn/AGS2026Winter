@@ -23,10 +23,28 @@
 
 namespace
 {
+	// アニメーションリスト
+	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
+	{
+		// 通常アニメーション
+		{(int)SmallMonster::ANIM_TYPE::IDLE,L"SmallMonster.mv1",20.0f,0,0.0f, -1.0f},
+		{(int)SmallMonster::ANIM_TYPE::RUN,L"SmallMonster.mv1",30.0f,1,0.0f,-1.0f},
+		// 攻撃アニメーション
+		{(int)SmallMonster::ANIM_TYPE::ATTRCK_READY,L"SmallMonster.mv1",0.3f, 3, 3.0f, 0.1f},
+		{(int)SmallMonster::ANIM_TYPE::ATTRCK,L"SmallMonster.mv1",20.0f, 2,0.0f,-1.0f},
+		// 被ダメージアニメーション
+		{(int)SmallMonster::ANIM_TYPE::DAMAGE,L"SmallMonster.mv1",15.0f, 3,0.0f,-1.0f},
+		{(int)SmallMonster::ANIM_TYPE::DEAD,L"SmallMonster.mv1",30.0f, 4,0.0f,-1.0f},
+	};
+
 	constexpr float HALF_RATE = 0.5f;
 }
 
 SmallMonster::SmallMonster(int key, int createNo)
+	:
+	animeAgoType_(-1),
+	animeType_(-1),
+	stateTime_(0.0f)
 {
 	key_ = key;
 	createNo_ = createNo;
@@ -369,13 +387,13 @@ void SmallMonster::InitAnimation(void)
 {
 	std::wstring path = Application::PATH_MODEL + L"Enemy/Monster/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
-	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"SmallMonster.mv1", 20.0f, 0);
-	animationController_->Add((int)ANIM_TYPE::RUN, path + L"SmallMonster.mv1", 30.0f, 1);
 
-	animationController_->Add((int)ANIM_TYPE::ATTRCK_READY, path + L"SmallMonster.mv1", 0.3f, 3, 3.0f, 0.1f);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK, path + L"SmallMonster.mv1", 20.0f, 2);
-	animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"SmallMonster.mv1", 15.0f, 3);
-	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"SmallMonster.mv1", 30.0f, 4);
+	// アニメーションの登録
+	for (const auto& anim : ANIM_LIST)
+	{
+		animationController_
+			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);
+	}
 
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK, true, 1.0f);
 

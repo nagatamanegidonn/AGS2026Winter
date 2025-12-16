@@ -24,8 +24,32 @@
 
 namespace
 {
+	// アニメーションリスト
+	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
+	{
+		// 通常アニメーション
+		{(int)Boss::ANIM_TYPE::IDLE,L"Boss.mv1",20.0f,0,0.0f, -1.0f},
+		{(int)Boss::ANIM_TYPE::RUN,L"Boss.mv1",30.0f,6,0.0f,-1.0f},
+		{(int)Boss::ANIM_TYPE::FAST_RUN,L"Boss.mv1",30.0f, 2,0.0f,-1.0f},
+		// 攻撃アニメーション
+		{(int)Boss::ANIM_TYPE::READY_ATTRCK,L"Boss.mv1",1.2f, 12, 0.0f, 1.5f},
+		{(int)Boss::ANIM_TYPE::ATTRCK_STAMP,L"Boss.mv1",25.0f, 10,0.0f,-1.0f},
+		{(int)Boss::ANIM_TYPE::ATTRCK_L_CLOW,L"Boss.mv1",20.0f, 8,0.0f,-1.0f},
+		{(int)Boss::ANIM_TYPE::ATTRCK_R_CLOW,L"Boss.mv1",20.0f, 5,0.0f,-1.0f},
+		{(int)Boss::ANIM_TYPE::ATTRCK_DASH,L"Boss.mv1",40.0f, 2,0.0f,-1.0f},
+		// 被ダメージアニメーション
+		{(int)Boss::ANIM_TYPE::STUNNED,L"Boss.mv1",30.0f, 14,0.0f,-1.0f},
+		{(int)Boss::ANIM_TYPE::DEAD,L"Boss.mv1", 30.0f, 13,0.0f,-1.0f},
+	};
+	// アタックデータリスト
+	const CharaBase::AttrckData ATTRCK_STAMP_DATA = { false, -1, 17.0f, 24.0f,-1.0f,0.0f,-1, };
+	const CharaBase::AttrckData ATTRCK_L_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
+	const CharaBase::AttrckData ATTRCK_R_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
+	const CharaBase::AttrckData ATTRCK_DASH_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
 
-	constexpr float ROT_RATE = 3.0f;//2.0f;
+	
+
+	constexpr float ROT_RATE = 3.0f;
 }
 
 Boss::Boss(int key)
@@ -131,12 +155,6 @@ void Boss::Init(void)
 	capsule_->SetLocalPosDown({ 0.0f, 300.0f, 0.0f });
 	capsule_->SetRadius(200.0f);
 
-	// カプセルコライダ
-	/*capsule_ = std::make_unique<Capsule>(transform_);
-	capsule_->SetLocalPosTop({ 0.0f, 110.0f, 0.0f });
-	capsule_->SetLocalPosDown({ 0.0f, 30.0f, 0.0f });
-	capsule_->SetRadius(20.0f);*/
-
 	auto& nIns = NetManager::GetInstance();
 	auto& users = NetManager::GetInstance().GetNetUsers();
 
@@ -152,8 +170,7 @@ void Boss::Init(void)
 void Boss::Update(void)
 {
 	auto& nIns = NetManager::GetInstance();
-
-	auto& users = NetManager::GetInstance().GetNetUsers();
+	auto& users = nIns.GetNetUsers();
 
 	animeAgoType_ = animeType_;
 
@@ -250,10 +267,10 @@ void Boss::Update(void)
 		// 位置送信もここでOK（ProcessMove内でも呼ばれてるけど念のため）
 		nIns.SetBoss(key_, transform_.pos, transform_.quaRot, animeType_, (int)state_);
 	}
-	//通信プレイヤーの処理
+	// 通信プレイヤーの処理
 	else
 	{
-		//HPの同期
+		// HPの同期
 		hp_ = nIns.GetNetBossHp(key_);
 
 		const MONSTER_DATA& boss = nIns.GetBoss(key_);
@@ -267,23 +284,19 @@ void Boss::Update(void)
 		}
 		else animationController_->Play(animeType_);
 
-
 		const auto& pos = boss.postion_;
 		transform_.pos = pos;
 		const auto& rot = boss.rot_;
 		transform_.quaRot = rot;
-
 	}
 
-	//ダッシュエフェクト
+	// ダッシュエフェクト
 	effectController_->LoopUpdate(0, transform_.pos, transform_.rot, 50.0f);
 	effectController_->Update(1);
 
-
-
-	//音の再生
+	// 音の再生
 	const auto& selfPos = nIns.GetPostion(nIns.GetSelf().key);
-	//音量設定
+	// 音量設定
 	float volume = AsoUtility::CalcVolumeByDistance(selfPos, transform_.pos, (MOVE_RADIUS + MOVE_RADIUS));
 
 	// 無音なら停止
@@ -319,7 +332,7 @@ void Boss::Update(void)
 	}
 
 
-	//ダメージ描画の更新
+	// ダメージ描画の更新
 	for (auto& hitdamage : hitdamages_)
 	{
 		hitdamage->Update();
@@ -342,7 +355,7 @@ void Boss::Update(void)
 	if (animeAgoType_ != (int)ANIM_TYPE::DEAD
 		&& animeType_ == (int)ANIM_TYPE::DEAD)
 	{
-		//クエストがボス討伐ならカウントアップ
+		// クエストがボス討伐ならカウントアップ
 		GameManager::GetInstance().SetClearCount(
 		GameManager::GetInstance().GetClearCount() + 1);
 
@@ -350,15 +363,7 @@ void Boss::Update(void)
 		{
 			GameManager::GetInstance().SetClearTime(10.0f);
 		}
-
-		/*if (GameManager::GetInstance().)
-		{
-			GameManager::GetInstance().SetClearCount(
-				GameManager::GetInstance().GetClearCount() + 1);
-		}*/
 	}
-
-
 }
 void Boss::Draw(void)
 {
@@ -405,10 +410,9 @@ void Boss::Damage(int _dama,bool _isConst)
 	const int lastDame = _dama * dameRate;
 
 	nIns.SetNetBossDamage(nIns.GetSelf().key, lastDame);
-
 }
 
-////武器との当たり判定
+////モデルとの当たり判定
 //const bool Boss::CollisionCapsule(int& modelId)
 //{
 //	// ０番目のフレームのコリジョン情報を更新する
@@ -604,28 +608,21 @@ bool Boss::IsBattle(void) const
 
 void Boss::InitAnimation(void)
 {
-
 	std::wstring path = Application::PATH_MODEL + L"Enemy/Boss/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
-	// 通常アニメーション
-	animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Boss.mv1", 20.0f, 0);
-	animationController_->Add((int)ANIM_TYPE::RUN, path + L"Boss.mv1", 30.0f, 6);
-	animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"Boss.mv1", 30.0f, 2);
-	// 攻撃アニメーション
-	animationController_->Add((int)ANIM_TYPE::READY_ATTRCK, path + L"Boss.mv1", 1.2f, 12, 0.0f, 1.5f);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK_STAMP, path + L"Boss.mv1", 25.0f, 10);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK_L_CLOW, path + L"Boss.mv1", 20.0f, 8);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK_R_CLOW, path + L"Boss.mv1", 20.0f, 5);
-	animationController_->Add((int)ANIM_TYPE::ATTRCK_DASH, path + L"Boss.mv1", 40.0f, 2);
-	// 被ダメージアニメーション
-	animationController_->Add((int)ANIM_TYPE::STUNNED, path + L"Boss.mv1", 30.0f, 14);
-	animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Boss.mv1", 30.0f, 13);
+
+	// アニメーションの登録
+	for (const auto& anim : ANIM_LIST)
+	{
+		animationController_
+			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);
+	}
 
 	// 攻撃データの設定
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK_STAMP, std::move(SetAtrckData(-1, 17.0f, 24.0f)));
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK_L_CLOW, std::move(SetAtrckData(-1, 9.0f, 17.0f)));
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK_R_CLOW, std::move(SetAtrckData(-1, 9.0f, 17.0f)));
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK_DASH, std::move(SetAtrckData(-1, 0.0f, 22.5f)));
+	SetAtrckData((int)ANIM_TYPE::ATTRCK_STAMP, ATTRCK_STAMP_DATA);
+	SetAtrckData((int)ANIM_TYPE::ATTRCK_L_CLOW, ATTRCK_L_CLOW_DATA);
+	SetAtrckData((int)ANIM_TYPE::ATTRCK_R_CLOW, ATTRCK_R_CLOW_DATA);
+	SetAtrckData((int)ANIM_TYPE::ATTRCK_DASH, ATTRCK_DASH_DATA);
 
 	// ブレンド設定
 	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_IDLE, true, 5.0f);

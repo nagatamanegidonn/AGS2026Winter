@@ -27,7 +27,7 @@
 namespace
 {
 	// アニメーションリスト
-	const std::vector<CharaBase::AnimationInfo> animList =
+	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
 		{ (int)Player::ANIM_TYPE::IDLE, L"Axe/Idle.mv1", 20.0f, -1, 0.0f, -1.0f },
 		{ (int)Player::ANIM_TYPE::RUN, L"Run.mv1", 30.0f, -1, 0.0f, -1.0f },
@@ -109,39 +109,8 @@ void Arrow::InitAnimation(void)
 	std::wstring path = Application::PATH_MODEL + L"Player2/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 
-	//// 待機
-	//animationController_->Add((int)ANIM_TYPE::IDLE, path + L"Axe/Idle.mv1", 20.0f);
-	//// 移動系（共通）
-	//animationController_->Add((int)ANIM_TYPE::RUN, path + L"Run.mv1", 30.0f);
-	//animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"FastRun.mv1", 30.0f);
-	//animationController_->Add((int)ANIM_TYPE::ROLL, path + L"Sprinting Forward Roll.mv1", 45.0f, -1, 0.0f, 32.0f);
-	//// 抜刀
-	//animationController_->Add((int)ANIM_TYPE::DRAW, path + L"Arrow/Draw.mv1", 20.0f, 0, 0.0f, 8.0f);
-	//animationController_->Add((int)ANIM_TYPE::BATTLE_DRAW, path + L"Arrow/Draw.mv1", 20.0f, 0, 8.0f);
-	//// 納刀
-	//animationController_->Add((int)ANIM_TYPE::CLOSE, path + L"Arrow/Draw.mv1", 20.0f, 0, 8.0f, 0.1f);
-	//animationController_->Add((int)ANIM_TYPE::BATTLE_CLOSE, path + L"Arrow/Draw.mv1", 30.0f, 0, 27.0f, 8.0f);
-	//// 戦闘時待機
-	//animationController_->Add((int)ANIM_TYPE::BTLLE_IDLE, path + L"Arrow/BattleIdle.mv1", 20.0f);
-	//// 武器持ち移動
-	//animationController_->Add((int)ANIM_TYPE::BTLLE_RUN, path + L"Arrow/BattleRun.mv1", 30.0f);
-	//// ダメージ
-	//animationController_->Add((int)ANIM_TYPE::DAMAGE, path + L"Axe/Damage.mv1", 30.0f);
-	//// 吹っ飛び（共通）
-	//animationController_->Add((int)ANIM_TYPE::FLYING, path + L"Flying.mv1", 20.0f, -1, 20.0f, 0.1f);
-	//animationController_->Add((int)ANIM_TYPE::DOWN, path + L"Down.mv1", 20.0f);
-	//// 攻撃
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK1S, path + L"Arrow/AttrckS.mv1", 20.0f);
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK1STOP, path + L"Arrow/AttrckC.mv1", 20.0f);
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK1E, path + L"Arrow/AttrckE.mv1", 20.0f);
-	//// 通常攻撃２
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK2, path + L"Axe/Attrck2.mv1", 40.0f);
-	//// 通常攻撃３
-	//animationController_->Add((int)ANIM_TYPE::ATTRCK3, path + L"Axe/Attrck3.mv1", 40.0f);
-	//// 死亡（共通）
-	//animationController_->Add((int)ANIM_TYPE::DEAD, path + L"Dying.mv1", 30.0f);
-
-	for (const auto& anim : animList)
+	// アニメーションの登録
+	for (const auto& anim : ANIM_LIST)
 	{
 		animationController_
 			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);

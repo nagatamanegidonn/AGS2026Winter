@@ -47,7 +47,7 @@ void ArrowShot::Update(void)
 
 int ArrowShot::GetDamage(void) const
 {
-	return (int)((float)damage_ * (timeAlive_ / 2));
+	return static_cast<int>(((float)damage_) * (timeAlive_ / 2));
 }
 
 void ArrowShot::SetParam(void)
