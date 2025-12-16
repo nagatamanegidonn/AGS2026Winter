@@ -1,10 +1,6 @@
 #pragma once
 #include "Common/Transform.h"
 
-//class ResourceManager;
-//class SceneManager;
-//class GravityManager;
-
 class ActorBase
 {
 
@@ -23,11 +19,6 @@ public:
 	const Transform& GetTransform(void) const;
 
 protected:
-
-	// シングルトン参照
-	/*ResourceManager& resMng_;
-	SceneManager& scnMng_;
-	GravityManager& grvMng_;*/
 
 	// モデル制御の基本情報
 	Transform transform_;

@@ -52,7 +52,7 @@ public:
 	void InitQuest(int _clearMaxCount) {
 		clearMaxCount_ = _clearMaxCount;
 		clearCount_ = 0;
-		clearFlag_ = false;//いらないかも
+		clearFlag_ = false;// 試作段階
 		clearTime_ = 0.0f;
 	}
 
@@ -102,7 +102,7 @@ private:
 	GAME_RESULT gameResult_;
 	// クリアフラグ
 	bool clearFlag_;
-	//ゲーム内容
+	// ゲーム内容
 	int clearCount_; 
 	int clearMaxCount_;
 	float clearTime_;

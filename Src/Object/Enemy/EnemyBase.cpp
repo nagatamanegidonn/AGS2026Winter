@@ -192,7 +192,7 @@ void EnemyBase::CollisionGravity(void)
 
 void EnemyBase::TargetRotate(const VECTOR& traPos, float rate)
 {
-
+	// ターゲット方向ベクトルを計算
 	VECTOR toTarget = VSub(traPos, transform_.pos);
 	toTarget.y = 0.0f;
 	toTarget = VNorm(toTarget);
@@ -201,19 +201,24 @@ void EnemyBase::TargetRotate(const VECTOR& traPos, float rate)
 	forward.y = 0.0f;
 	forward = VNorm(forward);
 
+	// 内積から角度を求める
 	float dot = VDot(forward, toTarget);
 	dot = std::clamp(dot, -1.0f, 1.0f);
 	float angleRad = acosf(dot);
 
+
+	// 右回りか左回りかを判定するために外積を計算
 	float crossY = forward.x * toTarget.z - forward.z * toTarget.x;
+	// 外積のY成分が正なら右回り、負なら左回り
 	if (crossY > 0.0f) {
 		angleRad = -angleRad;
 	}
 
+	// ラジアンを度に変換
 	float angleDeg = AsoUtility::Rad2DegF(angleRad);
 
-	const float maxTurnDeg = 5.0f;
-	const float deadZoneDeg = 1.0f;
+	const float maxTurnDeg = 3.0f;	// 1フレームあたりの最大回転角度
+	const float deadZoneDeg = 1.0f;	// デッドゾーン(この角度以下は回転しない)
 
 	if (std::abs(angleDeg) > deadZoneDeg)
 	{

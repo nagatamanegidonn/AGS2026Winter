@@ -56,10 +56,10 @@ public:
 
 	// カメラの取得
 	std::weak_ptr<Camera> GetCamera(void) const;
-	//スクリーンの取得
+	// スクリーンの取得
 	const int& GetMainScreen(void);
 
-	//シーンを画像保存
+	// シーンを画像保存
 	const void CaptureMainScreen(void);
 	const void DrawCapturedScreen(int x, int y);
 

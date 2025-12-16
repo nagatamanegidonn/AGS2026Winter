@@ -27,15 +27,15 @@ public:
 		ROAD,
 	};
 
-	//ステージエリア
+	// ステージエリア
 	struct Area
 	{
-		int areaId = 0;			//多分使わない
+		int areaId = 0;
 		VECTOR pos = { 0.0f,0.0f,0.0f };
 		float radius = 10.0f;
 	};
 
-	//エリア移動用の位置情報
+	// エリア移動用の位置情報
 	struct LerpPos
 	{
 		int nextId = -1;
@@ -68,7 +68,7 @@ public:
 	std::weak_ptr<Area> GetArea(int areaId) const;
 	std::map<int, std::shared_ptr<Area>> GetArea(void)const;
 	void SetArea(VECTOR pos, float rad,int areaId);
-	//posがエリアにいるか
+	// posがエリアにいるか
 	int CheckAreaId(const VECTOR& pos);
 	const bool CheckArea(const VECTOR pos);
 
@@ -82,9 +82,6 @@ private:
 
 	// 惑星名
 	Stage::NAME name_;
-
-
-
 
 	std::map<int,std::shared_ptr<Area>> stageArea_;
 

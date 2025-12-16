@@ -15,7 +15,7 @@ Timer::Timer(float limitSeconds)
     endHandle_ = LoadGraph((Application::PATH_IMAGE + L"ShootNeedle.png").c_str());
 
     Material_ = std::make_unique<PixelMaterial>(L"Timer.cso", 1);
-    Material_->AddConstBuf({ 0.5f, 0.5f, 1.0f, 0.3f });
+    Material_->AddConstBuf(MATERIAL_DATA);
     Material_->AddTextureBuf(freamHandle_);
     Material_->AddTextureBuf(needleHandle_);
     Material_->AddTextureBuf(endHandle_);
@@ -78,12 +78,11 @@ void Timer::DrawNeedle(int centerX, int centerY, float startDeg, float endDeg) c
     float t = elapsed / limitSeconds_;
     float angleDeg = startDeg + (endDeg - startDeg) * t;
     float rad = AsoUtility::Deg2RadF(angleDeg);
-    
+
     int w, h;
     GetGraphSize(needleHandle_, &w, &h);
 
-    Material_->SetConstBuf(0,{ 0.5f, 0.5f, rad,  AsoUtility::Deg2RadF(endDeg) });
+    Material_->SetConstBuf(0, { 0.5f, 0.5f, rad,  AsoUtility::Deg2RadF(endDeg) });
 
     Renderer_->Draw(centerX, centerY);
-    //DrawRotaGraph2(centerX, centerY, 0, h / 2, 1.0f, rad, needleHandle_, TRUE);
 }

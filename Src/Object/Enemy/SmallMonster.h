@@ -11,45 +11,40 @@ public:
 	static constexpr float TIME_ROT = 1.0f;
 	static constexpr float TIME_ROT2 = 10.0f;
 
-	static constexpr float SCALE_SIZE = 2.0f;//2.0f;
+	static constexpr float SCALE_SIZE = 2.0f;
 
 	// ƒXƒs[ƒh
-	static constexpr float SPEED_MOVE = 4.5f;/*3.0f;*/
-	static constexpr float SPEED_FOLLOW = 12.0f;/*8.0f;*/
-	static constexpr float SPEED_RUN = 15.0f;/*10.0f;*/
+	static constexpr float SPEED_MOVE = 4.5f;
+	static constexpr float SPEED_FOLLOW = 12.0f;
+	static constexpr float SPEED_RUN = 15.0f;
 
-	//”»’è—p”¼Œa
+	// ”»’è—p”¼Œa
 	static constexpr float MOVE_RADIUS = 2250.0f;
 	static constexpr float DASH_RADIUS = 1500.0f;
 	static constexpr float ATTRCK_RADIUS = 750.0f;
 	static constexpr float ATTRCK_BITE_RADIUS = 150.0f;
 	static constexpr float ATTRCK_STAMP_RADIUS = 300.0f;
-
-	static constexpr float FOV_RADIUS = 30.0f;//‹–ìŠp
-
-	static constexpr float MAX_LERP_TIME = 20.0f;//İ’†ŠÔ
+	// ‹–ìŠÖŒW
+	static constexpr float FOV_RADIUS = 30.0f;		// ‹–ìŠp
 
 
 	// Å‘å‚g‚o
 	static constexpr int MAX_HP = 75;
 
-	//UŒ‚ŠÖŒW
-	static constexpr int ATTRCK_CLOW = 28;
-	//static constexpr int ATTRCK_CLOW = 8;
+	// UŒ‚ŠÖŒW
 	static constexpr int ATTRCK_STAMP = 34;
-	static constexpr int ATTRCK_DASH = 25;
 
 	// ó‘Ô
 	enum class STATE
 	{
 		NONE,
 		PLAY,
-		BATTLE,			//Œã‚ÅÁ‚·
-		FOLLOW,			//‹ß‚Ã‚­
+		BATTLE,			// Œã‚ÅÁ‚·
+		FOLLOW,			// ‹ß‚Ã‚­
 
-		ATTRCK_READY,	//—\”õ“®ì
-		ATTRCK,	//UŒ‚
-	
+		ATTRCK_READY,	// —\”õ“®ì
+		ATTRCK,			// UŒ‚
+
 		DAMAGE,
 		DEAD,
 		END
@@ -61,8 +56,8 @@ public:
 		IDLE,
 		RUN,
 
-		ATTRCK_READY,		//—\”õ“®ì
-		ATTRCK,
+		ATTRCK_READY,	// —\”õ“®ì
+		ATTRCK,			// UŒ‚
 
 		DAMAGE,
 		DEAD,
@@ -78,18 +73,18 @@ public:
 	void Update(void)override;
 	void Draw(void)override;
 
-	//ƒ_ƒ[ƒWŠÖŒW
+	// ƒ_ƒ[ƒWŠÖŒW
 	void Damage(int _dama, bool _isConst = false)override;
 
 	const bool IsState(STATE state)const { return (state_ == state); }
 
 	const VECTOR GetAttrckPos(void) const { return attrckPos_; }
 
-	//ŠO•”ƒNƒ‰ƒXƒg‚Ì“–‚½‚è”»’è
+	// ŠO•”ƒNƒ‰ƒXƒg‚Ì“–‚½‚è”»’è
 	const bool CollisionCapsule(std::weak_ptr<Capsule> _capsule);
 	const bool CollisionAttrck(const int& modelId);
 
-	//’Ç]‘ÎÛ‚Ìİ’è
+	// ’Ç]‘ÎÛ‚Ìİ’è
 	void SetFollow(const Transform* follow) override;
 
 
@@ -100,16 +95,12 @@ private:
 	int animeType_;
 	int animeAgoType_;
 
-	float stateTime_;	//ó‘ÔŠÔ
-
+	float stateTime_;	// ó‘ÔŠÔ
 	
 	//UŒ‚ŠÇ—
-	//ATTRCK_TYPE attrckTypeState_;//UŒ‚í•Ê
-
-	float dameRate_;		//ó‚¯‚éƒ_ƒ[ƒW”{—¦
-	//ƒ{ƒXŒÀ’è
-	int attrckCount_;		//˜A‘±UŒ‚‚ÌÛ‚Ég—p
-	VECTOR attrckPos_;		//UŒ‚”»’è’†SˆÊ’u
+	float dameRate_;		// ó‚¯‚éƒ_ƒ[ƒW”{—¦
+	int attrckCount_;		// ˜A‘±UŒ‚‚ÌÛ‚Ég—p
+	VECTOR attrckPos_;		// UŒ‚”»’è’†SˆÊ’u
 	float attrckRadius = 0.0f;
 
 	
@@ -120,7 +111,7 @@ private:
 	std::function<void(void)> stateUpdate_;
 
 
-	//•¡”‚Ì‰Šú‰»ˆ—
+	// •¡”‚Ì‰Šú‰»ˆ—
 	void InitAnimation(void);
 	void InitEffect(void);
 	void InitSound(void);
@@ -131,7 +122,7 @@ private:
 	void ChangeStatePlay(void);
 	void ChangeStateBattle(void);
 	void ChangeStateFollow(void);
-	//UŒ‚Œn
+	// UŒ‚Œn
 	void ChangeStateAttrckReady(void);
 	void ChangeStateAttrckStamp(void);
 
@@ -143,7 +134,7 @@ private:
 	void UpdatePlay(void);
 	void UpdateBattle(void);
 	void UpdateFollow(void);
-	//UŒ‚Œn
+	// UŒ‚Œn
 	void UpdateAttrckReady(void);
 	void UpdateAttrckStamp(void);
 
@@ -151,7 +142,7 @@ private:
 	void UpdateDead(void);
 
 
-	//UŒ‚–³Œø‰»
+	// UŒ‚–³Œø‰»
 	void AttrckUpdate(void);
 
 	// ƒfƒoƒbƒO—p•`‰æ

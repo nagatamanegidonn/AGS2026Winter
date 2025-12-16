@@ -41,8 +41,8 @@ enum class NET_DATA_TYPE
 	USERS,
 	ACTION_HIS_ALL,
 };
-
-// 基本通信データ//通信の基本的なデータ
+ 
+// 基本通信データ// 通信の基本的なデータ
 struct NET_BASIC_DATA
 {
 	// 通信種別
@@ -54,7 +54,7 @@ struct NET_BASIC_DATA
 	uint32_t crc;
 };
 
-// ユーザデータ//接続の参照などに使用する,接続ユーザーデータ
+// ユーザデータ// 接続の参照などに使用する,接続ユーザーデータ
 struct NET_JOIN_USER
 {
 	// 通信モード(ホスト or クライアント)
@@ -70,7 +70,7 @@ struct NET_JOIN_USER
 	// 全体のゲーム進行状態
 	GAME_STATE gameState = GAME_STATE::CONNECTING;
 
-	//武器情報
+	// 武器情報
 	int weaponId_ = 0;
 
 };
@@ -80,7 +80,7 @@ struct NET_JOIN_USERS
 	NET_JOIN_USER users[MAX_PLAYERS];
 };
 
-//ネットにおくるクラス？
+// ネットにおくるクラス
 enum class PLAYER_ACTION
 {
 	NONE = 0,
@@ -111,27 +111,27 @@ struct MONSTER_DATA
 	int state_ = 0;
 };
 
-//ゲームシーンで使用する通信データ
+// ゲームシーンで使用する通信データ
 struct NET_ACTION_HIS
 {
 	// ユーザの任意キー
 	int key = -1;
-	// 過去フレーム分のアクション情報//bool型みたいなもの
+	// 過去フレーム分のアクション情報// bool型みたいなもの
 	NET_ACTION actions[NUM_FRAME];
 
-	//自分の位置情報		新規
+	// 自分の位置情報		新規
 	VECTOR selfPostion_ = { 0.0f,0.0f,0.0f };		//8bite×3 ?
 	Quaternion playerRot_ = Quaternion::Identity();	//8bite×4 ?
 
 	int playerAnim_ = 0;
 
 	int hp_ = 100;
-	int bossDamage_ = 0;//Bossに与えたdamage毎フレームリセット
-	int bossHp_ = 0;//Boss
+	int bossDamage_ = 0;// Bossに与えたdamage毎フレームリセット
+	int bossHp_ = 0;	// Boss
 
 	MONSTER_DATA boss_;
 
-	//小型用
+	// 小型用
 	MONSTER_DATA monsters_[3];
 	int smallHp_[3] = {0,0,0};
 	int smallDamage_[3] = { 0,0,0 };

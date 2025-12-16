@@ -36,7 +36,7 @@ void Sound::Update(VECTOR pos)
 {
 	if (soundType_ != TYPE::SOUND_3D || CheckSoundMem(handleId_) != 1)
 	{
-		//3D以外　もしくは再生していない場合
+		// 3D以外or再生していない場合
 		return;
 	}
 	int i = Set3DPositionSoundMem(pos, handleId_);
@@ -84,11 +84,10 @@ bool Sound::Play(TIMES times, bool isForce)
 {
 	if (soundType_ != TYPE::SOUND_2D || handleId_ == -1)
 	{
-		return false;	//失敗
+		return false;	// 失敗
 	}
 	if (!isForce && CheckMove())
 	{
-		//int i = PlaySoundMem(handleId_, times == TIMES::ONCE ? DX_PLAYTYPE_BACK : DX_PLAYTYPE_LOOP, true);
 		return false;
 	}
 	int i = PlaySoundMem(handleId_, times == TIMES::ONCE ? DX_PLAYTYPE_BACK : DX_PLAYTYPE_LOOP, true);
@@ -100,7 +99,7 @@ bool Sound::Play(VECTOR pos, float radius, TIMES times)
 {
 	if (soundType_ != TYPE::SOUND_3D || handleId_ == -1)
 	{
-		return false;	//失敗
+		return false;	// 失敗
 	}
 	if (CheckMove())
 	{
@@ -167,14 +166,14 @@ void Sound::ChengeVolume(float per)
 	}
 	ChangeVolumeSoundMem(static_cast<int>(per * static_cast<float>(maxVolume_)), handleId_);
 }
-//基本的にInit時のみ使用
+// 基本的にInit時のみ使用
 void Sound::ChengeMaxVolume(float per)
 {
 	maxVolume_ = 255 * per;
 	ChengeVolume(1.0f);
 }
 
-//ポーズ一時停止(未完成)
+// ポーズ一時停止(未完成)
 void Sound::Pause(TIMES times)
 {
 	if (handleId_ == -1 || isPaused_) return;

@@ -7,7 +7,7 @@
 
 class AnimationController;
 
-//セレクトシーン、コネクトシーンで使用
+// セレクトシーン、コネクトシーンで使用
 class ViewPlayer :
     public ActorBase
 {

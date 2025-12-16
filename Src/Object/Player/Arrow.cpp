@@ -40,7 +40,7 @@ bool Arrow::IsSyncAttrck()
 
 void Arrow::InitParam(void)
 {
-	//メインウェポン
+	// メインウェポン
 	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
 	// 初期座標
 	transWeapon_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
@@ -49,7 +49,7 @@ void Arrow::InitParam(void)
 		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
 	transWeapon_.Update();
 
-	//サブウェポン
+	// サブウェポン
 	const std::wstring PATH_MDL = Application::PATH_MODEL;
 	transSubWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Wepon/Bow/Arrow.mv1").c_str());
 	transSubWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);

@@ -21,6 +21,11 @@
 #include "HitPart.h"
 #include "SmallMonster.h"
 
+namespace
+{
+	constexpr float HALF_RATE = 0.5f;
+}
+
 SmallMonster::SmallMonster(int key, int createNo)
 {
 	key_ = key;
@@ -40,18 +45,17 @@ SmallMonster::SmallMonster(int key, int createNo)
 	stateChanges_.emplace(STATE::DAMAGE, std::bind(&SmallMonster::ChangeStateDamage, this));
 	stateChanges_.emplace(STATE::DEAD, std::bind(&SmallMonster::ChangeStateDead, this));
 
-	//攻撃情報
+	// 攻撃情報
 	attrckCount_ = 0;
-	//attrckTypeState_ = ATTRCK_TYPE::NONE;
 	attrckDamage_ = 10;
-	//追跡対象
+	// 追跡対象
 	follow_ = nullptr;
 	followTime_ = 0.0f;
-	//攻撃位置
+	// 攻撃位置
 	attrckPos_ = AsoUtility::VECTOR_ZERO;
 	dameRate_ = 1.0f;
 
-	//当たり判定
+	// 当たり判定
 	hitParts_.clear();
 	AddHitPart(transform_.modelId, L"Bone002", ATTRCK_BITE_RADIUS, 1.0f);//胴体
 	
@@ -64,7 +68,7 @@ SmallMonster::~SmallMonster(void)
 	MV1DeleteModel(transform_.modelId);
 }
 
-//初期化処理
+// 初期化処理
 void SmallMonster::Init(void)
 {
 	// モデルの基本設定
@@ -86,12 +90,12 @@ void SmallMonster::Init(void)
 	// 初期状態
 	ChangeState(STATE::PLAY);
 
-	//位置情報の変数
+	// 位置情報の変数
 	movedPos_ = AsoUtility::VECTOR_ZERO;
 	moveDir_ = AsoUtility::VECTOR_ZERO;
 	movePow_ = AsoUtility::VECTOR_ZERO;
 
-	//重力兼ジャンプ力
+	// 重力兼ジャンプ力
 	jumpPow_ = AsoUtility::VECTOR_ZERO;
 
 	// カプセルコライダ
@@ -103,7 +107,7 @@ void SmallMonster::Init(void)
 	auto& nIns = NetManager::GetInstance();
 	auto& users = NetManager::GetInstance().GetNetUsers();
 
-	// ＨＰの初期化
+	// HPの初期化
 	hp_ = hpMax_ = 1 * users.size();
 
 	isHitCheck_ = false;
@@ -111,7 +115,7 @@ void SmallMonster::Init(void)
 	transform_.MakeCollider(Collider::TYPE::WALL);
 	hitDamePos_ = AsoUtility::VECTOR_ZERO;
 }
-//更新処理
+// 更新処理
 void SmallMonster::Update(void)
 {
 	auto& nIns = NetManager::GetInstance();
@@ -120,19 +124,20 @@ void SmallMonster::Update(void)
 
 	animeAgoType_ = animeType_;
 
-	//ダメージ処理
+	// ダメージ処理
 	int dame = 0;
 	for (auto& user : users)
 	{
 		const int userDame = nIns.GetNetMonsDamage(user.first, createNo_);
-
+		// 合計ダメージに加算
 		dame += nIns.GetNetMonsDamage(user.first, createNo_);
-		//damage表記//ダメージを受けていたなら
+		// ダメージを受けていたなら
 		if (userDame > 0)
 		{
 			bool isEnd = false;
 			for (auto& hitdamage : hitdamages_)
-			{//表示終了しているものがあるなら
+			{
+				// 表示終了しているものがあるなら
 				if (hitdamage->GetState() == HitDamage::STATE::END)
 				{
 					hitdamage->Init(userDame);
@@ -148,20 +153,19 @@ void SmallMonster::Update(void)
 		}
 	}
 
-	//当たり判定の設定
+	// 当たり判定の設定
 	for (const auto& part : hitParts_)
 	{
 		part->Update();
 	}
 
-
 	// 自分のプレイヤーのときだけ入力を処理する
 	if (nIns.GetMode() == NET_MODE::HOST) {
-		//ダメージを与える
+		// ダメージを与える
 		hp_ -= dame;
 		nIns.SetNetMonsHp(key_, createNo_, hp_);
 
-		//死亡判定
+		// 死亡判定
 		if (hp_ <= 0.0f && state_ != STATE::DEAD) { ChangeState(STATE::DEAD); }
 
 		movePow_ = AsoUtility::VECTOR_ZERO;
@@ -193,10 +197,10 @@ void SmallMonster::Update(void)
 		// 位置送信もここでOK（ProcessMove内でも呼ばれてるけど念のため）
 		nIns.SetMonsData(key_, createNo_, transform_.pos, transform_.quaRot, animeType_, (int)state_);
 	}
-	//通信プレイヤーの処理
+	// 通信プレイヤーの処理
 	else
 	{
-		//HPの同期
+		// HPの同期
 		hp_ = nIns.GetNetMonsHp(key_,createNo_);
 
 		const MONSTER_DATA& mons = nIns.GetMonsData(key_, createNo_);
@@ -219,7 +223,7 @@ void SmallMonster::Update(void)
 	}
 
 
-	//ダメージ描画の更新
+	// ダメージ描画の更新
 	for (auto& hitdamage : hitdamages_)
 	{
 		hitdamage->Update();
@@ -237,7 +241,7 @@ void SmallMonster::Update(void)
 		ChangeState(STATE::NONE);
 	}
 }
-//描画処理
+// 描画処理
 void SmallMonster::Draw(void)
 {
 	if (state_ != STATE::NONE)
@@ -245,7 +249,7 @@ void SmallMonster::Draw(void)
 		MV1DrawModel(transform_.modelId);
 	}
 
-	//ダメージの表記
+	// ダメージの表記
 	for (auto& hitdamage : hitdamages_)
 	{
 		hitdamage->Draw();
@@ -260,12 +264,10 @@ void SmallMonster::Draw(void)
 
 void SmallMonster::Damage(int _dama, bool _isConst)
 {
-	//無敵中はない
-
 	auto& nIns = NetManager::GetInstance();
 
-	float dameRate = dameRate_;
-	if (_isConst)dameRate = 1.0f;//固定ダメージなら倍率無効
+	float dameRate = dameRate_;		// ダメージ倍率
+	if (_isConst)dameRate = 1.0f;	// 固定ダメージなら倍率無効
 
 	const int lastDame = _dama * dameRate;
 
@@ -275,7 +277,7 @@ void SmallMonster::Damage(int _dama, bool _isConst)
 
 const bool SmallMonster::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 {
-	//当たり判定フラグ
+	// 当たり判定フラグ
 	bool ret = false;
 	VECTOR hitPos = AsoUtility::VECTOR_ZERO;
 
@@ -284,10 +286,9 @@ const bool SmallMonster::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 
 		// 衝突した複数のポリゴンと衝突回避するまで、
 		// プレイヤーのdamage
-		 // 当たったかどうかで処理を分岐
+		// 当たったかどうかで処理を分岐
 		if (_capsule.lock()->IsHitSphere(part->GetPos(), part->GetRadius()))
 		{
-
 			// 当たった場合は衝突の情報を描画する
 			ret = true;
 			dameRate_ = part->GetDameRate();
@@ -306,17 +307,11 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 {
 
 	auto& nIns = NetManager::GetInstance();
-	/*if (animeType_==(int)ANIM_TYPE::ATTRCK_BITE)
-	{
-		attrckType_ = (int)ANIM_TYPE::ATTRCK_BITE;
-		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, "TongueEnd_M");//牙攻撃用
-		attrckRadius = ATTRCK_BITE_RADIUS;
-	}*/
 	if (animeType_ == (int)ANIM_TYPE::ATTRCK)
 	{
 		attrckType_ = (int)ANIM_TYPE::ATTRCK;
 		attrckPos_ = VScale(VAdd(AsoUtility::MV1GetFreamPos(transform_.modelId, L"Bone002")
-			, AsoUtility::MV1GetFreamPos(transform_.modelId, L"Bone002")), 0.5f);
+			, AsoUtility::MV1GetFreamPos(transform_.modelId, L"Bone002")), HALF_RATE);
 		attrckRadius = ATTRCK_STAMP_RADIUS;
 	}
 	else
@@ -349,8 +344,7 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 	// 衝突した複数のポリゴンと衝突回避するまで、
 	// プレイヤーのdamage
 	 // 当たったかどうかで処理を分岐
-	if (hits.HitNum >= 1)
-	{
+	if (hits.HitNum >= 1){
 		// 当たった場合は衝突の情報を描画する
 		ret = true;
 	}
@@ -486,13 +480,13 @@ void SmallMonster::UpdateBattle(void)
 	// 一定時間ごとに回転処理
 	if (rotateTimer_ <= 1.0f)
 	{
-		//ターゲットに向けて回転
+		// ターゲットに向けて回転
 		TargetRotate(follow_->pos, 0.3f);
 		if (rotateTimer_ <= 0.0f)
 		{
 			rotateTimer_ = rotateInterval_; // リセット
 		}
-		//この時の回転は歩く
+		// この時の回転は歩く
 		animationController_->Play((int)ANIM_TYPE::RUN);
 		animeType_ = (int)ANIM_TYPE::RUN;
 
@@ -508,24 +502,17 @@ void SmallMonster::UpdateBattle(void)
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
 
-	//視線の先に至らに変更予定
-	if (stateTime_ < 0.0f || (IsTargetInFOV(follow_->pos, FOV_RADIUS) && stateTime_ < 1.0f)) {
-
-		if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))//攻撃半径×攻撃半径
+	// 視線の先に至らに変更予定
+	if (stateTime_ < 0.0f || (IsTargetInFOV(follow_->pos, FOV_RADIUS) && stateTime_ < 1.0f)) 
+	{		
+		//　攻撃半径×攻撃半径
+		if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))
 		{
-
 			ChangeState(STATE::ATTRCK_READY);
 		}
-		//プレイヤーが索敵範囲内	//回り続けると回転だけなので突進を絡める
-		else if (disPow > DASH_RADIUS * DASH_RADIUS) {
-			//ChangeState(STATE::ATTRCK_DASH);//接近
-		}
-		//プレイヤーが索敵範囲内	//回り続けると回転だけなので突進を絡める
+		// プレイヤーが索敵範囲内	// 回り続けると回転だけなので突進を絡める
 		else if (disPow < MOVE_RADIUS * MOVE_RADIUS) {
-			ChangeState(STATE::FOLLOW);//接近
-		}
-		else {
-			//ChangeState(STATE::PLAY);//バトル中止
+			ChangeState(STATE::FOLLOW);// 接近
 		}
 	}
 }
@@ -536,7 +523,7 @@ void SmallMonster::UpdateFollow(void)
 
 	if (IsTargetInFOV(follow_->pos, FOV_RADIUS))
 	{
-		//ターゲットに向けて回転
+		// ターゲットに向けて回転
 		TargetRotate(follow_->pos);
 	}
 
@@ -548,22 +535,9 @@ void SmallMonster::UpdateFollow(void)
 	VECTOR diff = VSub(transform_.pos, follow_->pos);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
-
-	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))//ダメージ半径×攻撃半径
+	// ダメージ半径×攻撃半径
+	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))
 	{
-		//攻撃方法の決定
-		//if ((int)disPow % 2 == 0)
-		//{
-		//	//攻撃方法
-		//	attrckTypeState_ = ATTRCK_TYPE::BITE;
-		//}
-		//else
-		//{
-		//	//攻撃方法
-		//	attrckTypeState_ = ATTRCK_TYPE::CLOW_R;
-		//	attrckCount_ = 3;
-		//}
-
 		ChangeState(STATE::ATTRCK_READY);
 	}
 	else if (stateTime_ < 0.0f)
@@ -598,30 +572,18 @@ void SmallMonster::UpdateDamage(void)
 {
 	animationController_->Play((int)ANIM_TYPE::DAMAGE, false);
 	animeType_ = (int)ANIM_TYPE::DAMAGE;
-
-
-	if (animationController_->IsEnd())
-	{
-
-	}
 }
 void SmallMonster::UpdateDead(void)
 {
 	animationController_->Play((int)ANIM_TYPE::DEAD, false);
 	animeType_ = (int)ANIM_TYPE::DEAD;
-
-
-	if (animationController_->IsEnd())
-	{
-
-	}
 }
 
 void SmallMonster::AttrckUpdate(void)
 {
 	animationController_->Play(attrckType_, false);
 
-	//当たり判定が発生するか
+	//　当たり判定が発生するか
 	if (atkData_[attrckType_]->sHitTime < animationController_->GetStepTime()
 		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
 	{
@@ -635,10 +597,11 @@ void SmallMonster::AttrckUpdate(void)
 
 void SmallMonster::DrawDebug(void)
 {
-	//当たり判定
+	//　当たり判定
 	for (const auto& part : hitParts_)
 	{
 		part->Draw();
 	}
+
 	capsule_->Draw();
 }

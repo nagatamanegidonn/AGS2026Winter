@@ -15,11 +15,7 @@ BomObject::BomObject(int damage, const VECTOR& birthPos, const VECTOR& shotVec, 
 
 	// カプセルコライダの作成
 	capsule_ = nullptr;
-	/*capsule_ = std::make_shared<Capsule>(transform_);
-	capsule_->SetLocalPosTop({ 0.0f, 0.0f, 10.0f });
-	capsule_->SetLocalPosDown({ 0.0f,0.0f,  -10.0f });*/
 	radius_ = 60.0f;
-	//capsule_->SetRadius(radius_);
 
 	type_ = TYPE::BOM;
 

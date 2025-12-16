@@ -17,7 +17,7 @@ public:
 
 		BOSS,
 		MONSTER,
-
+		// ÉvÉåÉCÉÑÅ[
 		PLAYER_NIGHT,
 		PLAYER_SHADOW,
 
@@ -42,6 +42,8 @@ public:
 		ARROW,
 
 		CLEAR_LOGO,
+
+		ITEM_FREAM,
 
 	};
 

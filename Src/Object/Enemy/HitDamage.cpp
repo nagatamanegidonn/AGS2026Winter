@@ -4,11 +4,17 @@
 
 #include "HitDamage.h"
 
+namespace
+{
+	constexpr int WEAK_DAMAGE = 20;
+}
+
 HitDamage::HitDamage(int& model, std::string boneName, int damage) :parModel_(model)
 {
 	boneName_ = boneName;
 
 	state_ = STATE::PLAY;
+	uiPos_ = AsoUtility::VECTOR_ZERO;
 	uiRate_ = 1.0f;
 	uiDame_ = damage;
 
@@ -44,7 +50,7 @@ void HitDamage::Update(void)
 
 void HitDamage::Draw(void)
 {
-	//ダメージの表記
+	// ダメージの表記
 	if (state_ == STATE::PLAY)
 	{
 		VECTOR twoDPos = ConvWorldPosToScreenPos(uiPos_);
@@ -56,8 +62,8 @@ void HitDamage::Draw(void)
 			int len = (int)wcslen(msg.c_str());
 			int width = GetDrawStringWidth(msg.c_str(), len);
 
-			//damage表記
-			if (uiDame_ > 20) {
+			// ダメージの大きさで色を変える
+			if (uiDame_ > WEAK_DAMAGE) {
 				DrawFormatString(twoDPos.x + randPosX_, twoDPos.y + randPosY_, 0xffd700, msg.c_str());
 			}
 			else

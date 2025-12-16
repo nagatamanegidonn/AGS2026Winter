@@ -25,16 +25,16 @@ class GameScene : public SceneBase
 
 public:
 
-	//ゲームプレイヤー数
+	// ゲームプレイヤー数
 	static constexpr int GAME_PLAYER_NUM = 2;
 
-	//プレイヤーダウンカウント限界数
+	// プレイヤーダウンカウント限界数
 	static constexpr int MAX_DOWN_COUNT = 2;
 
-	//コンストラクタ
+	// コンストラクタ
 	GameScene(void);
 
-	//デストラクタ
+	// デストラクタ
 	~GameScene(void);
 
 	void Init(void) override;
@@ -45,11 +45,11 @@ public:
 	void DownCountPuls(void) { downCnt_ += 1; }
 	const int GetDownCount(void)const { return downCnt_; }
 
-	//弾の生成
+	// 弾の生成
 	void CreateShot(ShotBase::TYPE type,int damage
 		,const VECTOR& birthPos, const VECTOR& dir, int key);
 
-	//ステージオブジェクトの生成
+	// ステージオブジェクトの生成
 	void CreateObject(const Transform& _trans);
 
 private:
@@ -57,7 +57,7 @@ private:
 	// フェード
 	std::unique_ptr<Fader> fader_;
 
-	//ミニマップシェーダ
+	// ミニマップシェーダ
 	std::unique_ptr<PixelMaterial> Material_;
 	std::unique_ptr<PixelRenderer> Renderer_;
 	int mapHandle_;
@@ -69,7 +69,7 @@ private:
 	std::string textId_;
 	int stepId_;
 
-	//Objectクラス
+	// Objectクラス
 	std::vector<std::shared_ptr<Player>> players_;
 
 	std::unique_ptr<Boss> boss_;
@@ -77,20 +77,20 @@ private:
 
 	std::vector<std::unique_ptr<ShotBase>> shots_;
 
-	//背景インスタンス
+	// 背景インスタンス
 	// スカイドーム
 	std::unique_ptr<SkyDome> skyDome_;
 	std::unique_ptr<Stage> stage_;
 	std::unique_ptr<Grid> grid_;
 
-	//ゲーム開始待機時間
+	// ゲーム開始待機時間
 	float stepCountDown_;
 	
 	float minDist_ = 10000.0f;
 
-	//ゲームシーン用変数
-	int downCnt_;		//ダウンした回数
-	float soundRate_;	//音量倍率
+	// ゲームシーン用変数
+	int downCnt_;		// ダウンした回数
+	float soundRate_;	// 音量倍率
 
 	// 衝突判定
 	void Collision(void);

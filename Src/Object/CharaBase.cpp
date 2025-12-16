@@ -40,7 +40,6 @@ void CharaBase::Collision(void)
 	CollisionGravity();
 
 	// 移動
-	//moveDiff_ = VSub(movedPos_, transform_.pos);
 	transform_.pos = movedPos_;
 
 
@@ -49,7 +48,7 @@ void CharaBase::Collision(void)
 		transform_.pos = { 0.0f, -30.0f, 0.0f };
 	}
 
-	//移動誤判定
+	// 移動誤判定
 	CollisionMoveEnd();
 }
 void CharaBase::CollisionStageCapsule(void)
@@ -79,29 +78,6 @@ void CharaBase::CollisionMoveEnd(void)
 
 				transform_.pos = movedPos_;
 				transform_.Update();
-
-				// 着地モーション
-				//for (int tryCnt = 0; tryCnt < 10; tryCnt++)
-				//{
-				//	// 再度、モデル全体と衝突検出するには、効率が悪過ぎるので、
-				//	// 最初の衝突判定で検出した衝突ポリゴン1枚と衝突判定を取る
-				//	auto pHit = HitCheck_Line_Triangle(
-				//		prePos_, transform_.pos,
-				//		hit.Position[0], hit.Position[1], hit.Position[2]);
-
-				//	if (pHit.HitFlag)
-				//	{
-				//		// 法線の方向にちょっとだけ移動させる
-				//		movedPos_ = VAdd(movedPos_, VScale(VNorm(VSub(prePos_, transform_.pos)), 5.0f));
-				//		// カプセルも一緒に移動させる
-				//		transform_.pos = movedPos_;
-				//		transform_.Update();
-				//		continue;
-				//	}
-				//	else {
-				//		break;
-				//	}
-				//}
 			}
 		}
 	}
@@ -160,19 +136,21 @@ void CharaBase::CountTime(float& time)
 }
 
 
-std::unique_ptr<CharaBase::AttrckData> CharaBase::SetAtrckData(int nextAtkId, float sHitTim, float HitTim, float sNewTime, bool isChage, int chargeId)
+std::unique_ptr<CharaBase::AttrckData> CharaBase::SetAtrckData(
+	int nextAtkId, float sHitTim, float HitTim, float sNewTime, bool isChage, int chargeId)
 {
 	auto atk = std::make_unique<AttrckData>();
 
-	atk->isCharge = isChage;	//チャージ攻撃か
-	atk->chargeId = chargeId;		//ナンバー
-
-	atk->sHitTime = sHitTim;	//判定発生時間
-	atk->HitTime = HitTim;
-	atk->sNewTime = sNewTime;	//n入力受付時間
-	atk->NewTime = 0.0f;
-
-	atk->nextAttrck = nextAtkId;	//次のこうげきID 
-
+	// チャージ関連
+	atk->isCharge = isChage;	// チャージ攻撃か
+	atk->chargeId = chargeId;	// ナンバー
+	// 判定時間
+	atk->sHitTime = sHitTim;	// 判定発生時間
+	atk->HitTime = HitTim;		// 判定終了時間
+	atk->sNewTime = sNewTime;	// n入力受付時間
+	atk->NewTime = 0.0f;		// n入力受付終了時間
+	// 次の攻撃ID
+	atk->nextAttrck = nextAtkId;
+	 
 	return atk;
 }

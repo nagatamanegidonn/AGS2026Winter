@@ -11,16 +11,16 @@ public:
 	// アニメーションデータ
 	struct AttrckData
 	{
-		bool isCharge = false;	//チャージ攻撃か
-		int chargeId = -1;		//charge中のナンバー
+		bool isCharge = false;	// チャージ攻撃か
+		int chargeId = -1;		// charge中のナンバー
 
-		float sHitTime = 0.0f;	//判定発生時間
+		float sHitTime = 0.0f;	// 判定発生時間
 		float HitTime = 0.0f;
 
-		float sNewTime = 0.0f;	//n入力受付時間
-		float NewTime = 0.0f;
+		float sNewTime = 0.0f;	// n入力受付時間
+		float NewTime = 0.0f;	// n入力受付終了時間
 
-		int nextAttrck = -1;	//次のこうげきID 
+		int nextAttrck = -1;	// 次の攻撃ID 
 	};
 
 	// コンストラクタ
@@ -33,7 +33,7 @@ public:
 	virtual void Update(void) = 0;
 	virtual void Draw(void) = 0;
 
-	//最終更新
+	// 最終更新
 	void Collision(void);
 	virtual void CollisionStageCapsule(void);
 	virtual void CollisionGravity(void);
@@ -43,11 +43,11 @@ public:
 	void AddCollider(std::weak_ptr<Collider> collider);
 	void ClearCollider(void);
 
-	//攻撃量の取得
+	// 攻撃量の取得
 	const int GetAttrckPow(void) const { return attrckDamage_; }
 	const float GetAttrckRate(void) const { return attrckRate_; }
 
-	//現エリアの設定：取得
+	// 現エリアの設定：取得
 	void SetAreaId(int id);
 	const int& GetAreaId(void) const { return areaId_; }
 
@@ -57,10 +57,10 @@ protected:
 
 #pragma region 移動,回転,重力
 
-	//更新前の座標
+	// 更新前の座標
 	VECTOR prePos_;
 
-	//移動
+	// 移動
 	// 移動スピード
 	float speed_;
 	// 移動方向
@@ -83,23 +83,24 @@ protected:
 	// 衝突判定に用いられるコライダ
 	std::vector<std::weak_ptr<Collider>> colliders_;
 
-	//エリア管理
+	// エリア管理
 	int areaId_;
 
 	// 移動量の計算
 	void CalcGravityPow(void);
-	//時間のカウント
+
+	// 時間のカウント
 	void CountTime(float& time);
 
 	// 種類別のアニメーションデータ
-	std::map<int, std::unique_ptr<AttrckData>> atkData_;
-	int attrckType_ = 0;//アタックデータ使用ID
+	std::map<int, std::unique_ptr<AttrckData>> atkData_;// アタックアニメデータ
+	int attrckType_ = 0;								// アタックデータ使用ID
 
-	//攻撃管理
-	bool isHitCheck_;			//攻撃判定が発生するかの判定
-	float changeAttrckTime_;		//攻撃チャージ時間
-	int attrckDamage_;			//攻撃力
-	float attrckRate_ = 1.0f;	//攻撃率
+	// 攻撃管理
+	bool isHitCheck_;			// 攻撃判定が発生するかの判定
+	float changeAttrckTime_;	// 攻撃チャージ時間
+	int attrckDamage_;			// 攻撃力
+	float attrckRate_ = 1.0f;	// 攻撃率
 
 
 	/// <summary>

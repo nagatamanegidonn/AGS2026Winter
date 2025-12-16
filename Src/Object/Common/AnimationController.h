@@ -27,13 +27,13 @@ public :
 
 		// 逆再生
 		float switchLoopReverse_ = 1.0f;
-		//ブレンドするかどうか
+		// ブレンドするかどうか
 		bool isBlend = false;
 		float blendSpeed = 1.0f;
 
 	};
 
-	//ブレンド情報
+	// ブレンド情報
 	struct BlendData {
 		int fromAttachNo = -1;
 		int animType = -1;
@@ -54,7 +54,7 @@ public :
 	~AnimationController(void);
 
 	// アニメーション追加
-	//sTimeとeTimeを入れるときに再生方向を決めれる
+	// sTimeとeTimeを入れるときに再生方向を決めれる
 	void Add(int type, const std::wstring& path, float speed, int animNo = 0
 		, float sTime = 0.0f, float eTime = -1.0f);
 	void SetIsBlend(int type, bool isBlend, float blendSpeed = 3.0f);
@@ -75,7 +75,7 @@ public :
 	bool IsEnd(void) const;
 
 	const float GetStepTime(void) const { return playAnim_.step; }
-	//アニメーションのモデルローカル位置
+	// アニメーションのモデルローカル位置
 	const VECTOR GetPos(void) const { return localPos_; }
 	const bool IsBlend(void) const { return blend_.isBlending; }
 

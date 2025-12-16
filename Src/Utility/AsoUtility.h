@@ -6,10 +6,10 @@
 #include "../Common/Quaternion.h"
 class AsoUtility
 {
-	//関数の前にあるstaticはAsoUtilityを宣言しなくても使用できるようにするため
+	// 関数の前にあるstaticはAsoUtilityを宣言しなくても使用できるようにするため
 public:
 
-	//180度(deg)
+	// 180度(deg)
 	static constexpr float DEG_PAI = 180.0f;
 
 	// ラジアン(rad)・度(deg)変換用
@@ -128,12 +128,12 @@ public:
 
 	static float LerpAngle(float from, float to, float t);
 
-	//半径判定(半径内に入っているかどうか)
+	// 半径判定(半径内に入っているかどうか)
 	static bool IsLenge(const VECTOR& sPos, const VECTOR& ePos, float lenge);
 	static float GetDisPow(const VECTOR& sPos, const VECTOR& ePos);
 	static float CalcVolumeByDistance(const VECTOR& listener, const VECTOR& source, float maxDistance);
 
-	//string変換
+	// string変換
 	static std::string WStringToUTF8_Win(const std::wstring& wstr);
 	static	std::wstring UTF8ToWString_Win(const std::string& str);
 };

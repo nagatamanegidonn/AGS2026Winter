@@ -8,10 +8,10 @@ public:
 	//リソース名
 	enum class SRC
 	{
-		//TITLE_BGM,		//タイトルシーンのBGM
-		//SELECT_BGM,		//セレクトシーンのBGM
+		//TITLE_BGM,		// タイトルシーンのBGM
+		//SELECT_BGM,		// セレクトシーンのBGM
 		//
-		//RESULT_BGM,		//リザルトシーンのBGM
+		//RESULT_BGM,		// リザルトシーンのBGM
 
 		BATTLE_BGM,
 		
@@ -19,14 +19,14 @@ public:
 		SHOT_DAMAGE,
 		CHAGE,
 		
-		//コネクトシーンで使用
+		// コネクトシーンで使用
 		CONECT_START,
 		ADD,
 
-		//ゲームシーンで使用
+		// ゲームシーンで使用
 		LOCKON,
 
-		//SE
+		// SE
 		SELECT,
 		ENTER,
 		START,

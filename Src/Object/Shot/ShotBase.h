@@ -57,7 +57,7 @@ public:
     std::weak_ptr<Capsule> GetCapsule(void);
 
 
-    //外部クラストの当たり判定
+    // 外部クラストの当たり判定
     bool CollisionCapsule(std::weak_ptr<Capsule> _capsule)const;
 
 	// 状態遷移

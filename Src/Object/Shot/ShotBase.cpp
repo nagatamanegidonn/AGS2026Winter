@@ -107,12 +107,12 @@ std::weak_ptr<Capsule> ShotBase::GetCapsule(void)
 
 bool ShotBase::CollisionCapsule(std::weak_ptr<Capsule> _capsule) const
 {
-	//当たり判定フラグ
+	// 当たり判定フラグ
 	bool ret = false;
 
 	// 衝突した複数のポリゴンと衝突回避するまで、
 	// プレイヤーのdamage
-	 // 当たったかどうかで処理を分岐
+	// 当たったかどうかで処理を分岐
 	if (_capsule.lock()->IsHitSphere(transform_.pos, radius_))
 	{
 		// 当たった場合は衝突の情報を描画する

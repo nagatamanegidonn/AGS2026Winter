@@ -17,7 +17,7 @@
 #include "../Object/Common/Timer.h"
 
 #include "../Object/Player/Player.h"
-#include "../Object/Player/GreatSword.h"
+#include "../Object/Player/Sword.h"
 #include "../Object/Player/Arrow.h"
 
 #include "../Object/Shot/BomObject.h"
@@ -39,7 +39,7 @@
 
 namespace
 {
-	//タイマーの描画位置
+	// タイマーの描画位置
 	constexpr int TIME_POS_X = Timer::SIZE_X / 2 + 10;
 	constexpr int TIME_POS_Y = Timer::SIZE_Y / 2 + 10;
 	constexpr float LIMIT_TIME = 60.0f * 5.0f;
@@ -130,7 +130,7 @@ void GameScene::Init(void)
 		switch (nIns.GetWeapon(user.first))
 		{
 		case 0:
-			player = std::make_shared<GreatSword>(user.first);
+			player = std::make_shared<Sword>(user.first);
 			break;
 		case 1:
 			player = std::make_shared<Player>(user.first);
@@ -142,12 +142,9 @@ void GameScene::Init(void)
 			break;
 		}
 		
-		Player::KEY_CONFIG keyP1 = {
-			KEY_INPUT_UP, KEY_INPUT_DOWN, KEY_INPUT_LEFT, KEY_INPUT_RIGHT, KEY_INPUT_SPACE, KEY_INPUT_M
-		};
 		player->Init(this, user.second.playerType);
 
-		//自分用のクラス	
+		// 自分用のクラス	
 		if (user.first== NetManager::GetInstance().GetSelf().key)
 		{
 
@@ -155,7 +152,7 @@ void GameScene::Init(void)
 			stage_ = std::make_unique<Stage>(*player, *boss_);
 			stage_->Init();
 			// ステージの初期設定
-			//stage_->ChangeStage(Stage::NAME::SPECIAL_STAGE);
+			// stage_->ChangeStage(Stage::NAME::SPECIAL_STAGE);
 			stage_->ChangeStage(Stage::NAME::MAIN_PLANET);
 
 			// スカイドーム
@@ -171,38 +168,36 @@ void GameScene::Init(void)
 	}
 	stage_->SetPlayers(players_);
 
-
-	//背景初期化
+	// 背景初期化
 	grid_ = std::make_unique<Grid>(); 
 	grid_->Init();
 
-	//空の弾の作成
+	// 空の弾の作成
 	auto  shot = std::make_unique<ItemShot>(0, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, -1);
 	shot->ChangeState();
 	shots_.push_back(std::move(shot));
 
-	//ゲーム開始待機時間
+	// ゲーム開始待機時間
 	stepCountDown_ = 1.5f;
 
-	//ダウンした回数
+	// ダウンした回数
 	downCnt_ = 0;
 
-	//音の設定
+	// 音の設定
 	soundRate_ = 0.0f;
 	SoundManager::GetInstance().Play(SoundManager::SRC::BATTLE_BGM, Sound::TIMES::LOOP);
 	SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
-	//SoundManager::GetInstance().Pause(SoundManager::SRC::BATTLE_BGM, Sound::TIMES::LOOP);
 
-	//計測開始
+	// 計測開始
 	timer_ = std::make_unique<Timer>(LIMIT_TIME);
 	timer_->Start();
 
-	//マップ
+	// マップ
 	mapHandle_ = LoadGraph((Application::PATH_IMAGE + L"UI/Map.png").c_str());
 	bossHandle_ = LoadGraph((Application::PATH_IMAGE + L"UI/Boss.png").c_str());
 	playerHandle_ = LoadGraph((Application::PATH_IMAGE + L"UI/Player.png").c_str());
 
-	//ミニマップシェーダ
+	// ミニマップシェーダ
 	Material_ = std::make_unique<PixelMaterial>(L"Map.cso", 3);
 	Material_->AddConstBuf({ 0.5f, 0.5f, 0.2f, 0.2f });//ボス
 	Material_->AddConstBuf({ 0.5f, 0.5f, 0.2f, 0.2f });//プレイヤー
@@ -244,7 +239,7 @@ void GameScene::Update(void)
 		break;
 	}
 
-	//シーン遷移が間に合ってないプレイヤーのために待機
+	// シーン遷移が間に合ってないプレイヤーのために待機
 	float limit = stepCountDown_ - SceneManager::GetInstance().GetTotalGameTime();
 	if (limit > 0.0f)
 	{
@@ -262,10 +257,10 @@ void GameScene::Update(void)
 #endif
 
 
-	//自身のアクション記録(履歴じゃない)をリセット
+	// 自身のアクション記録(履歴じゃない)をリセット
 	NetManager::GetInstance().ResetAction();
 
-	//背景関係の更新
+	// 背景関係の更新
 	skyDome_->Update();
 	stage_->Update();
 	grid_->Update();
@@ -281,7 +276,7 @@ void GameScene::Update(void)
 	{
 		player->Update();
 
-		//BGM設定
+		// BGM設定
 		if (player->GetAreaId() == boss_->GetAreaId() && player->IsSelf()
 			&& boss_->IsBattle())
 		{
@@ -293,19 +288,16 @@ void GameScene::Update(void)
 			{
 				soundRate_ = 1.0f;
 			}
-			//音の再生
+			// 音の再生
 			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
-			//SoundManager::GetInstance().Resume(SoundManager::SRC::BATTLE_BGM, Sound::TIMES::LOOP);
 		}
 		else if(player->IsSelf())
 		{
-			if (soundRate_ > 0.0f)
-			{
+			if (soundRate_ > 0.0f){
 				soundRate_ -= SceneManager::GetInstance().GetDeltaTime() * 0.3f;
 			}
 			else {
 				soundRate_ = 0.0f;
-				//SoundManager::GetInstance().Pause(SoundManager::SRC::BATTLE_BGM, Sound::TIMES::LOOP);
 			}
 			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
 		}
@@ -354,28 +346,20 @@ void GameScene::Update(void)
 				}
 			}
 		}
-		else if (boss_->IsState(Boss::STATE::FOLLOW))
-		{
-			//if (disPow < 100.0f * 100.0f)//ダメージ半径×攻撃半径
-			//{
-			//	boss_->SetFollow(&player->GetTransform());
-			//}
-		}
 	}
 	for (auto& shot : shots_)
 	{
 		shot->Update();
 	}
 
-	//同じエリアにいなくても機能
-	//バトル中同じリアにいるプレイヤーが1人もいなかったら
+	// 同じエリアにいなくても機能
+	// バトル中同じリアにいるプレイヤーが1人もいなかったら
 	if (!isBattle && boss_->IsState(Boss::STATE::BATTLE))
 	{
 		boss_->SetBattleCancel();//バトル中止
 	}
-	//体力が減ったら移動（線形補間）
-	//LerpMove中は使用不可
-	//if (boss_->GetHp() <= Boss::MAX_HP && !boss_->IsState(Boss::STATE::LERP_MOVE))
+	// 体力が減ったら移動（線形補間）
+	// LerpMove中は使用不可
 	if ((boss_->GetLerpTime() <= 0.0f|| !stage_->GetActivePlanet().lock()->CheckArea(boss_->GetTransform().pos))
 		&& !boss_->IsState(Boss::STATE::LERP_MOVE))
 	{
@@ -395,10 +379,10 @@ void GameScene::Update(void)
 			}
 		}
 		stepId_ = 0;
-		boss_->StartLerp();//移動開始
+		boss_->StartLerp();// 移動開始
 		boss_->SetLerpPos(stage_->GetActivePlanet().lock()->GetLerpPos(textId_, stepId_));
 	}
-	//線形補間が終わったら次があるか調べる
+	// 線形補間が終わったら次があるか調べる
 	else if ( !boss_->IsLerp() && boss_->IsState(Boss::STATE::LERP_MOVE))
 	{
 		stepId_ += 1;
@@ -413,7 +397,7 @@ void GameScene::Update(void)
 		}
 	}
 
-	//ボスの更新
+	// ボスの更新
 	boss_->Update();
 	for (auto& mons : Monsters_)
 	{
@@ -434,7 +418,8 @@ void GameScene::Update(void)
 	GameManager::GAME_RESULT result = GameManager::GAME_RESULT::NONE;
 
 	if (GameManager::GetInstance().IsClear()) {
-		if (timer_->IsRunning())timer_->Reset();//タイマーが動いてたら止める
+		// タイマーが動いてたら止める
+		if (timer_->IsRunning())timer_->Reset();
 		// クリア時間の更新
 		GameManager::GetInstance().UpdateClearTime(SceneManager::GetInstance().GetDeltaTime());
 
@@ -458,13 +443,8 @@ void GameScene::Update(void)
 	if (GameManager::GetInstance().GetGameResult() != GameManager::GAME_RESULT::NONE)
 	{ 
 		// ゲームオーバーシーンへ遷移
-		//SceneManager::GetInstance().SetGameResult(result);
 		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::RSULT);
 	}
-	//if (!nIns.IsSameGameState(GAME_STATE::GAME_PLAYING))//最初の一回目が、フレームがずれてるからダメ
-	//{
-	//	SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);//ゲームスタート！
-	//}
 }
 
 void GameScene::Draw(void)
@@ -484,11 +464,6 @@ void GameScene::Draw(void)
 
 	auto& nIns = NetManager::GetInstance();
 
-	// UIの描画
-	//DrawUI();
-
-	int x = 0;
-	int y = 0;
 
 	//ボスの描画]
 	boss_->Draw();
@@ -497,15 +472,19 @@ void GameScene::Draw(void)
 		mons->Draw();
 	}
 
+	// プレイヤー情報取得用
+	int playerNo = 0;
+
 	VECTOR playerPos{};
 	VECTOR playerDirF{};
+
 	// プレイヤーの描画
 	for (auto& player : players_)
 	{
 
 		player->Draw();
-		player->DrawUI(x);
-		x++;
+		player->DrawUI(playerNo);
+		playerNo++;
 		if (player->IsSelf())
 		{
 			playerPos = player->GetTransform().pos;
@@ -516,7 +495,7 @@ void GameScene::Draw(void)
 	// Draw内
 	timer_->DrawNeedle(TIME_POS_X, TIME_POS_Y); // 中心位置 (x, y)
 
-	//マップ
+	// マップ
 	const VECTOR bossPos = boss_->GetTransform().pos;
 	const VECTOR cameraF = SceneManager::GetInstance().GetCamera().lock()->GetForward();
 	// カメラの右ベクトル
@@ -535,7 +514,7 @@ void GameScene::Draw(void)
 	Material_->SetConstBuf(1,{ -playerDirF.x, playerDirF.z, 0.05f, 0.05f });//
 	Material_->SetConstBuf(2,{ -camRight.x, camRight.z, 0.0f, 0.0f });//
 
-	//ミニマップの描画
+	// ミニマップの描画
 	/*SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);
 	Renderer_->Draw(MAP_POS_X, MAP_POS_Y);
 	SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);*/
@@ -606,11 +585,10 @@ void GameScene::CreateShot(ShotBase::TYPE type, int damage, const VECTOR& birthP
 			default:
 				break;
 		}
-		//auto shot = std::make_unique<ShotBase>(damage, birthPos, dir, key);
 		shots_.push_back(std::move(shot));
 	}
 }
-//ステージオブジェクトの生成
+// ステージオブジェクトの生成
 void GameScene::CreateObject(const Transform& _trans)
 {
 	stage_->AddBom(_trans);
@@ -623,10 +601,10 @@ void GameScene::Collision(void)
 	// プレイヤーの描画
 	for (auto& player : players_)
 	{
-		//参照型要改善
+		// 参照型要改善
 		int model = player->GetTransWepon().modelId;
 
-		//味方への攻撃判定（未実装）
+		// 味方への攻撃判定（未実装）
 		for (auto& playerVS : players_)
 		{
 			if (player == playerVS)
@@ -641,7 +619,7 @@ void GameScene::Collision(void)
 		}
 
 
-		//最終的にボスの攻撃判定//自分だけ
+		// 最終的にボスの攻撃判定//自分だけ
 		if (boss_->CollisionCapsule(player->GetCapsule())
 			&& player->IsAttrck() && player->IsHit() && player->IsSelf())
 		{
@@ -649,11 +627,11 @@ void GameScene::Collision(void)
 			SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
 
 			boss_->Damage(player->GetAttrckPow() * player->GetAttrckRate());
-			//音の再生
+			// 音の再生
 			SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
 
 		}
-		//小型の処理
+		// 小型の処理
 		for (auto& mons : Monsters_)
 		{
 			if (mons->CollisionCapsule(player->GetCapsule())
@@ -664,7 +642,7 @@ void GameScene::Collision(void)
 				SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
 
 				mons->Damage(player->GetAttrckPow() * player->GetAttrckRate());
-				//音の再生
+				// 音の再生
 				SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
 
 			}
@@ -712,8 +690,7 @@ void GameScene::Collision(void)
 			// 小型の処理(攻撃)
 			for (auto& mons : Monsters_)
 			{
-				if (mons->CollisionAttrck(player->GetTransform().modelId)
-					/*&& boss_->IsHit()*/)
+				if (mons->CollisionAttrck(player->GetTransform().modelId))
 				{
 					VECTOR mixDir = AsoUtility::VECTOR_ZERO;
 
@@ -787,7 +764,7 @@ void GameScene::Collision(void)
 		// 爆弾の処理
 		else if (shot->GetType() == ShotBase::TYPE::BOM)//ここでほしいのは全てのプレイヤーの攻撃判定と自分の管理しているクラスの判定
 		{
-			//　通常状態(設置状態)
+			// 通常状態(設置状態)
 			if (shot->IsShot())
 			{
 				for (auto& player : players_)
@@ -835,7 +812,7 @@ void GameScene::Collision(void)
 							// 画面を暗転
 							shot->ChangeState();
 
-							//	吹き飛び方向
+							// 吹き飛び方向
 							VECTOR mixDir = VScale(VNorm(VSub(player->GetTransform().pos, ShotPos)), 0.001f);
 							// ダメージ
 							player->Damage(shot->GetDamage() * 0.1f, ShotPos, mixDir);
@@ -881,7 +858,7 @@ void GameScene::ShotHitEnemy(ShotBase& shot, EnemyBase& enemy)
 		// 戦闘状態へ（Follow設定など）
 		enemy.SetFollow(&player->GetTransform());
 	}
-
+	// 弾の状態を変更
 	shot.ChangeState();
 }
 

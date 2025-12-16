@@ -131,7 +131,7 @@ public:
 	//新規
 #pragma region ゲームシーンで使用
 
-	//bool IsAction(int key, PLAYER_ACTION action, bool isAction);
+	// bool IsAction(int key, PLAYER_ACTION action, bool isAction);
 	// ポジション設定
 	VECTOR GetPostion(int key);
 	void SetPostion(int key, VECTOR pos);

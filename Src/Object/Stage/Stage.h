@@ -83,7 +83,7 @@ private:
 	// Å‰‚Ì˜f¯
 	void MakeMainStage(void);
 
-	// hana
+	// ‰Ô‚Ìì¬
 	void MakeFlour(void);
 
 

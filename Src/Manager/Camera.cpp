@@ -273,7 +273,7 @@ void Camera::ProcessRot(void)
 	auto& ins = InputManager::GetInstance();
 
 
-	//回転軸と量決め
+	// 回転軸と量決め
 	//const float ROT_POW = 1.0f;
 	const float ROT_POW = AsoUtility::Deg2RadF(1.0f);
 	VECTOR axisDeg = AsoUtility::VECTOR_ZERO;
@@ -296,7 +296,7 @@ void Camera::ProcessRot(void)
 
 	if (!AsoUtility::EqualsVZero(axisDeg))
 	{
-		//今回回転させたい回転量をクォータニオンで作る
+		// 今回回転させたい回転量をクォータニオンで作る
 		Quaternion rotPow = Quaternion();
 
 		/*rotPow = rotPow.Mult(
@@ -312,7 +312,7 @@ void Camera::ProcessRot(void)
 				AsoUtility::Deg2RadF(axisDeg.y), AsoUtility::AXIS_Y
 			));
 
-		// 回転諒を加える(合成)
+		// 回転量を加える(合成)
 		angles_ = VAdd(angles_, axisDeg);
 
 	}
@@ -322,7 +322,7 @@ void Camera::ProcessRot(void)
 void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, const bool left)
 {
 
-	//回転軸と量決め
+	// 回転軸と量決め
 	//const float ROT_POW = 1.0f;
 	const float ROT_POW = AsoUtility::Deg2RadF(1.0f);
 	VECTOR axisDeg = AsoUtility::VECTOR_ZERO;
@@ -345,7 +345,7 @@ void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, co
 
 	if (!AsoUtility::EqualsVZero(axisDeg))
 	{
-		//今回回転させたい回転量をクォータニオンで作る
+		// 今回回転させたい回転量をクォータニオンで作る
 		Quaternion rotPow = Quaternion();
 
 		/*rotPow = rotPow.Mult(

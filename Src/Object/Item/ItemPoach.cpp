@@ -1,6 +1,7 @@
 #include "ItemBase.h"
 #include "ItemPoach.h"
 #include "../../Application.h"
+#include "../../Manager/ResourceManager.h"
 #include <DxLib.h>
 #include <typeindex>
 #include <algorithm> // 追加
@@ -10,6 +11,8 @@ ItemPoach::ItemPoach()
 	selectIndex_(0),
 	ItemList_()
 {
+	// アイテムフレーム画像読み込み
+	itemFrameImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::ITEM_FREAM).handleId_;
 }
 
 ItemPoach::~ItemPoach()
@@ -24,10 +27,16 @@ void ItemPoach::Draw(int i)
 	auto it = ItemList_.begin();
 	std::advance(it, selectIndex_);
 
+	// アイテムフレーム描画
+	DrawRotaGraph(Application::SCREEN_SIZE_X - 100, Application::SCREEN_SIZE_Y - 100, 1.0f, 0.0f, itemFrameImage_, true);
+
+	
 	if (it != ItemList_.end()) {
 		(*it)->Draw();
+#ifdef _DEBUG
 		DrawFormatString(Application::SCREEN_SIZE_X - 200, Application::SCREEN_SIZE_Y - 80,
 			0x0000ff, L"選択中のID=%d", selectIndex_);
+#endif // DEBUG
 	}
 
 #ifdef _DEBUG

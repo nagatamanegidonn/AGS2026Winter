@@ -79,7 +79,7 @@ public:
 
 	// ’Ç]‘ÎÛ‚Ìİ’è
 	void SetFollow(const Transform* follow);
-	//targetLookAtPos‚ÉŒü‚©‚Á‚Ä’–Ú‚·‚é
+	// targetLookAtPos‚ÉŒü‚©‚Á‚Ä’–Ú‚·‚é
 	void LookAtSmoothly(const VECTOR& targetLookAtPos, float interpolationFactor);
 
 	// ƒJƒƒ‰‘€ì

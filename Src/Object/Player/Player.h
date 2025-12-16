@@ -29,19 +29,18 @@ class Player : public CharaBase
 public:
 
 
-	//腰
+	// 腰
 	static constexpr VECTOR GSOWRD_SPINE_ROT = { 0.0f, 0.0f, 180.0f };
 	static constexpr VECTOR GSOWRD_SPINE_POS = { 0.0f, 50.0f, 15.0f };
-	//右手
+	// 右手
 	static constexpr VECTOR GSOWRD_HAND_ROT = { 160.0f, 20.0f, 45.0f };
 	static constexpr VECTOR GSOWRD_HAND_POS = { 0.0f, 0.0f, 0.0f };
 
-	//ローカル回転
+	// ローカル回転
 	static constexpr VECTOR WEPON_LOCAL_ROT =
 	{ 160.0f, 180.0f,0.0f };
 
 	// 回転完了までの時間
-	//static constexpr float TIME_ROT = 1.0f;
 	static constexpr float TIME_ROT = 0.1f;
 	static constexpr float TIME_ROT2 = 10.0f;
 
@@ -53,7 +52,6 @@ public:
 	static constexpr float SPEED_MOVE = 5.0f;
 	static constexpr float SPEED_RUN = 10.0f;
 	static constexpr float SPEED_JUMP = SPEED_RUN * 8;
-	//static constexpr float SPEED_ROLL = 7.5f;
 	static constexpr float SPEED_ROLL = 15.0f;
 
 
@@ -78,20 +76,20 @@ public:
 	enum class STATE
 	{
 		NONE,		
-		PLAY,		//通常状態
-		BATTLE,		//戦闘状態
-		WEPON,		//抜刀、納刀
+		PLAY,		// 通常状態
+		BATTLE,		// 戦闘状態
+		WEPON,		// 抜刀、納刀
 
-		ATTRCK,		//攻撃
+		ATTRCK,		// 攻撃
 
-		ROWLING,	//回避
+		ROWLING,	// 回避
 
-		DAMAGE,		//ダメージ（のけぞり）
-		HI_DAMAGE,	//ダメ―ジ（吹っ飛び）
-		DEAD,		//死亡
+		DAMAGE,		// ダメージ（のけぞり）
+		HI_DAMAGE,	// ダメ―ジ（吹っ飛び）
+		DEAD,		// 死亡
 
-		GET,		//採取
-		ITEM_PLAY,		//使用
+		GET,		// 採取
+		ITEM_PLAY,	// 使用
 
 		END
 	};
@@ -99,43 +97,43 @@ public:
 	// アニメーション種別
 	enum class ANIM_TYPE
 	{
-		//通常アニメーション
+		// 通常アニメーション
 		IDLE,
 		RUN,
 		FAST_RUN,
 		ROLL,
-		//採取、使用
+		// 採取、使用
 		GET,
 		ITEM_DRINK,
 		ITEM_THROW,
 		ITEM_THROW_E,
 		ITEM_SET,
 		ITEM_SET_E,
-		//抜刀
+		// 抜刀
 		DRAW,
 		BATTLE_DRAW,
-		//納刀
+		// 納刀
 		CLOSE,
 		BATTLE_CLOSE,
-		//バトル時アニメーション
+		// バトル時アニメーション
 		BTLLE_IDLE,
 		BTLLE_RUN,
 		BTLLE_FAST_RUN,
-		//ダメージ
+		// ダメージ
 		DAMAGE,
 		FLYING,
 		DOWN,
-		//攻撃
+		// 攻撃
 		ATTRCK1S,
 		ATTRCK1STOP,
 		ATTRCK1E,
 		ATTRCK2,
 		ATTRCK3,
-		//死亡
+		// 死亡
 		DEAD,
 	};
 
-	//プレイヤー自身から発生されるサウンド
+	// プレイヤー自身から発生されるサウンド
 	enum class SE
 	{
 		CHAGE,
@@ -153,18 +151,7 @@ public:
 		ATTRCK2,
 		ATTRCK3,
 
-		MAX//音なしfor文用
-	};
-
-	// キーコンフィグ(1P、2P)
-	struct KEY_CONFIG
-	{
-		int UP;
-		int DOWN;
-		int LEFT;
-		int RIGHT;
-		int GAME_END;
-		int JUMP;
+		MAX// 音なしfor文用
 	};
 
 	// コンストラクタ
@@ -174,7 +161,6 @@ public:
 	~Player(void);
 
 	void Init(GameScene* scene, PLAYER_TYPE type);
-	// Player.h or Player.cpp に追加
 	void Init(void) override 
 	{
 		// 必要な初期化処理を書く。何もなければ空でもOK。
@@ -193,7 +179,7 @@ public:
 
 	// ＨＰの取得
 	const int GetHp(void) const { return hp_; }
-	//ダメージ関係
+	// ダメージ関係
 	void Damage(int dama,const VECTOR atkPos, const VECTOR mixDir);
 
 	const bool IsHit(void) const;
@@ -205,22 +191,22 @@ public:
 	// プレイヤー種別(1P or 2P)
 	const PLAYER_TYPE& GetPlayerType(void)const;
 	bool CollisionCapsule(int& modelId)const;
-	//球体との当たり判定
+	// 球体との当たり判定
 	const bool CollisionUnderSphere(const VECTOR pos,float r)const;
 
-	const bool IsAttrck(void) const;//通信プレイヤーのことは不明
-	const bool IsLoopAnim(void);//通信プレイヤー
+	const bool IsAttrck(void) const;// 通信プレイヤーのことは不明
+	const bool IsLoopAnim(void);	// 通信プレイヤー
 
-	bool IsSelf(void);//このプレイヤーが自身かどうか返す関数
+	bool IsSelf(void);// このプレイヤーが自身かどうか返す関数
 
-	//注目するか
+	// 注目するか
 	bool IsAimSet(void);
 	bool IsTrgAimSet(void);
 
 	// 通信専用の攻撃アニメーション判定
 	virtual bool IsSyncAttrck(void);
 
-	//採取の際の情報（仮）
+	// 採取の際の情報（仮）
 	void SetItemId(int id) { itemId_ = id; }
 
 protected:
@@ -229,7 +215,7 @@ protected:
 
 	// ゲームシーンのポインタ変数
 	GameScene* gameScene_;
-	//ユーザー番号
+	// ユーザー番号
 	int key_;
 
 	// モデル制御の基本情報(武器用)
@@ -237,11 +223,11 @@ protected:
 
 	// アニメーション
 	std::unique_ptr<AnimationController> animationController_;
-	//操作コントローラー
+	// 操作コントローラー
 	std::unique_ptr<InputController> inputController_;
-	//エフェクトコントローラー
+	// エフェクトコントローラー
 	std::unique_ptr<EffectController> effectController_;
-	//サウンドコントローラー
+	// サウンドコントローラー
 	std::unique_ptr<SoundController> soundController_;
 
 	// 状態管理
@@ -249,29 +235,28 @@ protected:
 	int animeType_;
 	int animeAgoType_;
 
-	//抜刀状態管理
-	bool isBattle_;		//抜刀中か判断する
-	bool isDrawWepon_;
-	bool isCloseWepon_;
+	// 抜刀状態管理
+	bool isBattle_;		// 抜刀中か判断する
+	bool isDrawWepon_;	// 抜刀動作中か判断する
+	bool isCloseWepon_;	// 納刀動作中か判断する
 
-	//攻撃管理
-	bool isHit_;		//ダメージが連続で入らないための判定//攻撃中一度ダメージを与えてらtrueに
+	// 攻撃管理
+	bool isHit_;		// ダメージが連続で入らないための判定//攻撃中一度ダメージを与えてらtrueに
 	float chageCount_ = 0.0f;
 	
 	// 状態管理(状態遷移時初期処理)
 	std::map<STATE, std::function<void(void)>> stateChanges_;
-	//std::map<ANIM_TYPE, std::function<void(void)>> attrckChanges_;
 	// 状態管理(更新ステップ)
 	std::function<void(void)> stateUpdate_;
 
-	//UI
-	int freamImg_;		//
-	int jobImg_;		//ジョブアイコン
-	int hpImg_;			//HP画像（色を変えスタミナにも使用）
-	int hpFreamImg_;	//HPフレーム画像」
-	int hpMaskImg_;		//HPマスク画像
-	int staFreamImg_;	//スタミナフレーム画像
-	int staMaskImg_;	//スタミナマスク画像
+	// UI
+	int freamImg_;		// フレーム画像
+	int jobImg_;		// ジョブアイコン
+	int hpImg_;			// HP画像（色を変えスタミナにも使用）
+	int hpFreamImg_;	// HPフレーム画像」
+	int hpMaskImg_;		// HPマスク画像
+	int staFreamImg_;	// スタミナフレーム画像
+	int staMaskImg_;	// スタミナマスク画像
 
 	std::unique_ptr<PixelMaterial> Material_;
 	std::unique_ptr<PixelRenderer> Renderer_;
@@ -280,7 +265,7 @@ protected:
 	std::unique_ptr<PixelMaterial> staMaterial_;
 	std::unique_ptr<PixelRenderer> staRenderer_;
 
-	//カプセル
+	// カプセル
 	std::unique_ptr<Capsule> capsule_;
 	std::shared_ptr<Capsule> capsuleWepon_;
 
@@ -298,32 +283,32 @@ protected:
 
 #pragma region パラメーター
 
-	// 体力	//ダメージ系
+	// 体力	// ダメージ系
 	int hp_;
 	int hpAgo_;
 	int hpMax_;
 	float damage_;
-	//スタミナ
+	// スタミナ
 	float stamina_;
 	float staminaMax_;
 	float staminaDir_;
-	bool isBreak_;		//疲労(スタミナが０になったか判定)
+	bool isBreak_;		// 疲労(スタミナが０になったか判定)
 
 #pragma endregion
 
-	//ダメージ関係
-	float invisibleTime_;	//無敵時間
-	VECTOR flyigDir_;		//吹き飛び方向
-	float flyigTime_;		//吹き飛び時間
-	float downTime_;		//起き上がり始めるまでの時間
+	// ダメージ関係
+	float invisibleTime_;	// 無敵時間
+	VECTOR flyigDir_;		// 吹き飛び方向
+	float flyigTime_;		// 吹き飛び時間
+	float downTime_;		// 起き上がり始めるまでの時間
 
-	//採取の際の情報（仮）
-	//採取行動の際にどのアイテムがとれるかをId管理（何もないときはー１）
+	// 採取の際の情報（仮）
+	// 採取行動の際にどのアイテムがとれるかをId管理（何もないときはー１）
 	int itemId_;
-	//アイテムポーチ
+	// アイテムポーチ
 	std::unique_ptr <ItemPoach> poach_;
 
-	//複種の初期化処理
+	// 複種の初期化処理
 	virtual void InitParam(void);
 	virtual void InitAnimation(void);
 	virtual void InitEffect(void);
@@ -361,17 +346,14 @@ protected:
 	void UseItem(void);
 #pragma endregion
 
-
-
 	// 移動
-	void ProcessMove(void);
-	void ProcessBattleMove(void);
+	void ProcessNormal(void);	// 通常操作
+	void ProcessBattle(void);	// 戦闘操作
 
 	// 回転
 	void SetGoalRotate(double rotRad);
 	void Rotate(void);
 	float CreateRad(const VECTOR& dir);
-
 
 	//武器の同期
 	const void SyncWeapon();
@@ -394,22 +376,21 @@ protected:
 	//最終更新
 	void CollisionStageCapsule(void)override;
 	void CollisionGravity(void)override;
-	//bool CollisionCapsule(int& modelId);
 
 	
 	// モーション終了
 	bool IsEndLanding(void);
-	//操作可能か
+	// 操作可能か
 	const bool IsInputPlay(void)const;
 
-	//攻撃キャンセル時の処理
+	// 攻撃キャンセル時の処理
 	void AttrckReset(void);
-	//アニメーション終了時の処理
+	// アニメーション終了時の処理
 	void ChangeStateAnimeEnd(const ANIM_TYPE anim, const std::function<void(void)> function = {});
 
 	// デバッグ用描画
 	void DrawDebug(void);
-	//attackDataを基にした更新
+	// attackDataを基にした更新
 	void AttrckUpdate(void);
 
 };

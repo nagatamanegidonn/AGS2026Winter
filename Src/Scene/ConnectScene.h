@@ -48,7 +48,7 @@ private:
 	// スタート画像
 	int imgStart_;
 
-	//背景、カーソル画像
+	//　背景、カーソル画像
 	int backImg_;
 	std::unique_ptr<PixelMaterial> Material_;
 	std::unique_ptr<PixelRenderer> Renderer_;

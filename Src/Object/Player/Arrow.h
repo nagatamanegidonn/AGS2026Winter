@@ -6,13 +6,13 @@ class Arrow :
 {
 public:
 
-    //îwíÜ
+    // îwíÜ
     static constexpr VECTOR BOW_SPINE_ROT = { 0.0f, 0.0f, 30.0f };
     static constexpr VECTOR BOW_SPINE_POS = { 0.0f, 0.0f, 15.0f };    
-    //ç∂éË
+    // ç∂éË
     static constexpr VECTOR BOW_LHAND_ROT = { 0.0f, 70.0f, -90.0f };
     static constexpr VECTOR BOW_LHAND_POS = { 0.0f, 0.0f, -3.0f };
-    //ç∂éË
+    // ç∂éË
     static constexpr VECTOR ARROW_RHAND_ROT = { 0.0f, 0.0f, -90.0f };
     static constexpr VECTOR ARROW_RHAND_POS = { 0.0f, 0.0f, -3.0f };
 

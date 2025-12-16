@@ -22,6 +22,11 @@
 #include "HitPart.h"
 #include "Boss.h"
 
+namespace
+{
+	constexpr float ROT_RATE = 3.0f;//2.0f;
+}
+
 Boss::Boss(int key)
 {
 	key_ = key;
@@ -77,7 +82,7 @@ Boss::Boss(int key)
 	AddHitPart(transform_.modelId, L"Knee_R", 75.0f, 1.0f);
 
 	lerpTime_ = MAX_LERP_TIME;
-	lerpPos_ = AsoUtility::VECTOR_ZERO;
+	waypoint_ = AsoUtility::VECTOR_ZERO;
 	isLerp_ = false;
 	lerpId_ = 0;
 }
@@ -562,7 +567,7 @@ const bool Boss::CollisionAttrck(const int& modelId)
 
 void Boss::SetLerpPos(VECTOR pos)
 {
-	lerpPos_ = pos;
+	waypoint_ = pos;
 	isLerp_ = true;
 }
 void Boss::StartLerp(void)
@@ -764,18 +769,20 @@ void Boss::UpdatePlay(void)
 }
 void Boss::UpdateLerpMove(void)
 {
+	// アニメーション再生
 	animationController_->Play((int)ANIM_TYPE::FAST_RUN);
 	animeType_ = (int)ANIM_TYPE::FAST_RUN;
 
+	// 移動
 	movePow_ =
-		VScale(VNorm(VSub(lerpPos_, transform_.pos)), SPEED_RUN);
+		VScale(VNorm(VSub(waypoint_, transform_.pos)), SPEED_RUN);
 	movePow_.y = 0.0f;
 
-	//ターゲットに向けて回転
-	TargetRotate(lerpPos_, 0.3f);
+	// ターゲットに向けて回転
+	TargetRotate(waypoint_);
 
 	// playerとの衝突判定
-	const VECTOR diff = VSub(transform_.pos, lerpPos_);
+	const VECTOR diff = VSub(transform_.pos, waypoint_);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
 	//視線の先に至らに変更予定
@@ -794,7 +801,7 @@ void Boss::UpdateBattle(void)
 
 	// タイマー更新
 	rotateTimer_ -= SceneManager::GetInstance().GetDeltaTime(); // フレームの経過時間を使う（環境によって異なります）
-	if (lerpTime_ >= 0.0f)lerpTime_ -= SceneManager::GetInstance().GetDeltaTime();
+	if (lerpTime_ >= 0.0f)lerpTime_ -= SceneManager::GetInstance().GetDeltaTime()*2.0f;
 
 	// 一定時間ごとに回転処理
 	if (rotateTimer_ <= 1.0f)

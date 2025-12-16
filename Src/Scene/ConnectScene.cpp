@@ -55,25 +55,25 @@ void ConnectScene::Init(void)
 
 #pragma endregion
 
-	//ネットマネージャの状態変更
-	NetManager::GetInstance().ChangeGameState(GAME_STATE::CONNECTING);//ネット通信受け付ける状態に変更
+	// ネットマネージャの状態変更
+	NetManager::GetInstance().ChangeGameState(GAME_STATE::CONNECTING);// ネット通信受け付ける状態に変更
 
 	auto& nIns = NetManager::GetInstance();
-	if (nIns.GetMode() == NET_MODE::HOST)//ModeがHost(リーダー)なら
+	if (nIns.GetMode() == NET_MODE::HOST)// ModeがHost(リーダー)なら
 	{
-		//音の再生
+		// 音の再生
 		SoundManager::GetInstance().Play(SoundManager::SRC::CONECT_START, Sound::TIMES::ONCE, true);
 	}
 }
 
 void ConnectScene::Update(void)
-{
-	//インスタンスクラスの取得
+{ 
+	// インスタンスクラスの取得
 	auto& nIns = NetManager::GetInstance();
 	const auto& ins = InputManager::GetInstance();
 	const auto& users = NetManager::GetInstance().GetNetUsers();
 
-	//武器情報の送信
+	// 武器情報の送信
 	nIns.SetWeapon(NetManager::GetInstance().GetSelf().key, GameManager::GetInstance().GetWeponId());
 
 	const InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(GameManager::GetInstance().GetControllId());
@@ -97,51 +97,51 @@ void ConnectScene::Update(void)
 		player->Update();
 	}
 
-	//ここでプレイヤー同士の接続を行う
-	if (nIns.GetMode() == NET_MODE::HOST)//ModeがHost(リーダー)なら
+	// ここでプレイヤー同士の接続を行う
+	if (nIns.GetMode() == NET_MODE::HOST)// ModeがHost(リーダー)なら
 	{
 		auto& players = NetManager::GetInstance().GetNetUsers();
-		if (players.size() >= 1)//自分のほかにつながっているプレイヤーがいるなら
+		if (players.size() >= 1)// 自分のほかにつながっているプレイヤーがいるなら
 		{
 			// マウスでの操作
-			if (ins.IsClickMouseLeft())//左クリックで
+			if (ins.IsClickMouseLeft())// 左クリックで
 			{
-				Vector2 moPos = ins.GetMousePos();//リーダーだけがスタート可能
+				Vector2 moPos = ins.GetMousePos();
 
 				if (B1_S_POS.x <= moPos.x && B1_E_POS.x >= moPos.x
 					&& B1_S_POS.y <= moPos.y && B1_E_POS.y >= moPos.y)
 				{
-					//音の再生
+					// 音の再生
 					SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
-					//リザルトの初期化
+					// リザルトの初期化
 					GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
 					GameManager::GetInstance().InitQuest(1);
 
-					//ネットマネージャの状態変更
+					// ネットマネージャの状態変更
 					NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
 				}
 			}
-			//キーボード、コントローラーでの操作
+			// キーボード、コントローラーでの操作
 			else if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::RIGHT)
 				|| ins.IsTrgDown(KEY_INPUT_SPACE))
 			{
-				//音の再生
+				// 音の再生
 				SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
-				//リザルトの初期化
+				// リザルトの初期化
 				GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
 				GameManager::GetInstance().InitQuest(1);
 
-				//ネットマネージャの状態変更
+				// ネットマネージャの状態変更
 				NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
 			}
 		}
 	}
 
-	//プレイ人数が一人のみの場合タイトルに戻れる
+	// プレイ人数が一人のみの場合タイトルに戻れる
 	if (players.size() <= 1) {
-		//タイトルへ戻る
+		// タイトルへ戻る
 		if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::DOWN)
 			|| ins.IsTrgDown(KEY_INPUT_BACK))
 		{
@@ -150,11 +150,11 @@ void ConnectScene::Update(void)
 		}
 	}
 
-	//ネットマネージャがGOTO_GAMEならゲームスタート
+	// ネットマネージャがGOTO_GAMEならゲームスタート
 	if (nIns.IsSameGameState(GAME_STATE::GOTO_GAME))
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::GAME_START, Sound::TIMES::ONCE, true);
-		//リザルトの初期化
+		// リザルトの初期化
 		GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
 		GameManager::GetInstance().InitQuest(1);
 
@@ -200,7 +200,6 @@ void ConnectScene::Draw(void)
 
 
 			std::wstring out = L"接続番号:";
-			//out += std::to_wstring(users.second.key) + L" ";
 			out += std::to_wstring(ip.d1);
 			out += L".";
 			out += std::to_wstring(ip.d2);
@@ -208,9 +207,7 @@ void ConnectScene::Draw(void)
 			out += std::to_wstring(ip.d3);
 			out += L".";
 			out += std::to_wstring(ip.d4);
-			//out += L" : " + std::to_wstring(users.second.port);
 
-			//DrawString(HX - 100, y, out.c_str(), 0xffffff);
 			int len = (int)wcslen(out.c_str());
 			int width = GetDrawStringWidth(out.c_str(), len);
 

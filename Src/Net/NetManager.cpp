@@ -506,11 +506,12 @@ void NetManager::ReplaceUser(NET_JOIN_USER entity)
 
 
 		//ここHostしか通ってない気がする
-
+#ifdef _DEBUG
 		/*printfDx("[受信] key: %d | 旧位置: %.2f, %.2f → 新位置: %.2f, %.2f\n",
 			entity.key,
 			poolShare_.joinUserActionHis_[entity.key].selfPostion_.x, poolShare_.joinUserActionHis_[entity.key].selfPostion_.y,
 			pool_.joinUserActionHis_[entity.key].selfPostion_.x, pool_.joinUserActionHis_[entity.key].selfPostion_.y);*/
+#endif // DEBUG
 
 		if (current.gameState <= entity.gameState)
 		{
@@ -580,7 +581,7 @@ GAME_STATE NetManager::GetGameStateSelf(void) const
 {
 	return pool_.selfJoinUser_.gameState;
 }
-//接続ユーザーのStateがあっているのか
+// 接続ユーザーのStateがあっているのか
 bool NetManager::IsSameGameState(GAME_STATE state)
 {
 	// 一人だけなら常に一致とみなす
@@ -616,7 +617,7 @@ unsigned int NetManager::GetFrameNo(void) const
 	return frameNo_;
 }
 
-//ゲームシーンでの送信データ作成に利用
+// ゲームシーンでの送信データ作成に利用
 void NetManager::MakeActionHis(NET_ACTION action)
 {
 
@@ -649,7 +650,7 @@ bool NetManager::IsSync(void)
 	return isSync_;
 }
 
-//通信をやめてタイトルへ
+// 通信をやめてタイトルへ
 void NetManager::ResetSync(void)
 {
 	isSync_ = false; // 同期解除 or 状態遷移など
@@ -663,10 +664,10 @@ void NetManager::SetAction(PLAYER_ACTION act)
 	pool_.selfAction_.actBits |= static_cast<int>(act);
 }
 
-//位置情報　新規
+// 位置情報　新規
 VECTOR NetManager::GetPostion(int key)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].selfPostion_;
 	}
@@ -676,10 +677,10 @@ void NetManager::SetPostion(int key,VECTOR pos)
 {
 	pool_.selfActionHis_.selfPostion_ = pos;
 }
-//回転情報
+// 回転情報
 Quaternion NetManager::GetPlayRot(int key)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].playerRot_;
 	}
@@ -692,7 +693,7 @@ void NetManager::SetPlayRot(int key, Quaternion rot)
 
 int NetManager::GetAnimeType(int key)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].playerAnim_;
 	}
@@ -705,7 +706,7 @@ void NetManager::SetAnimeType(int key, int anim)
 
 int NetManager::GetNetHp(int key)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].hp_;
 	}
@@ -718,7 +719,7 @@ void NetManager::SetNetHp(int key, int hp)
 
 int NetManager::GetNetBossDamage(int key)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].bossDamage_;
 	}
@@ -731,7 +732,7 @@ void NetManager::SetNetBossDamage(int key, int damage)
 
 int NetManager::GetNetBossHp(int key)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].bossHp_;
 	}
@@ -743,16 +744,16 @@ void NetManager::SetNetBossHp(int key, int hp)
 	pool_.selfActionHis_.bossHp_ = hp;
 }
 
-//武器IDの取得、設定
+// 武器IDの取得、設定
 int NetManager::GetWeapon(int key)
 {
-	if (pool_.joinUsers_.find(key) != pool_.joinUsers_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUsers_.find(key) != pool_.joinUsers_.end())
 	{
 		return pool_.joinUsers_[key].weaponId_;
 	}
 	return 0;
 }
-void NetManager::SetWeapon(int key, int id)///////なんでこれでいけるか理解する/////////////
+void NetManager::SetWeapon(int key, int id)////なんでこれでいけるか理解する/////
 {
 	// 自分自身の武器IDも変更する場合は selfJoinUser_ も
 	if (pool_.selfJoinUser_.key == key)
@@ -845,7 +846,7 @@ const NET_ACTION_HIS NetManager::GetSelfActionHis(void) const
 
 MONSTER_DATA NetManager::GetBoss(int key)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())// アクションが最後のと違うなら？
 	{
 		return pool_.joinUserActionHis_[key].boss_;
 	}
@@ -863,7 +864,7 @@ void NetManager::SetBoss(int key, VECTOR pos, Quaternion rot, int anim, int stat
 
 MONSTER_DATA NetManager::GetMonsData(int key, int No)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].monsters_[No];
 	}
@@ -879,7 +880,7 @@ void NetManager::SetMonsData(int key, int No, VECTOR pos, Quaternion rot, int an
 
 int NetManager::GetNetMonsDamage(int key, int No)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].smallDamage_[No];
 	}
@@ -892,7 +893,7 @@ void NetManager::SetNetMonsDamage(int key, int No, int damage)
 
 int NetManager::GetNetMonsHp(int key, int No)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].smallHp_[No];
 	}
@@ -935,32 +936,30 @@ void NetManager::ReplaceActionHis(NET_ACTION_HIS entity)
 
 #pragma region IsAction
 
-//アクションしてるのが自分ではないので他の人を調べる
+// アクションしてるのが自分ではないので他の人を調べる
 bool NetManager::IsAction(int key, PLAYER_ACTION action)
 {
-	//joinUserActionHis_=接続されているほかのユーザー
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())//アクションが最後のと違うなら？
+	// joinUserActionHis_=接続されているほかのユーザー
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
-
 		for (const auto& actionHis : pool_.joinUserActionHis_[key].actions)
 		{
 			if (frameNo_ == actionHis.frameNo)
 			{
 				return actionHis.actBits & static_cast<int>(action);
 			}
-		}
-		
+		}		
 	}
 	return false;
 }
 
-//再帰処理？Key入力がネットマネージャーで確認するまで回してる？
+// 再帰処理？Key入力がネットマネージャーで確認するまで回してる？
 bool NetManager::IsAction(int key, PLAYER_ACTION action, bool isAction)
 {
-	//selfJoinUser_=自身
-	if (pool_.selfJoinUser_.key == key)//該当するキーを自分が押してるなら
+	// selfJoinUser_ = 自身
+	if (pool_.selfJoinUser_.key == key)// 該当するキーを自分が押してるなら
 	{
-		return isAction;//処理をそのまま通す　操作をややこしくしない
+		return isAction;// 処理をそのまま通す　操作をややこしくしない
 	}
 	return IsAction(key, action);
 }

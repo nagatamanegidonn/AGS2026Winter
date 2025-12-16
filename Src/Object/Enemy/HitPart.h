@@ -10,7 +10,7 @@ public:
 	~HitPart(void);
 
 	void Update(void);
-	void Draw(void);
+	void Draw(void) const;
 
 	const VECTOR GetPos(void) const { return pos_; }
 	const float GetRadius(void) const { return radius_; }
@@ -21,10 +21,10 @@ private:
 	int& parModel_;
 	std::wstring boneName_;
 
-	//ダメージ関係
+	// ダメージ関係
 	float damageRate_;
 
-	//位置関係
+	// 位置関係
 	VECTOR pos_;
 	float radius_;
 

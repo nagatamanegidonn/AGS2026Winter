@@ -19,7 +19,7 @@ public:
 
 private:
 
-	//ゲーム開始待機時間
+	// ゲーム開始待機時間
 	float stepCountDown_;
 
 };

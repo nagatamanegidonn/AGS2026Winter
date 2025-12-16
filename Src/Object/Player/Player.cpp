@@ -35,7 +35,7 @@
 
 namespace
 {
-	//ステータスの描画位置、サイズ
+	// ステータスの描画位置、サイズ
 	constexpr int PRAM_SIZE_X = 100;
 	constexpr int PRAM_SIZE_Y = 30;
 	constexpr int PRAM_POS_X = 60;
@@ -174,7 +174,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	demoRot_ = AsoUtility::VECTOR_ZERO;
 
 	// ゲームシーンの機能を使えるように
-	//ここ＆（参照）のほうがいいのか？
+	// ここ＆（参照）のほうがいいのか？
 	gameScene_ = scene;
 
 	// プレイヤー種別(プレイヤー番号)
@@ -198,10 +198,10 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 
 	freamImg_ = LoadGraph((Application::PATH_IMAGE + L"Fream.png").c_str());
 	hpImg_ = LoadGraph((Application::PATH_IMAGE + L"hp.png").c_str());
-	//HP
+	// HP
 	hpFreamImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/hpFream.png").c_str());
 	hpMaskImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/hpMask.png").c_str());
-	//スタミナ
+	// スタミナ
 	staFreamImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/staFream.png").c_str());
 	staMaskImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/staMask.png").c_str());
 
@@ -244,7 +244,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	isBreak_ = false;
 
 
-	//ステータスUI
+	// ステータスUI
 	Material_ = std::make_unique<PixelMaterial>(L"PlayerStatus.cso", 2);
 	Material_->AddConstBuf({ 0.3f, 0.7f, 0.5f, 0.05f });//HP位置(左上)サイズ
 	Material_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
@@ -254,7 +254,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	Renderer_ = std::make_unique<PixelRenderer>(*Material_);
 	Renderer_->SetSize(Vector2(PRAM_SIZE_X, PRAM_SIZE_Y));
 
-	//HP_UI
+	// HP_UI
 	hpMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
 	hpMaterial_->AddConstBuf({ 0.0f, 1.0f,0.0f,  1.0f });//HP位置(左上)サイズ
 	hpMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
@@ -263,7 +263,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	hpRenderer_ = std::make_unique<PixelRenderer>(*hpMaterial_);
 	hpRenderer_->SetSize(Vector2(HP_SIZE_X, HP_SIZE_Y));
 
-	//HP_UI
+	// スタミナ_UI
 	staMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
 	staMaterial_->AddConstBuf({ 1.0f, 0.9f,0.0f,  1.0f });//HP位置(左上)サイズ
 	staMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
@@ -277,28 +277,28 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	InitAnimation();
 	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 55.0f, 0, 0.0f, 210.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::GET, true, 5.0f);
-	//投げるモーション
+	// 投げるモーション
 	animationController_->Add((int)ANIM_TYPE::ITEM_THROW, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 30.0f, 50.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_THROW, true, 5.0f);
 	animationController_->Add((int)ANIM_TYPE::ITEM_THROW_E, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 50.0f, 60.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_THROW_E, true, 5.0f);
-	//設置するモーション
+	// 設置するモーション
 	animationController_->Add((int)ANIM_TYPE::ITEM_SET, Application::PATH_MODEL + L"Player2/Normal/Tender Placement.mv1", 35.0f, 0, 40.0f, 170.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_SET, true, 5.0f);
 	animationController_->Add((int)ANIM_TYPE::ITEM_SET_E, Application::PATH_MODEL + L"Player2/Normal/Tender Placement.mv1", 35.0f, 0, 170.0f, 250.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_SET_E, true, 5.0f);
-	//飲むモーション
+	// 飲むモーション
 	animationController_->Add((int)ANIM_TYPE::ITEM_DRINK, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_DRINK, true, 5.0f);
 
 
-	//エフェクトの設定
+	// エフェクトの設定
 	InitEffect();
-	//BGM.SEの設定
+	// BGM.SEの設定
 	InitSound();
 	InitAttrckSound();
 
-	//コントローラーの登録
+	// コントローラーの登録
 	inputController_ = std::make_unique<InputController>(GameManager::GetInstance().GetControllId());
 
 
@@ -308,17 +308,17 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	isDrawWepon_ = false;
 	isCloseWepon_ = false;
 
-	//攻撃管理
+	// 攻撃管理
 	isHit_ = false;
 	isHitCheck_ = false;
 	changeAttrckTime_ = 0.0f;
 
-	//位置情報の変数
+	// 位置情報の変数
 	movedPos_ = AsoUtility::VECTOR_ZERO;
 	moveDir_ = AsoUtility::VECTOR_ZERO;
 	movePow_ = AsoUtility::VECTOR_ZERO;
 
-	//重力兼ジャンプ力
+	// 重力兼ジャンプ力
 	jumpPow_ = AsoUtility::VECTOR_ZERO;
 
 	// 衝突チェック
@@ -332,12 +332,12 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	capsule_->SetRadius(20.0f);
 	
 	
-	//ステータスの初期化
-	invisibleTime_ = 0.0f;//無敵時間
+	// ステータスの初期化
+	invisibleTime_ = 0.0f;// 無敵時間
 	flyigDir_ = AsoUtility::VECTOR_ZERO;
 	flyigTime_ = downTime_ = 0.0f;
 
-	//武器ごとのパラメータ設定
+	// 武器ごとのパラメータ設定
 	InitParam();
 
 
@@ -348,7 +348,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 
 
 
-	//採取の際の情報（仮）
+	// 採取の際の情報（仮）
 	itemId_ = -1;
 	poach_ = std::make_unique<ItemPoach>();
 	for (int i = 0; i < 2; i++) {
@@ -372,10 +372,10 @@ void Player::Update(void)
 
 	auto& nIns = NetManager::GetInstance();
 
-	//ダメージを受けたらエフェクトストップ
+	// ダメージを受けたらエフェクトストップ
 	if (hp_ != hpAgo_) {
 		effectController_->Stop(0);
-		//体力が０になっていたら
+		// 体力が０になっていたら
 		if (hp_ <= 0) { gameScene_->DownCountPuls(); }
 	}
 	hpAgo_ = hp_;
@@ -390,7 +390,7 @@ void Player::Update(void)
 
 		inputController_->Update();
 
-		//ポーチの更新
+		// ポーチの更新
 		if (inputController_->IsTriggered(InputController::KEY::ROLL))
 		{
 			//poach_->OpenClose();
@@ -401,7 +401,7 @@ void Player::Update(void)
 			poach_->NextItem();
 		}
 
-		//回避処理
+		// 回避処理
 		if (inputController_->IsTriggered(InputController::KEY::ROLL) && IsInputPlay()
 			&& animeType_ != (int)ANIM_TYPE::ROLL && animeType_ != (int)ANIM_TYPE::DAMAGE
 			&& animeType_ != (int)ANIM_TYPE::GET&& animeType_ != (int)ANIM_TYPE::ITEM_DRINK
@@ -414,12 +414,12 @@ void Player::Update(void)
 			ChangeState(STATE::ROWLING);
 
 		}
-		//無敵時間の処理
+		// 無敵時間の処理
 		if (invisibleTime_ > 0.0f)
 		{
 			invisibleTime_ -= deltaTime;
 		}
-		//赤ダメージ
+		// 赤ダメージ
 		if (damage_ > 0.0f)
 		{
 			damage_ -= damage_ * deltaTime;
@@ -427,7 +427,7 @@ void Player::Update(void)
 				damage_ = 0.0f;
 		}
 
-		//スタミナ
+		// スタミナ
 		stamina_ += staminaDir_ * deltaTime;
 		if (staminaMax_ < stamina_) {
 			stamina_ = staminaMax_;
@@ -449,7 +449,7 @@ void Player::Update(void)
 		if (isBattle_)
 		{
 			auto& nIns = NetManager::GetInstance();
-			//戦闘状態度と教える
+			// 戦闘状態度と教える
 			nIns.SetAction(PLAYER_ACTION::IS_BATTLE);
 		}
 
@@ -462,10 +462,7 @@ void Player::Update(void)
 		// 衝突判定
 		Collision();
 
-		// 歩きエフェクト
-		//EffectFootSmoke();
-
-		//カメラ操作
+		// カメラ操作
 		SceneManager::GetInstance().GetCamera().lock()->ProcessPlayRot(
 			inputController_->IsNew(InputController::KEY::R_FORWARD),
 			inputController_->IsNew(InputController::KEY::R_BACK),
@@ -474,12 +471,11 @@ void Player::Update(void)
 		);
 
 		// 重力方向に沿って回転させる
-		//transform_.quaRot = grvMng_.GetTransform().quaRot;
 		transform_.quaRot = Quaternion();//grvMng_がないので代わりに
 		transform_.quaRot = transform_.quaRot.Mult(playerRotY_);
 
 
-		// 位置送信もここでOK（ProcessMove内でも呼ばれてるけど念のため）
+		// 自身のプレイヤーの情報をネットワークに送信
 		nIns.SetPostion(key_, transform_.pos);
 		nIns.SetPlayRot(key_, transform_.quaRot);
 
@@ -487,34 +483,29 @@ void Player::Update(void)
 
 		nIns.SetNetHp(key_, hp_);
 	}
-	//通信プレイヤーの処理
+	// 通信プレイヤーの処理
 	else
 	{
-		//攻撃と抜刀納刀のみループなし
+		// 攻撃と抜刀納刀のみループなし
 		int nextAnimeType = nIns.GetAnimeType(key_);
 		if (animeType_ != nextAnimeType) {
 			animeType_ = nextAnimeType;
 		}
 
+		// 結果の通信を受け取って状態を更新
+		// アニメーションの再生	
 		bool loop = !IsLoopAnim();
 		animationController_->Play(animeType_, loop);
-
-
+		// 位置と回転の同期
 		const auto& pos = nIns.GetPostion(key_);
 		transform_.pos = pos;
 		const auto& rot = nIns.GetPlayRot(key_);
 		transform_.quaRot = rot;
 
-		/*if (nIns.IsAction(key_, PLAYER_ACTION::IS_ATTRCK))
-		{
-
-		}*/
-
-		//チャージ処理
+		// チャージ処理
 		if (animeType_ == (int)ANIM_TYPE::ATTRCK1STOP)
 		{
 			changeAttrckTime_ += SceneManager::GetInstance().GetDeltaTime();
-			//printfDx("( count=%f,chageAttrckTime_=%f)\n", chageCount_,chageAttrckTime_);
 		}
 		else
 		{
@@ -524,10 +515,10 @@ void Player::Update(void)
 
 		hp_ = nIns.GetNetHp(key_);
 
-		//プレイヤーの座標
+		// プレイヤーの座標
 		const auto& selfPos = nIns.GetPostion(nIns.GetSelf().key);
 
-		//音量設定
+		// 音量設定
 		float volume = AsoUtility::CalcVolumeByDistance(selfPos, transform_.pos, MAX_EAR_RADIUS);
 
 		// 無音なら停止
@@ -539,7 +530,7 @@ void Player::Update(void)
 
 	}
 	
-	//エフェクト処理
+	// エフェクト処理
 #pragma region エフェクト処理
 
 	float rate = changeAttrckTime_ / (CHAGE_MAX_TIME / 4);
@@ -557,7 +548,7 @@ void Player::Update(void)
 	effectController_->Update(0, transform_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
 	effectController_->LoopUpdate(1, transWeapon_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
 	
-	//音の再生
+	// 音の再生
 	if (animeAgoType_ != (int)ANIM_TYPE::DRAW 
 		&& animeType_== (int)ANIM_TYPE::DRAW)
 	{
@@ -588,7 +579,7 @@ void Player::Update(void)
 	{
 		soundController_->Play((int)SE::ROLL, Sound::TIMES::ONCE,true);
 	}
-	//弾の発射
+	// 弾の発射
 	else if (animeType_ == (int)ANIM_TYPE::ITEM_THROW_E
 		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_THROW_E)
 	{
@@ -598,15 +589,13 @@ void Player::Update(void)
 			// エラー処理またはログ出力
 			return;
 		}
-		// 音再生
-		//soundController_->Play((int)SE::ATTRCK2, Sound::TIMES::ONCE);
 
 		// 手の位置とグローバルマトリクスを取得
 		const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
 		gameScene_->CreateShot(ShotBase::TYPE::ITEM, attrckDamage_
 			, posHand, transform_.GetForward(), key_);
 	}
-	//設置の完了
+	// 設置の完了
 	else if (animeType_ == (int)ANIM_TYPE::ITEM_SET_E
 		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_SET_E)
 	{
@@ -635,7 +624,7 @@ void Player::Update(void)
 		soundController_->Play((int)SE::RUN, Sound::TIMES::ONCE);
 	}
 
-	//攻撃時の音再生
+	// 攻撃時の音再生
 	PlayAttrckSound();
 
 #pragma endregion
@@ -654,7 +643,7 @@ void Player::Update(void)
 		SceneManager::GetInstance().CaptureMainScreen();
 	}
 
-	//武器の同期
+	// 武器の同期
 	SyncWeapon();
 
 }
@@ -698,7 +687,7 @@ void Player::DrawUI(int i)
 	auto& nIns = NetManager::GetInstance();
 
 
-	//自身のUI（他描画なし）
+	// 自身のUI（他描画なし）
 	if (key_ == nIns.GetSelf().key)
 	{
 		hpMaterial_->SetConstBuf(1, { (float)hp_ / (float)hpMax_, ((float)hp_ + damage_) / (float)hpMax_, 1.0f, 1.0f });
@@ -706,26 +695,20 @@ void Player::DrawUI(int i)
 		staMaterial_->SetConstBuf(1, { stamina_ / staminaMax_, 0.0f, 1.0f, 1.0f });
 		staRenderer_->Draw(GAGE_POS_X, STA_POS_Y);
 
-		//アイテムの表示
+		// アイテムの表示
 		poach_->Draw(-1);
 
 	}
 
-	//共通描画
+	// 共通描画
 	Material_->SetConstBuf(1, { (float)hp_ / (float)hpMax_, 1.0f, 1.0f, 1.0f });
 	Renderer_->Draw(PRAM_POS_X, PRAM_POS_Y + (PRAM_distance_Y * i));
 
-
+#ifdef DEBUG
 	const auto& pos = nIns.GetPostion(key_);
 	const auto& animeType = nIns.GetAnimeType(key_);
 
-
-	//プレイヤーの座標
-	/*const auto& selfPos = nIns.GetPostion(nIns.GetSelf().key);
-	DrawFormatString(300, i * 65 + 48, 0x000000, "剣ウェポン回転(%.2f, %.2f,%2f)", ((float)hp_ + damage_) / (float)hpMax_
-		, demoRot_.y, demoRot_.z);*/
-#ifdef DEBUG
-
+	// プレイヤーデバッグ情報
 	DrawFormatString(300, i * 65, 0x000000, L"プレイヤー番号(%d)", key_);
 	DrawFormatString(300, i * 65 + 16, 0x000000, L"プレイヤー座標(%.2f, %.2f,%2f)", transform_.pos.x, transform_.pos.y, transform_.pos.z);
 	DrawFormatString(300, i * 65 + 48, 0x000000, L"剣ウェポン回転(%.2f, %.2f,%2f)", AsoUtility::GetDisPow(selfPos,transform_.pos)
@@ -735,8 +718,6 @@ void Player::DrawUI(int i)
 #endif // DEBUG
 
 }
-
-
 void Player::Release(void)
 {
 }
@@ -783,7 +764,7 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 	}
 	
 	damage_ = (float)dama;
-	//HPからdamage_分減らす
+	// HPからdamage_分減らす
 	hp_ -= damage_;
 	if (hp_ <= 0) { 
 		hp_ = 0; 
@@ -791,9 +772,9 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 		ChangeState(STATE::DEAD);
 		return;
 	}
-	invisibleTime_ = INVISIBLE_BIG_TIME;//威力・小のときの無敵時間
+	invisibleTime_ = INVISIBLE_BIG_TIME;// 威力・小のときの無敵時間
 
-	//攻撃、納刀モーションをリセット
+	// 攻撃、納刀モーションをリセット
 	AttrckReset();
 }
 
@@ -824,7 +805,7 @@ const PLAYER_TYPE& Player::GetPlayerType(void)const
 
 void Player::InitParam(void)
 {
-	//メインウェポン
+	// メインウェポン
 	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);
 	// 初期座標
 	transWeapon_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
@@ -833,8 +814,8 @@ void Player::InitParam(void)
 		Quaternion::Euler({ AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.x), AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.y), AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.z) });
 	transWeapon_.Update();
 
-	//サブウェポン
-	//なし
+	// サブウェポン
+	// なし
 
 	atkData_.emplace((int)ANIM_TYPE::ATTRCK1S, std::move(SetAtrckData((int)ANIM_TYPE::ATTRCK1E, -1.0f, -1.0f
 		, -1.0f, true, (int)ANIM_TYPE::ATTRCK1STOP)));
@@ -858,7 +839,7 @@ void Player::InitAnimation(void)
 	animationController_->Add((int)ANIM_TYPE::FAST_RUN, path + L"FastRun.mv1", 30.0f);
 	animationController_->Add((int)ANIM_TYPE::ROLL, path + L"Sprinting Forward Roll.mv1", 45.0f, -1, 0.0f, 32.0f);
 
-	//冬からの新規ブレンド
+	// 冬からの新規ブレンド
 	animationController_->SetIsBlend((int)ANIM_TYPE::RUN, true, 10.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::FAST_RUN, true, 10.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ROLL, true);
@@ -891,7 +872,7 @@ void Player::InitAnimation(void)
 	animationController_->Add((int)ANIM_TYPE::DOWN, path + L"Down.mv1", 20.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::DOWN, true, 3.0f);
 
-	//攻撃
+	// 攻撃
 	animationController_->Add((int)ANIM_TYPE::ATTRCK1S, path + L"Great Sword Slash (1).mv1", 20.0f, -1, 0.0f, 13.0f);
 	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK1S, true);
 	animationController_->Add((int)ANIM_TYPE::ATTRCK1STOP, path + L"Great Sword Slash (1).mv1", 20.0f, -1, 13.0f, 13.0f);
@@ -913,7 +894,7 @@ void Player::InitEffect(void)
 {
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
-	//ためアニメーション
+	// チャージアニメーション
 	effectController_->Add(0, path + L"PowerUp/PowerUp.efkefc");
 
 	effectController_->Add(1, path + L"Slash/Slash.efkefc");
@@ -1032,22 +1013,22 @@ void Player::ChangeStateItemUse(void)
 
 #pragma region StateごとのUpdate
 
-//stateがNONEの時のUpdate
+// stateがNONEの時のUpdate
 void Player::UpdateNone(void)
 {
 }
-//stateがPLAYの時のUpdate
+// stateがPLAYの時のUpdate
 void Player::UpdatePlay(void)
 {
 	// 移動処理
-	ProcessMove();
+	ProcessNormal();
 }
-//stateがBATTLEの時のUpdate
+// stateがBATTLEの時のUpdate
 void Player::UpdateBattle(void)
 {
 #pragma region 攻撃処理
 	
-	//抜刀してすぐ攻撃できるようIsNewを使用
+	// 抜刀してすぐ攻撃できるようIsNewを使用
 	if (inputController_->IsNew(InputController::KEY::ATTRCK) && IsInputPlay())
 	{
 		isHit_ = false;
@@ -1064,7 +1045,7 @@ void Player::UpdateBattle(void)
 
 
 	// 移動処理(攻撃も含む)
-	ProcessBattleMove();
+	ProcessBattle();
 
 #ifdef _DEBUG
 
@@ -1118,7 +1099,7 @@ void Player::UpdateWepon(void)
 			{
 				
 				isBattle_ = true;
-				//抜刀してすぐ攻撃できるようIsNewを使用
+				// 抜刀してすぐ攻撃できるようIsNewを使用
 				if (inputController_->IsNew(InputController::KEY::ATTRCK))
 				{
 					isDrawWepon_ = false;
@@ -1170,7 +1151,7 @@ void Player::UpdateRowling(void)
 }
 void Player::UpdateDamage(void)
 {
-	//アニメーションが終わったらPLAYかBATTLEに...
+	// アニメーションが終わったらPLAYかBATTLEに...
 	ChangeStateAnimeEnd(ANIM_TYPE::DAMAGE);
 
 }
@@ -1210,7 +1191,7 @@ void Player::UpdateHiDamage(void)
 		return;
 	}
 
-	//吹っ飛ばしが終わった後
+	// 吹っ飛ばしが終わった後
 	animationController_->Play(attrckType_, false);
 
 	if (!animationController_->IsBlend())
@@ -1258,17 +1239,17 @@ void Player::UpdateGet(void)
 {
 	if (animationController_->IsEnd())
 	{
-		if (itemId_ >= 0)//獲得できる
+		if (itemId_ >= 0)// 獲得できる
 		{
 			switch (itemId_)
 			{
-				case 0://投擲アイテム
+				case 0:// 投擲アイテム
 					poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
 					break;
-				case 1://回復アイテム
+				case 1:// 回復アイテム
 					poach_->AddItem(std::make_shared<ItemBase>(L"回復"));
 					break;
-				case 2://設置アイテム
+				case 2:// 設置アイテム
 					poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
 					break;
 			}
@@ -1283,7 +1264,7 @@ void Player::UpdateItemUse(void)
 	{
 		ChangeStateAnimeEnd(ANIM_TYPE::ITEM_DRINK, [this]() { UseItem(); });
 	}
-	//使用アイテムが投擲アイテムなら
+	// 使用アイテムが投擲アイテムなら
 	else if (poach_->IsSelectedItemName(L"攻撃"))
 	{
 		if (animeType_ != (int)ANIM_TYPE::ITEM_THROW_E)
@@ -1300,7 +1281,7 @@ void Player::UpdateItemUse(void)
 			ChangeStateAnimeEnd(ANIM_TYPE::ITEM_THROW_E, [this]() { UseItem(); });
 		}
 	}
-	//使用アイテムが投擲アイテムなら
+	// 使用アイテムが投擲アイテムなら
 	else if (poach_->IsSelectedItemName(L"設置"))
 	{
 		if (animeType_ != (int)ANIM_TYPE::ITEM_SET_E)
@@ -1317,51 +1298,25 @@ void Player::UpdateItemUse(void)
 			ChangeStateAnimeEnd(ANIM_TYPE::ITEM_SET_E, [this]() { UseItem(); });
 		}
 	}
-
-	/*if (animationController_->IsEnd())
-	{
-		if (poach_->GetSelectId() == 0 && animeType_ == (int)ANIM_TYPE::ITEM_THROW)
-		{v
-			if (animationController_->IsEnd())
-			{
-				animeType_ = (int)ANIM_TYPE::ITEM_THROW_E;
-			}
-		}
-		
-	}*/
 }
 
 #pragma endregion
 
-//使用回復系アイテム
+// 使用回復系アイテム
 void Player::UseItem(void)
 {
-	//回復アイテムのIdは１
+	// 回復アイテムのIdは１
 	if (poach_->IsSelectedItemName(L"回復"))
 	{
-		//体力回復
+		// 体力回復
 		hp_ += 20;
 		if (hp_ > hpMax_)
 		{
 			hp_ = hpMax_;
 		}
 	}
-	//投擲アイテムのIdは０
-	else if (poach_->IsSelectedItemName(L"攻撃"))
-	{
-		//投擲処理
-		/*auto thrownItem = std::make_shared<ThrownItem>(type_, transform_.pos, transform_.GetForward());
-		gameScene_->AddThrownItem(thrownItem);*/
-	}
-	//設置アイテムのIdは２
-	else if (poach_->IsSelectedItemName(L"設置"))
-	{
-		//投擲処理
-		/*auto thrownItem = std::make_shared<ThrownItem>(type_, transform_.pos, transform_.GetForward());
-		gameScene_->AddThrownItem(thrownItem);*/
-	}
 
-	//アイテム使用処理
+	// アイテム使用処理
 	poach_->UseSelectedItem();
 }
 
@@ -1369,25 +1324,24 @@ void Player::UseItem(void)
 
 #pragma region 移動関係
 
-void Player::ProcessMove(void)
+void Player::ProcessNormal(void)
 {
 	VECTOR dir = AsoUtility::VECTOR_ZERO;
 
 	bool isAction = false;
-	//auto& nIns = NetManager::GetInstance();
 
 	if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, AsoUtility::DIR_F); }
 	if (inputController_->IsNew(InputController::KEY::LEFT)) { dir = VAdd(dir, AsoUtility::DIR_L); }
 	if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, AsoUtility::DIR_B); }
 	if (inputController_->IsNew(InputController::KEY::RIGHT)) { dir = VAdd(dir, AsoUtility::DIR_R); }
 
-	//移動方向の向き設定
+	// 移動方向の向き設定
 	float rotRad = CreateRad(dir);
 	
-	//抜刀じゃないなら
+	// 抜刀じゃないなら
 	if (IsInputPlay())
 	{
-		//抜刀処理
+		// 抜刀処理
 		if (inputController_->IsTriggered(InputController::KEY::DRAW))
 		{
 			if (!AsoUtility::EqualsVZero(movePow_))
@@ -1396,13 +1350,13 @@ void Player::ProcessMove(void)
 
 				movePow_ = VScale(VNorm(movePow_), speed_);
 			}
-			movePow_ = AsoUtility::VECTOR_ZERO;//抜刀時移動しない（帰るなら戻す）
+			movePow_ = AsoUtility::VECTOR_ZERO;// 抜刀時移動しない（帰るなら戻す）
 
 			isDrawWepon_ = true;
 			ChangeState(STATE::WEPON);
 			return;
 		}
-		//採取判定
+		// 採取判定
 		bool isId = false;
 		for (const auto c : colliders_)
 		{
@@ -1414,7 +1368,7 @@ void Player::ProcessMove(void)
 					isId = true;
 				}
 
-				//採取処理
+				// 採取処理
 				if (inputController_->IsNew(InputController::KEY::GET) &&
 					AsoUtility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
 				{
@@ -1443,10 +1397,10 @@ void Player::ProcessMove(void)
 
 		movePow_ = AsoUtility::VECTOR_ZERO;
 
-		if ((!AsoUtility::EqualsVZero(dir)) /*&& (isJump_ || IsEndLanding())*/)
+		if ((!AsoUtility::EqualsVZero(dir)))
 		{
-			//入力された方向をかめらの回転情報を使って
-			//カメラの進行方向に変換する
+			// 入力された方向をかめらの回転情報を使って
+			// カメラの進行方向に変換する
 			Quaternion cameraRot = SceneManager::GetInstance().GetCamera().lock()->GetQuaRotOutX();
 			dir = cameraRot.PosAxis(dir);
 
@@ -1465,7 +1419,7 @@ void Player::ProcessMove(void)
 			SetGoalRotate(rotRad);
 
 
-			if (IsEndLanding())//モーションが変えていいやつか？
+			if (IsEndLanding())// モーションが変えていいやつか？
 			{
 				// アニメーション
 				if (isDash)
@@ -1500,23 +1454,8 @@ void Player::ProcessMove(void)
 	{
 		SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FOLLOW);
 	}
-	
-
-	// 左向き
-	//isAction = InputManager::GetInstance().IsNew(keyConfig_.LEFT);
-	//if (nIns.IsAction(key_, PLAYER_ACTION::MOVE_LEFT, isAction))
-	//{
-	//	transform_.pos.x -= speed_;
-	//	if (key_ == nIns.GetSelf().key) 
-	//	{
-	//		//ネットに左へ移動したと伝える
-	//		nIns.SetAction(PLAYER_ACTION::MOVE_LEFT);
-	//	}
-	//}
-
-
 }
-void Player::ProcessBattleMove(void)
+void Player::ProcessBattle(void)
 {
 	InputManager& ins = InputManager::GetInstance();
 	VECTOR dir = AsoUtility::VECTOR_ZERO;
@@ -1530,7 +1469,7 @@ void Player::ProcessBattleMove(void)
 	if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, AsoUtility::DIR_B);}
 	if (inputController_->IsNew(InputController::KEY::RIGHT)) { dir = VAdd(dir, AsoUtility::DIR_R);}
 	
-	//移動方向の向き設定
+	// 移動方向の向き設定
 	float rotRad = CreateRad(dir);
 
 	if (IsInputPlay())
@@ -1539,21 +1478,20 @@ void Player::ProcessBattleMove(void)
 		{
 			isCloseWepon_ = true;
 			ChangeState(STATE::WEPON);
-			movePow_ = AsoUtility::VECTOR_ZERO;//納刀時移動しない（帰るなら戻す）
+			movePow_ = AsoUtility::VECTOR_ZERO;// 納刀時移動しない（帰るなら戻す）
 
 			return;
 		}
 
+		// 移動量初期化
 		movePow_ = AsoUtility::VECTOR_ZERO;
 
-
-		if ((!AsoUtility::EqualsVZero(dir)) /*&& (isJump_ || IsEndLanding())*/)
+		if ((!AsoUtility::EqualsVZero(dir)))
 		{
-			//入力された方向をかめらの回転情報を使って
-			//カメラの進行方向に変換する
+			// 入力された方向をかめらの回転情報を使って
+			// カメラの進行方向に変換する
 			Quaternion cameraRot = SceneManager::GetInstance().GetCamera().lock()->GetQuaRotOutX();
 			dir = cameraRot.PosAxis(dir);
-
 
 			// 移動処理
 			speed_ = SPEED_MOVE;
@@ -1563,13 +1501,14 @@ void Player::ProcessBattleMove(void)
 				staminaDir_ = DOWN_TAF;
 			}
 
+			// 移動力セット
 			movePow_ = VScale(dir, speed_);
 
 			// 回転処理
 			SetGoalRotate(rotRad);
 
 
-			if (IsEndLanding())//モーションが変えていいやつか？
+			if (IsEndLanding())// モーションが変えていいやつか？
 			{
 				// アニメーション
 				if (isDash)
@@ -1594,8 +1533,7 @@ void Player::ProcessBattleMove(void)
 		}
 	}
 
-
-
+	// カメラ切り替え
 	if (ins.IsNew(KEY_INPUT_N))
 	{
 		SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FPS);
@@ -1632,9 +1570,9 @@ void Player::SetGoalRotate(double rotRad)
 //↑プレイヤーに向かせたい、ゴールとなる回転を設定する
 void Player::Rotate(void)
 {
-	//回転の球面補間を行う。
-	//TIME_ROT定数で指定された時間をかけて、ゆっくりゴールとなる
-	//回転に向かって近づくような回転を行う
+	// 回転の球面補間を行う。
+	// TIME_ROT定数で指定された時間をかけて、ゆっくりゴールとなる
+	// 回転に向かって近づくような回転を行う
 	stepRotTime_ -= SceneManager::GetInstance().GetDeltaTime();
 	// 回転の球面補間
 	playerRotY_ = Quaternion::Slerp(
@@ -1651,7 +1589,7 @@ float Player::CreateRad(const VECTOR& dir)
 
 #pragma endregion
 
-//武器の同期
+// 武器の同期
 const void Player::SyncWeapon()
 {
 	auto& nIns = NetManager::GetInstance();
@@ -1708,7 +1646,7 @@ void Player::SyncWeaponBattle()
 #pragma endregion
 }
 
-//オブジェクトのフレーム追従♭
+// オブジェクトのフレーム追従♭
 const void Player::SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offsetRot, const VECTOR& offsetPos,
 	const Transform& modelTransform, Transform& outWeaponTransform)
 {
@@ -1758,7 +1696,7 @@ const void Player::SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offse
 	outWeaponTransform.Update(true);
 }
 
-//当たり判定
+// 当たり判定
 #pragma region コリジョン関数
 
 void Player::CollisionGravity(void)
@@ -1795,11 +1733,9 @@ void Player::CollisionGravity(void)
 				c.lock()->modelId_, -1, gravHitPosUp, gravHitPosDown);
 
 			// 最初は上の行のように実装して、木の上に登ってしまうことを確認する
-			//if (hit.HitFlag > 0)
 			if ((hit.HitFlag > 0|| hitF.HitFlag > 0) && VDot(dirGravity, jumpPow_) > 0.9f)
 			{
 				// 使用する衝突位置を選ぶ
-				//VECTOR usedHitPosition = hit.HitFlag > 0 ? hit.HitPosition : hitF.HitPosition;
 				VECTOR usedHitPosition = hit.HitFlag > 0 ? hit.HitPosition : VSub(hitF.HitPosition, VScale(transform_.GetForward(), COLL_LEG_RATE));
 
 				// 衝突地点から、少し上に移動
@@ -1884,7 +1820,7 @@ void Player::CollisionStageCapsule(void)
 
 					if (pHit)
 					{
-						//法線方向高さなし
+						// 法線方向高さなし
 						VECTOR nor = hit.Normal;
 						nor.y = 0.0f;
 
@@ -1931,13 +1867,12 @@ bool Player::CollisionCapsule(int& modelId)const
 }
 const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 {
-
 	// playerとの衝突判定
 	VECTOR diff = VSub(transform_.pos, pos);
 
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
-	if (disPow < capsule_->GetRadius() * r)//ダメージ半径×攻撃半径
+	if (disPow < capsule_->GetRadius() * r)// ダメージ半径×攻撃半径
 	{
 		return true;
 	}
@@ -1948,7 +1883,7 @@ const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 #pragma endregion
 
 
-//攻撃状態の判定
+// 攻撃状態の判定
 const bool Player::IsAttrck(void)const
 {
 	return(state_ == STATE::ATTRCK);
@@ -2004,7 +1939,7 @@ bool Player::IsSyncAttrck(void)
 		);
 }
 
-//操作をしなくても終わるまで動くモーションのときに使用
+// 操作をしなくても終わるまで動くモーションのときに使用
 bool Player::IsEndLanding(void)
 {
 	bool ret = true;
@@ -2026,18 +1961,18 @@ bool Player::IsEndLanding(void)
 	return false;
 
 }
-//操作が可能か
+// 操作が可能か
 const bool Player::IsInputPlay(void) const
 {
 	// アニメーションが終了しているか
-	//もし抜刀、納刀、攻撃してないなら操作可能（true）
+	// もし抜刀、納刀、攻撃してないなら操作可能（true）
 	if (!isDrawWepon_ && !isCloseWepon_ && state_ != STATE::ATTRCK)
 	{
 		return true;
 	}
 	return false;
 }
-//通常状態に戻す
+// 通常状態に戻す
 void Player::AttrckReset(void)
 {
 	isDrawWepon_ = false;
@@ -2047,7 +1982,7 @@ void Player::AttrckReset(void)
 
 }
 
-//特定のアニメーションが終わったらIdleに戻す処理
+// 特定のアニメーションが終わったらIdleに戻す処理
 void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim, const std::function<void(void)> function)
 {
 	animationController_->Play((int)anim, false);
@@ -2055,13 +1990,13 @@ void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim, const std::function<void(
 
 	if (animationController_->IsEnd())
 	{
-		//追加処理
+		// 追加処理
 		if (function != nullptr)
 		{
 			function();
 		}
 		STATE nextState = STATE::PLAY;
-		//バトル状態なら
+		// バトル状態なら
 		if (isBattle_)
 		{
 			nextState = STATE::BATTLE;
@@ -2072,7 +2007,6 @@ void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim, const std::function<void(
 
 void Player::DrawDebug(void)
 {
-	//DrawFormatString(0, 20, 0x000000, "移動速度　：%.2f", speed_);
 	DrawLine3D(prePos_, transform_.pos, 0xf0f000);
 
 	// カプセルコライダ
@@ -2082,13 +2016,10 @@ void Player::DrawDebug(void)
 	const auto gravHitPosDown = VAdd(gravHitPosDown_, VScale(transform_.GetForward(), COLL_LEG_RATE));
 	DrawLine3D(gravHitPosUp, gravHitPosDown, 0xffffff);
 
-	//InputManager& ins = InputManager::GetInstance();
 	capsuleWepon_->Draw();
 
 	auto r = inputController_->IsNew(InputController::KEY::DASH);
 
-	//DrawFormatString(100, 132, 0xFFFFFF, "Draw : %s", isDrawWepon_ ? "true" : "false");
-	//DrawFormatString(100, 116, 0xFFFFFF, "Close: %s", isCloseWepon_ ? "true" : "false");
 	DrawFormatString(100, 116, 0xFFFFFF, L"Attrck: %s", inputController_->IsNew(InputController::KEY::ATTRCK) ? L"true" : L"false");
 	DrawFormatString(100, 132, 0xFFFFFF, L"ChageT: %.2f", changeAttrckTime_);
 	//倍率設定
@@ -2103,7 +2034,7 @@ void Player::AttrckUpdate(void)
 {
 	animationController_->Play(attrckType_, false);
 
-	//操作を受け付けるか
+	// 操作を受け付けるか
 	if (animationController_->GetStepTime() > atkData_[attrckType_]->sNewTime 
 		&& atkData_[attrckType_]->sNewTime > 0.0f)
 	{
@@ -2129,11 +2060,10 @@ void Player::AttrckUpdate(void)
 		}
 	}
 
-	//当たり判定が発生するか
+	// 当たり判定が発生するか
 	if (atkData_[attrckType_]->sHitTime < animationController_->GetStepTime()
 		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
 	{
-
 		effectController_->Update(1, capsuleWepon_->GetCenter());
 
 		isHitCheck_ = true;
@@ -2141,12 +2071,12 @@ void Player::AttrckUpdate(void)
 
 	if (animationController_->IsEnd())
 	{
-		//チャージするものか
+		// チャージするものか
 		if (atkData_[attrckType_]->isCharge)
 		{
 			if (inputController_->IsNew(InputController::KEY::ATTRCK) && changeAttrckTime_ <= CHAGE_MAX_TIME)
 			{
-				//チャージ中なら回転可能
+				// チャージ中なら回転可能
 				VECTOR dir = AsoUtility::VECTOR_ZERO;
 
 				if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, AsoUtility::DIR_F); }
@@ -2154,26 +2084,25 @@ void Player::AttrckUpdate(void)
 				if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, AsoUtility::DIR_B); }
 				if (inputController_->IsNew(InputController::KEY::RIGHT)) { dir = VAdd(dir, AsoUtility::DIR_R); }
 
-				//移動方向の向き設定
+				// 移動方向の向き設定
 				float rotRad = CreateRad(dir);
-				if ((!AsoUtility::EqualsVZero(dir)) /*&& (isJump_ || IsEndLanding())*/)
+				if (!AsoUtility::EqualsVZero(dir))
 				{
-					//入力された方向をかめらの回転情報を使って
-					//カメラの進行方向に変換する
-					
+					// 入力された方向をかめらの回転情報を使って
+					// カメラの進行方向に変換する
 					Quaternion cameraRot = SceneManager::GetInstance().GetCamera().lock()->GetQuaRotOutX();
 					dir = cameraRot.PosAxis(dir);
 
 					// 回転処理
 					SetGoalRotate(rotRad);
 				}
-				//チャージ処理
+				// チャージ処理
 				changeAttrckTime_ += SceneManager::GetInstance().GetDeltaTime();
 				animeType_ = atkData_[attrckType_]->chargeId;
 			}
-			else//チャージ終了なら次のアニメへ(攻撃へ)
+			else// チャージ終了なら次のアニメへ(攻撃へ)
 			{
-				//倍率設定
+				// 倍率設定
 				float rate = changeAttrckTime_ / (CHAGE_MAX_TIME / 4);
 				if (rate >= 4)rate = 0.5f;
 				attrckRate_ = 1.0f + (rate * 0.3f);
@@ -2185,7 +2114,7 @@ void Player::AttrckUpdate(void)
 				return;
 			}
 		}
-		else//アニメーションが終わってチャージ処理もないなら終了
+		else// アニメーションが終わってチャージ処理もないなら終了
 		{
 			animationController_->Play((int)ANIM_TYPE::BTLLE_IDLE);
 			animeType_ = (int)ANIM_TYPE::BTLLE_IDLE;

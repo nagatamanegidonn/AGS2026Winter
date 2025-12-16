@@ -62,8 +62,6 @@ Application& Application::GetInstance(void)
 
 void Application::Init(void)
 {
-	
-
 	// アプリケーションの初期設定
 	SetWindowText(L"ワイルドハント");
 
@@ -74,9 +72,9 @@ void Application::Init(void)
 	// ２重起動検査回避用
 	SRand(GetNowCount());
 
-	//この2つすごい大事・・・・・・
-	SetDoubleStartValidFlag(true);
-	SetAlwaysRunFlag(true);
+	// １つのPCで複数起動させるための設定
+	SetDoubleStartValidFlag(true);  // ２重起動を可能にする
+	SetAlwaysRunFlag(true);			// 非アクティブ時も動作する
 
 	int rand = GetRand(999);
 	std::wstring name = L"UDP Test";
@@ -84,6 +82,8 @@ void Application::Init(void)
 	name += std::to_wstring(rand);
 	SetMainWindowClassName(name.c_str());
 
+	// DxLibの初期化
+	SetUseDirect3DVersion(DX_DIRECT3D_11);
 	if (DxLib_Init() == -1)
 	{
 		isError_ = true;
@@ -94,13 +94,12 @@ void Application::Init(void)
 	InitEffekseer();  // ★ここを追加！
 	//----------------------------------
 
-
 	// 入力制御初期化
 	SetUseDirectInputFlag(true);
 	InputManager::CreateInstance();
 	InputTextManager::CreateInstance();
 
-	// ネットワーク管理初期化////////////////////////////////////////
+	// ネットワーク管理初期化
 	NetManager::CreateInstance();
 
 	// リソース管理初期化
@@ -112,7 +111,7 @@ void Application::Init(void)
 	// シーン管理初期化
 	SceneManager::CreateInstance();
 
-	//音の初期化
+	// 音の初期化
 	SoundManager::CreateInstance();
 
 	// 計測
@@ -136,7 +135,6 @@ void Application::Run(void)
 		SceneManager::GetInstance().Update();
 		SceneManager::GetInstance().Draw();
 
-
 		Measure::GetInstance().Draw();
 
 		// ネットワーク管理更新(フレームの最後)
@@ -152,7 +150,7 @@ void Application::Destroy(void)
 	NetManager::GetInstance().Destroy();
 
 	InputManager::GetInstance().Destroy();
-	ResourceManager::GetInstance().Destroy();//なんかエラー出る
+	ResourceManager::GetInstance().Destroy();
 	SoundManager::GetInstance().Destroy(); 
 	GameManager::GetInstance().Destroy();
 	SceneManager::GetInstance().Destroy();

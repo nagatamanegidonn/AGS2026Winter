@@ -109,6 +109,9 @@ void ResourceManager::Init(void)
 	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"Quest/Clear.png");
 	resourcesMap_.emplace(SRC::CLEAR_LOGO, std::move(res));
 
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"Item/ItemFream.png");
+	resourcesMap_.emplace(SRC::ITEM_FREAM, std::move(res));
+
 }
 
 void ResourceManager::Release(void)

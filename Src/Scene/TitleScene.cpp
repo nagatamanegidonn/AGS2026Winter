@@ -43,7 +43,6 @@ TitleScene::TitleScene(void)
 	titleImg_(-1),
 	inputController_(nullptr)
 {
-	//inputController_ = nullptr;
 }
 
 TitleScene::~TitleScene(void)
@@ -51,15 +50,14 @@ TitleScene::~TitleScene(void)
 	DeleteGraph(titleImg_);
 	DeleteGraph(backImg_);
 	DeleteGraph(cursorImg_);
-
 }
 
 void TitleScene::Init(void)
 {
-	//カメラの設定
+	// カメラの設定
 	SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FIXED_POINT);
 
-	//コントローラーの登録
+	// コントローラーの登録
  	inputController_ = std::make_unique<InputController>(GameManager::GetInstance().GetControllId());
 
 	cursorImg_ = LoadGraph((Application::PATH_IMAGE + L"tile_0072.png").c_str());
@@ -70,15 +68,16 @@ void TitleScene::Init(void)
 	inputTextArea_ = new InputTextArea(//ここの１５は最大文字数
 		{ IP_S_POS.x, IP_S_POS.y }, { IP_E_POS.x- IP_S_POS.x, IP_E_POS.y - IP_S_POS.y }, 15);
 
+	// デフォルトIPアドレス設定
 	std::wstring defaultIp =
 		std::to_wstring(hostIp.d1) + L"." +
 		std::to_wstring(hostIp.d2) + L"." +
 		std::to_wstring(hostIp.d3) + L"." +
 		std::to_wstring(hostIp.d4);
 
+	// IPアドレス初期設定
 	inputTextArea_->SetText(defaultIp);
 
-	
 	NetManager::GetInstance().Init(); // ソケット再生成、ユーザー情報リセット
 
 	player_ = std::make_unique<ViewPlayer>();
@@ -86,12 +85,12 @@ void TitleScene::Init(void)
 	player_->SetChar(0);
 	player_->SetWepon(GameManager::GetInstance().GetWeponId());
 
-	//選択中の項目
+	// 選択中の項目
 	selectId_ = (int)MENU::GAME_START;
 	weponId_ = GameManager::GetInstance().GetWeponId();
 	isWpSelect_ = false;
 
-	//
+	// 武器選択用の位置登録
 	AddPosTri(L"片手剣", 0, Vector2(WIDTH, HEIGHT)
 		, Vector2(WP_C_POS.x + 50, WP_C_POS.y + (HEIGHT)));
 	AddPosTri(L"大剣", 1, Vector2(WIDTH, HEIGHT)
@@ -116,7 +115,6 @@ void TitleScene::Init(void)
 	cursorMaterial_->AddTextureBuf(cursorImg_);
 	cursorRenderer_ = std::make_unique<PixelRenderer>(*cursorMaterial_);
 	cursorRenderer_->SetSize(Vector2(HEIGHT, HEIGHT));
-	
 
 	// 背景画像
 	Material_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
@@ -128,7 +126,7 @@ void TitleScene::Init(void)
 		Vector2(Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y)
 	);
 	
-	// 
+	/// タイトル画像
 	titleMaterial_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
 	titleMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
 	titleMaterial_->AddTextureBuf(titleImg_);
@@ -139,7 +137,6 @@ void TitleScene::Init(void)
 	);
 
 	isTitle_ = true;
-
 }
 
 void TitleScene::Update(void)
@@ -193,26 +190,24 @@ void TitleScene::Draw(void)
 		DrawString(B1_S_POS.x + 50, B1_S_POS.y + 7, L"HOST", 0xffffff);
 
 		// 挑戦クエスト描画
-
 	}
 	else
 	{
 		DrawString(B1_S_POS.x + 50, B1_S_POS.y + 7, L"CLIENT", 0xffffff);
 	}
 
-	//出撃
+	// 武器変更
 	DrawBox(WP_S_POS.x, WP_S_POS.y, WP_E_POS.x, WP_E_POS.y, 0x000000, true);
 	DrawBox(WP_S_POS.x, WP_S_POS.y, WP_E_POS.x, WP_E_POS.y, 0xffffff, false);
 	DrawString(WP_S_POS.x + 50, WP_S_POS.y + 7, L"武器変更", 0xffffff);
 
-	//出撃
+	// 出撃
 	DrawBox(B2_S_POS.x, B2_S_POS.y, B2_E_POS.x, B2_E_POS.y, 0x000000, true);
 	DrawBox(B2_S_POS.x, B2_S_POS.y, B2_E_POS.x, B2_E_POS.y, 0xffffff, false);
 	DrawString(B2_S_POS.x + 50, B2_S_POS.y + 7, L"出撃", 0xffffff);
 
-	//IPアドレス
+	// IPアドレス
 	inputTextArea_->Draw();
-	//DrawString(B1_E_POS.x + 12 + 180, B1_S_POS.y + 12, "127.0.0.1", 0xffffff);
 
 #ifdef DEBUG
 
@@ -266,6 +261,7 @@ void TitleScene::Draw(void)
 				, weponsPos_.at(weponId_)->CenterPos.y);
 		}
 	}
+
 }
 
 void TitleScene::Release(void)
@@ -337,7 +333,7 @@ void TitleScene::UpdateNormal(void)
 
 #pragma endregion
 
-//マウス更新
+// マウス更新
 void TitleScene::MouseUpdate(void)
 {
 	auto& ins = InputManager::GetInstance();
@@ -349,7 +345,7 @@ void TitleScene::MouseUpdate(void)
 		padUpdate_ = std::bind(&TitleScene::PIpUpdate, this);
 	}
 
-	//クリックしたとき
+	// クリックしたとき
 	if (!inputTextArea_->IsActive() && IsTrggerdMleft())
 	{
 		Vector2 moPos = ins.GetMousePos();
@@ -433,6 +429,7 @@ void TitleScene::MWeponUpdate(void)
 	auto& sns = SceneManager::GetInstance();
 	auto& gns = GameManager::GetInstance();
 
+	// クリックしたとき
 	if (IsTrggerdMleft())
 	{
 		Vector2 moPos = ins.GetMousePos();
@@ -456,7 +453,7 @@ void TitleScene::MWeponUpdate(void)
 				continue;
 			}
 		}
-		//選択してないなら戻る
+		// 選択してないなら戻る
 		if (!isSlect)
 		{
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
@@ -469,7 +466,7 @@ void TitleScene::MWeponUpdate(void)
 	}
 
 }
-//通常更新（コントロ－ラー）
+// 通常更新（コントロ－ラー）
 void TitleScene::PNormalUpdate(void)
 {
 	auto& ins = InputManager::GetInstance();
@@ -514,7 +511,6 @@ void TitleScene::PNormalUpdate(void)
 
 			// マウスを表示状態にする
 			SetMouseDispFlag(true);
-			//SetMouseDispFlag(false);
 
 			if (GameManager::GetInstance().IsHost())
 			{
@@ -571,20 +567,18 @@ void TitleScene::PWeponUpdate(void)
 		return;
 	}
 
-	if (inputController_->IsTriggered(InputController::KEY::FORWARD) /*&& weponId_ > (int)WEPON_ID::BLONZ_SOERD*/)
+	if (inputController_->IsTriggered(InputController::KEY::FORWARD))
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT, Sound::TIMES::ONCE, true);
 		weponId_ = (weponId_ - 1 + (int)WEPON_ID::MAX) % ((int)WEPON_ID::MAX);
-		//weponId_--;
-
+		
 		gns.SetWeponId(weponId_);
 		player_->SetWepon(GameManager::GetInstance().GetWeponId());
 	}
-	else if (inputController_->IsTriggered(InputController::KEY::BACK)/* && weponId_ < (int)WEPON_ID::MAX - 1*/)
+	else if (inputController_->IsTriggered(InputController::KEY::BACK))
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT, Sound::TIMES::ONCE, true);
 		weponId_ = (weponId_ + 1) % ((int)WEPON_ID::MAX);
-		//weponId_++;
 
 		gns.SetWeponId(weponId_);
 		player_->SetWepon(GameManager::GetInstance().GetWeponId());

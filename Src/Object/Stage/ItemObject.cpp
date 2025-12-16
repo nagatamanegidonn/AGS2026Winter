@@ -25,7 +25,7 @@ void ItemObject::Init(void)
 
 void ItemObject::Update(void)
 {
-	//プレイヤーの下にいるか
+	// プレイヤーの下にいるか
 	if (player_.CollisionUnderSphere(transform_.collider->pos_, transform_.collider->radius_))
 	{
 		player_.SetItemId(itemId_);

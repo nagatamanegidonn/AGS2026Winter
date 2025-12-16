@@ -57,8 +57,6 @@ public:
 
 	// ボタン位置
 	const int B1_Y = Application::SCREEN_SIZE_Y - 100;
-	/*const Vector2 B1_S_POS = Vector2(HX - WIDTH / 2, B1_Y - HEIGHT / 2);
-	const Vector2 B1_E_POS = Vector2(HX + WIDTH / 2, B1_Y + HEIGHT / 2);*/
 	const Vector2 B1_C_POS = Vector2(845, 80 );
 	const Vector2 B1_S_POS = Vector2(B1_C_POS.x - WIDTH / 2, B1_C_POS.y - HEIGHT / 2);
 	const Vector2 B1_E_POS = Vector2(B1_C_POS.x + WIDTH / 2, B1_C_POS.y + HEIGHT / 2);
@@ -72,7 +70,7 @@ public:
 	const Vector2 WP_S_POS = Vector2(WP_C_POS.x - WIDTH / 2, WP_C_POS.y - HEIGHT / 2);
 	const Vector2 WP_E_POS = Vector2(WP_C_POS.x + WIDTH / 2, WP_C_POS.y + HEIGHT / 2);
 
-	//startボタンPos
+	// startボタンPos
 	const int B2_Y = B1_Y + 40;
 	const Vector2 B2_C_POS = Vector2(HX, B2_Y);
 	const Vector2 B2_S_POS = Vector2(B2_C_POS.x - WIDTH / 2, B2_C_POS.y - HEIGHT / 2);
@@ -91,15 +89,13 @@ public:
 
 private:
 
-
-
-	//設定
+	// 設定
 	std::unique_ptr<InputController> inputController_;
 
 	// IPアドレス
 	InputTextArea* inputTextArea_;
 
-	//プレイヤー
+	// プレイヤー
 	std::unique_ptr<ViewPlayer> player_;
 
 	// 状態管理(更新ステップ)
@@ -107,26 +103,29 @@ private:
 	void UpdateMouse(void);
 	void UpdateNormal(void);
 
+	// コントローラー、キーボード更新ステップ
+	// パッド操作
 	std::function<void(void)> padUpdate_;
 	void PNormalUpdate(void);
 	void PWeponUpdate(void);
 	void PIpUpdate(void);
+
+	// マウス操作
 	std::function<void(void)> mouseUpdate_;
 	void MouseUpdate(void);
 	void MWeponUpdate(void);
-	
-
+	// 前回のマウス情報
 	Vector2 agoMousePos_;
 	bool agoMouseTrg_;
 
-	//ここで変更するステータス
+	// このシーンで変更するステータス
 	bool isPad_;
 	int selectId_;
 	int weponId_;
 	bool isWpSelect_;
 	std::map<int, std::unique_ptr<PosTri>> weponsPos_;
 
-	//背景、カーソル画像
+	// 背景、カーソル画像
 	int titleImg_;
 	int backImg_;
 	int cursorImg_;

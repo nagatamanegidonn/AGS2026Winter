@@ -34,7 +34,7 @@
     <ClCompile Include="Src\Object\Player\Arrow.cpp" />
     <ClCompile Include="Src\Object\Shot\ShotBase.cpp" />
     <ClCompile Include="Src\Object\Common\SoundController.cpp" />
-    <ClCompile Include="Src\Object\Player\GreatSword.cpp" />
+    <ClCompile Include="Src\Object\Player\Sword.cpp" />
     <ClCompile Include="Src\Object\Common\EffectController.cpp" />
     <ClCompile Include="Src\Manager\Sound.cpp" />
     <ClCompile Include="Src\Manager\SoundManager.cpp" />
@@ -102,7 +102,7 @@
     <ClInclude Include="Src\Object\Player\Arrow.h" />
     <ClInclude Include="Src\Object\Shot\ShotBase.h" />
     <ClInclude Include="Src\Object\Common\SoundController.h" />
-    <ClInclude Include="Src\Object\Player\GreatSword.h" />
+    <ClInclude Include="Src\Object\Player\Sword.h" />
     <ClInclude Include="Src\Object\Common\EffectController.h" />
     <ClInclude Include="Src\Manager\Sound.h" />
     <ClInclude Include="Src\Manager\SoundManager.h" />

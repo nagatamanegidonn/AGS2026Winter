@@ -24,9 +24,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
 	// メモリリーク検出
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-
-
-	std::thread bgThread(backgroundTask); // バックグラウンドタスクをスレッドで実行
+	// バックグラウンドタスクをスレッドで実行
+	std::thread bgThread(backgroundTask); 
 
 	// インスタンスの生成
 	Application::CreateInstance();

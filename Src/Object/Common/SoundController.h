@@ -28,12 +28,12 @@ public:
 	bool Play(int src, Sound::TIMES times, bool isForce = false);	//二次元音源用
 	bool Play(int src, Sound::TIMES times, VECTOR pos, float radius);	//三次元音源用
 
-	void Stop(int src);	//音源を停止する
-	void AllStop(void);	//音源を停止する
+	void Stop(int src);	// 音源を停止する
+	void AllStop(void);	// 音源を停止する
 
 	bool CheckMove(int src);
 
-	void ChengeVolume(int src, float per);	//per 0.0～1.0でパーセントを設定する
+	void ChengeVolume(int src, float per);	// per 0.0～1.0でパーセントを設定する
 private:
 	
 	std::map<int, std::unique_ptr<Sound>> soundMap_;

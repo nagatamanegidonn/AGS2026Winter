@@ -67,16 +67,16 @@ public:
 private:
 	struct InputState
 	{
-		PeripheralType type;//周辺機器種別
-		uint32_t code;			//入力コード（汎用）
+		PeripheralType type;	// 周辺機器種別
+		uint32_t code;			// 入力コード（汎用）
 	};
 
 	using InputTable_t = std::map<KEY, std::vector<InputState>>;
-	InputTable_t inputTable_;	//機器ごとによる判定を多なうためのkey
+	InputTable_t inputTable_;	// 機器ごとによる判定を多なうためのkey
 
-	using InputData_t = std::map<KEY, bool>;//機器ごとによる判定
-	InputData_t currentInput_;	//最新の
-	InputData_t lastInput_;		//直前の
+	using InputData_t = std::map<KEY, bool>;// 機器ごとによる判定
+	InputData_t currentInput_;	// 最新の
+	InputData_t lastInput_;		// 直前の
 
 	int padType_;
 	int rightX, rightY = 0;

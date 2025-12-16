@@ -26,7 +26,6 @@ public:
 	// 指定フェードを開始する
 	void SetFade(NET_STATE state);
 
-
 	// コンストラクタ
 	Fader(int color);
 	// デストラクタ
@@ -36,7 +35,6 @@ public:
 	void Update(void);
 	void Draw(void);
 
-
 private:
 
 	// 状態
@@ -44,8 +42,10 @@ private:
 
 	// 透明度
 	float alpha_;
+
 	// 速度
 	float speed_;
+
 	// カラー
 	int color_;
 

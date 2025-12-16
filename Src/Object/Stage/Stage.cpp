@@ -33,9 +33,9 @@ Stage::~Stage(void)
 
 void Stage::Init(void)
 {
-	//
+	// ステージ	作成
 	MakeMainStage();
-	//
+	// 花の作成
 	MakeFlour();
 
 	step_ = -1.0f;
@@ -56,7 +56,7 @@ void Stage::Update(void)
 		s.second->Update();
 	}
 
-	//エリアの設定
+	//　エリアの設定
 	for (const auto& s : activePlanet_.lock()->GetArea())
 	{
 		VECTOR diff;
@@ -72,7 +72,7 @@ void Stage::Update(void)
 
 			if (disPow < s.second->radius * s.second->radius)
 			{
-				//プレイヤーのエリア位置設定
+				//　プレイヤーのエリア位置設定
 				player.lock()->SetAreaId(s.second->areaId);
 			}
 		}
@@ -133,7 +133,7 @@ void Stage::ChangeStage(NAME type)
 		}
 	}
 
-	//エリアの設定
+	//　エリアの設定
 	for (const auto& s : activePlanet_.lock()->GetArea())
 	{
 		VECTOR diff;
@@ -248,7 +248,7 @@ void Stage::MakeMainStage(void)
 	objects_.push_back(std::move(obj));
 	//------------------------------------------------------------------------------
 }
-//採取ポイントの作成
+// 採取ポイントの作成
 void Stage::MakeFlour(void)
 {
 

@@ -192,7 +192,7 @@
     <ClCompile Include="Src\Object\Player\ViewPlayer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Player\GreatSword.cpp">
+    <ClCompile Include="Src\Object\Player\Sword.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Common\SoundController.cpp">
@@ -530,7 +530,7 @@
     <ClInclude Include="Src\Object\Player\ViewPlayer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Player\GreatSword.h">
+    <ClInclude Include="Src\Object\Player\Sword.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Common\SoundController.h">

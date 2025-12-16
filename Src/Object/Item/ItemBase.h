@@ -33,14 +33,16 @@ public:
 
 private:
 
-	//格納ID
+	// 格納ID
 	int selectId_;
-	//アイテム画像
+
+	// アイテム画像
 	int itemImage_;
-	//アイテム名
+
+	// アイテム名
 	std::wstring  name_;
 		 
-	//持っている数
+	// 持っている数
 	int count_;
 };
 

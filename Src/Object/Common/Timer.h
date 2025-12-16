@@ -10,6 +10,7 @@ public:
     static constexpr int SIZE_X = 100;
     static constexpr int SIZE_Y = 100;
 
+	static constexpr FLOAT4 MATERIAL_DATA = { 0.5f, 0.5f, 1.0f, 0.3f }; // タイマー描画用マテリアルデータ
 
     Timer(float limitSeconds); // 制限時間（秒）を指定して初期化
     ~Timer(void);

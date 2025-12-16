@@ -47,7 +47,11 @@ void ItemBase::Update(void)
 void ItemBase::Draw(void)
 {
 	DrawRotaGraph(Application::SCREEN_SIZE_X - 100, Application::SCREEN_SIZE_Y - 100, 8.0f, 0.0f, itemImage_, true);
+
+#ifdef _DEBUG
 	DrawFormatString(Application::SCREEN_SIZE_X - 100, Application::SCREEN_SIZE_Y - 100, 0x0000ff, L"%d", count_);
+#endif // DEBUG
+
 }
 
 void ItemBase::Release(void)

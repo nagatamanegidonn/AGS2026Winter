@@ -22,7 +22,7 @@ void SoundManager::Init(void)
 {
 	Sound res;
 
-	//バトルＢＧＭ
+	// バトルBGM
 	//res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"PerituneMaterial_Breakthrough.mp3");
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"BGM/Battle1.mp3");
 	res.ChengeMaxVolume(0.6f);
@@ -30,10 +30,11 @@ void SoundManager::Init(void)
 
 
 
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"SowrdDamage.mp3");//今回使うのはこれ
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"SowrdDamage.mp3");	// 今回使うのはこれ
 	res.ChengeMaxVolume(0.6f);
 	soundMap_.emplace(SRC::SLASH_DAMAGE, res);
-	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"BowDamage.mp3");//今回使うのはこれ
+
+	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"BowDamage.mp3");		// 今回使うのはこれ
 	res.ChengeMaxVolume(0.6f);
 	soundMap_.emplace(SRC::SHOT_DAMAGE, res);
 
@@ -41,7 +42,7 @@ void SoundManager::Init(void)
 	res.ChengeMaxVolume(1.0f);
 	soundMap_.emplace(SRC::CHAGE, res);
 	
-	//コネクトシーンで使用
+	// コネクトシーンで使用
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"Conect/Start.mp3");
 	res.ChengeMaxVolume(0.8f);
 	soundMap_.emplace(SRC::CONECT_START, res);
@@ -49,13 +50,13 @@ void SoundManager::Init(void)
 	res.ChengeMaxVolume(0.8f);
 	soundMap_.emplace(SRC::ADD, res);
 
-	//ゲームシーンで使用
+	// ゲームシーンで使用
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"Game/RockOn.mp3");
 	res.ChengeMaxVolume(1.0f);
 	soundMap_.emplace(SRC::LOCKON, res);
 
 
-	//SESelect.mp3
+	// SESelect.mp3
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"Deffult/Select.mp3");
 	res.ChengeMaxVolume(1.0f);
 	soundMap_.emplace(SRC::SELECT, res);
@@ -99,7 +100,7 @@ void SoundManager::Destroy(void)
 	delete instance_;
 }
 
-//音の再生
+// 音の再生
 bool SoundManager::Play(SRC src, Sound::TIMES times, bool isForce)
 {
 	const auto& lPair = soundMap_.find(src);
@@ -130,7 +131,7 @@ bool SoundManager::Play(SRC src, Sound::TIMES times, VECTOR pos, float radius)
 void SoundManager::Stop(SRC src)
 {
 	const auto& lPair = soundMap_.find(src);
-	if (lPair != soundMap_.end())//指定のものが存在するか？
+	if (lPair != soundMap_.end())// 指定のものが存在するか？
 	{
 		return lPair->second.Stop();
 	}
@@ -173,7 +174,7 @@ bool SoundManager::Resume(SRC src, Sound::TIMES times)
 	}
 	return false;
 }
-//再生中か?
+// 再生中か?
 bool SoundManager::CheckMove(SRC src)
 {
 	const auto& lPair = soundMap_.find(src);
@@ -183,7 +184,7 @@ bool SoundManager::CheckMove(SRC src)
 	}
 	return false;
 }
-//音量
+// 音量
 void SoundManager::ChengeVolume(SRC src, float per)
 {
 	const auto& lPair = soundMap_.find(src);
