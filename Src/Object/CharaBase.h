@@ -22,6 +22,8 @@ public:
 		float endFrame;
 	};
 	// アニメーションデータ
+	//const CharaBase::AttrckData ATTRCK_STAMP_DATA = { false, -1, 17.0f, 24.0f,-1.0f,0.0f,-1, };
+
 	struct AttrckData
 	{
 		bool isCharge = false;	// チャージ攻撃か

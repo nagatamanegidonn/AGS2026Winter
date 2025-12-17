@@ -12,6 +12,12 @@
 #include "HitDamage.h"
 #include "EnemyBase.h"
 
+namespace
+{
+	constexpr int DRAW_UP_SCALE = 30;// モデルに埋まらないよう
+	constexpr float HALF_SCALE = 0.5;
+}
+
 EnemyBase::EnemyBase(void)
 {
 }
@@ -46,19 +52,20 @@ bool EnemyBase::IsTargetInFOV(const VECTOR& followPos, float fovDeg)
 	forward.y = 0.0f;
 	forward = VNorm(forward);
 
-	float dot = VDot(forward, toTarget); // コサイン角
-	float angleRad = acosf(std::clamp(dot, -1.0f, 1.0f)); // 安定化
+	float dot = VDot(forward, toTarget);					// コサイン角
+	float angleRad = acosf(std::clamp(dot, -1.0f, 1.0f));	// 安定化
 	float angleDeg = AsoUtility::Rad2DegF(angleRad);
 
 	// 視野角の半分以内なら true
-	return angleDeg <= (fovDeg * 0.5f);
+	return angleDeg <= (fovDeg * HALF_SCALE);
 }
 void EnemyBase::AddHitPart(int& model, std::wstring boneName, float rad, float rate)
 {
 	auto  part = std::make_unique<HitPart>(model, boneName, rad, rate);
 	hitParts_.emplace_back(std::move(part));
 }
-//Colliderによる判定
+
+// Colliderによる判定
 #pragma region 判定系
 
 void EnemyBase::CollisionStageCapsule(void)
@@ -147,6 +154,7 @@ void EnemyBase::CollisionStageCapsule(void)
 		MV1CollResultPolyDimTerminate(hits);
 	}
 }
+
 void EnemyBase::CollisionGravity(void)
 {
 	// ジャンプ量を加算
@@ -188,7 +196,6 @@ void EnemyBase::CollisionGravity(void)
 }
 
 #pragma endregion
-
 
 void EnemyBase::TargetRotate(const VECTOR& traPos, float rate)
 {
@@ -235,13 +242,13 @@ void EnemyBase::DrawFOV(float fovDeg, float radius, int rayCount, unsigned int c
 {
 	//原点
 	VECTOR origin = transform_.pos;
-	origin.y += 30;
+	origin.y += DRAW_UP_SCALE;
 
 	VECTOR forward = transform_.GetForward();
 	forward.y = 0.0f;
 	forward = VNorm(forward);
 
-	float halfFov = fovDeg * 0.5f;
+	float halfFov = fovDeg * HALF_SCALE;
 	float angleStep = fovDeg / (rayCount - 1);
 
 	for (int i = 0; i < rayCount; ++i)
@@ -257,7 +264,7 @@ void EnemyBase::DrawFOV(float fovDeg, float radius, int rayCount, unsigned int c
 		};
 
 		VECTOR end = VAdd(origin, VScale(dir, radius));
-		end.y += 30;
+		end.y += DRAW_UP_SCALE;
 
 		DrawLine3D(origin, end, color);
 	}

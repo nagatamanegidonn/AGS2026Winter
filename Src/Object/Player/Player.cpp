@@ -263,7 +263,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::BOW));
 		attrckDamage_ = BOW_DAMAGE;
-		hp_ = hpAgo_ = hpMax_ = MAX_HP-90;
+		hp_ = hpAgo_ = hpMax_ = MAX_HP;
 		break;
 	// デフォルトは大剣
 	default:

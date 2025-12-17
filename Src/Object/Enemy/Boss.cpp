@@ -28,18 +28,18 @@ namespace
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
 		// 通常アニメーション
-		{(int)Boss::ANIM_TYPE::IDLE,L"Boss.mv1",20.0f,0,0.0f, -1.0f},
-		{(int)Boss::ANIM_TYPE::RUN,L"Boss.mv1",30.0f,6,0.0f,-1.0f},
-		{(int)Boss::ANIM_TYPE::FAST_RUN,L"Boss.mv1",30.0f, 2,0.0f,-1.0f},
+		{static_cast<int>(Boss::ANIM_TYPE::IDLE),L"Boss.mv1",20.0f,0,0.0f, -1.0f},
+		{static_cast<int>(Boss::ANIM_TYPE::RUN),L"Boss.mv1",30.0f,6,0.0f,-1.0f},
+		{static_cast<int>(Boss::ANIM_TYPE::FAST_RUN),L"Boss.mv1",30.0f, 2,0.0f,-1.0f},
 		// 攻撃アニメーション
-		{(int)Boss::ANIM_TYPE::READY_ATTRCK,L"Boss.mv1",1.2f, 12, 0.0f, 1.5f},
-		{(int)Boss::ANIM_TYPE::ATTRCK_STAMP,L"Boss.mv1",25.0f, 10,0.0f,-1.0f},
-		{(int)Boss::ANIM_TYPE::ATTRCK_L_CLOW,L"Boss.mv1",20.0f, 8,0.0f,-1.0f},
-		{(int)Boss::ANIM_TYPE::ATTRCK_R_CLOW,L"Boss.mv1",20.0f, 5,0.0f,-1.0f},
-		{(int)Boss::ANIM_TYPE::ATTRCK_DASH,L"Boss.mv1",40.0f, 2,0.0f,-1.0f},
+		{static_cast<int>(Boss::ANIM_TYPE::READY_ATTRCK),L"Boss.mv1",1.2f, 12, 0.0f, 1.5f},
+		{static_cast<int>(Boss::ANIM_TYPE::ATTRCK_STAMP),L"Boss.mv1",25.0f, 10,0.0f,-1.0f},
+		{static_cast<int>(Boss::ANIM_TYPE::ATTRCK_L_CLOW),L"Boss.mv1",20.0f, 8,0.0f,-1.0f},
+		{static_cast<int>(Boss::ANIM_TYPE::ATTRCK_R_CLOW),L"Boss.mv1",20.0f, 5,0.0f,-1.0f},
+		{static_cast<int>(Boss::ANIM_TYPE::ATTRCK_DASH),L"Boss.mv1",40.0f, 2,0.0f,-1.0f},
 		// 被ダメージアニメーション
-		{(int)Boss::ANIM_TYPE::STUNNED,L"Boss.mv1",30.0f, 14,0.0f,-1.0f},
-		{(int)Boss::ANIM_TYPE::DEAD,L"Boss.mv1", 30.0f, 13,0.0f,-1.0f},
+		{static_cast<int>(Boss::ANIM_TYPE::STUNNED),L"Boss.mv1",30.0f, 14,0.0f,-1.0f},
+		{static_cast<int>(Boss::ANIM_TYPE::DEAD),L"Boss.mv1", 30.0f, 13,0.0f,-1.0f},
 	};
 	// アタックデータリスト
 	const CharaBase::AttrckData ATTRCK_STAMP_DATA = { false, -1, 17.0f, 24.0f,-1.0f,0.0f,-1, };
@@ -47,7 +47,6 @@ namespace
 	const CharaBase::AttrckData ATTRCK_R_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
 	const CharaBase::AttrckData ATTRCK_DASH_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
 
-	
 
 	constexpr float ROT_RATE = 3.0f;
 }
@@ -203,16 +202,17 @@ void Boss::Update(void)
 	}
 
 	//アニメーションに応じて攻撃力設定
-	if (animeType_ == (int)ANIM_TYPE::ATTRCK_STAMP)
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_STAMP))
 	{
 		attrckDamage_ = ATTRCK_STAMP;
 	}
-	else if (animeType_ == (int)ANIM_TYPE::ATTRCK_L_CLOW
-		|| animeType_ == (int)ANIM_TYPE::ATTRCK_R_CLOW)
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW)
+		|| animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW)
+		)
 	{
 		attrckDamage_ = ATTRCK_CLOW;
 	}
-	else if (animeType_ == (int)ANIM_TYPE::ATTRCK_DASH)
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_DASH))
 	{
 		attrckDamage_ = ATTRCK_DASH;
 		effectController_->LoopPlay(0);
@@ -265,7 +265,7 @@ void Boss::Update(void)
 		transform_.quaRot = transform_.quaRot.Mult(playerRotY_);
 
 		// 位置送信もここでOK（ProcessMove内でも呼ばれてるけど念のため）
-		nIns.SetBoss(key_, transform_.pos, transform_.quaRot, animeType_, (int)state_);
+		nIns.SetBoss(key_, transform_.pos, transform_.quaRot, animeType_, static_cast<int>(state_));
 	}
 	// 通信プレイヤーの処理
 	else
@@ -278,7 +278,7 @@ void Boss::Update(void)
 		animeType_ = boss.Anim_;
 		state_ = static_cast<Boss::STATE>(boss.state_);
 
-		if (animeType_ == (int)ANIM_TYPE::DEAD)
+		if (animeType_ == static_cast<int>(ANIM_TYPE::DEAD))
 		{
 			animationController_->Play(animeType_, false);
 		}
@@ -305,28 +305,29 @@ void Boss::Update(void)
 	soundController_->ChengeVolume(2, volume); // ボリュームだけ更新
 
 
-	if (animeType_ == (int)ANIM_TYPE::ATTRCK_STAMP
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_STAMP)
 		&& animationController_->GetStepTime() > 23.0f
 		&& animationController_->GetStepTime() < 23.5f)
 	{
 		soundController_->Play(2, Sound::TIMES::ONCE);
 	}
 	else if (
-		(animeType_ == (int)ANIM_TYPE::ATTRCK_L_CLOW
-		&& animeAgoType_ != (int)ANIM_TYPE::ATTRCK_L_CLOW)||
-		(animeType_ == (int)ANIM_TYPE::ATTRCK_R_CLOW
-			&& animeAgoType_ != (int)ANIM_TYPE::ATTRCK_R_CLOW)
+		(animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW)
+		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW))||
+		(animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW)
+			&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW))
 		)
 	{
 		soundController_->Play(1, Sound::TIMES::ONCE);
 	}
-	else if (animeType_ == (int)ANIM_TYPE::ATTRCK_DASH
-		&& animeAgoType_ != (int)ANIM_TYPE::ATTRCK_DASH)
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_DASH)
+		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ATTRCK_DASH)
+		)
 	{
 		soundController_->Play(0, Sound::TIMES::ONCE);
 	}
-	else if (animeType_ == (int)ANIM_TYPE::DEAD
-		&& animeAgoType_ != (int)ANIM_TYPE::DEAD)
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::DEAD)
+		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::DEAD))
 	{
 		SceneManager::GetInstance().CaptureMainScreen();
 	}
@@ -345,15 +346,16 @@ void Boss::Update(void)
 
 	// アニメーション再生
 	animationController_->Update();
-	if (animationController_->IsEnd() && animeType_ == (int)ANIM_TYPE::DEAD)
+	if (animationController_->IsEnd() && animeType_ == static_cast<int>(ANIM_TYPE::DEAD))
 	{
 		//// ゲームの勝敗判定//シーン遷移
 		//GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_CLEAR;
 		//GameManager::GetInstance().SetGameResult(result);
 	}
 	//　クエストがボス討伐ならカウントする//bossの死亡アニメーション開始時に1回だけ
-	if (animeAgoType_ != (int)ANIM_TYPE::DEAD
-		&& animeType_ == (int)ANIM_TYPE::DEAD)
+	if (animeAgoType_ != static_cast<int>(ANIM_TYPE::DEAD)
+		&& animeType_ == static_cast<int>(ANIM_TYPE::DEAD)
+		)
 	{
 		// クエストがボス討伐ならカウントアップ
 		GameManager::GetInstance().SetClearCount(
@@ -495,28 +497,28 @@ const bool Boss::CollisionAttrck(const int& modelId)
 {
 
 	auto& nIns = NetManager::GetInstance();
-	if (animeType_==(int)ANIM_TYPE::ATTRCK_STAMP)
+	if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_STAMP))
 	{
-		attrckType_ = (int)ANIM_TYPE::ATTRCK_STAMP;
+		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK_STAMP);
 		attrckPos_ = VScale(VAdd(AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_L")
 			, AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_R")), 0.5f);
 		attrckRadius = ATTRCK_STAMP_RADIUS;
 	}
-	else if (animeType_==(int)ANIM_TYPE::ATTRCK_L_CLOW)
+	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW))
 	{
-		attrckType_ = (int)ANIM_TYPE::ATTRCK_L_CLOW;
+		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW);
 		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_L");
 		attrckRadius = ATTRCK_BITE_RADIUS;
 	}
-	else if (animeType_==(int)ANIM_TYPE::ATTRCK_R_CLOW)
+	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW))
 	{
-		attrckType_ = (int)ANIM_TYPE::ATTRCK_R_CLOW;
+		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
 		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_R");
 		attrckRadius = ATTRCK_BITE_RADIUS;
 	}
-	else if (animeType_==(int)ANIM_TYPE::ATTRCK_DASH)
+	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_DASH))
 	{
-		attrckType_ = (int)ANIM_TYPE::ATTRCK_R_CLOW;
+		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
 		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, L"Chest_M");
 		attrckRadius = ATTRCK_DASH_RADIUS;
 	}
@@ -619,18 +621,18 @@ void Boss::InitAnimation(void)
 	}
 
 	// 攻撃データの設定
-	SetAtrckData((int)ANIM_TYPE::ATTRCK_STAMP, ATTRCK_STAMP_DATA);
-	SetAtrckData((int)ANIM_TYPE::ATTRCK_L_CLOW, ATTRCK_L_CLOW_DATA);
-	SetAtrckData((int)ANIM_TYPE::ATTRCK_R_CLOW, ATTRCK_R_CLOW_DATA);
-	SetAtrckData((int)ANIM_TYPE::ATTRCK_DASH, ATTRCK_DASH_DATA);
+	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK_STAMP), ATTRCK_STAMP_DATA);
+	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW), ATTRCK_L_CLOW_DATA);
+	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW), ATTRCK_R_CLOW_DATA);
+	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK_DASH), ATTRCK_DASH_DATA);
 
 	// ブレンド設定
-	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_IDLE, true, 5.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK_STAMP, true, 1.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::STUNNED, true, 3.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK_STAMP), true, 1.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::STUNNED), true, 3.0f);
 
-	animationController_->Play((int)ANIM_TYPE::RUN);
-	animeType_ = (int)ANIM_TYPE::RUN;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
+	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 	animeAgoType_ = animeType_;
 }
 void Boss::InitEffect(void)
@@ -683,8 +685,8 @@ void Boss::ChangeStateBattle(void)
 }
 void Boss::ChangeStateFollow(void)
 {
-	animationController_->Play((int)ANIM_TYPE::FAST_RUN);
-	animeType_ = (int)ANIM_TYPE::FAST_RUN;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::FAST_RUN));
+	animeType_ = static_cast<int>(ANIM_TYPE::FAST_RUN);
 
 	stateUpdate_ = std::bind(&Boss::UpdateFollow, this);
 }
@@ -734,8 +736,8 @@ void Boss::UpdateNone(void)
 // stateがPLAYの時のUpdate
 void Boss::UpdatePlay(void)
 {
-	animationController_->Play((int)ANIM_TYPE::RUN);
-	animeType_ = (int)ANIM_TYPE::RUN;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
+	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 
 	VECTOR axis = AsoUtility::VECTOR_ZERO;
 	axis.y = 1.0f;
@@ -758,8 +760,8 @@ void Boss::UpdatePlay(void)
 void Boss::UpdateLerpMove(void)
 {
 	// アニメーション再生
-	animationController_->Play((int)ANIM_TYPE::FAST_RUN);
-	animeType_ = (int)ANIM_TYPE::FAST_RUN;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::FAST_RUN));
+	animeType_ = static_cast<int>(ANIM_TYPE::FAST_RUN);
 
 	// 移動
 	movePow_ =
@@ -801,13 +803,13 @@ void Boss::UpdateBattle(void)
 			rotateTimer_ = rotateInterval_; // リセット
 		}
 		// この時の回転は歩く
-		animationController_->Play((int)ANIM_TYPE::RUN);
-		animeType_ = (int)ANIM_TYPE::RUN;
+		animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
+		animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 	}
 	else
 	{
-		animationController_->Play((int)ANIM_TYPE::IDLE, true);
-		animeType_ = (int)ANIM_TYPE::IDLE;
+		animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+		animeType_ = static_cast<int>(ANIM_TYPE::IDLE);
 	}
 
 
@@ -822,7 +824,7 @@ void Boss::UpdateBattle(void)
 	{
 		if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))
 		{
-			if ((int)disPow % 2 == 0)
+			if (static_cast<int>(disPow) % 2 == 0)
 			{
 				// 攻撃方法
 				attrckTypeState_ = ATTRCK_TYPE::BITE;
@@ -851,8 +853,8 @@ void Boss::UpdateBattle(void)
 }
 void Boss::UpdateFollow(void)
 {
-	animationController_->Play((int)ANIM_TYPE::FAST_RUN);
-	animeType_ = (int)ANIM_TYPE::FAST_RUN;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::FAST_RUN));
+	animeType_ = static_cast<int>(ANIM_TYPE::FAST_RUN);
 
 	if (IsTargetInFOV(follow_->pos,FOV_RADIUS))
 	{
@@ -869,7 +871,7 @@ void Boss::UpdateFollow(void)
 
 	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))//ダメージ半径×攻撃半径
 	{
-		if ((int)disPow % 2 == 0)
+		if (static_cast<int>(disPow) % 2 == 0)
 		{
 			//攻撃方法
 			attrckTypeState_ = ATTRCK_TYPE::BITE;
@@ -894,8 +896,8 @@ void Boss::UpdateAttrckReady(void)
 	switch (attrckTypeState_)
 	{
 	case ATTRCK_TYPE::BITE:
-		animationController_->Play((int)ANIM_TYPE::READY_ATTRCK, false);
-		animeType_ = (int)ANIM_TYPE::READY_ATTRCK;
+		animationController_->Play(static_cast<int>(ANIM_TYPE::READY_ATTRCK), false);
+		animeType_ = static_cast<int>(ANIM_TYPE::READY_ATTRCK);
 
 		if (animationController_->IsEnd())
 		{
@@ -909,8 +911,8 @@ void Boss::UpdateAttrckReady(void)
 		ChangeState(STATE::BATTLE);
 		break;
 	case ATTRCK_TYPE::CLOW_R:
-		animationController_->Play((int)ANIM_TYPE::READY_ATTRCK, false);
-		animeType_ = (int)ANIM_TYPE::READY_ATTRCK;
+		animationController_->Play(static_cast<int>(ANIM_TYPE::READY_ATTRCK), false);
+		animeType_ = static_cast<int>(ANIM_TYPE::READY_ATTRCK);
 
 		if (animationController_->IsEnd())
 		{
@@ -926,8 +928,8 @@ void Boss::UpdateAttrckReady(void)
 }
 void Boss::UpdateAttrckStamp(void)
 {
-	animationController_->Play((int)ANIM_TYPE::ATTRCK_STAMP, false);
-	animeType_ = (int)ANIM_TYPE::ATTRCK_STAMP;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK_STAMP), false);
+	animeType_ = static_cast<int>(ANIM_TYPE::ATTRCK_STAMP);
 
 	if (animationController_->IsEnd())
 	{
@@ -947,8 +949,8 @@ void Boss::UpdateAttrckStamp(void)
 void Boss::UpdateAttrckLeftClaw(void)
 {
 
-	animationController_->Play((int)ANIM_TYPE::ATTRCK_L_CLOW, false);
-	animeType_ = (int)ANIM_TYPE::ATTRCK_L_CLOW;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW), false);
+	animeType_ = static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW);
 
 	if (animationController_->IsEnd())
 	{
@@ -967,8 +969,8 @@ void Boss::UpdateAttrckLeftClaw(void)
 }
 void Boss::UpdateAttrckRightClaw(void)
 {
-	animationController_->Play((int)ANIM_TYPE::ATTRCK_R_CLOW, false);
-	animeType_ = (int)ANIM_TYPE::ATTRCK_R_CLOW;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW), false);
+	animeType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
 
 	if (animationController_->IsEnd())
 	{
@@ -987,8 +989,8 @@ void Boss::UpdateAttrckRightClaw(void)
 }
 void Boss::UpdateAttrckDash(void)
 {
-	animationController_->Play((int)ANIM_TYPE::ATTRCK_DASH);
-	animeType_ = (int)ANIM_TYPE::ATTRCK_DASH;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK_DASH));
+	animeType_ = static_cast<int>(ANIM_TYPE::ATTRCK_DASH);
 
 	
 
@@ -1019,8 +1021,8 @@ void Boss::UpdateAttrckDash(void)
 }
 void Boss::UpdateStunned(void)
 {
-	animationController_->Play((int)ANIM_TYPE::STUNNED);
-	animeType_ = (int)ANIM_TYPE::STUNNED;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::STUNNED));
+	animeType_ = static_cast<int>(ANIM_TYPE::STUNNED);
 
 
 	if (stateTime_ < 0.0f)
@@ -1035,8 +1037,8 @@ void Boss::UpdateDamage(void)
 }
 void Boss::UpdateDead(void)
 {
-	animationController_->Play((int)ANIM_TYPE::DEAD, false);
-	animeType_ = (int)ANIM_TYPE::DEAD;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::DEAD), false);
+	animeType_ = static_cast<int>(ANIM_TYPE::DEAD);
 
 
 	if (animationController_->IsEnd())

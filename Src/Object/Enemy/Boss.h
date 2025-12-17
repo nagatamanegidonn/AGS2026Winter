@@ -39,7 +39,7 @@ public:
 	static constexpr float MOVE_ACC = 0.25f;
 	// 減速(decelerate=ディセラレイト)
 	static constexpr float MOVE_DEC = 0.05f;
-	//判定用半径
+	// 判定用半径
 	static constexpr float MOVE_RADIUS = 2250.0f;
 	static constexpr float DASH_RADIUS = 1500.0f;
 	static constexpr float ATTRCK_RADIUS = 750.0f;
@@ -139,25 +139,30 @@ public:
 	// 攻撃関係
 	const VECTOR GetAttrckPos(void) const { return attrckPos_; }
 	const bool IsHit(void)const { return isHitCheck_; }
+
 	// エリア移動関係
 	const float GetLerpTime(void)const { return lerpTime_; }
 	const bool IsLerp(void)const { return isLerp_; }
 	const int GetLerpId(void)const { return lerpId_; }
-
-	const std::vector<std::unique_ptr<HitPart>>& GetHitParts(void) const { return hitParts_; }
-
 	void SetLerpPos(const VECTOR pos);
+
 	// LERP移動開始
 	void StartLerp(void);
+
 	// 追従対象の設定
 	void SetFollow(const Transform* follow) override;
+
 	// バトル終了
 	void SetBattleCancel(void);
+
 	// スタン状態開始
 	void StartStunned(void);
 
 	// BGM用バトル常態化の判定
 	bool IsBattle(void) const;
+
+	// 当たり判定の取得
+	const std::vector<std::unique_ptr<HitPart>>& GetHitParts(void) const { return hitParts_; }
 
 private:
 

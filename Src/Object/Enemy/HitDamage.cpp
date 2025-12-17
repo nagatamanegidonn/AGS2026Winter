@@ -59,7 +59,7 @@ void HitDamage::Draw(void)
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 * uiRate_);
 			std::wstring msg = std::to_wstring(uiDame_);
 			SetFontSize(28);
-			int len = (int)wcslen(msg.c_str());
+			int len = static_cast<int>(wcslen(msg.c_str()));
 			int width = GetDrawStringWidth(msg.c_str(), len);
 
 			// ダメージの大きさで色を変える
