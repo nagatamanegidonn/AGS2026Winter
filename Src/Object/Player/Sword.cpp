@@ -24,6 +24,8 @@
 
 #include "Sword.h"
 
+#pragma region 定数
+
 namespace
 {
 	// アニメーションリスト
@@ -47,16 +49,49 @@ namespace
 		{ static_cast<int>(Player::ANIM_TYPE::DAMAGE), L"Axe/Damage.mv1", 30.0f, 0, 0.0f, -1.0f },
 		{ static_cast<int>(Player::ANIM_TYPE::FLYING), L"Flying.mv1", 20.0f, -1, 20.0f, 0.1f },
 		{ static_cast<int>(Player::ANIM_TYPE::DOWN), L"Down.mv1", 20.0f, -1, 0.0f, -1.0f },
-		// 攻撃		//下記にスペルミスがあるから修正
+		// 攻撃		// 下記にスペルミスがあるから修正
 		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1S), L"Axe/Attrck1.mv1", 40.0f, -1, 0.0f, -1.0f },
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1STOP), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1E), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1STOP), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	//使用無し
+		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1E), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	//使用無し
 		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK2), L"Axe/Attrck2.mv1", 40.0f, -1, 12.0f, -1.0f  },
 		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK3), L"Axe/Attrck3.mv1", 40.0f, 0, 0.0f, -1.0f },
 		// 死亡
 		{ static_cast<int>(Player::ANIM_TYPE::DEAD), L"Dying.mv1", 30.0f, 0, 0.0f, -1.0f },
+		// 共通アニメーション
+		{ static_cast<int>(Player::ANIM_TYPE::GET), L"Normal/Picking Up.mv1", 55.0f, 0, 0.0f, 210.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_THROW), L"Normal/Goalie Throw.mv1", 30.0f, 0, 30.0f, 50.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_THROW_E), L"Normal/Goalie Throw.mv1", 30.0f, 0, 50.0f, 60.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_SET), L"Normal/Tender Placement.mv1", 35.0f, 0, 40.0f, 170.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_SET_E), L"Normal/Tender Placement.mv1", 35.0f, 0, 170.0f, 250.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_DRINK), L"Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f },
 	};
+
+	// アクションデータリスト
+	// 攻撃情報の設定
+	const CharaBase::ActionData ATTRCK_ATTRCK1S_DATA = { false, -1,  20.0f, 30.0f, 32.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTRCK2) };
+	const CharaBase::ActionData ATTRCK_ATTRCK2_DATA = { false, -1, 25.0f, 30.0f, 32.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTRCK3) };
+	const CharaBase::ActionData ATTRCK_ATTRCK3_DATA = { false, -1, 25.0f, 40.0f, 60.0f,0.0f,-1 };
+	// 共通データ
+	const CharaBase::ActionData FLYING_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::DOWN) };
+	const CharaBase::ActionData DOWN_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::IDLE) };
+	const CharaBase::ActionData IDLE_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,-1 };
+
+	// 武器カプセル関係
+	constexpr VECTOR WEAPON_CAPSULE_TOP = { 0.0f, 125.0f, 0.0f };
+	constexpr VECTOR WEAPON_CAPSULE_DOWN = { 0.0f, 0.0f, 0.0f };
+
+	// サウンド発生時間
+	constexpr float ATTRCK1_SE_STIME = 20.0f;
+	constexpr float ATTRCK2_SE_STIME = 25.0f;
+	constexpr float ATTRCK3_SE_STIME = 25.0f;
+	constexpr float HALF_RATE = 0.5f;
+
+	constexpr float BLEND_RATE_30 = 3.0f;
+	constexpr float BLEND_RATE_50 = 5.0f;
+	constexpr float BLEND_RATE_100 = 10.0f;
 }
+
+#pragma endregion
 
 Sword::Sword(int key) :Player(key)
 {
@@ -88,16 +123,23 @@ void Sword::InitParam(void)
 	// サブウェポン
 	// なし
 
+	// カプセルの設定
+	capsuleWeapon_ = std::make_shared<Capsule>(transWeapon_);
+	capsuleWeapon_->SetLocalPosTop(WEAPON_CAPSULE_TOP);
+	capsuleWeapon_->SetLocalPosDown(WEAPON_CAPSULE_DOWN);
+	capsuleWeapon_->SetRadius(10.0f); 
+
+	// 抜刀ダッシュの有無
 	isBattleDash_ = true;
 
+	// 攻撃情報の設定
+	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK1S), ATTRCK_ATTRCK1S_DATA);
+	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK2), ATTRCK_ATTRCK2_DATA);
+	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK3), ATTRCK_ATTRCK3_DATA);
 
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK1S), std::move(SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK2), 20.0f, 30.0f, 32.0f)));
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK2), std::move(SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK3), 25.0f, 30.0f, 32.0f)));
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK3), std::move(SetAtrckData(-1, 25.0f, 40.0f, 60.0f)));
-
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::FLYING), std::move(SetAtrckData(static_cast<int>(ANIM_TYPE::DOWN))));
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::DOWN), std::move(SetAtrckData(static_cast<int>(ANIM_TYPE::IDLE))));
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::IDLE), std::move(SetAtrckData(-1)));
+	SetAtrckData(static_cast<int>(ANIM_TYPE::FLYING), FLYING_DATA);
+	SetAtrckData(static_cast<int>(ANIM_TYPE::DOWN), DOWN_DATA);
+	SetAtrckData(static_cast<int>(ANIM_TYPE::IDLE), IDLE_DATA);
 }
 
 void Sword::InitAnimation(void)
@@ -114,29 +156,23 @@ void Sword::InitAnimation(void)
 			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);
 	}
 
-	for (const auto& anim : ANIM_LIST)
-	{
-		animationController_
-			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);
-	}
-
 	// 従来からのブレンド設定
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, BLEND_RATE_50);
 	// 冬からの新規ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, 10.0f);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, 10.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, BLEND_RATE_100);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ROLL), true);
 	// 抜刀、納刀ブレンド設定
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DRAW), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BATTLE_CLOSE), true);
 	// バトル時アニメーションブレンド設定
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, 10.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, BLEND_RATE_100);
 	// 武器持ち移動
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, 10.0f);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_FAST_RUN), true, 10.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_FAST_RUN), true, BLEND_RATE_100);
 	// ダメージ（共通）
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FLYING), true);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, 3.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_RATE_30);
 	// 攻撃
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK1S), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK2), true);
@@ -155,7 +191,6 @@ void Sword::InitEffect(void)
 	effectController_->Add(0, path + L"PowerUp/PowerUp.efkefc");
 	effectController_->Add(1, path + L"Slash/Slash.efkefc");
 	effectController_->Play(1);
-
 }
 
 void Sword::InitAttrckSound(void)
@@ -169,20 +204,20 @@ void Sword::InitAttrckSound(void)
 void Sword::PlayAttrckSound(void)
 {
 	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1S)
-		&& animationController_->GetStepTime() > 20.0f
-		&& animationController_->GetStepTime() < 20.5f)
+		&& animationController_->GetStepTime() > ATTRCK1_SE_STIME
+		&& animationController_->GetStepTime() < ATTRCK1_SE_STIME + HALF_RATE)
 	{
 		soundController_->Play(static_cast<int>(SE::ATTRCK1), Sound::TIMES::ONCE);
 	}
 	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK2)
-		&& animationController_->GetStepTime() > 25.0f
-		&& animationController_->GetStepTime() < 25.5f)
+		&& animationController_->GetStepTime() > ATTRCK2_SE_STIME
+		&& animationController_->GetStepTime() < ATTRCK2_SE_STIME + HALF_RATE)
 	{
 		soundController_->Play(static_cast<int>(SE::ATTRCK2), Sound::TIMES::ONCE);
 	}
 	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK3)
-		&& animationController_->GetStepTime() > 25.0f
-		&& animationController_->GetStepTime() < 25.5f)
+		&& animationController_->GetStepTime() > ATTRCK3_SE_STIME
+		&& animationController_->GetStepTime() < ATTRCK3_SE_STIME + HALF_RATE)
 	{
 		soundController_->Play(static_cast<int>(SE::ATTRCK3), Sound::TIMES::ONCE);
 	}

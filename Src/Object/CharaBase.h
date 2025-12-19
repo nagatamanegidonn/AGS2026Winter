@@ -24,7 +24,7 @@ public:
 	// アニメーションデータ
 	//const CharaBase::AttrckData ATTRCK_STAMP_DATA = { false, -1, 17.0f, 24.0f,-1.0f,0.0f,-1, };
 
-	struct AttrckData
+	struct ActionData
 	{
 		bool isCharge = false;	// チャージ攻撃か
 		int chargeId = -1;		// charge中のナンバー
@@ -105,7 +105,7 @@ protected:
 	void CountTime(float& time);
 
 	// 種類別のアニメーションデータ
-	std::map<int, std::unique_ptr<AttrckData>> atkData_;// アタックアニメデータ
+	std::map<int, std::unique_ptr<ActionData>> atkData_;// アタックアニメデータ
 	int attrckType_ = 0;								// アタックデータ使用ID
 
 	// 攻撃管理
@@ -125,8 +125,8 @@ protected:
 	/// <param name="isChage">操作受付終了時間</param>
 	/// <param name="chargeId">固定用アニメ</param>
 	/// <returns></returns>
-	std::unique_ptr<AttrckData> SetAtrckData(int nextAtkId, float sHitTim = -1.0f, float HitTim = -1.0f,
+	std::unique_ptr<ActionData> SetAtrckData(int nextAtkId, float sHitTim = -1.0f, float HitTim = -1.0f,
 		float sNewTime = -1.0f, bool isChage = false, int chargeId = -1);
-	void SetAtrckData(int id,const AttrckData& data);
+	void SetAtrckData(int id,const ActionData& data);
 };
 

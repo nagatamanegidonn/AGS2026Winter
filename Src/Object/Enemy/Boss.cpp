@@ -42,10 +42,10 @@ namespace
 		{static_cast<int>(Boss::ANIM_TYPE::DEAD),L"Boss.mv1", 30.0f, 13,0.0f,-1.0f},
 	};
 	// アタックデータリスト
-	const CharaBase::AttrckData ATTRCK_STAMP_DATA = { false, -1, 17.0f, 24.0f,-1.0f,0.0f,-1, };
-	const CharaBase::AttrckData ATTRCK_L_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
-	const CharaBase::AttrckData ATTRCK_R_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
-	const CharaBase::AttrckData ATTRCK_DASH_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
+	const CharaBase::ActionData ATTRCK_STAMP_DATA = { false, -1, 17.0f, 24.0f,-1.0f,0.0f,-1, };
+	const CharaBase::ActionData ATTRCK_L_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
+	const CharaBase::ActionData ATTRCK_R_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
+	const CharaBase::ActionData ATTRCK_DASH_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
 
 
 	constexpr float ROT_RATE = 3.0f;

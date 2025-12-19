@@ -27,14 +27,14 @@ namespace
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
 		// 通常アニメーション
-		{(int)SmallMonster::ANIM_TYPE::IDLE,L"SmallMonster.mv1",20.0f,0,0.0f, -1.0f},
-		{(int)SmallMonster::ANIM_TYPE::RUN,L"SmallMonster.mv1",30.0f,1,0.0f,-1.0f},
+		{static_cast<int>(SmallMonster::ANIM_TYPE::IDLE),L"SmallMonster.mv1",20.0f,0,0.0f, -1.0f},
+		{static_cast<int>(SmallMonster::ANIM_TYPE::RUN),L"SmallMonster.mv1",30.0f,1,0.0f,-1.0f},
 		// 攻撃アニメーション
-		{(int)SmallMonster::ANIM_TYPE::ATTRCK_READY,L"SmallMonster.mv1",0.3f, 3, 3.0f, 0.1f},
-		{(int)SmallMonster::ANIM_TYPE::ATTRCK,L"SmallMonster.mv1",20.0f, 2,0.0f,-1.0f},
+		{static_cast<int>(SmallMonster::ANIM_TYPE::ATTRCK_READY),L"SmallMonster.mv1",0.3f, 3, 3.0f, 0.1f},
+		{static_cast<int>(SmallMonster::ANIM_TYPE::ATTRCK),L"SmallMonster.mv1",20.0f, 2,0.0f,-1.0f},
 		// 被ダメージアニメーション
-		{(int)SmallMonster::ANIM_TYPE::DAMAGE,L"SmallMonster.mv1",15.0f, 3,0.0f,-1.0f},
-		{(int)SmallMonster::ANIM_TYPE::DEAD,L"SmallMonster.mv1",30.0f, 4,0.0f,-1.0f},
+		{static_cast<int>(SmallMonster::ANIM_TYPE::DAMAGE),L"SmallMonster.mv1",15.0f, 3,0.0f,-1.0f},
+		{static_cast<int>(SmallMonster::ANIM_TYPE::DEAD),L"SmallMonster.mv1",30.0f, 4,0.0f,-1.0f},
 	};
 
 	constexpr float HALF_RATE = 0.5f;
@@ -59,7 +59,6 @@ SmallMonster::SmallMonster(int key, int createNo)
 	stateChanges_.emplace(STATE::FOLLOW, std::bind(&SmallMonster::ChangeStateFollow, this));
 	stateChanges_.emplace(STATE::ATTRCK_READY, std::bind(&SmallMonster::ChangeStateAttrckReady, this));
 	stateChanges_.emplace(STATE::ATTRCK, std::bind(&SmallMonster::ChangeStateAttrckStamp, this));
-
 	stateChanges_.emplace(STATE::DAMAGE, std::bind(&SmallMonster::ChangeStateDamage, this));
 	stateChanges_.emplace(STATE::DEAD, std::bind(&SmallMonster::ChangeStateDead, this));
 
@@ -213,7 +212,7 @@ void SmallMonster::Update(void)
 
 
 		// 位置送信もここでOK（ProcessMove内でも呼ばれてるけど念のため）
-		nIns.SetMonsData(key_, createNo_, transform_.pos, transform_.quaRot, animeType_, (int)state_);
+		nIns.SetMonsData(key_, createNo_, transform_.pos, transform_.quaRot, animeType_, static_cast<int>(state_));
 	}
 	// 通信プレイヤーの処理
 	else
@@ -226,7 +225,7 @@ void SmallMonster::Update(void)
 		animeType_ = mons.Anim_;
 		state_ = static_cast<SmallMonster::STATE>(mons.state_);
 
-		if (animeType_ == (int)ANIM_TYPE::DEAD)
+		if (animeType_ == static_cast<int>(ANIM_TYPE::DEAD))
 		{
 			animationController_->Play(animeType_, false);
 		}
@@ -254,7 +253,7 @@ void SmallMonster::Update(void)
 
 	// アニメーション再生
 	animationController_->Update();
-	if (animationController_->IsEnd() && animeType_ == (int)ANIM_TYPE::DEAD)
+	if (animationController_->IsEnd() && animeType_ == static_cast<int>(ANIM_TYPE::DEAD))
 	{
 		ChangeState(STATE::NONE);
 	}
@@ -325,9 +324,9 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 {
 
 	auto& nIns = NetManager::GetInstance();
-	if (animeType_ == (int)ANIM_TYPE::ATTRCK)
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK))
 	{
-		attrckType_ = (int)ANIM_TYPE::ATTRCK;
+		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK);
 		attrckPos_ = VScale(VAdd(AsoUtility::MV1GetFreamPos(transform_.modelId, L"Bone002")
 			, AsoUtility::MV1GetFreamPos(transform_.modelId, L"Bone002")), HALF_RATE);
 		attrckRadius = ATTRCK_STAMP_RADIUS;
@@ -395,14 +394,14 @@ void SmallMonster::InitAnimation(void)
 			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);
 	}
 
-	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK, true, 1.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK), true, 1.0f);
 
-	animationController_->Play((int)ANIM_TYPE::RUN);
-	animeType_ = (int)ANIM_TYPE::RUN;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
+	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 	animeAgoType_ = animeType_;
 
 	//攻撃情報の設定
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK, std::move(SetAtrckData(-1, 10.0f, 14.0f)));
+	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK), std::move(SetAtrckData(-1, 10.0f, 14.0f)));
 
 }
 void SmallMonster::InitEffect(void)
@@ -441,8 +440,8 @@ void SmallMonster::ChangeStateBattle(void)
 }
 void SmallMonster::ChangeStateFollow(void)
 {
-	animationController_->Play((int)ANIM_TYPE::RUN);
-	animeType_ = (int)ANIM_TYPE::RUN;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
+	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 
 	stateUpdate_ = std::bind(&SmallMonster::UpdateFollow, this);
 }
@@ -470,11 +469,11 @@ void SmallMonster::UpdateNone(void)
 }
 void SmallMonster::UpdatePlay(void)
 {
-	animationController_->Play((int)ANIM_TYPE::RUN);
-	animeType_ = (int)ANIM_TYPE::RUN;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
+	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 
 	VECTOR axis = AsoUtility::VECTOR_ZERO;
-	axis.y = -0.5f * (createNo_ + 1);
+	axis.y = -HALF_RATE * (createNo_ + 1);
 
 	//回転
 	if (!AsoUtility::EqualsVZero(axis)) {
@@ -505,14 +504,14 @@ void SmallMonster::UpdateBattle(void)
 			rotateTimer_ = rotateInterval_; // リセット
 		}
 		// この時の回転は歩く
-		animationController_->Play((int)ANIM_TYPE::RUN);
-		animeType_ = (int)ANIM_TYPE::RUN;
+		animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
+		animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 
 	}
 	else
 	{
-		animationController_->Play((int)ANIM_TYPE::IDLE, true);
-		animeType_ = (int)ANIM_TYPE::IDLE;
+		animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+		animeType_ = static_cast<int>(ANIM_TYPE::IDLE);
 	}
 
 	// playerとの衝突判定
@@ -536,8 +535,8 @@ void SmallMonster::UpdateBattle(void)
 }
 void SmallMonster::UpdateFollow(void)
 {
-	animationController_->Play((int)ANIM_TYPE::RUN);
-	animeType_ = (int)ANIM_TYPE::RUN;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
+	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 
 	if (IsTargetInFOV(follow_->pos, FOV_RADIUS))
 	{
@@ -565,8 +564,8 @@ void SmallMonster::UpdateFollow(void)
 }
 void SmallMonster::UpdateAttrckReady(void)
 {
-	animationController_->Play((int)ANIM_TYPE::ATTRCK, false);
-	animeType_ = (int)ANIM_TYPE::ATTRCK;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK), false);
+	animeType_ = static_cast<int>(ANIM_TYPE::ATTRCK);
 
 	if (animationController_->IsEnd())
 	{
@@ -578,8 +577,8 @@ void SmallMonster::UpdateAttrckReady(void)
 }
 void SmallMonster::UpdateAttrckStamp(void)
 {
-	animationController_->Play((int)ANIM_TYPE::ATTRCK, false);
-	animeType_ = (int)ANIM_TYPE::ATTRCK;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK), false);
+	animeType_ = static_cast<int>(ANIM_TYPE::ATTRCK);
 
 	if (animationController_->IsEnd())
 	{
@@ -588,13 +587,13 @@ void SmallMonster::UpdateAttrckStamp(void)
 }
 void SmallMonster::UpdateDamage(void)
 {
-	animationController_->Play((int)ANIM_TYPE::DAMAGE, false);
-	animeType_ = (int)ANIM_TYPE::DAMAGE;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::DAMAGE), false);
+	animeType_ = static_cast<int>(ANIM_TYPE::DAMAGE);
 }
 void SmallMonster::UpdateDead(void)
 {
-	animationController_->Play((int)ANIM_TYPE::DEAD, false);
-	animeType_ = (int)ANIM_TYPE::DEAD;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::DEAD), false);
+	animeType_ = static_cast<int>(ANIM_TYPE::DEAD);
 }
 
 void SmallMonster::AttrckUpdate(void)

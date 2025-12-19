@@ -60,11 +60,13 @@ void Camera::SetBeforeDraw(void)
 		break;
 	case Camera::MODE::FOLLOW:
 		SetBeforeDrawFollow();
-		// 注視点を前方方向に設定
+		// ライト方向の設定
 		ChangeLightTypeDir(VNorm(VSub(targetPos_, pos_)));
 		break;
 	case Camera::MODE::FPS:
 		SyncFollowFPS();
+		// ライト方向の設定
+		ChangeLightTypeDir(VNorm(VSub(targetPos_, pos_)));
 		break;
 	}
 

@@ -70,7 +70,7 @@ public:
 		NONE,		
 		PLAY,		// 通常状態
 		BATTLE,		// 戦闘状態
-		WEPON,		// 抜刀、納刀
+		WEAPON,		// 抜刀、納刀
 
 		ATTRCK,		// 攻撃
 
@@ -185,7 +185,7 @@ public:
 	const bool CollisionUnderSphere(const VECTOR pos,float r)const;
 
 	const bool IsAttrck(void) const;// 通信プレイヤーのことは不明
-	const bool IsLoopAnim(void);	// 通信プレイヤー
+	const bool IsLoopAnim(void) const;	// 通信プレイヤー
 
 	bool IsSelf(void);// このプレイヤーが自身かどうか返す関数
 
@@ -302,8 +302,8 @@ protected:
 	virtual void InitParam(void);
 	virtual void InitAnimation(void);
 	virtual void InitEffect(void);
-	virtual void InitSound(void);
-	virtual void InitAttrckSound(void);
+	void InitSound(void);		// 通常サウンド
+	virtual void InitAttrckSound(void);	// 戦闘用サウンド
 	// 攻撃音再生
 	virtual void PlayAttrckSound(void);
 

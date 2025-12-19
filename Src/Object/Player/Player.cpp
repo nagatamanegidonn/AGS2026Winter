@@ -38,30 +38,7 @@ namespace
 	// アニメーションリスト
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
-		{ (int)Player::ANIM_TYPE::IDLE, L"Idle.mv1", 20.0f, -1, 0.0f, -1.0f },
-		{ (int)Player::ANIM_TYPE::RUN, L"Run.mv1", 30.0f, -1, 0.0f, -1.0f },
-		{ (int)Player::ANIM_TYPE::FAST_RUN, L"FastRun.mv1", 30.0f, -1, 0.0f, -1.0f },
-		{ (int)Player::ANIM_TYPE::ROLL, L"Sprinting Forward Roll.mv1", 45.0f, 0, 0.0f, 32.0f },
-		// 抜刀、納刀
-		{ (int)Player::ANIM_TYPE::DRAW, L"Draw Great Sword 1.mv1", 30.0f, 0, 0.0f, -1.0f},
-		{ (int)Player::ANIM_TYPE::BATTLE_DRAW, L"Draw Great Sword 2.mv1", 30.0f, 0, 0.0f, -1.0f},
-		{ (int)Player::ANIM_TYPE::CLOSE, L"Draw Great Sword 1.mv1", 30.0f, -1, 13.0f, 0.1f},
-		{ (int)Player::ANIM_TYPE::BATTLE_CLOSE, L"Draw Great Sword 2.mv1", 30.0f, -1, 24.0f, 0.1f},
-		// バトル時アニメーション
-		{ (int)Player::ANIM_TYPE::BTLLE_IDLE, L"BattleIdle.mv1", 20.0f, -1, 0.0f, -1.0f },
-		{ (int)Player::ANIM_TYPE::BTLLE_RUN, L"BattleRun.mv1", 30.0f, -1, 0.0f, -1.0f },
-		// ダメージ
-		{ (int)Player::ANIM_TYPE::DAMAGE, L"Damage.mv1", 30.0f, 0, 0.0f, 24.0f },
-		{ (int)Player::ANIM_TYPE::FLYING, L"Flying.mv1", 20.0f, -1, 20.0f, 0.1f },
-		{ (int)Player::ANIM_TYPE::DOWN, L"Down.mv1", 20.0f, -1, 0.0f, -1.0f },
-		// 攻撃
-		{ (int)Player::ANIM_TYPE::ATTRCK1S, L"Great Sword Slash (1).mv1", 20.0f, -1, 0.0f, 13.0f },
-		{ (int)Player::ANIM_TYPE::ATTRCK1STOP, L"Great Sword Slash (1).mv1", 20.0f, -1, 13.0f, 13.0f },
-		{ (int)Player::ANIM_TYPE::ATTRCK1E, L"Great Sword Slash (1).mv1", 20.0f, -1, 13.0f ,-1.0f},
-		{ (int)Player::ANIM_TYPE::ATTRCK2, L"Great Sword Slash (2).mv1", 30.0f, -1, 10.0f ,-1.0f},
-		{ (int)Player::ANIM_TYPE::ATTRCK3, L"Great Sword Casting.mv1", 40.0f, 0, 0.0f, -1.0f },
-		// 死亡
-		{ (int)Player::ANIM_TYPE::DEAD, L"Dying.mv1", 30.0f, 0, 0.0f, -1.0f },
+		
 	};
 
 	// ステータスの描画位置、サイズ
@@ -123,7 +100,6 @@ Player::Player(int key)
 	isBattle_(false),
 	isDrawWeapon_(false),
 	isCloseWeapon_(false),
-
 	hp_(0),
 	hpAgo_(0),
 	hpMax_(0),
@@ -131,11 +107,9 @@ Player::Player(int key)
 	stamina_(0.0f),
 	staminaMax_(0.0f),
 	staminaDir_(0.0f),
-
 	stateChanges_(),
 	isBattleDash_(false),
 	soundController_(nullptr),
-
 	jobImg_(-1),
 	freamImg_(-1),
 	hpImg_(-1),
@@ -143,7 +117,6 @@ Player::Player(int key)
 	hpMaskImg_(-1),
 	staFreamImg_(-1),
 	staMaskImg_(-1),
-
 	Material_(nullptr),
 	Renderer_(nullptr),
 	hpMaterial_(nullptr),
@@ -156,7 +129,6 @@ Player::Player(int key)
 	inputController_(nullptr),
 	effectController_(nullptr),
 	gameScene_(nullptr),
-	
 	chageCount_(0.0f)
 {
 	key_ = key;
@@ -166,6 +138,7 @@ Player::Player(int key)
 	effectController_ = nullptr;
 	soundController_.reset();
 	soundController_ = nullptr;
+
 	state_ = STATE::NONE;
 
 	isBattleDash_ = false;
@@ -174,7 +147,7 @@ Player::Player(int key)
 	stateChanges_.emplace(STATE::NONE, std::bind(&Player::ChangeStateNone, this));
 	stateChanges_.emplace(STATE::PLAY, std::bind(&Player::ChangeStatePlay, this));
 	stateChanges_.emplace(STATE::BATTLE, std::bind(&Player::ChangeStateBattle, this));
-	stateChanges_.emplace(STATE::WEPON, std::bind(&Player::ChangeStateWeapon, this));
+	stateChanges_.emplace(STATE::WEAPON, std::bind(&Player::ChangeStateWeapon, this));
 	stateChanges_.emplace(STATE::ATTRCK, std::bind(&Player::ChangeStateAttrck, this));
 	stateChanges_.emplace(STATE::ROWLING, std::bind(&Player::ChangeStateRowling, this));
 	stateChanges_.emplace(STATE::DAMAGE, std::bind(&Player::ChangeStateDamage, this));
@@ -257,7 +230,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 		attrckDamage_ = GREAT_SWORD_DAMAGE;
 		hp_ = hpAgo_ = hpMax_ = MAX_HP;
 		break;
-		//	弓
+		// 弓
 	case BOW_ID:
 		jobImg_ = LoadGraph((Application::PATH_IMAGE + L"Job/Arrow.png").c_str());
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
@@ -266,11 +239,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 		hp_ = hpAgo_ = hpMax_ = MAX_HP;
 		break;
 	// デフォルトは大剣
-	default:
-		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
-			ResourceManager::SRC::SWORD2));
-		attrckDamage_ = 20;
-		hp_ = hpAgo_ = hpMax_ = MAX_HP;
+	default:		
 		break;
 	}
 
@@ -310,27 +279,20 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 
 	// アニメーションの設定
 	InitAnimation();
-	animationController_->Add((int)ANIM_TYPE::GET, Application::PATH_MODEL + L"Player2/Normal/Picking Up.mv1", 55.0f, 0, 0.0f, 210.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::GET, true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::GET), true, 5.0f);
 	// 投げるモーション
-	animationController_->Add((int)ANIM_TYPE::ITEM_THROW, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 30.0f, 50.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_THROW, true, 5.0f);
-	animationController_->Add((int)ANIM_TYPE::ITEM_THROW_E, Application::PATH_MODEL + L"Player2/Normal/Goalie Throw.mv1", 30.0f, 0, 50.0f, 60.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_THROW_E, true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_THROW), true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_THROW_E), true, 5.0f);
 	// 設置するモーション
-	animationController_->Add((int)ANIM_TYPE::ITEM_SET, Application::PATH_MODEL + L"Player2/Normal/Tender Placement.mv1", 35.0f, 0, 40.0f, 170.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_SET, true, 5.0f);
-	animationController_->Add((int)ANIM_TYPE::ITEM_SET_E, Application::PATH_MODEL + L"Player2/Normal/Tender Placement.mv1", 35.0f, 0, 170.0f, 250.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_SET_E, true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_SET), true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_SET_E), true, 5.0f);
 	// 飲むモーション
-	animationController_->Add((int)ANIM_TYPE::ITEM_DRINK, Application::PATH_MODEL + L"Player2/Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ITEM_DRINK, true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_DRINK), true, 5.0f);
 
 	// エフェクトの設定
 	InitEffect();
 	// BGM.SEの設定
 	InitSound();
-	InitAttrckSound();
 
 	// コントローラーの登録
 	inputController_ = std::make_unique<InputController>(GameManager::GetInstance().GetControllId());
@@ -371,11 +333,6 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 
 	// 武器ごとのパラメータ設定
 	InitParam();
-
-	capsuleWeapon_ = std::make_shared<Capsule>(transWeapon_);
-	capsuleWeapon_->SetLocalPosTop({ 0.0f, 110.0f, 0.0f });
-	capsuleWeapon_->SetLocalPosDown({ 0.0f, -30.0f, 0.0f });
-	capsuleWeapon_->SetRadius(10.0f);
 
 	// 採取の際の情報（仮）
 	itemId_ = -1;
@@ -438,10 +395,10 @@ void Player::Update(void)
 
 		// 回避処理
 		if (inputController_->IsTriggered(InputController::KEY::ROLL) && IsInputPlay()
-			&& animeType_ != (int)ANIM_TYPE::ROLL && animeType_ != (int)ANIM_TYPE::DAMAGE
-			&& animeType_ != (int)ANIM_TYPE::GET&& animeType_ != (int)ANIM_TYPE::ITEM_DRINK
-			&& animeType_ != (int)ANIM_TYPE::ITEM_THROW
-			&& animeType_ != (int)ANIM_TYPE::ITEM_SET
+			&& animeType_ != static_cast<int>(ANIM_TYPE::ROLL) && animeType_ != static_cast<int>(ANIM_TYPE::DAMAGE)
+			&& animeType_ != static_cast<int>(ANIM_TYPE::GET) && animeType_ != static_cast<int>(ANIM_TYPE::ITEM_DRINK)
+			&& animeType_ != static_cast<int>(ANIM_TYPE::ITEM_THROW)
+			&& animeType_ != static_cast<int>(ANIM_TYPE::ITEM_SET)
 			&& state_ != STATE::HI_DAMAGE && hp_ > 0 && stamina_ > ROLL_TAF)
 		{
 			stamina_ -= ROLL_TAF;
@@ -536,7 +493,8 @@ void Player::Update(void)
 		transform_.quaRot = rot;
 
 		// チャージ処理
-		if (animeType_ == (int)ANIM_TYPE::ATTRCK1STOP)
+		if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1STOP)
+			)
 		{
 			changeAttrckTime_ += SceneManager::GetInstance().GetDeltaTime();
 		}
@@ -566,14 +524,16 @@ void Player::Update(void)
 #pragma region エフェクト処理
 
 	float rate = changeAttrckTime_ / (CHAGE_MAX_TIME / 4);
-	if (rate >= chageCount_ && animeType_ == (int)ANIM_TYPE::ATTRCK1STOP)
+	if (rate >= chageCount_ && animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1STOP)
+		)
 	{
 		effectController_->Play(0);
-		soundController_->Play((int)SE::CHAGE, Sound::TIMES::ONCE, true);
+		soundController_->Play(static_cast<int>(SE::CHAGE), Sound::TIMES::ONCE, true);
 
 		chageCount_ += 1.0f;
 	}
-	else if (animeType_ != (int)ANIM_TYPE::ATTRCK1STOP)
+	else if (animeType_ != static_cast<int>(ANIM_TYPE::ATTRCK1STOP)
+		)
 	{
 		chageCount_ = 1.0f;
 	}
@@ -581,39 +541,46 @@ void Player::Update(void)
 	effectController_->LoopUpdate(1, transWeapon_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
 	
 	// 音の再生
-	if (animeAgoType_ != (int)ANIM_TYPE::DRAW 
-		&& animeType_== (int)ANIM_TYPE::DRAW)
+	if (animeAgoType_ != static_cast<int>(ANIM_TYPE::DRAW)
+		&& animeType_== static_cast<int>(ANIM_TYPE::DRAW)
+		)
 	{
-		soundController_->Play((int)SE::DRAW, Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::DRAW), Sound::TIMES::ONCE);
 	}
-	else if (animeAgoType_ != (int)ANIM_TYPE::BATTLE_CLOSE 
-		&& animeType_== (int)ANIM_TYPE::BATTLE_CLOSE)
+	else if (animeAgoType_ != static_cast<int>(ANIM_TYPE::BATTLE_CLOSE)
+		&& animeType_== static_cast<int>(ANIM_TYPE::BATTLE_CLOSE)
+		)
 	{
-		soundController_->Play((int)SE::CLOSE, Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::CLOSE), Sound::TIMES::ONCE);
 	}
-	else if (animeAgoType_ != (int)ANIM_TYPE::DAMAGE 
-		&& animeType_== (int)ANIM_TYPE::DAMAGE)
+	else if (animeAgoType_ != static_cast<int>(ANIM_TYPE::DAMAGE)
+		&& animeType_== static_cast<int>(ANIM_TYPE::DAMAGE)
+		)
 	{
-		soundController_->Play((int)SE::DAMAGE, Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::DAMAGE), Sound::TIMES::ONCE);
 	}
-	else if (animeAgoType_ != (int)ANIM_TYPE::FLYING 
-		&& animeType_== (int)ANIM_TYPE::FLYING)
+	else if (animeAgoType_ != static_cast<int>(ANIM_TYPE::FLYING)
+		&& animeType_== static_cast<int>(ANIM_TYPE::FLYING)
+		)
 	{
-		soundController_->Play((int)SE::HI_DAMAGE, Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::HI_DAMAGE), Sound::TIMES::ONCE);
 	}
-	else if (animeAgoType_ != (int)ANIM_TYPE::DOWN 
-		&& animeType_== (int)ANIM_TYPE::DOWN)
+	else if (animeAgoType_ != static_cast<int>(ANIM_TYPE::DOWN)
+		&& animeType_== static_cast<int>(ANIM_TYPE::DOWN)
+		)
 	{
-		soundController_->Play((int)SE::DOWN, Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::DOWN), Sound::TIMES::ONCE);
 	}
-	else if (animeAgoType_ != (int)ANIM_TYPE::ROLL 
-		&& animeType_== (int)ANIM_TYPE::ROLL)
+	else if (animeAgoType_ != static_cast<int>(ANIM_TYPE::ROLL)
+		&& animeType_== static_cast<int>(ANIM_TYPE::ROLL)
+		)
 	{
-		soundController_->Play((int)SE::ROLL, Sound::TIMES::ONCE,true);
+		soundController_->Play(static_cast<int>(SE::ROLL), Sound::TIMES::ONCE,true);
 	}
 	// 弾の発射
-	else if (animeType_ == (int)ANIM_TYPE::ITEM_THROW_E
-		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_THROW_E)
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::ITEM_THROW_E)
+		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ITEM_THROW_E)
+		)
 	{
 		// フレームの取得
 		int frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:RightHand");
@@ -628,8 +595,9 @@ void Player::Update(void)
 			, posHand, transform_.GetForward(), key_);
 	}
 	// 設置の完了
-	else if (animeType_ == (int)ANIM_TYPE::ITEM_SET_E
-		&& animeAgoType_ != (int)ANIM_TYPE::ITEM_SET_E)
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::ITEM_SET_E)
+		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ITEM_SET_E)
+		)
 	{
 		gameScene_->CreateShot(ShotBase::TYPE::BOM, attrckDamage_
 			, VAdd(VAdd(transform_.pos
@@ -641,19 +609,19 @@ void Player::Update(void)
 	walkTime_ -= SceneManager::GetInstance().GetDeltaTime();
 	if (animeAgoType_ == animeType_ &&
 		walkTime_ <= 0.0f &&
-		(animeType_ == (int)ANIM_TYPE::BTLLE_RUN
-			|| animeType_ == (int)ANIM_TYPE::RUN))
+		(animeType_ == static_cast<int>(ANIM_TYPE::BTLLE_RUN)
+			|| animeType_ == static_cast<int>(ANIM_TYPE::RUN)))
 	{
 		walkTime_ = FOOT_SMOKE;
-		soundController_->Play((int)SE::WALK, Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::WALK), Sound::TIMES::ONCE);
 	}
 	else if (animeAgoType_ == animeType_ &&
 		walkTime_ <= 0.0f &&
-		( animeType_ == (int)ANIM_TYPE::BTLLE_FAST_RUN
-			|| animeType_ == (int)ANIM_TYPE::FAST_RUN))
+		( animeType_ == static_cast<int>(ANIM_TYPE::BTLLE_FAST_RUN)
+			|| animeType_ == static_cast<int>(ANIM_TYPE::FAST_RUN)))
 	{
 		walkTime_ = FAST_FOOT_SMOKE;
-		soundController_->Play((int)SE::RUN, Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::RUN), Sound::TIMES::ONCE);
 	}
 
 	// 攻撃時の音再生
@@ -666,7 +634,7 @@ void Player::Update(void)
 
 	// アニメーション再生
 	animationController_->Update();
-	if (animationController_->IsEnd() && animeType_ == (int)ANIM_TYPE::DEAD
+	if (animationController_->IsEnd() && animeType_ == static_cast<int>(ANIM_TYPE::DEAD)
 		&& gameScene_->GetDownCount() >= GameScene::MAX_DOWN_COUNT)
 	{
 		// ゲームの勝敗判定
@@ -756,7 +724,7 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 {
 	auto& nIns = NetManager::GetInstance();
 
-	if ((animationController_->GetPlayType() == (int)ANIM_TYPE::DAMAGE)
+	if ((animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::DAMAGE))
 		||state_ == STATE::HI_DAMAGE
 		||state_ == STATE::DEAD
 		|| invisibleTime_ > 0.0f)
@@ -785,7 +753,7 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 		flyigDir_ = VNorm(VAdd(flyigDir_, mixDir));
 		flyigDir_.y = 0.0f;
 
-		attrckType_ = (int)ANIM_TYPE::FLYING;
+		attrckType_ = static_cast<int>(ANIM_TYPE::FLYING);
 		ChangeState(STATE::HI_DAMAGE);
 	}
 	else
@@ -835,120 +803,43 @@ const PLAYER_TYPE& Player::GetPlayerType(void)const
 
 void Player::InitParam(void)
 {
-	// メインウェポン
-	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);
-	// 初期座標
-	transWeapon_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
-	transWeapon_.quaRot = Quaternion();
-	transWeapon_.quaRotLocal =
-		Quaternion::Euler({ AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.x), AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.y), AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.z) });
-	transWeapon_.Update();
-
-	// サブウェポン
-	// なし
-
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK1S, std::move(SetAtrckData((int)ANIM_TYPE::ATTRCK1E, -1.0f, -1.0f
-		, -1.0f, true, (int)ANIM_TYPE::ATTRCK1STOP)));
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK1E, std::move(SetAtrckData((int)ANIM_TYPE::ATTRCK2, 16.0f, 24.0f, 22.0f)));
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK2, std::move(SetAtrckData((int)ANIM_TYPE::ATTRCK3, 21.0f, 40.0f, 38.0f)));
-	atkData_.emplace((int)ANIM_TYPE::ATTRCK3, std::move(SetAtrckData(-1, 60.0f, 78.0f)));
-
-	atkData_.emplace((int)ANIM_TYPE::FLYING, std::move(SetAtrckData((int)ANIM_TYPE::DOWN)));
-	atkData_.emplace((int)ANIM_TYPE::DOWN, std::move(SetAtrckData((int)ANIM_TYPE::IDLE)));
-	atkData_.emplace((int)ANIM_TYPE::IDLE, std::move(SetAtrckData(-1)));
 }
+
 void Player::InitAnimation(void)
 {
 	std::wstring path = Application::PATH_MODEL + L"Player2/";
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
-
-	// アニメーションの登録
-	for (const auto& anim : ANIM_LIST)
-	{
-		animationController_
-			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);
-	}
-
-	// 待機のブレンド設定
-	animationController_->SetIsBlend((int)ANIM_TYPE::IDLE, true, 5.0f);
-	// 走りのブレンド設定
-	animationController_->SetIsBlend((int)ANIM_TYPE::RUN, true, 10.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::FAST_RUN, true, 10.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ROLL, true);
-	// 抜刀納刀のブレンド設定
-	animationController_->SetIsBlend((int)ANIM_TYPE::DRAW, true);
-	animationController_->SetIsBlend((int)ANIM_TYPE::BATTLE_CLOSE, true);
-	// 戦闘待機のブレンド設定
-	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_IDLE, true, 10.0f);
-	// 戦闘走りのブレンド設定
-	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_RUN, true, 10.0f);
-	animationController_->SetIsBlend((int)ANIM_TYPE::BTLLE_FAST_RUN, true, 10.0f);
-	// ダメージのブレンド設定
-	animationController_->SetIsBlend((int)ANIM_TYPE::FLYING, true);
-	animationController_->SetIsBlend((int)ANIM_TYPE::DOWN, true, 3.0f);
-	// 攻撃のブレンド設定
-	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK1S, true);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK2, true);
-	animationController_->SetIsBlend((int)ANIM_TYPE::ATTRCK3, true);
-
-	animationController_->Play((int)ANIM_TYPE::IDLE);
-	animeType_ = (int)ANIM_TYPE::IDLE;
-	animeAgoType_ = animeType_;
 }
+
 void Player::InitEffect(void)
-{
-	std::wstring path = Application::PATH_EFFECT;
-	effectController_ = std::make_unique<EffectController>();
-	// チャージアニメーション
-	effectController_->Add(0, path + L"PowerUp/PowerUp.efkefc");
-
-	effectController_->Add(1, path + L"Slash/Slash.efkefc");
-	effectController_->Play(1);
+{	
 }
+
 void Player::InitSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 	soundController_ = std::make_unique<SoundController>();
 
-	soundController_->Add((int)SE::CHAGE, path + L"Player/Chage.mp3", 1.0f);
-	soundController_->Add((int)SE::DRAW, path + L"Weapon/Draw.mp3", 0.6f);
-	soundController_->Add((int)SE::CLOSE, path + L"Weapon/Close.mp3", 0.6f);
-	soundController_->Add((int)SE::WALK, path + L"Player/Walk.mp3", 0.6f);
-	soundController_->Add((int)SE::RUN, path + L"Player/Run.mp3", 0.6f);
-	soundController_->Add((int)SE::ROLL, path + L"Player/Roll.mp3", 0.6f);
-	soundController_->Add((int)SE::DAMAGE, path + L"Player/Damage.mp3", 0.6f);
-	soundController_->Add((int)SE::HI_DAMAGE, path + L"Player/HiDamage.mp3", 0.6f);
-	soundController_->Add((int)SE::DOWN, path + L"Player/Down.mp3.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::CHAGE), path + L"Player/Chage.mp3", 1.0f);
+	soundController_->Add(static_cast<int>(SE::DRAW), path + L"Weapon/Draw.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::CLOSE), path + L"Weapon/Close.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::WALK), path + L"Player/Walk.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::RUN), path + L"Player/Run.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::ROLL), path + L"Player/Roll.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::DAMAGE), path + L"Player/Damage.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::HI_DAMAGE), path + L"Player/HiDamage.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::DOWN), path + L"Player/Down.mp3.mp3", 0.6f);
+
+	InitAttrckSound();
 }
+
 void Player::InitAttrckSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
-
-	soundController_->Add((int)SE::ATTRCK1, path + L"Player/GreatSowrd.mp3", 0.6f);
-	soundController_->Add((int)SE::ATTRCK2, path + L"Player/GreatSowrd.mp3", 0.6f);
-	soundController_->Add((int)SE::ATTRCK3, path + L"Player/GreatSowrd.mp3", 0.6f);
 }
 
 void Player::PlayAttrckSound(void)
 {
-	if (animeType_ == (int)ANIM_TYPE::ATTRCK1E
-		&& animationController_->GetStepTime() > 16.0f
-		&& animationController_->GetStepTime() < 16.5f)
-	{
-		soundController_->Play((int)SE::ATTRCK1, Sound::TIMES::ONCE);
-	}
-	else if (animeType_ == (int)ANIM_TYPE::ATTRCK2
-		&& animationController_->GetStepTime() > 21.0f
-		&& animationController_->GetStepTime() < 21.5f)
-	{
-		soundController_->Play((int)SE::ATTRCK2, Sound::TIMES::ONCE);
-	}
-	else if (animeType_ == (int)ANIM_TYPE::ATTRCK3
-		&& animationController_->GetStepTime() > 60.0f
-		&& animationController_->GetStepTime() < 60.5f)
-	{
-		soundController_->Play((int)SE::ATTRCK3, Sound::TIMES::ONCE);
-	}
 }
 
 #pragma region StateによるUpdateの切り替え
@@ -1048,7 +939,7 @@ void Player::UpdateBattle(void)
 		movePow_ = AsoUtility::VECTOR_ZERO;
 
 
-		attrckType_ = (int)ANIM_TYPE::ATTRCK1S;
+		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK1S);
 		ChangeState(STATE::ATTRCK);
 		return;
 	}
@@ -1078,8 +969,8 @@ void Player::UpdateWeapon(void)
 	{
 		if (isDrawWeapon_)
 		{
-			animationController_->Play((int)ANIM_TYPE::BATTLE_DRAW, false);
-			animeType_ = (int)ANIM_TYPE::BATTLE_DRAW;
+			animationController_->Play(static_cast<int>(ANIM_TYPE::BATTLE_DRAW), false);
+			animeType_ = static_cast<int>(ANIM_TYPE::BATTLE_DRAW);
 
 			if (animationController_->IsEnd())
 			{
@@ -1091,8 +982,8 @@ void Player::UpdateWeapon(void)
 		}
 		else if (isCloseWeapon_)
 		{
-			animationController_->Play((int)ANIM_TYPE::BATTLE_CLOSE, false);
-			animeType_ = (int)ANIM_TYPE::BATTLE_CLOSE;
+			animationController_->Play(static_cast<int>(ANIM_TYPE::BATTLE_CLOSE), false);
+			animeType_ = static_cast<int>(ANIM_TYPE::BATTLE_CLOSE);
 
 			if (animationController_->IsEnd())
 			{
@@ -1104,8 +995,8 @@ void Player::UpdateWeapon(void)
 	{
 		if (isDrawWeapon_)
 		{
-			animationController_->Play((int)ANIM_TYPE::DRAW, false);
-			animeType_ = (int)ANIM_TYPE::DRAW;
+			animationController_->Play(static_cast<int>(ANIM_TYPE::DRAW), false);
+			animeType_ = static_cast<int>(ANIM_TYPE::DRAW);
 
 			if (animationController_->IsEnd())
 			{
@@ -1121,7 +1012,7 @@ void Player::UpdateWeapon(void)
 					movePow_ = AsoUtility::VECTOR_ZERO;
 
 
-					attrckType_ = (int)ANIM_TYPE::ATTRCK1S;
+					attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK1S);
 					ChangeState(STATE::ATTRCK);
 					return;
 				}
@@ -1129,8 +1020,8 @@ void Player::UpdateWeapon(void)
 		}
 		else if (isCloseWeapon_)
 		{
-			animationController_->Play((int)ANIM_TYPE::CLOSE, false);
-			animeType_ = (int)ANIM_TYPE::CLOSE;
+			animationController_->Play(static_cast<int>(ANIM_TYPE::CLOSE), false);
+			animeType_ = static_cast<int>(ANIM_TYPE::CLOSE);
 
 			if (animationController_->IsEnd())
 			{
@@ -1236,8 +1127,8 @@ void Player::UpdateHiDamage(void)
 void Player::UpdateDead(void)
 {
 	isBattle_ = false;
-	animationController_->Play((int)ANIM_TYPE::DEAD, false);
-	animeType_ = (int)ANIM_TYPE::DEAD;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::DEAD), false);
+	animeType_ = static_cast<int>(ANIM_TYPE::DEAD);
 
 	if (animationController_->IsEnd())
 	{
@@ -1280,13 +1171,13 @@ void Player::UpdateItemUse(void)
 	// 使用アイテムが投擲アイテムなら
 	else if (poach_->IsSelectedItemName(L"攻撃"))
 	{
-		if (animeType_ != (int)ANIM_TYPE::ITEM_THROW_E)
+		if (animeType_ != static_cast<int>(ANIM_TYPE::ITEM_THROW_E))
 		{
-			animationController_->Play((int)ANIM_TYPE::ITEM_THROW, false);
-			animeType_ = (int)ANIM_TYPE::ITEM_THROW;
+			animationController_->Play(static_cast<int>(ANIM_TYPE::ITEM_THROW), false);
+			animeType_ = static_cast<int>(ANIM_TYPE::ITEM_THROW);
 			if (animationController_->IsEnd())
 			{
-				animeType_ = (int)ANIM_TYPE::ITEM_THROW_E;
+				animeType_ = static_cast<int>(ANIM_TYPE::ITEM_THROW_E);
 			}
 		}
 		else
@@ -1297,13 +1188,13 @@ void Player::UpdateItemUse(void)
 	// 使用アイテムが投擲アイテムなら
 	else if (poach_->IsSelectedItemName(L"設置"))
 	{
-		if (animeType_ != (int)ANIM_TYPE::ITEM_SET_E)
+		if (animeType_ != static_cast<int>(ANIM_TYPE::ITEM_SET_E))
 		{
-			animationController_->Play((int)ANIM_TYPE::ITEM_SET, false);
-			animeType_ = (int)ANIM_TYPE::ITEM_SET;
+			animationController_->Play(static_cast<int>(ANIM_TYPE::ITEM_SET), false);
+			animeType_ = static_cast<int>(ANIM_TYPE::ITEM_SET);
 			if (animationController_->IsEnd())
 			{
-				animeType_ = (int)ANIM_TYPE::ITEM_SET_E;
+				animeType_ = static_cast<int>(ANIM_TYPE::ITEM_SET_E);
 			}
 		}
 		else
@@ -1331,8 +1222,6 @@ void Player::UseItem(void)
 	// アイテム使用処理
 	poach_->UseSelectedItem();
 }
-
-
 
 #pragma region 移動関係
 
@@ -1365,7 +1254,7 @@ void Player::ProcessNormal(void)
 			movePow_ = AsoUtility::VECTOR_ZERO;// 抜刀時移動しない（帰るなら戻す）
 
 			isDrawWeapon_ = true;
-			ChangeState(STATE::WEPON);
+			ChangeState(STATE::WEAPON);
 			return;
 		}
 		// 採取判定
@@ -1434,13 +1323,13 @@ void Player::ProcessNormal(void)
 				// アニメーション
 				if (isDash)
 				{
-					animationController_->Play((int)ANIM_TYPE::FAST_RUN);
-					animeType_ = (int)ANIM_TYPE::FAST_RUN;
+					animationController_->Play(static_cast<int>(ANIM_TYPE::FAST_RUN));
+					animeType_ = static_cast<int>(ANIM_TYPE::FAST_RUN);
 				}
 				else
 				{
-					animationController_->Play((int)ANIM_TYPE::RUN);
-					animeType_ = (int)ANIM_TYPE::RUN;
+					animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
+					animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 				}
 			}
 		}
@@ -1448,8 +1337,8 @@ void Player::ProcessNormal(void)
 		{
 			if (IsEndLanding())
 			{
-				animationController_->Play((int)ANIM_TYPE::IDLE);
-				animeType_ = (int)ANIM_TYPE::IDLE;
+				animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE));
+				animeType_ = static_cast<int>(ANIM_TYPE::IDLE);
 			}
 		}
 	}
@@ -1486,7 +1375,7 @@ void Player::ProcessBattle(void)
 		if (inputController_->IsTriggered(InputController::KEY::CLOSE))
 		{
 			isCloseWeapon_ = true;
-			ChangeState(STATE::WEPON);
+			ChangeState(STATE::WEAPON);
 			movePow_ = AsoUtility::VECTOR_ZERO;// 納刀時移動しない（帰るなら戻す）
 
 			return;
@@ -1522,13 +1411,13 @@ void Player::ProcessBattle(void)
 				// アニメーション
 				if (isDash)
 				{
-					animationController_->Play((int)ANIM_TYPE::BTLLE_FAST_RUN);
-					animeType_ = (int)ANIM_TYPE::BTLLE_FAST_RUN;
+					animationController_->Play(static_cast<int>(ANIM_TYPE::BTLLE_FAST_RUN));
+					animeType_ = static_cast<int>(ANIM_TYPE::BTLLE_FAST_RUN);
 				}
 				else
 				{
-					animationController_->Play((int)ANIM_TYPE::BTLLE_RUN);
-					animeType_ = (int)ANIM_TYPE::BTLLE_RUN;
+					animationController_->Play(static_cast<int>(ANIM_TYPE::BTLLE_RUN));
+					animeType_ = static_cast<int>(ANIM_TYPE::BTLLE_RUN);
 				}
 			}
 		}
@@ -1536,8 +1425,8 @@ void Player::ProcessBattle(void)
 		{
 			if (IsEndLanding())
 			{
-				animationController_->Play((int)ANIM_TYPE::BTLLE_IDLE);
-				animeType_ = (int)ANIM_TYPE::BTLLE_IDLE;
+				animationController_->Play(static_cast<int>(ANIM_TYPE::BTLLE_IDLE));
+				animeType_ = static_cast<int>(ANIM_TYPE::BTLLE_IDLE);
 			}
 		}
 	}
@@ -1884,24 +1773,23 @@ const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 
 #pragma endregion
 
-
 // 攻撃状態の判定
 const bool Player::IsAttrck(void)const
 {
 	return(state_ == STATE::ATTRCK);
 }
-const bool Player::IsLoopAnim(void)
+const bool Player::IsLoopAnim(void) const
 {
-	if (animeType_ == (int)ANIM_TYPE::ATTRCK1S ||
-		animeType_ == (int)ANIM_TYPE::ATTRCK1STOP ||
-		animeType_ == (int)ANIM_TYPE::ATTRCK1E ||
-		animeType_ == (int)ANIM_TYPE::ATTRCK2 ||
-		animeType_ == (int)ANIM_TYPE::ATTRCK3 ||
-		animeType_ == (int)ANIM_TYPE::BATTLE_CLOSE ||
-		animeType_ == (int)ANIM_TYPE::BATTLE_DRAW ||
-		animeType_ == (int)ANIM_TYPE::CLOSE ||
-		animeType_ == (int)ANIM_TYPE::DRAW ||
-		animeType_ == (int)ANIM_TYPE::DEAD
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1S) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1STOP) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1E) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK2) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK3) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::BATTLE_CLOSE) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::BATTLE_DRAW) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::CLOSE) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::DRAW) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::DEAD)
 		)
 	{
 		return true;
@@ -1935,9 +1823,9 @@ bool Player::IsTrgAimSet(void)
 
 bool Player::IsSyncAttrck(void)
 {
-	return (animationController_->GetPlayType() == (int)ANIM_TYPE::ATTRCK1E
-		|| animationController_->GetPlayType() == (int)ANIM_TYPE::ATTRCK2
-		|| animationController_->GetPlayType() == (int)ANIM_TYPE::ATTRCK3		
+	return (animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTRCK1E)
+		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTRCK2)
+		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTRCK3)
 		);
 }
 
@@ -1947,11 +1835,11 @@ bool Player::IsEndLanding(void)
 	bool ret = true;
 	return ret;
 	// アニメーションがジャンプではない
-	if (animationController_->GetPlayType() != (int)ANIM_TYPE::ATTRCK1S)
+	if (animationController_->GetPlayType() != static_cast<int>(ANIM_TYPE::ATTRCK1S))
 	{
 		return ret;
 	}
-	if (animationController_->GetPlayType() != (int)ANIM_TYPE::ATTRCK1S)
+	if (animationController_->GetPlayType() != static_cast<int>(ANIM_TYPE::ATTRCK1S))
 	{
 		return ret;
 	}
@@ -1986,8 +1874,8 @@ void Player::AttrckReset(void)
 // 特定のアニメーションが終わったらIdleに戻す処理
 void Player::ChangeStateAnimeEnd(const ANIM_TYPE anim, const std::function<void(void)> function)
 {
-	animationController_->Play((int)anim, false);
-	animeType_ = (int)anim;
+	animationController_->Play(static_cast<int>(anim), false);
+	animeType_ = static_cast<int>(anim);
 
 	if (animationController_->IsEnd())
 	{
@@ -2036,7 +1924,7 @@ void Player::AttrckUpdate(void)
 	animationController_->Play(attrckType_, false);
 
 	// 操作を受け付けるか
-	if (animationController_->GetStepTime() > atkData_[attrckType_]->sNewTime 
+	if (animationController_->GetStepTime() > atkData_[attrckType_]->sNewTime
 		&& atkData_[attrckType_]->sNewTime > 0.0f)
 	{
 		if (inputController_->IsTriggered(InputController::KEY::ATTRCK)
@@ -2049,7 +1937,7 @@ void Player::AttrckUpdate(void)
 			return;
 		}
 		else if (inputController_->IsTriggered(InputController::KEY::ROLL)
-			&&stamina_> ROLL_TAF)
+			&& stamina_ > ROLL_TAF)
 		{
 			stamina_ -= ROLL_TAF;
 			isHitCheck_ = false;
@@ -2108,7 +1996,6 @@ void Player::AttrckUpdate(void)
 				if (rate >= 4)rate = 0.5f;
 				attrckRate_ = 1.0f + (rate * 0.3f);
 
-				
 				attrckType_ = atkData_[attrckType_]->nextAttrck;
 				animeType_ = attrckType_;
 
@@ -2117,8 +2004,8 @@ void Player::AttrckUpdate(void)
 		}
 		else// アニメーションが終わってチャージ処理もないなら終了
 		{
-			animationController_->Play((int)ANIM_TYPE::BTLLE_IDLE);
-			animeType_ = (int)ANIM_TYPE::BTLLE_IDLE;
+			animationController_->Play(static_cast<int>(ANIM_TYPE::BTLLE_IDLE));
+			animeType_ = static_cast<int>(ANIM_TYPE::BTLLE_IDLE);
 
 			changeAttrckTime_ = 0.0f;
 			ChangeState(STATE::BATTLE);

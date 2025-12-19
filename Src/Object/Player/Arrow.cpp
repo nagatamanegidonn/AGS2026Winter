@@ -24,6 +24,8 @@
 
 #include "Arrow.h"
 
+#pragma region 定数
+
 namespace
 {
 	const VECTOR START_POS = VECTOR{ 0.0f, -30.0f, 0.0f };
@@ -59,18 +61,31 @@ namespace
 		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK3), L"Attrck3.mv1", 30.0f, 0, 0.0f, -1.0f },
 		// 死亡
 		{ static_cast<int>(Player::ANIM_TYPE::DEAD), L"Dying.mv1",30.0f, 0, 0.0f, -1.0f },
+		// 共通アニメーション
+		{ static_cast<int>(Player::ANIM_TYPE::GET), L"Normal/Picking Up.mv1", 55.0f, 0, 0.0f, 210.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_THROW), L"Normal/Goalie Throw.mv1", 30.0f, 0, 30.0f, 50.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_THROW_E), L"Normal/Goalie Throw.mv1", 30.0f, 0, 50.0f, 60.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_SET), L"Normal/Tender Placement.mv1", 35.0f, 0, 40.0f, 170.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_SET_E), L"Normal/Tender Placement.mv1", 35.0f, 0, 170.0f, 250.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ITEM_DRINK), L"Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f },
 	};
-	// アタックデータリスト
+
+	// アクションデータリスト
 	// 攻撃情報の設定
-	const CharaBase::AttrckData ATTRCK_ATTRCK1S_DATA
+	const CharaBase::ActionData ATTRCK_ATTRCK1S_DATA
 		= { true, static_cast<int>(Player::ANIM_TYPE::ATTRCK1STOP), -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTRCK1E) };
-	const CharaBase::AttrckData ATTRCK_ATTRCK1E_DATA = { false, -1, -1.0f, -1.0f,4.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTRCK1S), };
+	const CharaBase::ActionData ATTRCK_ATTRCK1E_DATA = { false, -1, -1.0f, -1.0f,4.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTRCK1S), };
+	// 共通データ
+	const CharaBase::ActionData FLYING_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::DOWN) };
+	const CharaBase::ActionData DOWN_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::IDLE) };
+	const CharaBase::ActionData IDLE_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,-1 };
 
-	const CharaBase::AttrckData FLYING_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::DOWN) };
-	const CharaBase::AttrckData DOWN_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::IDLE) };
-	const CharaBase::AttrckData IDLE_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,-1 };
-
+	constexpr float BLEND_RATE_30 = 3.0f;
+	constexpr float BLEND_RATE_50 = 5.0f;
+	constexpr float BLEND_RATE_100 = 10.0f;
 }
+
+#pragma endregion
 
 Arrow::Arrow(int key) :Player(key)
 {
@@ -107,16 +122,14 @@ void Arrow::InitParam(void)
 	transSubWeapon_.quaRotLocal = Quaternion();
 	transSubWeapon_.Update();
 
-	isBattleDash_ = false;
+	// カプセルの設定
+	capsuleWeapon_ = std::make_shared<Capsule>(transWeapon_);
+	capsuleWeapon_->SetLocalPosTop({ 0.0f, 110.0f, 0.0f });
+	capsuleWeapon_->SetLocalPosDown({ 0.0f, -30.0f, 0.0f });
+	capsuleWeapon_->SetRadius(10.0f);
 
-	// 攻撃情報の設定
-	/*atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK1S), std::move(SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK1E), -1.0f, -1.0f
-		, -1.0f, true, static_cast<int>(ANIM_TYPE::ATTRCK1STOP))));
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK1E), std::move(SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK1S), -1.0f, -1.0f, 4.0f)));
-	
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::FLYING), std::move(SetAtrckData(static_cast<int>(ANIM_TYPE::DOWN))));
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::DOWN), std::move(SetAtrckData(static_cast<int>(ANIM_TYPE::IDLE))));
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::IDLE), std::move(SetAtrckData(-1)));*/
+	// 抜刀ダッシュの有無
+	isBattleDash_ = false;
 
 	// 攻撃情報の設定
 	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK1S), ATTRCK_ATTRCK1S_DATA);
@@ -140,21 +153,21 @@ void Arrow::InitAnimation(void)
 	}
 
 	// 待機ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, BLEND_RATE_50);
 	// 冬からの新規ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, 10.0f);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, 10.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, BLEND_RATE_100);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ROLL), true);
 	// 抜刀、納刀ブレンド
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DRAW), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BATTLE_CLOSE), true);
 	// 戦闘時待機ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, 10.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, BLEND_RATE_100);
 	// 武器持ち移動ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, 10.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, BLEND_RATE_100);
 	// ダメージブレンド
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FLYING), true);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, 3.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_RATE_30);
 	// 攻撃ブレンド
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK1S), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK2), true);
@@ -172,7 +185,6 @@ void Arrow::InitEffect(void)
 	effectController_->Add(0, path + L"PowerUp/PowerUp.efkefc");
 	effectController_->Add(1, path + L"Slash/Slash.efkefc");
 	effectController_->Play(1);
-
 }
 
 void Arrow::InitAttrckSound(void)
@@ -210,7 +222,6 @@ void Arrow::PlayAttrckSound(void)
 	{
 		soundController_->Play(static_cast<int>(SE::ATTRCK1), Sound::TIMES::ONCE);
 	}
-	
 }
 
 void Arrow::DrawWeapon()

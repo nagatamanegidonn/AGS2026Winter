@@ -1,3 +1,4 @@
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\GreatSword.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\GreatSword.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Manager\GameManager.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\GameManager.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Shot\BomObject.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\BomObject.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Item\RecoveryItem.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\RecoveryItem.obj
@@ -13,7 +14,7 @@ D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Item\ItemBase.cpp;D:\Users\231601
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\Arrow.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\Arrow.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Shot\ShotBase.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\ShotBase.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Common\SoundController.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\SoundController.obj
-D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\GreatSword.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\GreatSword.obj
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Player\Sword.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\Sword.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Common\EffectController.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\EffectController.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Manager\Sound.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\Sound.obj
 D:\Users\2316013\Desktop\AGS2026冬\Src\Manager\SoundManager.cpp;D:\Users\2316013\Desktop\AGS2026冬\BaseProject\x64\Debug\SoundManager.obj

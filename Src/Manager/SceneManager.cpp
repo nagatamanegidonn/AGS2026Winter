@@ -91,7 +91,6 @@ void SceneManager::Init3D(void)
 	ChangeLightTypeDir({ 0.3f, -0.7f, 0.8f });
 	//ChangeLightTypePoint({ 0.0f, -100.0f, 0.0f },20000.0f, 0.0f, 0.0006f, 0.0f);
 
-
 	// ÉtÉHÉOê›íË
 	SetFogEnable(true);
 	SetFogColor(5, 5, 5);

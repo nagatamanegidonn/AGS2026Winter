@@ -1,7 +1,8 @@
-﻿  Arrow.cpp
+﻿  GreatSword.cpp
   コード生成しています。
-  Previous IPDB not found, fall back to full compilation.
-  All 7377 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  92 of 7411 functions ( 1.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    88 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
 EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj) : warning LNK4099: PDB 'EffekseerForDXLib_vs2019_x64.pdb' が 'EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj)' で、または 'D:\Users\2316013\Desktop\AGS2026冬\x64\Release\EffekseerForDXLib_vs2019_x64.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
   BaseProject.vcxproj -> D:\Users\2316013\Desktop\AGS2026冬\x64\Release\BaseProject.exe

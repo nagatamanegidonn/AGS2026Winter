@@ -18,6 +18,7 @@
 
 #include "../Object/Player/Player.h"
 #include "../Object/Player/Sword.h"
+#include "../Object/Player/GreatSword.h"
 #include "../Object/Player/Arrow.h"
 
 #include "../Object/Shot/BomObject.h"
@@ -133,7 +134,7 @@ void GameScene::Init(void)
 			player = std::make_shared<Sword>(user.first);
 			break;
 		case 1:
-			player = std::make_shared<Player>(user.first);
+			player = std::make_shared<GreatSword>(user.first);
 			break;
 		case 2:
 			player = std::make_shared<Arrow>(user.first);
