@@ -76,6 +76,10 @@ namespace
 	const CharaBase::ActionData FLYING_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::DOWN) };
 	const CharaBase::ActionData DOWN_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::IDLE) };
 	const CharaBase::ActionData IDLE_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,-1 };
+	
+	// 武器カプセル関係
+	constexpr VECTOR WEAPON_CAPSULE_TOP = { 0.0f, 200.0f, 0.0f };
+	constexpr VECTOR WEAPON_CAPSULE_DOWN = { 0.0f, 10.0f, 0.0f };
 
 	// サウンド発生時間
 	constexpr float ATTRCK1_SE_STIME = 16.0f;
@@ -122,8 +126,8 @@ void GreatSword::InitParam(void)
 
 	// カプセルの設定
 	capsuleWeapon_ = std::make_shared<Capsule>(transWeapon_);
-	capsuleWeapon_->SetLocalPosTop({ 0.0f, 200.0f, 0.0f });
-	capsuleWeapon_->SetLocalPosDown({ 0.0f, 10.0f, 0.0f });
+	capsuleWeapon_->SetLocalPosTop(WEAPON_CAPSULE_TOP);
+	capsuleWeapon_->SetLocalPosDown(WEAPON_CAPSULE_DOWN);
 	capsuleWeapon_->SetRadius(10.0f);
 
 	// 抜刀ダッシュの有無

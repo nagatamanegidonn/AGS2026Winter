@@ -938,7 +938,6 @@ void Player::UpdateBattle(void)
 		isHitCheck_ = false;
 		movePow_ = AsoUtility::VECTOR_ZERO;
 
-
 		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK1S);
 		ChangeState(STATE::ATTRCK);
 		return;
