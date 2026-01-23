@@ -159,6 +159,12 @@ Player::Player(int key)
 	walkTime_ = 0.0f;
 
 	attrckDamage_ = 0;
+
+
+	for (int i = 0; i < static_cast<int>(ANIM_TYPE::RUN); i++)
+	{
+		atkData_.emplace(i, SetAtrckData(-1));
+	}
 }
 
 Player::~Player(void)

@@ -1,8 +1,11 @@
-﻿  GreatSword.cpp
+﻿  Boss.cpp
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\Boss.cpp(161,24): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\Boss.cpp(412,29): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+D:\Users\2316013\Desktop\AGS2026冬\Src\Object\Enemy\Boss.cpp(412,21): warning C4244: '初期化中': 'float' から 'const int' への変換です。データが失われる可能性があります。
   コード生成しています。
-  92 of 7411 functions ( 1.2%) were compiled, the rest were copied from previous compilation.
+  11 of 7411 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    88 functions had inline decision re-evaluated but remain unchanged
+    12 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
 EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj) : warning LNK4099: PDB 'EffekseerForDXLib_vs2019_x64.pdb' が 'EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj)' で、または 'D:\Users\2316013\Desktop\AGS2026冬\x64\Release\EffekseerForDXLib_vs2019_x64.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
   BaseProject.vcxproj -> D:\Users\2316013\Desktop\AGS2026冬\x64\Release\BaseProject.exe
