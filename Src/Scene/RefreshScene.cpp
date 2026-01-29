@@ -56,7 +56,7 @@ void RefreshScene::Update(void)
 	// ƒV[ƒ“‚Ö‘JˆÚ
 	SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);
 	
-
+	SetMouseDispFlag(true);
 }
 
 void RefreshScene::Draw(void)

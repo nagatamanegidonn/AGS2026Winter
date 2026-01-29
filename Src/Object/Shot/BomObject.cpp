@@ -1,6 +1,8 @@
 #include "BomObject.h"
 #include "../../Manager/ResourceManager.h"
 #include "../Common/Collider/Capsule.h"
+#include "../../Application.h"
+#include "../Common/EffectController.h" // ★この行を追加
 
 BomObject::BomObject(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key)
 	:ShotBase(damage, birthPos, shotVec, key)
@@ -20,6 +22,11 @@ BomObject::BomObject(int damage, const VECTOR& birthPos, const VECTOR& shotVec, 
 	type_ = TYPE::BOM;
 
 	SetParam();
+
+	std::wstring path = Application::PATH_EFFECT;
+	effectController_ = std::make_unique<EffectController>();
+
+	effectController_->Add(0, path + L"Fire/Fire.efkefc");
 }
 
 BomObject::~BomObject(void)
@@ -41,6 +48,9 @@ void BomObject::Update(void)
 	case ShotBase::STATE::END:
 		break;
 	}
+
+	effectController_->Update(0);
+
 	// モデル制御の基本情報更新
 	transform_.Update();
 }
@@ -70,6 +80,8 @@ void BomObject::UpdateShot(void)
 	if (timeAlive_ <= 0.0f)
 	{
 		radius_ = 30.0f;
+		effectController_->Play(0, transform_.pos, { 0.0f,0.0f,0.0f }, 100.0f);
+
 	}
 	if (state_ != STATE::SHOT)
 	{

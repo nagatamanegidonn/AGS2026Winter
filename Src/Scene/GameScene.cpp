@@ -208,6 +208,9 @@ void GameScene::Init(void)
 	Material_->AddTextureBuf(playerHandle_);
 	Renderer_ = std::make_unique<PixelRenderer>(*Material_);
 	Renderer_->SetSize(Vector2(MAP_SIZE, MAP_SIZE));
+
+	SetMouseDispFlag(false);
+
 }
 
 void GameScene::Update(void)
@@ -711,23 +714,27 @@ void GameScene::Collision(void)
 		// 矢の処理
 		if (shot->GetType() == ShotBase::TYPE::ARROW)
 		{
-			// --- ボスとの判定 ---
-			if (boss_->CollisionCapsule(shot->GetCapsule())
-				&& shot->IsShot())
+			if (shot->IsShot())
 			{
-				if (boss_->IsState(Boss::STATE::PLAY))
+				// --- ボスとの判定 ---
+				if (boss_->CollisionCapsule(shot->GetCapsule()))
 				{
-					boss_->SetFollow(&players_.front()->GetTransform());
+					if (boss_->IsState(Boss::STATE::PLAY))
+					{
+						boss_->SetFollow(&players_.front()->GetTransform());
+					}
+					ShotHitEnemy(*shot, *boss_);
 				}
-				ShotHitEnemy(*shot, *boss_);
-			}
 
-			// --- 小型モンスターとの判定 ---
-			for (auto& mons : Monsters_)
-			{
-				if (mons->CollisionCapsule(shot->GetCapsule()))
+				// --- 小型モンスターとの判定 ---
+				for (auto& mons : Monsters_)
 				{
-					ShotHitEnemy(*shot, *mons);
+					if (mons->CollisionCapsule(shot->GetCapsule())
+						&& !mons->IsState(SmallMonster::STATE::END)
+						&& !mons->IsState(SmallMonster::STATE::NONE))
+					{
+						ShotHitEnemy(*shot, *mons);
+					}
 				}
 			}
 		}
@@ -847,6 +854,7 @@ void GameScene::ShotHitEnemy(ShotBase& shot, EnemyBase& enemy)
 
 	for (auto& player : players_)
 	{
+		// 弾の所有者と自分と同じならダメージ処理
 		if (shot.GetKey() == nIns.GetSelf().key && shot.GetKey() == player->GetKey())
 		{
 			// 音・カメラ・ダメージ

@@ -188,15 +188,12 @@ void Camera::ChangeMode(MODE mode)
 	case Camera::MODE::FIXED_POINT:
 		// ƒJƒƒ‰‚Ì‰Šúİ’è
 		SetDefault();
-		SetMouseDispFlag(true);
 		break;
 	case Camera::MODE::FPS:
 		break;
 	case Camera::MODE::FOLLOW:
-		SetMouseDispFlag(true);
 		break;
 	case Camera::MODE::SELF_SHOTD:
-		SetMouseDispFlag(true);
 		break;
 	}
 

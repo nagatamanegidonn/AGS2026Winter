@@ -1,6 +1,8 @@
 #pragma once
 #include "ShotBase.h"
 
+class EffectController;
+
 class BomObject :
     public ShotBase
 {
@@ -14,6 +16,8 @@ public:
     void Update(void) override;
 
 protected:
+
+    std::unique_ptr<EffectController> effectController_;
 
     // ƒpƒ‰ƒ[ƒ^‚Ìİ’è
     void SetParam(void)override;
