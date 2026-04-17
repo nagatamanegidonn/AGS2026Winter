@@ -9,17 +9,17 @@ namespace
 	constexpr int WEAK_DAMAGE = 20;
 }
 
-HitDamage::HitDamage(int& model, std::string boneName, int damage) :parModel_(model)
+HitDamage::HitDamage(int& model, std::string boneName, int damage)
+	:
+	parModel_(model),
+	boneName_(boneName),
+	state_(STATE::PLAY),
+	uiPos_(AsoUtility::VECTOR_ZERO),
+	uiRate_(1.0f),
+	uiDame_(damage),
+	randPosX_((rand() % RAND_RATE) - (RAND_RATE / 2)),
+	randPosY_((rand() % RAND_RATE) - (RAND_RATE / 2))
 {
-	boneName_ = boneName;
-
-	state_ = STATE::PLAY;
-	uiPos_ = AsoUtility::VECTOR_ZERO;
-	uiRate_ = 1.0f;
-	uiDame_ = damage;
-
-	randPosX_ = (rand() % RAND_RATE) - (RAND_RATE / 2);
-	randPosY_ = (rand() % RAND_RATE) - (RAND_RATE / 2);
 }
 
 HitDamage::~HitDamage(void)

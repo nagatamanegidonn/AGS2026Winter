@@ -9,9 +9,13 @@
 #define PAD_INPUT_RSTICK_RIGHT   (0x80000000)
 
 InputController::InputController(int padType)
-    :padType_(padType)
-{
-    inputTable_ =
+    :
+    padType_(padType),
+	rightX(0),
+	rightY(0),
+	currentInput_(),
+	lastInput_(),
+    inputTable_(
     {
         {KEY::OK,
             {
@@ -149,8 +153,8 @@ InputController::InputController(int padType)
                 {PeripheralType::GAME_PAD_INS,(int)InputManager::JOYPAD_BTN::LEFT}, //Aボタン
             }
         },
-    };
-
+    })
+{
     //デッドゾーンの設定
     SetJoypadDeadZone(padType_, 0.35);
 

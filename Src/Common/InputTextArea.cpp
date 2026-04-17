@@ -2,13 +2,14 @@
 #include "../Manager/InputTextManager.h"
 #include "InputTextArea.h"
 
-InputTextArea::InputTextArea(Vector2 pos, Vector2 size, int length) 
-	: manager_(InputTextManager::GetInstance())
+InputTextArea::InputTextArea(const Vector2 pos, const Vector2 size, int length) 
+	: manager_(InputTextManager::GetInstance()),
+	pos_(pos), 
+	size_(size), 
+	length_(length)
 {
-	pos_ = pos;
-	size_ = size;
-	length_ = length;
 	keyInputHandle_ = -1;
+	buffer_[0] = '\0';
 
 	// 入力タイプはオーバーライドして変えると良いです
 	//keyInputHandle_ = MakeKeyInput(length_, false, true, true);
@@ -78,12 +79,12 @@ int InputTextArea::GetKeyHandle(void)
 	return keyInputHandle_;
 }
 
-std::wstring InputTextArea::GetText(void)
+const std::wstring& InputTextArea::GetText(void)
 {
 	return text_;
 }
 
-void InputTextArea::SetText(std::wstring text)
+void InputTextArea::SetText(const std::wstring& text)
 {
 	text_ = text;
 }

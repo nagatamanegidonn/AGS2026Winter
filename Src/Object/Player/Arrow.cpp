@@ -35,6 +35,7 @@ namespace
 	// アニメーションリスト
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
+		// 通常アニメーション
 		{ static_cast<int>(Player::ANIM_TYPE::IDLE), L"Axe/Idle.mv1", 20.0f, -1, 0.0f, -1.0f },
 		{ static_cast<int>(Player::ANIM_TYPE::RUN), L"Run.mv1", 30.0f, -1, 0.0f, -1.0f },
 		{ static_cast<int>(Player::ANIM_TYPE::FAST_RUN), L"FastRun.mv1", 30.0f, -1, 0.0f, -1.0f },
@@ -239,17 +240,15 @@ void Arrow::DrawWeapon()
 
 void Arrow::SyncWeaponPlay()
 {
-#pragma region 武器の同期＿非戦闘時
+	// 武器の同期＿非戦闘時
 
 	// メインウェポン（背中）
 	SyncWeaponToFream(L"mixamorig:Spine", BOW_SPINE_ROT, BOW_SPINE_POS,
 		transform_, transWeapon_);
-
-#pragma endregion
 }
 void Arrow::SyncWeaponBattle()
 {
-#pragma region 武器の同期（戦闘時）
+	// 武器の同期（戦闘時）
 
 	// メインウェポン（左手）
 	SyncWeaponToFream(L"mixamorig:LeftHandMiddle1", BOW_LHAND_ROT, BOW_LHAND_POS,
@@ -258,7 +257,5 @@ void Arrow::SyncWeaponBattle()
 	// サブウェポン（右手）
 	SyncWeaponToFream(L"mixamorig:RightHand", ARROW_RHAND_ROT, ARROW_RHAND_POS,
 		transform_, transSubWeapon_);
-
-#pragma endregion
 }
 

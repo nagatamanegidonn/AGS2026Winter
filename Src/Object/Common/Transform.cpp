@@ -3,39 +3,35 @@
 #include "Transform.h"
 
 Transform::Transform(void)
+	:
+	modelId(-1),
+	scl(AsoUtility::VECTOR_ONE),
+	rot(AsoUtility::VECTOR_ZERO),
+	pos(AsoUtility::VECTOR_ZERO),
+	localPos(AsoUtility::VECTOR_ZERO),
+	matScl(MGetIdent()),
+	matRot(MGetIdent()),
+	matPos(MGetIdent()),
+	quaRot(Quaternion()),
+	quaRotLocal(Quaternion()),
+	collider(nullptr)
 {
-	modelId = -1;
-
-	scl = AsoUtility::VECTOR_ONE;
-	rot = AsoUtility::VECTOR_ZERO;
-	pos = AsoUtility::VECTOR_ZERO;
-	localPos = AsoUtility::VECTOR_ZERO;
-
-	matScl = MGetIdent();
-	matRot = MGetIdent();
-	matPos = MGetIdent();
-	quaRot = Quaternion();
-	quaRotLocal = Quaternion();
-
-	collider = nullptr;
 }
 
 Transform::Transform(int model)
+	:
+	modelId(model),
+	scl(AsoUtility::VECTOR_ONE),
+	rot(AsoUtility::VECTOR_ZERO),
+	pos(AsoUtility::VECTOR_ZERO),
+	localPos(AsoUtility::VECTOR_ZERO),
+	matScl(MGetIdent()),
+	matRot(MGetIdent()),
+	matPos(MGetIdent()),
+	quaRot(Quaternion()),
+	quaRotLocal(Quaternion()),
+	collider(nullptr)
 {
-	modelId = model;
-
-	scl = AsoUtility::VECTOR_ONE;
-	rot = AsoUtility::VECTOR_ZERO;
-	pos = AsoUtility::VECTOR_ZERO;
-	localPos = AsoUtility::VECTOR_ZERO;
-
-	matScl = MGetIdent();
-	matRot = MGetIdent();
-	matPos = MGetIdent();
-	quaRot = Quaternion();
-	quaRotLocal = Quaternion();
-
-	collider = nullptr;
 }
 
 Transform::~Transform(void)

@@ -163,7 +163,7 @@ bool ItemPoach::IsSelectedItemName(const std::wstring& _name) const
 	return false;*/
 }
 
-bool ItemPoach::IsSelectedItem(ItemBase _item) const
+bool ItemPoach::IsSelectedItem(const ItemBase& _item) const
 {
 	// アイテムが無ければ終了
 	if (ItemList_.empty()) return false;

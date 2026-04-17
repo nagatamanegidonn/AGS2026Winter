@@ -9,10 +9,10 @@
 ItemBase::ItemBase(std::wstring _name)
 	:
 	selectId_(-1),
+	itemImage_(-1),
+	name_(_name),	// アイテム名を設定
 	count_(1)
 {
-	// アイテム名を設定
-	name_ = _name;
 
 	// アイテム名に応じて画像を読み込む
 	if (name_ == L"攻撃") {
@@ -58,7 +58,7 @@ void ItemBase::Release(void)
 {
 }
 
-bool ItemBase::IsSameItem(const ItemBase _item) const
+bool ItemBase::IsSameItem(const ItemBase& _item) const
 {
 	return typeid(*this) == typeid(_item);
 }

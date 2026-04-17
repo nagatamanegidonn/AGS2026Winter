@@ -2,11 +2,14 @@
 #include "../Transform.h"
 #include "Capsule.h"
 
-Capsule::Capsule(const Transform& parent) : transformParent_(parent)
+Capsule::Capsule(const Transform& parent) 
+	: 
+	transformParent_(parent),
+	localPosTop_({ 0.0f, 0.0f, 0.0f }),
+	localPosDown_({ 0.0f, 0.0f, 0.0f }),
+	radius_(0.0f)
+
 {
-	radius_ = 0.0f;
-	localPosTop_ = { 0.0f, 0.0f, 0.0f };
-	localPosDown_ = { 0.0f, 0.0f, 0.0f };
 }
 
 Capsule::Capsule(const Capsule& base, const Transform& parent) : transformParent_(parent)

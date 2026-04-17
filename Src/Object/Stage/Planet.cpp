@@ -89,11 +89,11 @@ void Planet::SetRotation(const Quaternion& rot)
 	transform_.Update();
 }
 
-std::weak_ptr<Planet::Area> Planet::GetArea(int areaId) const
+const std::weak_ptr<Planet::Area>& Planet::GetArea(int areaId) const
 {
 	return stageArea_.at(areaId);
 }
-std::map<int, std::shared_ptr<Planet::Area>> Planet::GetArea(void) const
+const std::map<int, std::shared_ptr<Planet::Area>>& Planet::GetArea(void) const
 {
 	return stageArea_;
 }

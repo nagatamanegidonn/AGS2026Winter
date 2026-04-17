@@ -32,10 +32,7 @@ private:
 
 	// コンストラクタ
 	InputTextManager(void);
-
-	// コピーコンストラクタ
-	InputTextManager(const InputTextManager& ins);
-
+	
 	// デストラクタ
 	~InputTextManager(void);
 

@@ -6,6 +6,10 @@
 #include "ViewPlayer.h"
 
 ViewPlayer::ViewPlayer()
+	:
+	animationController_(nullptr),
+	weponId_(-1),
+	updateWeapon_(nullptr)
 {
 }
 

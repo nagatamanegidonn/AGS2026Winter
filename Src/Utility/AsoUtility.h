@@ -124,7 +124,7 @@ public:
 	/// <param name="modelId">モデルのハンドルID</param>
 	/// <param name="freamName">フレームの名前</param>
 	/// <returns>フレーム座標</returns>
-	static VECTOR MV1GetFreamPos(const int& modelId, const std::wstring freamName);
+	static VECTOR MV1GetFreamPos(const int& modelId, const std::wstring& freamName);
 
 	static float LerpAngle(float from, float to, float t);
 

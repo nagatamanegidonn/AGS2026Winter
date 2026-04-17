@@ -107,10 +107,11 @@ void Measure::Reset(void)
 }
 
 Measure::Measure(void)
+	:
+	mTotalTime(0.0),
+	mCntTotalFrame(0),
+	mInitTime(std::chrono::system_clock::now()) // Ç±Ç±Ç…í«â¡ÅI
 {
-	mInitTime = std::chrono::system_clock::now();
-	mCntTotalFrame = 0;
-	mTotalTime = 0.0;
 }
 
 Measure::~Measure(void)

@@ -2,12 +2,13 @@
 #include "../../Utility/AsoUtility.h"
 
 
-HitPart::HitPart(int& model, std::wstring boneName, float rad, float rate) : parModel_(model)
+HitPart::HitPart(int& model, std::wstring boneName, float rad, float rate) 
+	: 
+	parModel_(model),
+	boneName_(boneName),
+	radius_(rad),
+	damageRate_(rate)
 {
-	boneName_ = boneName;
-	radius_ = rad;
-	damageRate_ = rate;
-
 	pos_ = AsoUtility::MV1GetFreamPos(parModel_, boneName_);
 }
 

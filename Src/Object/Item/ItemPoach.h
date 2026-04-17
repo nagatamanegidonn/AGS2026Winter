@@ -29,7 +29,7 @@ public:
 
 	// 選択中のアイテムが引数の名前かどうか
 	bool IsSelectedItemName(const std::wstring& _name) const;
-	bool IsSelectedItem(ItemBase _item) const;
+	bool IsSelectedItem(const ItemBase& _item) const;
 
 private:
 

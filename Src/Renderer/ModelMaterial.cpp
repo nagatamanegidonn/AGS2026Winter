@@ -81,15 +81,9 @@ void ModelMaterial::SetConstBufPS(int idx, const FLOAT4& contBuf)
 
 void ModelMaterial::SetTextureBuf(int slot, int texDiffuse)
 {
-
-	if (textures_.count(slot) == 0)
-	{
-		textures_.emplace(slot, texDiffuse);
-	}
-	else
-	{
-		textures_[slot] = texDiffuse;
-	}
+	//  C++17以降であれば
+	// 「なければ挿入、あれば上書き」をこれ1回で実行
+	textures_.insert_or_assign(slot, texDiffuse);
 
 }
 

@@ -82,10 +82,6 @@ InputTextManager::InputTextManager(void)
 	inputTextArea_ = nullptr;
 }
 
-InputTextManager::InputTextManager(const InputTextManager& ins)
-{
-}
-
 InputTextManager::~InputTextManager(void)
 {
 }

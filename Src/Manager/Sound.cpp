@@ -1,31 +1,31 @@
 #include "Sound.h"
 
 Sound::Sound(void)
+	:
+	soundType_(TYPE::NONE),
+	path_(L""),
+	handleId_(-1),
+	pos_({ 0.0f,0.0f,0.0f }),
+	radius_(0.0f),		
+	maxVolume_(255),	// 音の最大音量
+	pauseTime_(0),		// 停止時の再生位置（ミリ秒）
+	isPaused_(false)	// 一時停止状態
 {
-	soundType_ = TYPE::NONE;
-	path_ = L"";
-
-	handleId_ = -1;
-	pos_ = { 0.0f,0.0f,0.0f };
-	radius_ = 0.0f;
-	maxVolume_ = 255;
-
-	pauseTime_ = 0; // 停止時の再生位置（ミリ秒）
-	isPaused_ = false;
+	
 }
 
 Sound::Sound(TYPE type, const std::wstring& path)
+	:
+	soundType_(type),
+	path_(path),
+	handleId_(-1),
+	pos_({ 0.0f,0.0f,0.0f }),
+	radius_(0.0f),
+	maxVolume_(255),	// 音の最大音量
+	pauseTime_(0),		// 停止時の再生位置（ミリ秒）
+	isPaused_(false)	// 一時停止状態
 {
-	soundType_ = type;
-	path_ = path;
-
-	handleId_ = -1;
-	pos_ = { 0.0f,0.0f,0.0f };
-	radius_ = 0.0f;
-	maxVolume_ = 255;
-
-	pauseTime_ = 0; // 停止時の再生位置（ミリ秒）
-	isPaused_ = false;
+	
 }
 
 Sound::~Sound(void)

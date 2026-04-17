@@ -189,8 +189,12 @@ bool InputManager::IsTrgMouseRight(void) const
 }
 
 InputManager::InputManager(void)
+	:
+	mouseInput_(-1),
+	infoEmpty_{},       // 全メンバをゼロ/false初期化
+	mouseInfoEmpty_{},  // 同上
+	padInfos_{}         // 配列全体を初期化
 {
-	mouseInput_ = -1;
 }
 
 const InputManager::Info& InputManager::Find(int key) const

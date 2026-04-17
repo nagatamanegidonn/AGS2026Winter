@@ -553,7 +553,7 @@ void AsoUtility::DrawLineXYZ(const VECTOR& pos, const Quaternion& rot, float len
 
 }
 
-VECTOR AsoUtility::MV1GetFreamPos(const int& modelId, const std::wstring freamName)
+VECTOR AsoUtility::MV1GetFreamPos(const int& modelId, const std::wstring& freamName)
 {
     auto frmNo = MV1SearchFrame(modelId, freamName.c_str());
     // プレイヤーの手の位置

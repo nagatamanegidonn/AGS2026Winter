@@ -27,7 +27,7 @@ public:
 	int GetCount(void) const { return count_; }
 
 	// 同じ派生クラスかどうかを判定するメソッド
-	virtual bool IsSameItem(const ItemBase _item) const;
+	virtual bool IsSameItem(const ItemBase& _item) const;
 	virtual bool IsSameName(const ItemBase& other) const {
 		return name_ == other.name_; // 同じアイテムかどうか
 	}

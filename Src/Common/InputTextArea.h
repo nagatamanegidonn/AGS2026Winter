@@ -15,7 +15,7 @@ public:
 	const int COLOR_CHAR = 0xffffff;
 	const int COLOR_FRAME = 0xffffff;
 
-	InputTextArea(Vector2 pos, Vector2 size, int length);
+	InputTextArea(const Vector2 pos, const Vector2 size, int length);
 	~InputTextArea(void);
 
 	// 更新ステップ
@@ -31,8 +31,8 @@ public:
 	int GetKeyHandle(void);
 
 	// テキストをセット
-	std::wstring GetText(void);
-	void SetText(std::wstring text);
+	const std::wstring& GetText(void);
+	void SetText(const std::wstring& text);
 
 	// 入力内容をセット
 	void SetKeyInputStringBuffer(void);
