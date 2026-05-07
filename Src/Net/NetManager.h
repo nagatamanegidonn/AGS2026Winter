@@ -183,14 +183,13 @@ public:
 	// ホストのポート番号取得
 	int GetHostPort(void) const;
 
-	// ※※※アクション設定
+	// アクション設定
 	void ResetAction(void);
 
 	unsigned int GetFrameNo(void) const;
 
-	//void MakeActionHis(int frameNo, NET_ACTION action);
 	void MakeActionHis(NET_ACTION action);
-
+	
 	bool IsSync(void);
 
 	void ResetSync(void);
@@ -235,7 +234,6 @@ private:
 
 	// ホストのIPアドレス
 	IPDATA hostIp_ = { 127, 0, 0, 1 };
-	//IPDATA hostIp_ = { 192, 168, 11, 21 };
 
 #pragma endregion
 

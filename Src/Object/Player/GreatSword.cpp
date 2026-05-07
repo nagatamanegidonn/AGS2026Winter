@@ -94,7 +94,9 @@ namespace
 
 #pragma endregion
 
-GreatSword::GreatSword(int key) :Player(key)
+GreatSword::GreatSword(int key) 
+	:
+	Player(key)
 {
 }
 

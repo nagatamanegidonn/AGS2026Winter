@@ -88,7 +88,9 @@ namespace
 
 #pragma endregion
 
-Arrow::Arrow(int key) :Player(key)
+Arrow::Arrow(int key) 
+	:
+	Player(key)
 {
 }
 

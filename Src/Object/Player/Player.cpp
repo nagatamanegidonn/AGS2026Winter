@@ -64,15 +64,16 @@ namespace
 	constexpr VECTOR START_POS = { 1200.0f,0.0f,-5000.0f };
 
 	// ゲージ関連
-	constexpr int GAGE_X_BASE_OFFSET = 60; // ゲージの基準X座標
-	constexpr int GAGE_X_ALIGN_OFFSET = 40; // ゲージの追加Xオフセット (アイコン幅など)
-	constexpr int GAGE_Y_BASE_OFFSET = 60; // ゲージの基準Y座標 (画面上部からの距離)
-	constexpr int GAGE_Y_HALF_GAP = 2; // HPとSTAの間の隙間を計算するためのオフセット
+	constexpr int GAGE_X_BASE_OFFSET = 60;	 // ゲージの基準X座標
+	constexpr int GAGE_X_ALIGN_OFFSET = 40;	 // ゲージの追加Xオフセット (アイコン幅など)
+	constexpr int GAGE_Y_BASE_OFFSET = 60;	 // ゲージの基準Y座標 (画面上部からの距離)
+	constexpr int GAGE_Y_HALF_GAP = 2;		 // HPとSTAの間の隙間を計算するためのオフセット
 
 	// HP,スタミナ表示位置
 	constexpr int GAGE_POS_X = GAGE_X_BASE_OFFSET + GAGE_X_ALIGN_OFFSET + HP_SIZE_X / 2;
 	constexpr int GAGE_POS_Y = GAGE_Y_BASE_OFFSET - GAGE_Y_HALF_GAP - HP_SIZE_Y / 2;
 	constexpr int STA_POS_Y = GAGE_Y_BASE_OFFSET + GAGE_Y_HALF_GAP + HP_SIZE_Y / 2;
+
 }
 
 
@@ -86,7 +87,7 @@ MATRIX GetFrameGlobalMatrix(int modelHandle, int frameIndex) {
 	}
 
 	MATRIX parentMat = GetFrameGlobalMatrix(modelHandle, parentIndex);
-	return MMult(localMat, parentMat); // ※ DxLibの行列乗算
+	return MMult(localMat, parentMat); // DxLibの行列乗算
 }
 
 Player::Player(int key)
@@ -217,7 +218,7 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	staFreamImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/staFream.png").c_str());
 	staMaskImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/staMask.png").c_str());
 
-	// モデルの基本設定//武器の設定
+	// モデルの基本設定_武器
 	switch (nIns.GetWeapon(key_))
 	{
 		// 剣
@@ -255,33 +256,8 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 	staminaDir_ = 1.0f;
 	isBreak_ = false;
 
-	// ステータスUI
-	Material_ = std::make_unique<PixelMaterial>(L"PlayerStatus.cso", 2);
-	Material_->AddConstBuf({ 0.3f, 0.7f, 0.5f, 0.05f });// ステータス位置(左上)サイズ
-	Material_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });	
-	Material_->AddTextureBuf(freamImg_);
-	Material_->AddTextureBuf(hpImg_);
-	Material_->AddTextureBuf(jobImg_);
-	Renderer_ = std::make_unique<PixelRenderer>(*Material_);
-	Renderer_->SetSize(Vector2(PRAM_SIZE_X, PRAM_SIZE_Y));
-
-	// HP_UI
-	hpMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
-	hpMaterial_->AddConstBuf({ 0.0f, 1.0f, 0.0f, 1.0f });// HP位置(左上)サイズ
-	hpMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
-	hpMaterial_->AddTextureBuf(hpFreamImg_);
-	hpMaterial_->AddTextureBuf(hpMaskImg_);
-	hpRenderer_ = std::make_unique<PixelRenderer>(*hpMaterial_);
-	hpRenderer_->SetSize(Vector2(HP_SIZE_X, HP_SIZE_Y));
-
-	// スタミナ_UI
-	staMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
-	staMaterial_->AddConstBuf({ 1.0f, 0.9f,0.0f,  1.0f });// スタミナ位置(左上)サイズ
-	staMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
-	staMaterial_->AddTextureBuf(staFreamImg_);
-	staMaterial_->AddTextureBuf(staMaskImg_);
-	staRenderer_ = std::make_unique<PixelRenderer>(*staMaterial_);
-	staRenderer_->SetSize(Vector2(HP_SIZE_X, HP_SIZE_Y));
+	// シェーダーの初期化
+	InitShader();
 
 	// アニメーションの設定
 	InitAnimation();
@@ -842,6 +818,38 @@ void Player::InitSound(void)
 void Player::InitAttrckSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
+}
+
+void Player::InitShader(void)
+{
+	// ステータスUI
+	Material_ = std::make_unique<PixelMaterial>(L"PlayerStatus.cso", 2);
+	Material_->AddConstBuf({ 0.3f, 0.7f, 0.5f, 0.05f });// ステータス位置(左上)サイズ
+	Material_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
+	Material_->AddTextureBuf(freamImg_);
+	Material_->AddTextureBuf(hpImg_);
+	Material_->AddTextureBuf(jobImg_);
+	Renderer_ = std::make_unique<PixelRenderer>(*Material_);
+	Renderer_->SetSize(Vector2(PRAM_SIZE_X, PRAM_SIZE_Y));
+
+	// HP_UI
+	hpMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
+	hpMaterial_->AddConstBuf({ 0.0f, 1.0f, 0.0f, 1.0f });// HP位置(左上)サイズ
+	hpMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
+	hpMaterial_->AddTextureBuf(hpFreamImg_);
+	hpMaterial_->AddTextureBuf(hpMaskImg_);
+	hpRenderer_ = std::make_unique<PixelRenderer>(*hpMaterial_);
+	hpRenderer_->SetSize(Vector2(HP_SIZE_X, HP_SIZE_Y));
+
+	// スタミナ_UI
+	staMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
+	staMaterial_->AddConstBuf({ 1.0f, 0.9f,0.0f,  1.0f });// スタミナ位置(左上)サイズ
+	staMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
+	staMaterial_->AddTextureBuf(staFreamImg_);
+	staMaterial_->AddTextureBuf(staMaskImg_);
+	staRenderer_ = std::make_unique<PixelRenderer>(*staMaterial_);
+	staRenderer_->SetSize(Vector2(HP_SIZE_X, HP_SIZE_Y));
+
 }
 
 void Player::PlayAttrckSound(void)
@@ -1498,10 +1506,11 @@ void Player::DrawWeapon()
 	MV1DrawModel(transWeapon_.modelId);
 }
 // 武器の同期
+#pragma region 武器の同期
 const void Player::SyncWeapon()
 {
 	auto& nIns = NetManager::GetInstance();
-#pragma region 武器の同期
+
 
 	if (key_ == nIns.GetSelf().key) {
 		if (isBattle_)
@@ -1524,29 +1533,20 @@ const void Player::SyncWeapon()
 			SyncWeaponPlay();
 		}
 	}
-
-#pragma endregion
 }
 void Player::SyncWeaponPlay()
 {
-#pragma region 武器の同期＿非戦闘時
-
 	// メインウェポン（腰）
 	SyncWeaponToFream(L"mixamorig:Spine2", GSOWRD_SPINE_ROT, GSOWRD_SPINE_POS,
 		transform_, transWeapon_);
-
-#pragma endregion
 }
 void Player::SyncWeaponBattle()
 {
-#pragma region 武器の同期（戦闘時）
-
 	// メインウェポン（右手）
 	SyncWeaponToFream(L"mixamorig:RightHandMiddle1", GSOWRD_HAND_ROT, GSOWRD_HAND_POS,
 		transform_, transWeapon_);
-
-#pragma endregion
 }
+#pragma endregion
 
 // オブジェクトのフレーム追従♭
 const void Player::SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offsetRot, const VECTOR& offsetPos,
@@ -1763,17 +1763,16 @@ bool Player::CollisionCapsule(int& modelId)const
 }
 const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 {
+	bool ret = false;
+
 	// playerとの衝突判定
 	VECTOR diff = VSub(transform_.pos, pos);
 
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
-	if (disPow < capsule_->GetRadius() * r)// ダメージ半径×攻撃半径
-	{
-		return true;
-	}
+	ret = (disPow < capsule_->GetRadius() * r);// ダメージ半径×攻撃半径
 
-	return false;
+	return ret;
 }
 
 #pragma endregion
@@ -1803,7 +1802,7 @@ const bool Player::IsLoopAnim(void) const
 	return false;
 }
 
-bool Player::IsSelf(void)
+const bool Player::IsSelf(void) const
 {
 	auto& nIns = NetManager::GetInstance();
 

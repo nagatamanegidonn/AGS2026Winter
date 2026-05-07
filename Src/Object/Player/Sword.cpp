@@ -93,7 +93,9 @@ namespace
 
 #pragma endregion
 
-Sword::Sword(int key) :Player(key)
+Sword::Sword(int key) 
+	:
+	Player(key)
 {
 }
 

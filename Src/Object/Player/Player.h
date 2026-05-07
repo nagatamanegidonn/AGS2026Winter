@@ -164,9 +164,8 @@ public:
 
 	// 座標の取得
 	const Transform& GetTransWeapon(void) const { return transWeapon_; }
-
+	// ユーザー番号の取得
 	const int GetKey(void) const { return key_; }
-
 	// ＨＰの取得
 	const int GetHp(void) const { return hp_; }
 	// ダメージ関係
@@ -176,6 +175,7 @@ public:
 	const bool GetHit(void) const;
 	const void SetHit(bool flag);
 
+	// カプセルの取得
 	std::weak_ptr<Capsule> GetCapsule(void);
 
 	// プレイヤー種別(1P or 2P)
@@ -187,7 +187,8 @@ public:
 	const bool IsAttrck(void) const;// 通信プレイヤーのことは不明
 	const bool IsLoopAnim(void) const;	// 通信プレイヤー
 
-	bool IsSelf(void);// このプレイヤーが自身かどうか返す関数
+	// 自身のプレイヤーかどうか
+	const bool IsSelf(void) const;
 
 	// 注目するか
 	bool IsAimSet(void);
@@ -304,6 +305,7 @@ protected:
 	virtual void InitEffect(void);
 	void InitSound(void);		// 通常サウンド
 	virtual void InitAttrckSound(void);	// 戦闘用サウンド
+	virtual void InitShader(void);	// シェーダー初期化
 	// 攻撃音再生
 	virtual void PlayAttrckSound(void);
 

@@ -240,7 +240,7 @@ void AnimationController::Update(void)
 			// ブレンド終了時に playAnim_ に確定させる
 			playAnim_.attachNo = blend_.toAttachNo;
 
-			// ※再生アニメーションタイプを更新（Playの変更許可に必要）
+			// 再生アニメーションタイプを更新（Playの変更許可に必要）
 			playType_ = playAnim_.animIndex;
 
 			blend_.data.pop_front();  // 古いものから削除
@@ -253,7 +253,7 @@ void AnimationController::Update(void)
 			MV1DetachAnim(modelId_, blend_.data.front().fromAttachNo);
 
 			blend_.data.pop_front();  // 古いものから削除
-			// ※再生アニメーションタイプを更新（Playの変更許可に必要）
+			// 再生アニメーションタイプを更新（Playの変更許可に必要）
 			//playType_ = playAnim_.animIndex;
 		}
 

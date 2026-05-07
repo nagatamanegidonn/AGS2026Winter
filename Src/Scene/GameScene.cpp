@@ -638,6 +638,11 @@ void GameScene::Collision(void)
 		// ¬Œ^‚Ìˆ—
 		for (auto& mons : Monsters_)
 		{
+			if (mons->IsState(SmallMonster::STATE::END)
+				|| mons->IsState(SmallMonster::STATE::NONE))
+			{
+				continue;
+			}
 			if (mons->CollisionCapsule(player->GetCapsule())
 				&& player->IsAttrck() && player->IsHit() && player->IsSelf())
 			{
@@ -729,6 +734,11 @@ void GameScene::Collision(void)
 				// --- ¬Œ^ƒ‚ƒ“ƒXƒ^[‚Æ‚Ì”»’è ---
 				for (auto& mons : Monsters_)
 				{
+					if (mons->IsState(SmallMonster::STATE::END)
+						|| mons->IsState(SmallMonster::STATE::NONE))
+					{
+						continue;
+					}
 					if (mons->CollisionCapsule(shot->GetCapsule())
 						&& !mons->IsState(SmallMonster::STATE::END)
 						&& !mons->IsState(SmallMonster::STATE::NONE))
