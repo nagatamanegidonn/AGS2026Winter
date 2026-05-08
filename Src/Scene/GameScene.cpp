@@ -306,7 +306,7 @@ void GameScene::Update(void)
 			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
 		}
 
-		//“¯‚¶ƒGƒŠƒA‚É‚¢‚È‚¢‚È‚ç–³Ž‹
+		// “¯‚¶ƒGƒŠƒA‚É‚¢‚È‚¢‚È‚ç–³Ž‹
 		if (player->GetAreaId() != boss_->GetAreaId())
 		{
 			continue;
@@ -408,15 +408,11 @@ void GameScene::Update(void)
 		mons->Update();
 	}
 
-
 	// ’ÊM‚ð‘—‚é
 	NetManager::GetInstance().Send(NET_DATA_TYPE::ACTION_HIS_ALL);
 
 	// Õ“Ë”»’è
 	Collision();
-
-
-
 
 	// ƒQ[ƒ€‚ÌŸ”s”»’è
 	GameManager::GAME_RESULT result = GameManager::GAME_RESULT::NONE;
@@ -453,7 +449,7 @@ void GameScene::Update(void)
 
 void GameScene::Draw(void)
 {
-	//”wŒiAƒXƒe[ƒW‚Ì•`‰æ
+	// ”wŒiAƒXƒe[ƒW‚Ì•`‰æ
 	skyDome_->Draw();
 	stage_->Draw();
 
@@ -469,7 +465,7 @@ void GameScene::Draw(void)
 	auto& nIns = NetManager::GetInstance();
 
 
-	//ƒ{ƒX‚Ì•`‰æ]
+	// ƒ{ƒX‚Ì•`‰æ
 	boss_->Draw();
 	for (auto& mons : Monsters_)
 	{
@@ -608,22 +604,7 @@ void GameScene::Collision(void)
 		// ŽQÆŒ^—v‰ü‘P
 		int model = player->GetTransWeapon().modelId;
 
-		// –¡•û‚Ö‚ÌUŒ‚”»’èi–¢ŽÀ‘•j
-		for (auto& playerVS : players_)
-		{
-			if (player == playerVS)
-			{
-				continue;
-			}
-
-			if (playerVS->CollisionCapsule(model) && player->IsAttrck())
-			{
-				//playerVS->Damage(3);
-			}
-		}
-
-
-		// ÅI“I‚Éƒ{ƒX‚ÌUŒ‚”»’è//Ž©•ª‚¾‚¯
+		// ÅI“I‚Éƒ{ƒX‚ÌUŒ‚”»’è // Ž©•ª‚¾‚¯
 		if (boss_->CollisionCapsule(player->GetCapsule())
 			&& player->IsAttrck() && player->IsHit() && player->IsSelf())
 		{

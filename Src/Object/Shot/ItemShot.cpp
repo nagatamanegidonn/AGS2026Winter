@@ -44,11 +44,12 @@ void ItemShot::Update(void)
 
 void ItemShot::SetParam(void)
 {
+	// 移動スピード
 	speed_ = 15.0f;
 	// 生存時間
 	// 生存フラグ、時間の初期化
 	timeAlive_ = 0.5f;
-	
+	// 判定半径
 	radius_ = 30.0f;
 }
 

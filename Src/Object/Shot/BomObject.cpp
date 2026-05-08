@@ -57,13 +57,14 @@ void BomObject::Update(void)
 
 void BomObject::SetParam(void)
 {
+	// 移動スピード
 	speed_ = 15.0f;
 	// 生存時間
 	// 生存フラグ、時間の初期化
 	timeAlive_ = 10.5f;
-
+	// 判定半径
 	radius_ = 60.0f;
-
+	// ダメージ
 	damage_ = 100;
 }
 
@@ -88,13 +89,6 @@ void BomObject::UpdateShot(void)
 		// 処理中断
 		return;
 	}
-
-	// 多少下に飛ばす
-	//if (shotVec_.y > -1.0f)shotVec_.y += -0.02f;
-
-	// 移動処理
-	/*VECTOR velocity = VScale(shotVec_, speed_);
-	transform_.pos = VAdd(transform_.pos, velocity);*/
 }
 void BomObject::UpdateBlast(void)
 {

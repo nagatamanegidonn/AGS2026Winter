@@ -49,11 +49,11 @@ void NetManager::Run(NET_MODE mode)
 	int port = 0;
 	switch (mode_)
 	{
-	case NET_MODE::HOST://モードがホストなら
+	case NET_MODE::HOST:	// モードがホストなら
 		instance_->net_ = new NetHost(*instance_);
 		port = RECEIVE_PORT_HOST;
 		break;
-	case NET_MODE::CLIENT://モードがクライアントなら
+	case NET_MODE::CLIENT:	// モードがクライアントなら
 		instance_->net_ = new NetClient(*instance_);
 		port = RECEIVE_PORT_CLIENT_RANGE + GetRand(899);
 		break;
@@ -94,9 +94,10 @@ void NetManager::Run(NET_MODE mode)
 
 void NetManager::Init(void)
 {
-	Stop(); // 万が一前回のセッションが生きてたら止める
+	// 万が一前回のセッションが生きてたら止める
+	Stop(); 
 
-   // ソケット・ユーザー情報などを初期化
+    // ソケット・ユーザー情報などを初期化
 	if (instance_ != nullptr)
 	{
 		instance_ = new NetManager();
@@ -114,7 +115,8 @@ void NetManager::Update(void)
 		return;
 	}
 
-	if (isSync_)//ゲーム通信中なら
+	// ゲーム通信中なら
+	if (isSync_)
 	{
 
 		// TODO 完全同期になっているので、ある程度非同期でも実行できるようにしたい
@@ -342,7 +344,6 @@ void NetManager::UdpReceiveThread(void)
 
 void NetManager::UdpReceiveData(void)
 {
-
 	const int SIZE_BASIC = sizeof(NET_BASIC_DATA);
 
 	for (int i = 0; i < NetManager::MAX_RECEIVE_NUM; i++)
@@ -375,6 +376,7 @@ void NetManager::UdpReceiveData(void)
 			NET_BASIC_DATA data = GetBasicData(bufptr);
 			bufptr += SIZE_BASIC;
 
+			// 通信データのサイズチェックと内容反映
 			switch (data.type)
 			{
 			case NET_DATA_TYPE::USER:
@@ -491,7 +493,7 @@ void NetManager::ReplaceUser(NET_JOIN_USER entity)
 {
 	auto& users = poolShare_.joinUsers_;
 
-	//
+	// 該当ユーザが存在しないなら新規追加、存在するなら更新
 	if (users.find(entity.key) == users.end())
 	{
 		// 新規追加
@@ -503,15 +505,6 @@ void NetManager::ReplaceUser(NET_JOIN_USER entity)
 	{
 
 		auto& current = users[entity.key];
-
-
-		//ここHostしか通ってない気がする
-#ifdef _DEBUG
-		/*printfDx("[受信] key: %d | 旧位置: %.2f, %.2f → 新位置: %.2f, %.2f\n",
-			entity.key,
-			poolShare_.joinUserActionHis_[entity.key].selfPostion_.x, poolShare_.joinUserActionHis_[entity.key].selfPostion_.y,
-			pool_.joinUserActionHis_[entity.key].selfPostion_.x, pool_.joinUserActionHis_[entity.key].selfPostion_.y);*/
-#endif // DEBUG
 
 		if (current.gameState <= entity.gameState)
 		{
@@ -552,9 +545,7 @@ void NetManager::ReplaceUsers(NET_JOIN_USERS entities)
 		{
 			poolShare_.hostJoinUser_ = user;
 		}
-
 	}
-
 }
 
 IPDATA NetManager::GetHostIp(void) const
@@ -584,11 +575,6 @@ GAME_STATE NetManager::GetGameStateSelf(void) const
 // 接続ユーザーのStateがあっているのか
 bool NetManager::IsSameGameState(GAME_STATE state)
 {
-	// 一人だけなら常に一致とみなす
-	/*if (pool_.joinUsers_.size() <= 1)
-	{
-		return true;
-	}*/
 
 	if (pool_.joinUsers_.size() == 0)
 	{
@@ -653,10 +639,9 @@ bool NetManager::IsSync(void)
 // 通信をやめてタイトルへ
 void NetManager::ResetSync(void)
 {
-	isSync_ = false; // 同期解除 or 状態遷移など
-	NetManager::GetInstance().Stop();
-	SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);
-
+	isSync_ = false;					// 同期解除 or 状態遷移など
+	NetManager::GetInstance().Stop();	// 通信停止
+	SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);// タイトルへ
 }
 
 void NetManager::SetAction(PLAYER_ACTION act)
@@ -833,8 +818,6 @@ bool NetManager::IsSameFrameNo(void)
 	}
 
 	return ret;
-
-
 }
 
 const NET_ACTION_HIS NetManager::GetSelfActionHis(void) const
@@ -846,7 +829,8 @@ const NET_ACTION_HIS NetManager::GetSelfActionHis(void) const
 
 MONSTER_DATA NetManager::GetBoss(int key)
 {
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())// アクションが最後のと違うなら？
+	// アクション履歴にユーザーがいるか確認
+	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
 	{
 		return pool_.joinUserActionHis_[key].boss_;
 	}
@@ -953,7 +937,7 @@ bool NetManager::IsAction(int key, PLAYER_ACTION action)
 	return false;
 }
 
-// 再帰処理？Key入力がネットマネージャーで確認するまで回してる？
+// Key入力がネットマネージャーで確認するまで回してる？
 bool NetManager::IsAction(int key, PLAYER_ACTION action, bool isAction)
 {
 	// selfJoinUser_ = 自身
@@ -961,7 +945,7 @@ bool NetManager::IsAction(int key, PLAYER_ACTION action, bool isAction)
 	{
 		return isAction;// 処理をそのまま通す　操作をややこしくしない
 	}
-	return IsAction(key, action);
+	return IsAction(key, action);// 再帰処理
 }
 
 #pragma endregion

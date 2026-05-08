@@ -791,7 +791,7 @@ void Boss::UpdateBattle(void)
 
 	// タイマー更新
 	rotateTimer_ -= SceneManager::GetInstance().GetDeltaTime(); // フレームの経過時間を使う（環境によって異なります）
-	if (lerpTime_ >= 0.0f)lerpTime_ -= SceneManager::GetInstance().GetDeltaTime() * 2.0f;
+	if (lerpTime_ >= 0.0f)lerpTime_ -= SceneManager::GetInstance().GetDeltaTime();
 
 	// 一定時間ごとに回転処理
 	if (rotateTimer_ <= 1.0f)

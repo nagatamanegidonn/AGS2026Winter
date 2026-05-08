@@ -117,12 +117,7 @@ bool ShotBase::CollisionCapsule(std::weak_ptr<Capsule> _capsule) const
 	{
 		// “–‚½‚Á‚½ê‡‚ÍÕ“Ë‚Ìî•ñ‚ğ•`‰æ‚·‚é
 		ret = true;
-
-
-		return ret;
 	}
-
-
 	return ret;
 }
 

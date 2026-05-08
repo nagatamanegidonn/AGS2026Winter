@@ -52,6 +52,7 @@ int ArrowShot::GetDamage(void) const
 
 void ArrowShot::SetParam(void)
 {
+	// 移動スピード
 	speed_ = 20.0f;
 	// 生存時間
 	// 生存フラグ、時間の初期化
