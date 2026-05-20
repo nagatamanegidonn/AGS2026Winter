@@ -21,14 +21,12 @@ Stage::Stage(Player& player, Boss& boss)
 }
 
 Stage::~Stage(void)
-{
-	
+{	
 	// オブジェクト	
 	objects_.clear();
 	
 	// 惑星
 	planets_.clear();
-
 }
 
 void Stage::Init(void)
@@ -91,8 +89,6 @@ void Stage::Update(void)
 
 void Stage::Draw(void)
 {
-
-
 	// 惑星
 	for (const auto& s : planets_)
 	{
@@ -104,7 +100,6 @@ void Stage::Draw(void)
 	{
 		s->Draw();
 	}
-
 }
 
 void Stage::ChangeStage(NAME type)

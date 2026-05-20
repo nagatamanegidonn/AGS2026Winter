@@ -128,7 +128,6 @@ public:
 
 #pragma endregion
 
-	//新規
 #pragma region ゲームシーンで使用
 
 	// bool IsAction(int key, PLAYER_ACTION action, bool isAction);
