@@ -21,7 +21,6 @@ ResourceManager& ResourceManager::GetInstance(void)
 
 void ResourceManager::Init(void)
 {
-
 	// „§‚µ‚Ü‚¹‚ñ‚ªA‚Ç‚¤‚µ‚Ä‚àg‚¢‚½‚¢•û‚Í
 	using RES = Resource;
 	using RES_T = RES::TYPE;

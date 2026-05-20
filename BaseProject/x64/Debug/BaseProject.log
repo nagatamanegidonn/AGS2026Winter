@@ -1,7 +1,20 @@
-﻿  GameScene.cpp
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(633,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(653,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(695,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(706,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(836,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+﻿  ResourceManager.cpp
+  AnimationController.cpp
+  Boss.cpp
+  EnemyBase.cpp
+  SmallMonster.cpp
+  Arrow.cpp
+  GreatSword.cpp
+  Player.cpp
+  Sword.cpp
+  ViewPlayer.cpp
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\SmallMonster.cpp(128,19): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\SmallMonster.cpp(289,29): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\SmallMonster.cpp(289,21): warning C4244: '初期化中': 'float' から 'const int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\Boss.cpp(161,24): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\Boss.cpp(412,29): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\Boss.cpp(412,21): warning C4244: '初期化中': 'float' から 'const int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Player.cpp(748,9): warning C4244: '-=': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Player.cpp(1496,12): warning C4305: '+=': 'double' から 'float' へ切り詰めます。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Player.cpp(1919,11): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
   BaseProject.vcxproj -> C:\Users\2316013\Desktop\WildHuntG\x64\Debug\BaseProject.exe

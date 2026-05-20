@@ -353,11 +353,8 @@ void AnimationController::Update(void)
 			mRate_ += data.blendRate;
 		}
 
-
 		VECTOR blendLpos = MV1GetAttachAnimFrameLocalPosition(modelId_, blend_.toAttachNo, rootFrame);
-
 		localPos_ = VAdd(mlocalPos, VScale(blendLpos, 1.0f - mRate_));
-
 	}
 
 	//MATRIX invRootTrans = MGetTranslate(VScale(rootPos, -1.0f));
