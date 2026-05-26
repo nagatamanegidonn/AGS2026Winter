@@ -110,15 +110,20 @@ void GameScene::Init(void)
 	fader_ = std::make_unique<Fader>(0xffffff);
 	fader_->Init(15.0f);
 
-	boss_ = std::make_unique<Boss>(NetManager::GetInstance().GetHost().key);
+	boss_ = std::make_unique<Boss>(NetManager::GetInstance().GetHost().key,0);
 	boss_->Init();
 	
-	Monsters_[0] = std::make_unique<SmallMonster>(NetManager::GetInstance().GetHost().key,0);
-	Monsters_[0]->Init();
-	Monsters_[1] = std::make_unique<SmallMonster>(NetManager::GetInstance().GetHost().key,1);
-	Monsters_[1]->Init();
-	Monsters_[2] = std::make_unique<SmallMonster>(NetManager::GetInstance().GetHost().key,2);
-	Monsters_[2]->Init();
+	auto mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key,1);
+	mons->Init();
+	monsters_.emplace_back(mons);
+	
+	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key,2);
+	mons->Init();
+	monsters_.emplace_back(mons);
+	
+	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key,3);
+	mons->Init();
+	monsters_.emplace_back(mons);
 
 	textId_ = "";
 	stepId_ = 0;
@@ -151,6 +156,7 @@ void GameScene::Init(void)
 
 			// ステージ
 			stage_ = std::make_unique<Stage>(*player, *boss_);
+			stage_->SetEnemy(monsters_);
 			stage_->Init();
 			// ステージの初期設定
 			// stage_->ChangeStage(Stage::NAME::SPECIAL_STAGE);
@@ -328,7 +334,7 @@ void GameScene::Update(void)
 			if (disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
 			{
 				boss_->SetFollow(&player->GetTransform());
-				for (auto& mons : Monsters_)
+				for (auto& mons : monsters_)
 				{
 					mons->SetFollow(&player->GetTransform());
 				}
@@ -344,7 +350,7 @@ void GameScene::Update(void)
 				minDist_ = disPow;
 				closestTrans = player->GetTransform();
 				boss_->SetFollow(&player->GetTransform());
-				for (auto& mons : Monsters_)
+				for (auto& mons : monsters_)
 				{
 					mons->SetFollow(&player->GetTransform());
 				}
@@ -403,7 +409,7 @@ void GameScene::Update(void)
 
 	// ボスの更新
 	boss_->Update();
-	for (auto& mons : Monsters_)
+	for (auto& mons : monsters_)
 	{
 		mons->Update();
 	}
@@ -467,7 +473,7 @@ void GameScene::Draw(void)
 
 	// ボスの描画
 	boss_->Draw();
-	for (auto& mons : Monsters_)
+	for (auto& mons : monsters_)
 	{
 		mons->Draw();
 	}
@@ -617,21 +623,24 @@ void GameScene::Collision(void)
 
 		}
 		// 小型の処理
-		for (auto& mons : Monsters_)
+		for (auto& mons : monsters_)
 		{
-			if (mons->IsState(SmallMonster::STATE::END)
-				|| mons->IsState(SmallMonster::STATE::NONE))
+			std::weak_ptr<SmallMonster> enemy = std::dynamic_pointer_cast<SmallMonster>(mons);
+			if (enemy.lock() == nullptr)continue;
+
+			if (enemy.lock()->IsState(SmallMonster::STATE::END)
+				|| enemy.lock()->IsState(SmallMonster::STATE::NONE))
 			{
 				continue;
 			}
-			if (mons->CollisionCapsule(player->GetCapsule())
+			if (enemy.lock()->CollisionCapsule(player->GetCapsule())
 				&& player->IsAttrck() && player->IsHit() && player->IsSelf())
 			{
 				player->SetHit(true);
 				
 				SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
 
-				mons->Damage(player->GetAttrckPow() * player->GetAttrckRate());
+				enemy.lock()->Damage(player->GetAttrckPow() * player->GetAttrckRate());
 				// 音の再生
 				SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
 
@@ -678,13 +687,16 @@ void GameScene::Collision(void)
 
 			}
 			// 小型の処理(攻撃)
-			for (auto& mons : Monsters_)
+			for (auto& mons : monsters_)
 			{
-				if (mons->CollisionAttrck(player->GetTransform().modelId))
+				std::weak_ptr<SmallMonster> enemy = std::dynamic_pointer_cast<SmallMonster>(mons);
+				if (enemy.lock() == nullptr)continue;
+
+				if (enemy.lock()->CollisionAttrck(player->GetTransform().modelId))
 				{
 					VECTOR mixDir = AsoUtility::VECTOR_ZERO;
 
-					player->Damage(mons->GetAttrckPow() * mons->GetAttrckRate(), mons->GetAttrckPos(), mixDir);
+					player->Damage(mons->GetAttrckPow() * mons->GetAttrckRate(), enemy.lock()->GetAttrckPos(), mixDir);
 					// playerが無敵か判定した後無敵じゃないならエフェクト
 
 				}
@@ -713,18 +725,21 @@ void GameScene::Collision(void)
 				}
 
 				// --- 小型モンスターとの判定 ---
-				for (auto& mons : Monsters_)
+				for (auto& mons : monsters_)
 				{
-					if (mons->IsState(SmallMonster::STATE::END)
-						|| mons->IsState(SmallMonster::STATE::NONE))
+					std::weak_ptr<SmallMonster> enemy = std::dynamic_pointer_cast<SmallMonster>(mons);
+					if (enemy.lock() == nullptr)continue;
+
+					if (enemy.lock()->IsState(SmallMonster::STATE::END)
+						|| enemy.lock()->IsState(SmallMonster::STATE::NONE))
 					{
 						continue;
 					}
-					if (mons->CollisionCapsule(shot->GetCapsule())
-						&& !mons->IsState(SmallMonster::STATE::END)
-						&& !mons->IsState(SmallMonster::STATE::NONE))
+					if (enemy.lock()->CollisionCapsule(shot->GetCapsule())
+						&& !enemy.lock()->IsState(SmallMonster::STATE::END)
+						&& !enemy.lock()->IsState(SmallMonster::STATE::NONE))
 					{
-						ShotHitEnemy(*shot, *mons);
+						ShotHitEnemy(*shot, *enemy.lock());
 					}
 				}
 			}

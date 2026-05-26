@@ -92,6 +92,10 @@ protected:
 
 #pragma endregion
 
+	int imgShadow_;	// 影画像
+
+	void DrawShadow(void);
+
 	// 衝突判定に用いられるコライダ
 	std::vector<std::weak_ptr<Collider>> colliders_;
 

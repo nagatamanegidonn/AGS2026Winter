@@ -72,7 +72,7 @@ private:
 	std::vector<std::shared_ptr<Player>> players_;
 
 	std::unique_ptr<Boss> boss_;
-	std::unique_ptr<SmallMonster> Monsters_[3];
+	std::vector<std::shared_ptr<EnemyBase>> monsters_;
 
 	std::vector<std::unique_ptr<ShotBase>> shots_;
 

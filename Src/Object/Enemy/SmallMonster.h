@@ -137,6 +137,9 @@ private:
 	void UpdateDamage(void);
 	void UpdateDead(void);
 
+	// 衝突チェック(カプセル)
+	void CollisionStageCapsule(void)override;
+	void CollisionGravity(void)override;
 
 	// 攻撃無効化
 	void AttrckUpdate(void);

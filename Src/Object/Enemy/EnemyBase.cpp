@@ -1,5 +1,7 @@
 #include "../../Utility/AsoUtility.h"
 
+#include "../../Net/NetManager.h"
+
 #include "../Common/AnimationController.h"
 #include "../Common/EffectController.h"
 #include "../Common/SoundController.h"
@@ -193,6 +195,43 @@ void EnemyBase::CollisionGravity(void)
 		}
 
 	}
+}
+
+int EnemyBase::DamageUpdate(void)
+{
+	auto& nIns = NetManager::GetInstance();
+	auto& users = nIns.GetNetUsers();
+
+	// ダメージ処理
+	int dame = 0;
+	for (auto& user : users)
+	{
+		const int userDame = nIns.GetNetMonsDamage(user.first, createNo_);
+		// 合計ダメージに加算
+		dame += nIns.GetNetMonsDamage(user.first, createNo_);
+		// ダメージを受けていたなら
+		if (userDame > 0)
+		{
+			bool isEnd = false;
+			for (auto& hitdamage : hitdamages_)
+			{
+				// 表示終了しているものがあるなら
+				if (hitdamage->GetState() == HitDamage::STATE::END)
+				{
+					hitdamage->Init(userDame);
+					isEnd = true;
+					break;
+				}
+			}
+			if (!isEnd)
+			{
+				auto  part = std::make_unique<HitDamage>(transform_.modelId, "Chest_M", userDame);
+				hitdamages_.emplace_back(std::move(part));
+			}
+		}
+	}
+
+	return dame;
 }
 
 #pragma endregion

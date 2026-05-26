@@ -2,24 +2,24 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\nsaga\AsoGame\就職作品展2026冬\x64\Release\BaseProject.exe</FullPath>
+      <FullPath>C:\Users\2316013\Desktop\WildHuntG\x64\Release\BaseProject.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\就職作品展2026冬\Data\Shader\Map.cso</FullPath>
+      <FullPath>C:\Users\2316013\Desktop\WildHuntG\Data\Shader\Map.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\就職作品展2026冬\Data\Shader\PlayerHp.cso</FullPath>
+      <FullPath>C:\Users\2316013\Desktop\WildHuntG\Data\Shader\PlayerHp.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\就職作品展2026冬\Data\Shader\PlayerStatus.cso</FullPath>
+      <FullPath>C:\Users\2316013\Desktop\WildHuntG\Data\Shader\PlayerStatus.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\就職作品展2026冬\Data\Shader\Texture.cso</FullPath>
+      <FullPath>C:\Users\2316013\Desktop\WildHuntG\Data\Shader\Texture.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\nsaga\AsoGame\就職作品展2026冬\Data\Shader\Timer.cso</FullPath>
+      <FullPath>C:\Users\2316013\Desktop\WildHuntG\Data\Shader\Timer.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

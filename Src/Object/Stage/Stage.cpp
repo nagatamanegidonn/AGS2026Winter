@@ -7,7 +7,9 @@
 #include "Object.h"
 #include "ItemObject.h"
 #include "../Player/Player.h"
+#include "../Enemy/EnemyBase.h"
 #include "../Enemy/Boss.h"
+
 #include "Planet.h"
 #include "../Common/Collider/Collider.h"
 #include "../Common/Transform.h"
@@ -119,12 +121,21 @@ void Stage::ChangeStage(NAME type)
 	boss_.ClearCollider();
 	boss_.AddCollider(activePlanet_.lock()->GetTransform().collider);
 
+	for (auto& mons : enemys_)
+	{
+		mons.lock()->AddCollider(activePlanet_.lock()->GetTransform().collider);
+	}
+
 	for (const auto& s : objects_)
 	{
 		if (s->GetTransform().collider != nullptr)
 		{
 			player_.AddCollider(s->GetTransform().collider);
 			boss_.AddCollider(s->GetTransform().collider);
+			for (auto& mons : enemys_)
+			{
+				mons.lock()->AddCollider(s->GetTransform().collider);
+			}
 		}
 	}
 
@@ -184,6 +195,14 @@ void Stage::SetPlayers(std::vector<std::shared_ptr<Player>> players)
 	}
 }
 
+void Stage::SetEnemy(std::vector<std::shared_ptr<EnemyBase>> enemys)
+{
+	for (auto& enemy : enemys)
+	{
+		enemys_.push_back(enemy);
+	}
+}
+
 void Stage::AddBom(const Transform& _trans)
 {
 	std::unique_ptr<Object> obj;
@@ -191,6 +210,10 @@ void Stage::AddBom(const Transform& _trans)
 	// ステージの当たり判定をプレイヤーに設定
 	player_.AddCollider(_trans.collider);
 	boss_.AddCollider(_trans.collider);
+	for (auto& mons : enemys_)
+	{
+		mons.lock()->AddCollider(_trans.collider);
+	}
 
 	obj = std::make_unique<Object>(player_, _trans, Object::STATE::PLAY);
 	obj->Init();

@@ -12,7 +12,9 @@ Capsule::Capsule(const Transform& parent)
 {
 }
 
-Capsule::Capsule(const Capsule& base, const Transform& parent) : transformParent_(parent)
+Capsule::Capsule(const Capsule& base, const Transform& parent) 
+	: 
+	transformParent_(parent)
 {
 	radius_ = base.GetRadius();
 	localPosTop_ = base.GetLocalPosTop();

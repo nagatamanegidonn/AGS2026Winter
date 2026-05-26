@@ -1,17 +1,22 @@
 ﻿  Boss.cpp
+  SmallMonster.cpp
+  Stage.cpp
   GameScene.cpp
-C:\Users\nsaga\AsoGame\就職作品展2026冬\Src\Scene\GameScene.cpp(614,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\nsaga\AsoGame\就職作品展2026冬\Src\Scene\GameScene.cpp(634,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\nsaga\AsoGame\就職作品展2026冬\Src\Scene\GameScene.cpp(676,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\nsaga\AsoGame\就職作品展2026冬\Src\Scene\GameScene.cpp(687,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\nsaga\AsoGame\就職作品展2026冬\Src\Scene\GameScene.cpp(817,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\nsaga\AsoGame\就職作品展2026冬\Src\Object\Enemy\Boss.cpp(161,24): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
-C:\Users\nsaga\AsoGame\就職作品展2026冬\Src\Object\Enemy\Boss.cpp(412,29): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\nsaga\AsoGame\就職作品展2026冬\Src\Object\Enemy\Boss.cpp(412,21): warning C4244: '初期化中': 'float' から 'const int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\SmallMonster.cpp(128,19): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\SmallMonster.cpp(268,29): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\SmallMonster.cpp(268,21): warning C4244: '初期化中': 'float' から 'const int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(620,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(643,49): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(685,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(699,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(832,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\Boss.cpp(161,24): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\Boss.cpp(369,29): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\Boss.cpp(369,21): warning C4244: '初期化中': 'float' から 'const int' への変換です。データが失われる可能性があります。
   コード生成しています。
-  43 of 7384 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    32 functions had inline decision re-evaluated but remain unchanged
+  29 of 7538 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    38 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
-EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj) : warning LNK4099: PDB 'EffekseerForDXLib_vs2019_x64.pdb' が 'EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj)' で、または 'C:\Users\nsaga\AsoGame\就職作品展2026冬\x64\Release\EffekseerForDXLib_vs2019_x64.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-  BaseProject.vcxproj -> C:\Users\nsaga\AsoGame\就職作品展2026冬\x64\Release\BaseProject.exe
+EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj) : warning LNK4099: PDB 'EffekseerForDXLib_vs2019_x64.pdb' が 'EffekseerForDXLib_vs2019_x64.lib(EffekseerForDXLib.obj)' で、または 'C:\Users\2316013\Desktop\WildHuntG\x64\Release\EffekseerForDXLib_vs2019_x64.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+  BaseProject.vcxproj -> C:\Users\2316013\Desktop\WildHuntG\x64\Release\BaseProject.exe

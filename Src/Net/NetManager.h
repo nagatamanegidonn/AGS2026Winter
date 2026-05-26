@@ -144,13 +144,6 @@ public:
 	int GetNetHp(int key);
 	void SetNetHp(int key, int hp);
 
-	//ボス関係
-	int GetNetBossDamage(int key);
-	void SetNetBossDamage(int key, int damage);
-
-	int GetNetBossHp(int key);
-	void SetNetBossHp(int key, int hp);
-
 #pragma endregion
 
 	int GetWeapon(int key);
@@ -163,10 +156,6 @@ public:
 
 	// 自分のアクション情報履歴
 	const NET_ACTION_HIS GetSelfActionHis(void) const;
-
-	// ポジション設定
-	MONSTER_DATA GetBoss(int key);
-	void SetBoss(int key, VECTOR pos, Quaternion rot, int anim, int  state);
 	
 	// ポジション設定
 	MONSTER_DATA GetMonsData(int key,int No);

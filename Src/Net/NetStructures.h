@@ -126,15 +126,11 @@ struct NET_ACTION_HIS
 	int playerAnim_ = 0;
 
 	int hp_ = 100;
-	int bossDamage_ = 0;// Bossに与えたdamage毎フレームリセット
-	int bossHp_ = 0;	// Boss
-
-	MONSTER_DATA boss_;
 
 	// 小型用
-	MONSTER_DATA monsters_[3];
-	int smallHp_[3] = {0,0,0};
-	int smallDamage_[3] = { 0,0,0 };
+	MONSTER_DATA monsters_[4];
+	int smallHp_[4] = { 10,10,10,10 };
+	int smallDamage_[4] = { 0,0,0,0 };
 
 };
 

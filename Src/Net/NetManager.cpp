@@ -702,33 +702,6 @@ void NetManager::SetNetHp(int key, int hp)
 	pool_.selfActionHis_.hp_ = hp;
 }
 
-int NetManager::GetNetBossDamage(int key)
-{
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
-	{
-		return pool_.joinUserActionHis_[key].bossDamage_;
-	}
-	return 0;
-}
-void NetManager::SetNetBossDamage(int key, int damage)
-{
-	pool_.selfActionHis_.bossDamage_ = damage;
-}
-
-int NetManager::GetNetBossHp(int key)
-{
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
-	{
-		return pool_.joinUserActionHis_[key].bossHp_;
-	}
-	return 0;
-}
-
-void NetManager::SetNetBossHp(int key, int hp)
-{
-	pool_.selfActionHis_.bossHp_ = hp;
-}
-
 // 武器IDの取得、設定
 int NetManager::GetWeapon(int key)
 {
@@ -825,24 +798,6 @@ const NET_ACTION_HIS NetManager::GetSelfActionHis(void) const
 	return pool_.selfActionHis_;
 }
 
-#pragma region ボスの通信関数
-
-MONSTER_DATA NetManager::GetBoss(int key)
-{
-	// アクション履歴にユーザーがいるか確認
-	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
-	{
-		return pool_.joinUserActionHis_[key].boss_;
-	}
-	return pool_.joinUserActionHis_[pool_.selfJoinUser_.key].boss_;
-}
-void NetManager::SetBoss(int key, VECTOR pos, Quaternion rot, int anim, int state)
-{
-	pool_.selfActionHis_.boss_.postion_ = pos;
-	pool_.selfActionHis_.boss_.rot_ = rot;
-	pool_.selfActionHis_.boss_.Anim_ = anim;
-	pool_.selfActionHis_.boss_.state_ = state;
-}
 
 #pragma region 小型用の通信関数
 

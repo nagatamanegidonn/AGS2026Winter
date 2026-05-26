@@ -117,8 +117,8 @@ void SmallMonster::Init(void)
 
 	// カプセルコライダ
 	capsule_ = std::make_unique<Capsule>(transform_);
-	capsule_->SetLocalPosTop({ 0.0f, 310.0f, 0.0f });
-	capsule_->SetLocalPosDown({ 0.0f, 300.0f, 0.0f });
+	capsule_->SetLocalPosTop({ 0.0f, 300.0f, 0.0f });
+	capsule_->SetLocalPosDown({ 0.0f, 290.0f, 0.0f });
 	capsule_->SetRadius(200.0f);
 
 	auto& nIns = NetManager::GetInstance();
@@ -141,34 +141,8 @@ void SmallMonster::Update(void)
 
 	animeAgoType_ = animeType_;
 
-	// ダメージ処理
-	int dame = 0;
-	for (auto& user : users)
-	{
-		const int userDame = nIns.GetNetMonsDamage(user.first, createNo_);
-		// 合計ダメージに加算
-		dame += nIns.GetNetMonsDamage(user.first, createNo_);
-		// ダメージを受けていたなら
-		if (userDame > 0)
-		{
-			bool isEnd = false;
-			for (auto& hitdamage : hitdamages_)
-			{
-				// 表示終了しているものがあるなら
-				if (hitdamage->GetState() == HitDamage::STATE::END)
-				{
-					hitdamage->Init(userDame);
-					isEnd = true;
-					break;
-				}
-			}
-			if (!isEnd)
-			{
-				auto  part = std::make_unique<HitDamage>(transform_.modelId, "Chest_M", userDame);
-				hitdamages_.emplace_back(std::move(part));
-			}
-		}
-	}
+	// ダメージの更新
+	int dame = EnemyBase::DamageUpdate();
 
 	// 当たり判定の設定
 	for (const auto& part : hitParts_)
@@ -176,40 +150,47 @@ void SmallMonster::Update(void)
 		part->Update();
 	}
 
+	//当たり判定の設定
+	for (const auto& part : hitParts_)
+	{
+		part->Update();
+	}
+
+
 	// 自分のプレイヤーのときだけ入力を処理する
 	if (nIns.GetMode() == NET_MODE::HOST) {
-		// ダメージを与える
+		//ダメージを与える
 		hp_ -= dame;
 		nIns.SetNetMonsHp(key_, createNo_, hp_);
 
-		// 死亡判定
+		//死亡判定
 		if (hp_ <= 0.0f && state_ != STATE::DEAD) { ChangeState(STATE::DEAD); }
 
 		movePow_ = AsoUtility::VECTOR_ZERO;
 
 		// 更新ステップ
-		stateUpdate_();
+		bool isDebug = true;
+#ifdef _DEBUG
+
+		if (state_ != STATE::DEAD)
+		{
+			//isDebug = false;
+		}
+
+#endif // DEBUG
+		if (isDebug) stateUpdate_();
 
 		// 重力による移動量
 		CalcGravityPow();
 
-		// 衝突判定//仮で消す
-		// ジャンプ量を加算
-		// 重力方向の反対
-		VECTOR dirUpGravity = AsoUtility::DIR_U;
-		// 重力の強さ
-		float gravityPow = Planet::DEFAULT_GRAVITY_POW;
-		movePow_ = VAdd(movePow_, VScale(dirUpGravity, gravityPow));
-
+		// 衝突判定
 		Collision();
 
 		if (stateTime_ >= 0.0f)stateTime_ -= SceneManager::GetInstance().GetDeltaTime();
 
-
 		// 重力方向に沿って回転させる
 		transform_.quaRot = Quaternion();//grvMng_がないので代わりに
 		transform_.quaRot = transform_.quaRot.Mult(playerRotY_);
-
 
 		// 位置送信もここでOK（ProcessMove内でも呼ばれてるけど念のため）
 		nIns.SetMonsData(key_, createNo_, transform_.pos, transform_.quaRot, animeType_, static_cast<int>(state_));
@@ -218,7 +199,7 @@ void SmallMonster::Update(void)
 	else
 	{
 		// HPの同期
-		hp_ = nIns.GetNetMonsHp(key_,createNo_);
+		hp_ = nIns.GetNetMonsHp(key_, createNo_);
 
 		const MONSTER_DATA& mons = nIns.GetMonsData(key_, createNo_);
 
@@ -231,12 +212,10 @@ void SmallMonster::Update(void)
 		}
 		else animationController_->Play(animeType_);
 
-
 		const auto& pos = mons.postion_;
 		transform_.pos = pos;
 		const auto& rot = mons.rot_;
 		transform_.quaRot = rot;
-
 	}
 
 
@@ -264,6 +243,8 @@ void SmallMonster::Draw(void)
 	if (state_ != STATE::NONE)
 	{
 		MV1DrawModel(transform_.modelId);
+
+		DrawShadow();
 	}
 
 	// ダメージの表記
@@ -594,6 +575,133 @@ void SmallMonster::UpdateDead(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::DEAD), false);
 	animeType_ = static_cast<int>(ANIM_TYPE::DEAD);
+}
+
+void SmallMonster::CollisionStageCapsule(void)
+{
+	// カプセルを移動させる
+	Transform trans = Transform(transform_);
+	trans.pos = movedPos_;
+	trans.Update();
+	Capsule cap = Capsule(*capsule_, trans);
+	// カプセルとの衝突判定(主にステージ)
+	for (const auto c : colliders_)
+	{
+		auto hits = MV1CollCheck_Capsule(
+			c.lock()->modelId_, -1,
+			cap.GetPosTop(), cap.GetPosDown(), cap.GetRadius());
+
+		if (c.lock()->type_ == Collider::TYPE::STAGE)
+		{
+			// 衝突した複数のポリゴンと衝突回避するまで、
+			// プレイヤーの位置を移動させる
+			for (int i = 0; i < hits.HitNum; i++)
+			{
+				auto hit = hits.Dim[i];
+
+				// 地面と異なり、衝突回避位置が不明なため、何度か移動させる
+				// この時、移動させる方向は、移動前座標に向いた方向であったり、
+				// 衝突したポリゴンの法線方向だったりする
+				for (int tryCnt = 0; tryCnt < 10; tryCnt++)
+				{
+					// 再度、モデル全体と衝突検出するには、効率が悪過ぎるので、
+					// 最初の衝突判定で検出した衝突ポリゴン1枚と衝突判定を取る
+					int pHit = HitCheck_Capsule_Triangle(
+						cap.GetPosTop(), cap.GetPosDown(), cap.GetRadius(),
+						hit.Position[0], hit.Position[1], hit.Position[2]);
+
+					if (pHit)
+					{
+						// 法線の方向にちょっとだけ移動させる
+						movedPos_ = VAdd(movedPos_, VScale(hit.Normal, 1.0f));
+						// カプセルも一緒に移動させる
+						trans.pos = movedPos_;
+						trans.Update();
+						continue;
+					}
+					break;
+				}
+			}
+		}
+		else if (c.lock()->type_ == Collider::TYPE::WALL)
+		{
+			// 衝突した複数のポリゴンと衝突回避するまで、
+			// プレイヤーの位置を移動させる
+			for (int i = 0; i < hits.HitNum; i++)
+			{
+				auto hit = hits.Dim[i];
+
+				// 地面と異なり、衝突回避位置が不明なため、何度か移動させる
+				// この時、移動させる方向は、移動前座標に向いた方向であったり、
+				// 衝突したポリゴンの法線方向だったりする
+				for (int tryCnt = 0; tryCnt < 10; tryCnt++)
+				{
+					// 再度、モデル全体と衝突検出するには、効率が悪過ぎるので、
+					// 最初の衝突判定で検出した衝突ポリゴン1枚と衝突判定を取る
+					int pHit = HitCheck_Capsule_Triangle(
+						cap.GetPosTop(), cap.GetPosDown(), cap.GetRadius(),
+						hit.Position[0], hit.Position[1], hit.Position[2]);
+
+					if (pHit)
+					{
+						//法線方向高さなし
+						VECTOR nor = hit.Normal;
+						nor.y = 0.0f;
+
+						// 法線の方向にちょっとだけ移動させる
+						movedPos_ = VAdd(movedPos_, VScale(nor, 1.0f));
+						// カプセルも一緒に移動させる
+						trans.pos = movedPos_;
+						trans.Update();
+						continue;
+					}
+					break;
+				}
+			}
+		}
+		// 検出した地面ポリゴン情報の後始末
+		MV1CollResultPolyDimTerminate(hits);
+	}
+}
+
+void SmallMonster::CollisionGravity(void)
+{
+	// ジャンプ量を加算
+	movedPos_ = VAdd(movedPos_, jumpPow_);
+
+	// 重力方向
+	VECTOR dirGravity = AsoUtility::DIR_D;
+
+	// 重力方向の反対
+	VECTOR dirUpGravity = AsoUtility::DIR_U;
+
+	// 重力の強さ
+	float gravityPow = Planet::DEFAULT_GRAVITY_POW;
+
+	float checkPow = 10.0f;
+	gravHitPosUp_ = VAdd(movedPos_, VScale(dirUpGravity, gravityPow));
+	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, checkPow * 2.0f));
+	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, checkPow));
+	for (const auto c : colliders_)
+	{
+
+		// 地面との衝突
+		auto hit = MV1CollCheck_Line(
+			c.lock()->modelId_, -1, gravHitPosUp_, gravHitPosDown_);
+
+		// 最初は上の行のように実装して、木の上に登ってしまうことを確認する
+		//if (hit.HitFlag > 0)
+		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > 0.9f)
+		{
+
+			// 衝突地点から、少し上に移動
+			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, 2.0f));
+
+			// ジャンプリセット
+			jumpPow_ = AsoUtility::VECTOR_ZERO;
+		}
+
+	}
 }
 
 void SmallMonster::AttrckUpdate(void)

@@ -76,6 +76,8 @@ protected:
 	virtual void CollisionStageCapsule(void)override;
 	virtual void CollisionGravity(void)override;
 
+	virtual int DamageUpdate(void);
+
 	void TargetRotate(const VECTOR& traPos, float rate = 1.0f);
 	void DrawFOV(float fovDeg, float radius, int rayCount, unsigned int color);
 

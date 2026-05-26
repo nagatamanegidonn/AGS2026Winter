@@ -86,6 +86,7 @@
     <ClCompile Include="Src\Object\Stage\Grid.cpp" />
     <ClCompile Include="Src\Object\Player\ViewPlayer.cpp" />
     <ClCompile Include="Src\Object\Common\Timer.cpp" />
+    <ClCompile Include="Src\Manager\UI\TextBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Object\Player\GreatSword.h" />
@@ -201,6 +202,7 @@
     <ClInclude Include="Src\Object\Stage\Grid.h" />
     <ClInclude Include="Src\Object\Player\ViewPlayer.h" />
     <ClInclude Include="Src\Object\Common\Timer.h" />
+    <ClInclude Include="Src\Manager\UI\TextBox.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Src\Shader\Texture\Map.hlsl">

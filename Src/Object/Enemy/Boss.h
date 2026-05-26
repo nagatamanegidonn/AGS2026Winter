@@ -112,7 +112,7 @@ public:
 	};
 
 	// コンストラクタ
-	Boss(int key);
+	Boss(int key,int createNo);
 
 	// デストラクタ
 	~Boss(void);
@@ -241,6 +241,7 @@ private:
 
 	// 攻撃無効化
 	void AttrckUpdate(void);
+	void AttackDataUpdate(void);
 
 	// デバッグ用描画
 	void DrawDebug(void);

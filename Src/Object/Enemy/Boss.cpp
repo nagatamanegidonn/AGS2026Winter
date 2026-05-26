@@ -51,10 +51,10 @@ namespace
 	constexpr float ROT_RATE = 3.0f;
 }
 
-Boss::Boss(int key)
+Boss::Boss(int key, int createNo)
 {
 	key_ = key;
-	createNo_ = 0;
+	createNo_ = createNo;
 
 	animationController_ = nullptr;
 	state_ = STATE::NONE;
@@ -173,54 +173,11 @@ void Boss::Update(void)
 
 	animeAgoType_ = animeType_;
 
-	//ダメージ処理
-	int dame = 0;
-	for (auto& user : users)
-	{
-		const int userDame = nIns.GetNetBossDamage(user.first);
-                                      
-		dame += nIns.GetNetBossDamage(user.first);
-		//damage表記//ダメージを受けていたなら
-		if (userDame > 0 && hp_ > 0)
-		{
-			bool isEnd = false;
-			for (auto& hitdamage : hitdamages_)
-			{//表示終了しているものがあるなら
-				if (hitdamage->GetState() == HitDamage::STATE::END)
-				{
-					hitdamage->Init(userDame);
-					isEnd = true;
-					break;
-				}
-			}
-			if (!isEnd)
-			{
-				auto  part = std::make_unique<HitDamage>(transform_.modelId, "Chest_M", userDame);
-				hitdamages_.emplace_back(std::move(part));
-			}
-		}
-	}
+	// ダメージの更新
+	int dame = EnemyBase::DamageUpdate();
 
-	//アニメーションに応じて攻撃力設定
-	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_STAMP))
-	{
-		attrckDamage_ = ATTRCK_STAMP;
-	}
-	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW)
-		|| animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW)
-		)
-	{
-		attrckDamage_ = ATTRCK_CLOW;
-	}
-	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_DASH))
-	{
-		attrckDamage_ = ATTRCK_DASH;
-		effectController_->LoopPlay(0);
-	}
-	else
-	{
-		effectController_->Stop(0);
-	}
+	// 攻撃情報の更新
+	AttackDataUpdate();
 
 	//当たり判定の設定
 	for (const auto& part : hitParts_)
@@ -233,7 +190,7 @@ void Boss::Update(void)
 	if (nIns.GetMode() == NET_MODE::HOST) {
 		//ダメージを与える
 		hp_ -= dame;
-		nIns.SetNetBossHp(key_, hp_);
+		nIns.SetNetMonsHp(key_, createNo_, hp_);
 
 		//死亡判定
 		if (hp_ <= 0.0f && state_ != STATE::DEAD) { ChangeState(STATE::DEAD); }
@@ -265,18 +222,18 @@ void Boss::Update(void)
 		transform_.quaRot = transform_.quaRot.Mult(playerRotY_);
 
 		// 位置送信もここでOK（ProcessMove内でも呼ばれてるけど念のため）
-		nIns.SetBoss(key_, transform_.pos, transform_.quaRot, animeType_, static_cast<int>(state_));
+		nIns.SetMonsData(key_, createNo_, transform_.pos, transform_.quaRot, animeType_, static_cast<int>(state_));
 	}
 	// 通信プレイヤーの処理
 	else
 	{
 		// HPの同期
-		hp_ = nIns.GetNetBossHp(key_);
+		hp_ = nIns.GetNetMonsHp(key_, createNo_);
 
-		const MONSTER_DATA& boss = nIns.GetBoss(key_);
+		const MONSTER_DATA& mons = nIns.GetMonsData(key_, createNo_);
 
-		animeType_ = boss.Anim_;
-		state_ = static_cast<Boss::STATE>(boss.state_);
+		animeType_ = mons.Anim_;
+		state_ = static_cast<Boss::STATE>(mons.state_);
 
 		if (animeType_ == static_cast<int>(ANIM_TYPE::DEAD))
 		{
@@ -284,9 +241,9 @@ void Boss::Update(void)
 		}
 		else animationController_->Play(animeType_);
 
-		const auto& pos = boss.postion_;
+		const auto& pos = mons.postion_;
 		transform_.pos = pos;
-		const auto& rot = boss.rot_;
+		const auto& rot = mons.rot_;
 		transform_.quaRot = rot;
 	}
 
@@ -339,7 +296,7 @@ void Boss::Update(void)
 		hitdamage->Update();
 	}
 
-	nIns.SetNetBossDamage(nIns.GetSelf().key, 0);
+	nIns.SetNetMonsDamage(nIns.GetSelf().key, createNo_, 0);
 
 	// 描画用の位置は、Draw()でNetManagerから取るからOK
 	transform_.Update();
@@ -411,60 +368,9 @@ void Boss::Damage(int _dama,bool _isConst)
 
 	const int lastDame = _dama * dameRate;
 
-	nIns.SetNetBossDamage(nIns.GetSelf().key, lastDame);
+	nIns.SetNetMonsDamage(nIns.GetSelf().key, createNo_, lastDame);
 }
 
-////モデルとの当たり判定
-//const bool Boss::CollisionCapsule(int& modelId)
-//{
-//	// ０番目のフレームのコリジョン情報を更新する
-//	MV1RefreshCollInfo(modelId, -1);
-//
-//	//当たり判定フラグ
-//	bool ret = false;
-//	VECTOR hitPos = AsoUtility::VECTOR_ZERO;
-//
-//	for (auto& part : hitParts_)
-//	{
-//		// カプセルとの衝突判定
-//		auto hits = MV1CollCheck_Sphere(
-//			modelId, -1,
-//			part->GetPos(), part->GetRadius());
-//		
-//		// 衝突した複数のポリゴンと衝突回避するまで、
-//		// プレイヤーのdamage
-//		 // 当たったかどうかで処理を分岐
-//		if (hits.HitNum >= 1)
-//		{
-//
-//			// 当たった場合は衝突の情報を描画する
-//			ret = true;
-//			dameRate_ = part->GetDameRate();
-//
-//			// 最初に衝突したポリゴンのインデックス
-//			const auto& poly = hits.Dim[0];
-//
-//			// 頂点の平均を取ってポリゴンの中心を求める
-//			hitPos = {
-//				(poly.Position[0].x + poly.Position[1].x + poly.Position[2].x) / 3.0f,
-//				(poly.Position[0].y + poly.Position[1].y + poly.Position[2].y) / 3.0f,
-//				(poly.Position[0].z + poly.Position[1].z + poly.Position[2].z) / 3.0f
-//			};
-//
-//			// 必要であれば保存しておく（例：メンバ変数 hitPos_ に）
-//			hitDamePos_ = hitPos;
-//
-//			// 検出した地面ポリゴン情報の後始末
-//			MV1CollResultPolyDimTerminate(hits);
-//			return ret;
-//		}
-//
-//		// 検出した地面ポリゴン情報の後始末
-//		MV1CollResultPolyDimTerminate(hits);
-//	}
-//
-//	return ret;
-//}
 const bool Boss::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 {
 	//当たり判定フラグ
@@ -1214,4 +1120,28 @@ void Boss::AttrckUpdate(void)
 	{
 		isHitCheck_ = false;
 	}	
+}
+
+void Boss::AttackDataUpdate(void)
+{
+	//アニメーションに応じて攻撃力設定
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_STAMP))
+	{
+		attrckDamage_ = ATTRCK_STAMP;
+	}
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW)
+		|| animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW)
+		)
+	{
+		attrckDamage_ = ATTRCK_CLOW;
+	}
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_DASH))
+	{
+		attrckDamage_ = ATTRCK_DASH;
+		effectController_->LoopPlay(0);
+	}
+	else
+	{
+		effectController_->Stop(0);
+	}
 }

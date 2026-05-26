@@ -8,6 +8,7 @@ class Object;
 class Planet;
 class Player;
 class Boss;
+class EnemyBase;
 
 class Stage: 
 	public ActorBase
@@ -52,7 +53,8 @@ public:
 	std::weak_ptr<Planet> GetPlanet(NAME type);
 	std::weak_ptr<Planet> GetActivePlanet(void);
 
-	void SetPlayers(std::vector < std:: shared_ptr <Player >> players);
+	void SetPlayers(std::vector<std::shared_ptr <Player>> players);
+	void SetEnemy(std::vector<std::shared_ptr <EnemyBase>> enemy);
 
 	void AddBom(const Transform& _trans);
 
@@ -64,6 +66,7 @@ private:
 	std::vector<std::weak_ptr<Player>> players_;
 	Player& player_;
 	Boss& boss_;
+	std::vector<std::weak_ptr<EnemyBase>> enemys_;
 
 	// ステージアクティブになっている惑星の情報
 	NAME activeName_;

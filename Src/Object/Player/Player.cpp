@@ -642,6 +642,9 @@ void Player::Draw(void)
 	// ƒ‚ƒfƒ‹‚Ì•`‰æ
 	MV1DrawModel(transform_.modelId);
 
+	// ‰e‚Ì•`‰æ
+	DrawShadow();
+
 	//•Ší‚Ì•`‰æ
 	DrawWeapon();
 
