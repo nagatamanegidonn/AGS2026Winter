@@ -136,14 +136,14 @@ void GreatSword::InitParam(void)
 	isBattleDash_ = false;
 
 	// çUåÇèÓïÒÇÃê›íË
-	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK1S), ATTRCK_ATTRCK1S_DATA);
-	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK1E), ATTRCK_ATTRCK1E_DATA);
-	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK2), ATTRCK_ATTRCK2_DATA);
-	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK3), ATTRCK_ATTRCK3_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK1S), ATTRCK_ATTRCK1S_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK1E), ATTRCK_ATTRCK1E_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK2), ATTRCK_ATTRCK2_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK3), ATTRCK_ATTRCK3_DATA);
 
-	SetAtrckData(static_cast<int>(ANIM_TYPE::FLYING), FLYING_DATA);
-	SetAtrckData(static_cast<int>(ANIM_TYPE::DOWN), DOWN_DATA);
-	SetAtrckData(static_cast<int>(ANIM_TYPE::IDLE), IDLE_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::FLYING), FLYING_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::DOWN), DOWN_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::IDLE), IDLE_DATA);
 }
 
 void GreatSword::InitAnimation(void)

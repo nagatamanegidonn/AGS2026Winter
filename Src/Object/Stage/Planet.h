@@ -66,7 +66,7 @@ public:
 	void SetRotation(const Quaternion& rot);
 
 	// エリアの取得・設定
-	const std::weak_ptr<Area>& GetArea(int areaId) const;
+	std::weak_ptr<Planet::Area> GetArea(int areaId) const;
 	const std::map<int, std::shared_ptr<Area>>& GetArea(void)const;
 	void SetArea(VECTOR pos, float rad,int areaId);
 	// posがエリアにいるか

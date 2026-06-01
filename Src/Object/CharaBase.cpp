@@ -233,7 +233,7 @@ void CharaBase::CountTime(float& time)
 }
 
 
-std::unique_ptr<CharaBase::ActionData> CharaBase::SetAtrckData(
+std::unique_ptr<CharaBase::ActionData> CharaBase::SetActionData(
 	int nextAtkId, float sHitTim, float HitTim, float sNewTime, bool isChage, int chargeId)
 {
 	auto atk = std::make_unique<ActionData>();
@@ -251,7 +251,7 @@ std::unique_ptr<CharaBase::ActionData> CharaBase::SetAtrckData(
 	 
 	return atk;
 }
-void CharaBase::SetAtrckData(int id, const ActionData& data)
+void CharaBase::SetActionData(int id, const ActionData& data)
 {
 	auto atk = std::make_unique<ActionData>();
 

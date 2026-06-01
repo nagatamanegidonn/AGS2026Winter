@@ -60,13 +60,14 @@ void TitleScene::Init(void)
 	// コントローラーの登録
  	inputController_ = std::make_unique<InputController>(GameManager::GetInstance().GetControllId());
 
+	// 画像の読み込み
 	cursorImg_ = LoadGraph((Application::PATH_IMAGE + L"tile_0072.png").c_str());
 	backImg_ = LoadGraph((Application::PATH_IMAGE + L"img.png").c_str());
 	titleImg_ = LoadGraph((Application::PATH_IMAGE + L"TitleRogo.png").c_str());
 
 	auto hostIp = NetManager::GetInstance().GetHostIp();
 	inputTextArea_ = new InputTextArea(//ここの１５は最大文字数
-		{ IP_S_POS.x, IP_S_POS.y }, { IP_E_POS.x- IP_S_POS.x, IP_E_POS.y - IP_S_POS.y }, 15);
+		{ IP_S_POS.x, IP_S_POS.y }, { IP_E_POS.x - IP_S_POS.x, IP_E_POS.y - IP_S_POS.y }, 15);
 
 	// デフォルトIPアドレス設定
 	std::wstring defaultIp =
@@ -98,12 +99,15 @@ void TitleScene::Init(void)
 	AddPosTri(L"弓", 2, Vector2(WIDTH, HEIGHT)
 		, Vector2(WP_C_POS.x + 50, WP_C_POS.y + (HEIGHT * 3)));
 
-	isPad_ = false;
+	isPad_ = false;	// デフォルトはマウス操作
+	
+	// 更新ステップの初期設定
 	typeUpdate_ = std::bind(&TitleScene::UpdateMouse, this);
 	padUpdate_ = std::bind(&TitleScene::PNormalUpdate, this);
 	mouseUpdate_ = std::bind(&TitleScene::MouseUpdate, this);
-	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
 
+	// マウスポインタを画面中央に移動
+	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
 
 	auto& ins = InputManager::GetInstance();
 	agoMousePos_ = ins.GetMousePos();
@@ -126,7 +130,7 @@ void TitleScene::Init(void)
 		Vector2(Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y)
 	);
 	
-	/// タイトル画像
+	// タイトル画像
 	titleMaterial_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
 	titleMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
 	titleMaterial_->AddTextureBuf(titleImg_);
@@ -136,6 +140,7 @@ void TitleScene::Init(void)
 		Vector2(Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y)
 	);
 
+	// タイトル画面フラグ
 	isTitle_ = true;
 }
 
@@ -162,7 +167,7 @@ void TitleScene::Draw(void)
 
 	// 背景描画
 	Renderer_->Draw();
-	
+
 	// タイトル画面
 	if (isTitle_)
 	{
@@ -181,7 +186,7 @@ void TitleScene::Draw(void)
 	player_->Draw();
 
 
-	
+
 	// ホストorクライアント
 	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0x000000, true);
 	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0xffffff, false);
@@ -209,12 +214,12 @@ void TitleScene::Draw(void)
 	// IPアドレス
 	inputTextArea_->Draw();
 
-#ifdef DEBUG
+#ifdef _DEBUG
 
 	Vector2 moPos = ins.GetMousePos();
-	DrawFormatString(0, 32, 0x000000, "ローカル座標(%d, %d)", moPos.x, moPos.y);
-	DrawFormatString(0, 16, 0x000000, "モードID(%d)", selectId_);
-	DrawFormatString(0, 0, 0x000000, "武器　ID(%d)", weponId_);
+	DrawFormatString(0, 32, 0x000000, L"ローカル座標(%d, %d)", moPos.x, moPos.y);
+	DrawFormatString(0, 16, 0x000000, L"モードID(%d)", selectId_);
+	DrawFormatString(0, 0, 0x000000, L"武器　ID(%d)", weponId_);
 
 #endif // DEBUG
 
@@ -225,15 +230,19 @@ void TitleScene::Draw(void)
 
 		switch (selectId_)
 		{
+			// ホストorクライアント選択
 		case (int)MENU::USER_SELECT:
 			cursorRenderer_->Draw(B1_S_POS.x - HEIGHT, B1_C_POS.y);
 			break;
+			// ゲームスタート
 		case (int)MENU::GAME_START:
 			cursorRenderer_->Draw(B2_S_POS.x - HEIGHT, B2_C_POS.y);
 			break;
+			// 武器設定
 		case (int)MENU::WEPON_SELECT:
 			cursorRenderer_->Draw(WP_S_POS.x - HEIGHT, WP_C_POS.y);
 			break;
+			// IPアドレス設定
 		case (int)MENU::IP_SET:
 			cursorRenderer_->Draw(IP_S_POS.x - HEIGHT, IP_C_POS.y);
 			break;
@@ -247,12 +256,10 @@ void TitleScene::Draw(void)
 		// 武器選択肢描画
 		for (const auto& wPos : weponsPos_)
 		{
-
 			DrawBox(wPos.second->StartPos.x, wPos.second->StartPos.y
 				, wPos.second->EndPos.x, wPos.second->EndPos.y, 0x000000, true);
 			DrawString(wPos.second->StartPos.x + 50, wPos.second->StartPos.y + 7
 				, wPos.second->Name.c_str(), 0xffffff);
-
 		}
 		// カーソル描画
 		if (isPad_)
@@ -268,7 +275,6 @@ void TitleScene::Release(void)
 {
 	inputTextArea_->Release();
 	delete inputTextArea_;
-
 }
 
 #pragma region マウス更新かパッド更新
@@ -327,6 +333,7 @@ void TitleScene::UpdateNormal(void)
 		return;
 	}
 
+	// 更新処理
 	padUpdate_();
 
 }

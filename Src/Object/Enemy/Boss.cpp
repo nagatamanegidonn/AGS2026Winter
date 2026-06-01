@@ -158,7 +158,7 @@ void Boss::Init(void)
 	auto& users = NetManager::GetInstance().GetNetUsers();
 
 	// ＨＰの初期化
-	hp_ = hpMax_ = MAX_HP * users.size();
+	hp_ = hpMax_ = static_cast<int>(static_cast<float>(MAX_HP) * static_cast<float>(users.size()));
 
 	isHitCheck_ = false;
 
@@ -289,7 +289,6 @@ void Boss::Update(void)
 		SceneManager::GetInstance().CaptureMainScreen();
 	}
 
-
 	// ダメージ描画の更新
 	for (auto& hitdamage : hitdamages_)
 	{
@@ -339,7 +338,6 @@ void Boss::Draw(void)
 		hitdamage->Draw();
 	}
 
-
 #ifdef _DEBUG
 
 	DrawFormatString(100, 400, 0x000000, L"Boss_Anim(%d)", animeType_);
@@ -366,8 +364,8 @@ void Boss::Damage(int _dama,bool _isConst)
 	float dameRate = dameRate_;
 	if (_isConst)dameRate = 1.0f;//固定ダメージなら倍率無効
 
-	const int lastDame = _dama * dameRate;
-
+	const int lastDame = static_cast<int>(static_cast<float>(_dama) * dameRate);
+	// ダメージの設定
 	nIns.SetNetMonsDamage(nIns.GetSelf().key, createNo_, lastDame);
 }
 
@@ -527,10 +525,10 @@ void Boss::InitAnimation(void)
 	}
 
 	// 攻撃データの設定
-	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK_STAMP), ATTRCK_STAMP_DATA);
-	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW), ATTRCK_L_CLOW_DATA);
-	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW), ATTRCK_R_CLOW_DATA);
-	SetAtrckData(static_cast<int>(ANIM_TYPE::ATTRCK_DASH), ATTRCK_DASH_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK_STAMP), ATTRCK_STAMP_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW), ATTRCK_L_CLOW_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW), ATTRCK_R_CLOW_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK_DASH), ATTRCK_DASH_DATA);
 
 	// ブレンド設定
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, 5.0f);

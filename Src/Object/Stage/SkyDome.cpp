@@ -49,7 +49,6 @@ void SkyDome::Init(void)
 
 void SkyDome::Update(void)
 {
-
 	// 更新ステップ
 	switch (state_)
 	{

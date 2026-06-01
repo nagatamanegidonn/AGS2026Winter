@@ -125,7 +125,7 @@ void SmallMonster::Init(void)
 	auto& users = NetManager::GetInstance().GetNetUsers();
 
 	// HPの初期化
-	hp_ = hpMax_ = 1 * users.size();
+	hp_ = hpMax_ = 10;
 
 	isHitCheck_ = false;
 
@@ -267,7 +267,7 @@ void SmallMonster::Damage(int _dama, bool _isConst)
 	float dameRate = dameRate_;		// ダメージ倍率
 	if (_isConst)dameRate = 1.0f;	// 固定ダメージなら倍率無効
 
-	const int lastDame = _dama * dameRate;
+	const int lastDame = static_cast<int>(static_cast<float>(_dama) * dameRate);
 
 	nIns.SetNetMonsDamage(nIns.GetSelf().key, createNo_,lastDame);
 }
@@ -382,7 +382,7 @@ void SmallMonster::InitAnimation(void)
 	animeAgoType_ = animeType_;
 
 	//攻撃情報の設定
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK), std::move(SetAtrckData(-1, 10.0f, 14.0f)));
+	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK), std::move(SetActionData(-1, 10.0f, 14.0f)));
 
 }
 void SmallMonster::InitEffect(void)

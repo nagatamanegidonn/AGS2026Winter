@@ -44,20 +44,12 @@ namespace
 	constexpr int TIME_POS_X = Timer::SIZE_X / 2 + 10;
 	constexpr int TIME_POS_Y = Timer::SIZE_Y / 2 + 10;
 	constexpr float LIMIT_TIME = 60.0f * 5.0f;
-
-
-	constexpr int MAP_SIZE = 200;
-	constexpr int MAP_POS_X = MAP_SIZE / 2 + 10;
-	constexpr int MAP_POS_Y = Application::SCREEN_SIZE_Y - MAP_SIZE / 2 - 10;
 }
 
 
 GameScene::GameScene(void)
 	:
 	SceneBase(),
-	playerHandle_(-1),
-	bossHandle_(-1),
-	mapHandle_(-1),
 	timer_(nullptr),
 	stage_(nullptr),
 	boss_(nullptr),
@@ -67,8 +59,6 @@ GameScene::GameScene(void)
 	stepId_(0),
 	downCnt_(0),
 	minDist_(10000.0f),
-	Material_(nullptr),
-	Renderer_(nullptr),
 	stepCountDown_(0.0f),
 	grid_(nullptr),
 	skyDome_(nullptr)
@@ -88,15 +78,6 @@ GameScene::~GameScene(void)
 
 	SoundManager::GetInstance().AllStop();
 
-	if (playerHandle_ != -1) {
-		DeleteGraph(playerHandle_);
-	}
-	if (bossHandle_ != -1) {
-		DeleteGraph(bossHandle_);
-	}
-	if (mapHandle_ != -1) {
-		DeleteGraph(mapHandle_);
-	}
 }
 
 void GameScene::Init(void)
@@ -199,22 +180,6 @@ void GameScene::Init(void)
 	timer_ = std::make_unique<Timer>(LIMIT_TIME);
 	timer_->Start();
 
-	// マップ
-	mapHandle_ = LoadGraph((Application::PATH_IMAGE + L"UI/Map.png").c_str());
-	bossHandle_ = LoadGraph((Application::PATH_IMAGE + L"UI/Boss.png").c_str());
-	playerHandle_ = LoadGraph((Application::PATH_IMAGE + L"UI/Player.png").c_str());
-
-	// ミニマップシェーダ
-	Material_ = std::make_unique<PixelMaterial>(L"Map.cso", 3);
-	Material_->AddConstBuf({ 0.5f, 0.5f, 0.2f, 0.2f });//ボス
-	Material_->AddConstBuf({ 0.5f, 0.5f, 0.2f, 0.2f });//プレイヤー
-	Material_->AddConstBuf({ 0.0f, 0.0f, 0.0f, 0.0f });//プレイヤー
-	Material_->AddTextureBuf(mapHandle_);
-	Material_->AddTextureBuf(bossHandle_);
-	Material_->AddTextureBuf(playerHandle_);
-	Renderer_ = std::make_unique<PixelRenderer>(*Material_);
-	Renderer_->SetSize(Vector2(MAP_SIZE, MAP_SIZE));
-
 	SetMouseDispFlag(false);
 
 }
@@ -234,12 +199,14 @@ void GameScene::Update(void)
 	Fader::NET_STATE fState = fader_->GetState();
 	switch (fState)
 	{
+		// フェードアウト開始
 	case Fader::NET_STATE::FADE_OUT:
 		if (fader_->IsEnd())
 		{
 			fader_->SetFade(Fader::NET_STATE::FADE_IN);
 		}
 		break;
+		// フェードイン開始
 	case Fader::NET_STATE::FADE_IN:
 		if (fader_->IsEnd())
 		{
@@ -376,12 +343,13 @@ void GameScene::Update(void)
 		textId_ = std::to_string(boss_->GetAreaId());
 		if (boss_->GetLerpTime() <= 0.0f)
 		{
+			// ボスの現在エリアから次の移動場所決定のIDを決める
 			switch (boss_->GetAreaId())
 			{
-			case 1:
+			case 1:	// エリア1ならエリア2へ
 				textId_ = "1to2";
 				break;
-			case 2:
+			case 2:	// エリア2ならエリア1へ
 				textId_ = "2to1";
 				break;
 			default:
@@ -500,30 +468,6 @@ void GameScene::Draw(void)
 
 	// Draw内
 	timer_->DrawNeedle(TIME_POS_X, TIME_POS_Y); // 中心位置 (x, y)
-
-	// マップ
-	const VECTOR bossPos = boss_->GetTransform().pos;
-	const VECTOR cameraF = SceneManager::GetInstance().GetCamera().lock()->GetForward();
-	// カメラの右ベクトル
-	VECTOR camRight = VCross(VGet(0, -1, 0), cameraF);
-	camRight = VNorm(camRight);
-
-	// 相対位置（プレイヤーを原点としたときのボスの位置）
-	float relX = bossPos.x - playerPos.x;
-	float relZ = bossPos.z - playerPos.z;
-	// 例: ミニマップや2D表示で使うために、相対位置をスケーリング
-	float scale = 0.0001f; // ミニマップの縮小率など
-	float screenX = relX * scale + 0.5f;
-	float screenY = -relZ * scale + 0.5f; // ZはY軸にマッピング
-
-	Material_->SetConstBuf(0,{ screenX, screenY, 0.05f, 0.05f });//ボス
-	Material_->SetConstBuf(1,{ -playerDirF.x, playerDirF.z, 0.05f, 0.05f });//
-	Material_->SetConstBuf(2,{ -camRight.x, camRight.z, 0.0f, 0.0f });//
-
-	// ミニマップの描画
-	/*SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);
-	Renderer_->Draw(MAP_POS_X, MAP_POS_Y);
-	SetTextureAddressModeUV(DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP);*/
 
 	GameManager::GetInstance().DrawClear();
 

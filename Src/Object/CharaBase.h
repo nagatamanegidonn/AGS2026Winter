@@ -129,8 +129,8 @@ protected:
 	/// <param name="isChage">操作受付終了時間</param>
 	/// <param name="chargeId">固定用アニメ</param>
 	/// <returns></returns>
-	std::unique_ptr<ActionData> SetAtrckData(int nextAtkId, float sHitTim = -1.0f, float HitTim = -1.0f,
+	std::unique_ptr<ActionData> SetActionData(int nextAtkId, float sHitTim = -1.0f, float HitTim = -1.0f,
 		float sNewTime = -1.0f, bool isChage = false, int chargeId = -1);
-	void SetAtrckData(int id,const ActionData& data);
+	void SetActionData(int id,const ActionData& data);
 };
 

@@ -68,7 +68,6 @@ void Planet::Update(void)
 void Planet::Draw(void)
 {
     MV1DrawModel(transform_.modelId);
-	//std::lerp()
 
 #ifdef _DEBUG
 	DrawSphere3D(AREA_POS_0, 1000.0f, 10, 0xff0000, 0xff0000, false);
@@ -89,7 +88,7 @@ void Planet::SetRotation(const Quaternion& rot)
 	transform_.Update();
 }
 
-const std::weak_ptr<Planet::Area>& Planet::GetArea(int areaId) const
+std::weak_ptr<Planet::Area> Planet::GetArea(int areaId) const
 {
 	return stageArea_.at(areaId);
 }

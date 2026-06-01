@@ -160,7 +160,6 @@ void ConnectScene::Update(void)
 
 		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);//ゲームスタート！
 	}
-
 }
 
 void ConnectScene::Draw(void)

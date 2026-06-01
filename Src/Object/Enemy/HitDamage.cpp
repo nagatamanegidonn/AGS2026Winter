@@ -35,6 +35,7 @@ void HitDamage::Init(int damage)
 
 void HitDamage::Update(void)
 {
+	// ダメージ表記の位置を更新
 	uiPos_ = AsoUtility::MV1GetFreamPos(parModel_, L"Chest_M");
 
 	if (uiRate_ > 0.0f)
@@ -56,7 +57,7 @@ void HitDamage::Draw(void)
 		VECTOR twoDPos = ConvWorldPosToScreenPos(uiPos_);
 		if (twoDPos.z >= 0.0f && twoDPos.z <= 1.0f)
 		{
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 * uiRate_);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255.0f * uiRate_));
 			std::wstring msg = std::to_wstring(uiDame_);
 			SetFontSize(28);
 			int len = static_cast<int>(wcslen(msg.c_str()));
@@ -64,11 +65,11 @@ void HitDamage::Draw(void)
 
 			// ダメージの大きさで色を変える
 			if (uiDame_ > WEAK_DAMAGE) {
-				DrawFormatString(twoDPos.x + randPosX_, twoDPos.y + randPosY_, 0xffd700, msg.c_str());
+				DrawFormatString(static_cast<int>(twoDPos.x) + randPosX_, static_cast<int>(twoDPos.y) + randPosY_, 0xffd700, msg.c_str());
 			}
 			else
 			{
-				DrawFormatString(twoDPos.x + randPosX_, twoDPos.y + randPosY_, 0xffffff, msg.c_str());
+				DrawFormatString(static_cast<int>(twoDPos.x) + randPosX_, static_cast<int>(twoDPos.y) + randPosY_, 0xffffff, msg.c_str());
 			}
 
 			SetFontSize(16);

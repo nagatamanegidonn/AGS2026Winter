@@ -164,7 +164,7 @@ Player::Player(int key)
 
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::RUN); i++)
 	{
-		atkData_.emplace(i, SetAtrckData(-1));
+		atkData_.emplace(i, SetActionData(-1));
 	}
 }
 
