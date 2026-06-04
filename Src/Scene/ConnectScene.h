@@ -1,7 +1,5 @@
 #pragma once
-
 #include "../Lib/nlohmann/json.hpp"
-
 #include "SceneBase.h"
 
 // 長いのでnamespaceの省略
@@ -28,17 +26,27 @@ public:
 
 	// コンストラクタ
 	ConnectScene(void);
+
 	// デストラクタ
 	~ConnectScene(void);
 
+	// 初期化処理
 	void Init(void) override;
+
+	// 更新処理
 	void Update(void) override;
+
+	// 描画処理
 	void Draw(void) override;
+
+	// 解放処理
 	void Release(void) override;
 
 private:
 
+	// プレイヤー
 	std::vector<std::unique_ptr<ViewPlayer>> players_;
+	// プレイヤー数
 	int playerNum_;
 
 	// タイトル画像
@@ -48,11 +56,11 @@ private:
 	int imgStart_;
 
 	//　背景、カーソル画像
-	int backImg_;
-	std::unique_ptr<PixelMaterial> Material_;
-	std::unique_ptr<PixelRenderer> Renderer_;
+	int backImg_;	// カーソル画像
+	std::unique_ptr<PixelMaterial> Material_;// ピクセルマテリアル
+	std::unique_ptr<PixelRenderer> Renderer_;// ピクセルレンダラー
 
+	// プレイヤーの追加
 	void AddPlayer(const VECTOR pos, const VECTOR rot);
-
 
 };

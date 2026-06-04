@@ -75,7 +75,7 @@ public:
 		ATTRCK,		// 攻撃
 
 		ROWLING,	// 回避
-
+		
 		DAMAGE,		// ダメージ（のけぞり）
 		HI_DAMAGE,	// ダメ―ジ（吹っ飛び）
 		DEAD,		// 死亡

@@ -1,5 +1,5 @@
 #pragma once
-#include<memory>  // shared_ptrを使うために必要
+#include <memory> 
 #include <vector>
 #include "../Common/Vector2.h"
 #include "../Object/Common/Transform.h"
@@ -28,9 +28,10 @@ public:
 
 	// ゲームプレイヤー数
 	static constexpr int GAME_PLAYER_NUM = 2;
-
 	// プレイヤーダウンカウント限界数
 	static constexpr int MAX_DOWN_COUNT = 2;
+	// 最小距離の初期値
+	static constexpr float START_MIN_DIST = 10000.0f;
 
 	// コンストラクタ
 	GameScene(void);
@@ -40,10 +41,13 @@ public:
 
 	// 初期化処理
 	void Init(void) override;
+
 	// 更新処理
 	void Update(void) override;
+
 	// 描画処理
 	void Draw(void) override;
+
 	// 解放処理
 	void Release(void) override;
 

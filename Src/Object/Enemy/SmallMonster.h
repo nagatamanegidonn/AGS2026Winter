@@ -70,14 +70,14 @@ public:
 	void Draw(void)override;
 
 	// ダメージ関係
-	void Damage(int _dama, bool _isConst = false)override;
+	void Damage(int dama, bool isConst = false)override;
 
 	const bool IsState(STATE state)const { return (state_ == state); }
 
 	const VECTOR GetAttrckPos(void) const { return attrckPos_; }
 
 	// 外部クラストの当たり判定
-	const bool CollisionCapsule(std::weak_ptr<Capsule> _capsule);
+	const bool CollisionCapsule(std::weak_ptr<Capsule> capsule);
 	const bool CollisionAttrck(const int& modelId);
 
 	// 追従対象の設定

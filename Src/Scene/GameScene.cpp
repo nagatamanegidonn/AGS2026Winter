@@ -15,7 +15,7 @@
 #include "../Net/NetManager.h"
 
 #include "../Object/Common/Timer.h"
-
+// プレイヤー関連
 #include "../Object/Player/Player.h"
 #include "../Object/Player/Sword.h"
 #include "../Object/Player/GreatSword.h"
@@ -25,9 +25,10 @@
 #include "../Object/Shot/ItemShot.h"
 #include "../Object/Shot/ArrowShot.h"
 #include "../Object/Shot/ShotBase.h"
-
+// 敵関連
 #include "../Object/Enemy/Boss.h"
 #include "../Object/Enemy/SmallMonster.h"
+
 #include "../Object/Stage/Stage.h"
 #include "../Object/Stage/Planet.h"
 #include "../Object/Stage/SkyDome.h"
@@ -233,7 +234,6 @@ void GameScene::Update(void)
 	Measure::GetInstance().Watch(L"01 Application START");
 #endif
 
-
 	// 自身のアクション記録(履歴じゃない)をリセット
 	NetManager::GetInstance().ResetAction();
 
@@ -242,10 +242,8 @@ void GameScene::Update(void)
 	stage_->Update();
 	grid_->Update();
 
-
 	Transform closestTrans;
 	Transform trans = Transform();
-
 
 	bool isBattle = false;
 	// プレイヤーの更新

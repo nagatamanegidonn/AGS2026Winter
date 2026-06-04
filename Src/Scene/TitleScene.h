@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
 #include <functional>
-#include<memory>  //ptrを使うために必要
+#include <memory>
 #include <string>
 
 #include "../Application.h"
@@ -78,12 +78,20 @@ public:
 
 	// コンストラクタ
 	TitleScene(void);
+
 	// デストラクタ
 	~TitleScene(void);
 
+	// 初期化処理
 	void Init(void) override;
+
+	// 更新処理
 	void Update(void) override;
+
+	// 描画処理
 	void Draw(void) override;
+
+	// 解放処理
 	void Release(void) override;
 
 private:
