@@ -65,9 +65,14 @@ public:
 	// デストラクタ
 	~SmallMonster(void);
 
-	void Init(void) override;
-	void Update(void)override;
-	void Draw(void)override;
+	// 初期化処理
+	virtual void Init(void) override;
+
+	// 更新処理
+	virtual void Update(void)override;
+
+	// 描画処理
+	virtual void Draw(void)override;
 
 	// ダメージ関係
 	void Damage(int dama, bool isConst = false)override;

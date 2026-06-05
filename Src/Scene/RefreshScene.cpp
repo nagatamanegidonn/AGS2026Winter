@@ -25,10 +25,11 @@ RefreshScene::~RefreshScene(void)
 
 void RefreshScene::Init(void)
 {
+	// シーン遷移の待機時間
 	stepCountDown_ = 3.0f;
 
+	// カメラ設定
 	SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FIXED_POINT);
-
 }
 
 void RefreshScene::Update(void)
@@ -44,18 +45,18 @@ void RefreshScene::Update(void)
 	float limit = stepCountDown_ - SceneManager::GetInstance().GetTotalGameTime();
 	if (limit > 0.0f)
 	{
-		DrawFormatString(100, 100, 0xffffff, L"%f", limit);
 		return;
 	}
+	// ゲーム結果の初期化
 	else
 	{
 		NetManager::GetInstance().ChangeGameState(GAME_STATE::NONE);
 	}
 
-
 	// シーンへ遷移
 	SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);
 	
+	// マウスポインタを表示さ	せる
 	SetMouseDispFlag(true);
 }
 
@@ -76,6 +77,7 @@ void RefreshScene::Draw(void)
 
 	SetFontSize(64);
 
+	// ゲーム結果の表示
 	switch (gns.GetGameResult())
 	{
 	case GameManager::GAME_RESULT::NONE:

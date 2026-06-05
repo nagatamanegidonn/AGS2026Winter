@@ -1,34 +1,17 @@
-﻿  CharaBase.cpp
-  Boss.cpp
-  EnemyBase.cpp
-  SmallMonster.cpp
-  Arrow.cpp
+﻿  Arrow.cpp
   GreatSword.cpp
   Player.cpp
   Sword.cpp
   ItemObject.cpp
   Object.cpp
-C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Player.cpp(751,9): warning C4244: '-=': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Player.cpp(1499,12): warning C4305: '+=': 'double' から 'float' へ切り詰めます。
-C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Player.cpp(1922,11): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
-  Planet.cpp
-  SkyDome.cpp
   Stage.cpp
-  ConnectScene.cpp
   GameScene.cpp
-  TitleScene.cpp
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\ConnectScene.cpp(85,28): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(564,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(587,49): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(629,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(643,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(776,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\TitleScene.cpp(393,21): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\TitleScene.cpp(393,25): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\TitleScene.cpp(393,29): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\TitleScene.cpp(393,33): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\TitleScene.cpp(532,21): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\TitleScene.cpp(532,25): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\TitleScene.cpp(532,29): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\TitleScene.cpp(532,33): warning C4838: 'int' から 'unsigned char' への変換には縮小変換が必要です
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(557,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(580,49): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(622,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(636,42): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp(767,41): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Player.cpp(743,9): warning C4244: '-=': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Player.cpp(1491,12): warning C4305: '+=': 'double' から 'float' へ切り詰めます。
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Player.cpp(1914,11): warning C4244: '初期化中': 'float' から 'int' への変換です。データが失われる可能性があります。
   BaseProject.vcxproj -> C:\Users\2316013\Desktop\WildHuntG\x64\Debug\BaseProject.exe

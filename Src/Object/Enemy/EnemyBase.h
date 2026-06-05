@@ -17,11 +17,19 @@ class EnemyBase :
 
 public:
 
+	// コンストラクタ
 	EnemyBase(void);
+
+	// デストラクタ
 	virtual ~EnemyBase(void);
 
+	// 初期化処理
 	virtual void Init(void) override;
+
+	// 更新処理
 	virtual void Update(void)override;
+
+	// 描画処理
 	virtual void Draw(void)override;
 
 	// 追従対象の設定
@@ -35,18 +43,20 @@ public:
 
 protected:
 
-	//ユーザー番号
+	// ユーザー番号
 	int key_;
 	int createNo_;
 
 	// アニメーション
 	std::unique_ptr<AnimationController> animationController_;
+	// エフェクトコントローラー
 	std::unique_ptr<EffectController> effectController_;
+	// サウンドコントローラー
 	std::unique_ptr<SoundController> soundController_;
 
-	//当たり判定（複数）
+	// 当たり判定（複数）
 	std::vector<std::unique_ptr<HitPart>> hitParts_;
-	//ダメージ表記用変数
+	// ダメージ表記用変数
 	std::vector<std::unique_ptr<HitDamage>> hitdamages_;
 
 	//アニメーションの追加、設定
@@ -56,15 +66,15 @@ protected:
 	int hp_;
 	int hpMax_;
 
-	//ターゲットプレイヤー
+	// ターゲットプレイヤー
 	const Transform* follow_;
 	float followTime_;
 
-	//ターゲット回転
+	// ターゲット回転
 	float rotateTimer_ = 0.0f;          // 回転間隔のためのタイマー
 	const float rotateInterval_ = 1.6f; // 例：0.2秒ごとに向き直す
 
-	//カプセル
+	// カプセル
 	std::unique_ptr<Capsule> capsule_;
 
 	// 衝突チェック(カプセル)
@@ -72,10 +82,11 @@ protected:
 	VECTOR gravHitPosUp_;	//← 衝突用線分
 	VECTOR hitDamePos_;	//← 衝突用線分
 
-	//最終更新
+	// 最終更新
 	virtual void CollisionStageCapsule(void)override;
 	virtual void CollisionGravity(void)override;
 
+	// ダメージ描画クラス生成などの更新処理
 	virtual int DamageUpdate(void);
 
 	void TargetRotate(const VECTOR& traPos, float rate = 1.0f);

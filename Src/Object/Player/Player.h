@@ -4,22 +4,17 @@
 #include "../Net/NetStructures.h"
 #include "../Common/Vector2F.h"
 #include "../Utility/AsoUtility.h"
-
 #include "../CharaBase.h"
 
 class AnimationController;
 class InputController;
 class EffectController;
 class SoundController;
-
 class ItemPoach;
-
 class Capsule;
 class Collider;
-
 class PixelMaterial;
 class PixelRenderer;
-
 class SceneBase;
 class GameScene;
 
@@ -71,18 +66,13 @@ public:
 		PLAY,		// 通常状態
 		BATTLE,		// 戦闘状態
 		WEAPON,		// 抜刀、納刀
-
 		ATTRCK,		// 攻撃
-
-		ROWLING,	// 回避
-		
+		ROWLING,	// 回避	
 		DAMAGE,		// ダメージ（のけぞり）
 		HI_DAMAGE,	// ダメ―ジ（吹っ飛び）
 		DEAD,		// 死亡
-
 		GET,		// 採取
 		ITEM_PLAY,	// 使用
-
 		END
 	};
 
@@ -134,43 +124,47 @@ public:
 		WALK,
 		RUN,
 		ROLL,
-
 		DAMAGE,
 		HI_DAMAGE,
 		DOWN,
-
 		ATTRCK1,
 		ATTRCK2,
 		ATTRCK3,
-
 		MAX// 音なしfor文用
 	};
 
 	// コンストラクタ
-	Player(int key);
+	Player(int key, GameScene* scene, PLAYER_TYPE type);
 
 	// デストラクタ
 	~Player(void);
 
-	void Init(GameScene* scene, PLAYER_TYPE type);
-	void Init(void) override 
-	{
-		// 必要な初期化処理を書く。何もなければ空でもOK。
-	}
-	void Update(void)override;
-	void Draw(void)override;
+	// 初期化処理
+	void Init(void) override;
+
+	// 更新処理
+	void Update(void) override;
+
+	// 描画処理
+	void Draw(void) override;
 	virtual void DrawUI(int i);
+
+	// 解放処理
 	void Release(void);
 
 	// 座標の取得
 	const Transform& GetTransWeapon(void) const { return transWeapon_; }
+
 	// ユーザー番号の取得
-	const int GetKey(void) const { return key_; }
+	inline const int GetKey(void) const { return key_; }
+
 	// ＨＰの取得
-	const int GetHp(void) const { return hp_; }
+	inline const int GetHp(void) const { return hp_; }
+
 	// ダメージ関係
 	void Damage(int dama,const VECTOR atkPos, const VECTOR mixDir);
 
+	// 衝突しているか
 	const bool IsHit(void) const;
 	const bool GetHit(void) const;
 	const void SetHit(bool flag);
@@ -180,19 +174,23 @@ public:
 
 	// プレイヤー種別(1P or 2P)
 	const PLAYER_TYPE& GetPlayerType(void)const;
+
+	// カプセルとの当たり判定
 	bool CollisionCapsule(int& modelId)const;
+
 	// 球体との当たり判定
 	const bool CollisionUnderSphere(const VECTOR pos,float r)const;
 
-	const bool IsAttrck(void) const;// 通信プレイヤーのことは不明
-	const bool IsLoopAnim(void) const;	// 通信プレイヤー
+	// 攻撃アニメーション判定
+	const bool IsAttrck(void) const;	// 攻撃をしているか
+	const bool IsLoopAnim(void) const;	// 再生アニメーションがループするか
 
 	// 自身のプレイヤーかどうか
 	const bool IsSelf(void) const;
 
-	// 注目するか
-	bool IsAimSet(void);
-	bool IsTrgAimSet(void);
+	// 注目判定
+	bool IsAimSet(void);	// 狙い撃ちをしているか
+	bool IsTrgAimSet(void);	// 注目をしているか
 
 	// 通信専用の攻撃アニメーション判定
 	virtual bool IsSyncAttrck(void);
@@ -202,10 +200,9 @@ public:
 
 protected:
 
-	VECTOR demoRot_;
-
 	// ゲームシーンのポインタ変数
 	GameScene* gameScene_;
+
 	// ユーザー番号
 	int key_;
 
@@ -223,8 +220,8 @@ protected:
 
 	// 状態管理
 	STATE state_;
-	int animeType_;
-	int animeAgoType_;
+	int animeType_;		// アニメーションの種類
+	int animeAgoType_;	// 前フレームのアニメーションの種類
 
 	// 抜刀状態管理
 	bool isBattle_;		// 抜刀中か判断する
@@ -249,21 +246,23 @@ protected:
 	int staFreamImg_;	// スタミナフレーム画像
 	int staMaskImg_;	// スタミナマスク画像
 
-	std::unique_ptr<PixelMaterial> Material_;
-	std::unique_ptr<PixelRenderer> Renderer_;
+	// ステータスUI
+	std::unique_ptr<PixelMaterial> statusMaterial_;
+	std::unique_ptr<PixelRenderer> statusRenderer_;
+	// HPバーUI
 	std::unique_ptr<PixelMaterial> hpMaterial_;
 	std::unique_ptr<PixelRenderer> hpRenderer_;
+	// スタミナUI
 	std::unique_ptr<PixelMaterial> staMaterial_;
 	std::unique_ptr<PixelRenderer> staRenderer_;
 
-	// カプセル
+	// カプセル（判定用）
 	std::unique_ptr<Capsule> capsule_;
 	std::shared_ptr<Capsule> capsuleWeapon_;
 
 	// 衝突チェック
 	VECTOR gravHitPosDown_; //← 衝突用線分
 	VECTOR gravHitPosUp_;	//← 衝突用線分
-
 
 	// プレイヤー種別(1P or 2P)
 	PLAYER_TYPE type_;
@@ -274,15 +273,16 @@ protected:
 
 #pragma region パラメーター
 
-	// 体力	// ダメージ系
-	int hp_;
-	int hpAgo_;
-	int hpMax_;
-	float damage_;
+	// 体力系
+	int hp_;	// 現在HP
+	int hpAgo_;	// 前フレームのHP
+	int hpMax_;	// 最大HP 
+	float damage_;	// ダメージ
+
 	// スタミナ
-	float stamina_;
-	float staminaMax_;
-	float staminaDir_;
+	float stamina_;		// 現在スタミナ
+	float staminaMax_;	// 最大スタミナ
+	float staminaDir_;	// 
 	bool isBreak_;		// 疲労(スタミナが０になったか判定)
 
 #pragma endregion
@@ -296,6 +296,7 @@ protected:
 	// 採取の際の情報（仮）
 	// 採取行動の際にどのアイテムがとれるかをId管理（何もないときはー１）
 	int itemId_;
+
 	// アイテムポーチ
 	std::unique_ptr <ItemPoach> poach_;
 
@@ -303,7 +304,7 @@ protected:
 	virtual void InitParam(void);
 	virtual void InitAnimation(void);
 	virtual void InitEffect(void);
-	void InitSound(void);		// 通常サウンド
+	void InitSound(void);				// 通常サウンド
 	virtual void InitAttrckSound(void);	// 戦闘用サウンド
 	virtual void InitShader(void);	// シェーダー初期化
 	// 攻撃音再生
@@ -352,8 +353,8 @@ protected:
 	virtual void DrawWeapon();
 	// 武器の同期
 	const void SyncWeapon();
-	virtual void SyncWeaponPlay();
-	virtual void SyncWeaponBattle();
+	virtual void SyncWeaponPlay();	// 通常
+	virtual void SyncWeaponBattle();// 戦闘中
 
 	/// <summary>
 	/// モデルのフレーム追従
@@ -373,16 +374,19 @@ protected:
 
 	// モーション終了
 	bool IsEndLanding(void);
+
 	// 操作可能か
 	const bool IsInputPlay(void)const;
 
 	// 攻撃キャンセル時の処理
 	void AttrckReset(void);
+
 	// アニメーション終了時の処理
 	void ChangeStateAnimeEnd(const ANIM_TYPE anim, const std::function<void(void)> function = {});
 
 	// デバッグ用描画
 	void DrawDebug(void);
+
 	// attackDataを基にした更新
 	void AttrckUpdate(void);
 

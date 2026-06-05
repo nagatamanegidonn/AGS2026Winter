@@ -31,11 +31,11 @@ void ConnectScene::Init(void)
 {
 	backImg_ = LoadGraph((Application::PATH_IMAGE + L"img.png").c_str());
 	// ポストエフェクト用(モノトーン)
-	Material_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
-	Material_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
-	Material_->AddTextureBuf(backImg_);
-	Renderer_ = std::make_unique<PixelRenderer>(*Material_);
-	Renderer_->MakeSquereVertex(
+	backGroundMaterial_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
+	backGroundMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
+	backGroundMaterial_->AddTextureBuf(backImg_);
+	backGroundRenderer_ = std::make_unique<PixelRenderer>(*backGroundMaterial_);
+	backGroundRenderer_->MakeSquereVertex(
 		Vector2(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2),
 		Vector2(Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y)
 	);
@@ -71,27 +71,27 @@ void ConnectScene::Update(void)
 	// インスタンスクラスの取得
 	auto& nIns = NetManager::GetInstance();
 	const auto& ins = InputManager::GetInstance();
-	const auto& users = NetManager::GetInstance().GetNetUsers();
 
 	// 武器情報の送信
 	nIns.SetWeapon(NetManager::GetInstance().GetSelf().key, GameManager::GetInstance().GetWeaponId());
 
 	const InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(GameManager::GetInstance().GetControllId());
-
-	auto& players = NetManager::GetInstance().GetNetUsers();
-	if (playerNum_ < players.size())
+	auto& users = NetManager::GetInstance().GetNetUsers();
+	if (playerNum_ < users.size())
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::ADD, Sound::TIMES::ONCE, true);
-		playerNum_ = players.size();
+		playerNum_ = users.size();
 		
 	}
 	int i = 0;
-	for (const auto& users : players)
+	for (const auto& user : users)
 	{
-		players_.at(i)->SetWeapon(nIns.GetWeapon(users.second.key));
+		// プレイヤーごとの武器の設定
+		players_.at(i)->SetWeapon(nIns.GetWeapon(user.second.key));
 		i++;
 	}
 
+	// プレイヤーの更新
 	for (const auto& player : players_)
 	{
 		player->Update();
@@ -140,7 +140,7 @@ void ConnectScene::Update(void)
 	}
 
 	// プレイ人数が一人のみの場合タイトルに戻れる
-	if (players.size() <= 1) {
+	if (users.size() <= 1) {
 		// タイトルへ戻る
 		if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::DOWN)
 			|| ins.IsTrgDown(KEY_INPUT_BACK))
@@ -164,15 +164,15 @@ void ConnectScene::Update(void)
 
 void ConnectScene::Draw(void)
 {
-	Renderer_->Draw();
+	backGroundRenderer_->Draw();
 
 	int HX = Application::SCREEN_SIZE_X / 2;
 	int HY = Application::SCREEN_SIZE_Y / 2;
 	
 	
-	auto& players = NetManager::GetInstance().GetNetUsers();
+	auto& users = NetManager::GetInstance().GetNetUsers();
 	int i = 0;
-	for (const auto& users : players)
+	for (const auto& user : users)
 	{
 		players_.at(i)->Draw();
 		i++;
@@ -183,20 +183,18 @@ void ConnectScene::Draw(void)
 	{
 		msg = L"接続待ち";
 	}
+
+	// 接続待ちの表示
 	DrawString(HX - 100, HY, msg.c_str(), 0xffffff);
 
 	int y = HY + 50;
 
-	for (const auto& users : players)
+	for (const auto& user : users)
 	{
-
-		if (users.second.mode == NET_MODE::HOST)
+		if (user.second.mode == NET_MODE::HOST)
 		{
-			IPDATA ip = users.second.ip;
-
-
+			IPDATA ip = user.second.ip;
 			Vector2(HX - WIDTH / 2, B1_Y - HEIGHT / 2);
-
 
 			std::wstring out = L"接続番号:";
 			out += std::to_wstring(ip.d1);
@@ -245,13 +243,13 @@ void ConnectScene::Draw(void)
 	DrawFormatString(100, 250, 0xffffff, "使用武器：%s", text.c_str());
 
 #endif // DEBUG
-
 }
 
 void ConnectScene::Release(void)
 {
 }
 
+// プレイヤーの追加
 void ConnectScene::AddPlayer(const VECTOR pos, const VECTOR rot)
 {
 	auto player_ = std::make_unique<ViewPlayer>();

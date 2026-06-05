@@ -2,25 +2,21 @@
 #include "../Application.h"
 #include "../Utility/AsoUtility.h"
 #include "../Utility/Measure.h"
-
 #include "../Manager/SoundManager.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
 #include "../Manager/GameManager.h"
 #include "../Manager/Camera.h"
-
 #include "../Common/Fader.h"
-
 #include "../Net/NetStructures.h"
 #include "../Net/NetManager.h"
-
 #include "../Object/Common/Timer.h"
 // プレイヤー関連
 #include "../Object/Player/Player.h"
 #include "../Object/Player/Sword.h"
 #include "../Object/Player/GreatSword.h"
 #include "../Object/Player/Arrow.h"
-
+// 投げ物関連
 #include "../Object/Shot/BomObject.h"
 #include "../Object/Shot/ItemShot.h"
 #include "../Object/Shot/ArrowShot.h"
@@ -28,12 +24,12 @@
 // 敵関連
 #include "../Object/Enemy/Boss.h"
 #include "../Object/Enemy/SmallMonster.h"
-
+// ステージ関連
 #include "../Object/Stage/Stage.h"
 #include "../Object/Stage/Planet.h"
 #include "../Object/Stage/SkyDome.h"
 #include "../Object/Stage/Grid.h"
-
+// シェーダ
 #include "../Renderer/PixelMaterial.h"
 #include "../Renderer/PixelRenderer.h"
 
@@ -44,6 +40,7 @@ namespace
 	// タイマーの描画位置
 	constexpr int TIME_POS_X = Timer::SIZE_X / 2 + 10;
 	constexpr int TIME_POS_Y = Timer::SIZE_Y / 2 + 10;
+	// 制限時間
 	constexpr float LIMIT_TIME = 60.0f * 5.0f;
 }
 
@@ -59,26 +56,23 @@ GameScene::GameScene(void)
 	textId_(""),
 	stepId_(0),
 	downCnt_(0),
-	minDist_(10000.0f),
 	stepCountDown_(0.0f),
+	minDist_(START_MIN_DIST),
 	grid_(nullptr),
 	skyDome_(nullptr)
 {
-	stepCountDown_ = 0;
+	// プレイヤークラスの解放
 	players_.clear();
-
-	skyDome_ = nullptr;
-	grid_ = nullptr;
 }
 
 GameScene::~GameScene(void)
 {
+	// Shotクラスの解放
 	shots_.clear();
-
+	// 経過時間のリセット
 	SceneManager::GetInstance().SetTotalGameTime(0.0f);
-
+	// 音の停止
 	SoundManager::GetInstance().AllStop();
-
 }
 
 void GameScene::Init(void)
@@ -89,72 +83,75 @@ void GameScene::Init(void)
 	auto& users = NetManager::GetInstance().GetNetUsers();
 	auto& nIns = NetManager::GetInstance();
 
+	// フラッシュ用フェードクラスの生成
 	fader_ = std::make_unique<Fader>(0xffffff);
 	fader_->Init(15.0f);
 
+	// ボスの生成
 	boss_ = std::make_unique<Boss>(NetManager::GetInstance().GetHost().key,0);
 	boss_->Init();
 	
+	// モンスターの設定
+	// 1体目
 	auto mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key,1);
 	mons->Init();
 	monsters_.emplace_back(mons);
-	
+	// 2体目
 	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key,2);
 	mons->Init();
 	monsters_.emplace_back(mons);
-	
+	// 3体目
 	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key,3);
 	mons->Init();
 	monsters_.emplace_back(mons);
 
+	// 移動用の変数初期化
 	textId_ = "";
 	stepId_ = 0;
 
 	for (auto& user : users)
 	{
-		auto  player = std::make_shared<Player>(user.first);
+		auto  player = std::make_shared<Player>(user.first, this, user.second.playerType);
 
 		// モデルの基本設定
 		switch (nIns.GetWeapon(user.first))
 		{
 		case 0:
-			player = std::make_shared<Sword>(user.first);
+			player = std::make_shared<Sword>(user.first, this, user.second.playerType);
 			break;
 		case 1:
-			player = std::make_shared<GreatSword>(user.first);
+			player = std::make_shared<GreatSword>(user.first, this, user.second.playerType);
 			break;
 		case 2:
-			player = std::make_shared<Arrow>(user.first);
+			player = std::make_shared<Arrow>(user.first, this, user.second.playerType);
 			break;
 		default:
 			break;
 		}
 		
-		player->Init(this, user.second.playerType);
+		player->Init();
 
 		// 自分用のクラス	
 		if (user.first== NetManager::GetInstance().GetSelf().key)
 		{
-
-			// ステージ
+			// ステージの設定
 			stage_ = std::make_unique<Stage>(*player, *boss_);
 			stage_->SetEnemy(monsters_);
 			stage_->Init();
-			// ステージの初期設定
-			// stage_->ChangeStage(Stage::NAME::SPECIAL_STAGE);
 			stage_->ChangeStage(Stage::NAME::MAIN_PLANET);
 
 			// スカイドーム
 			skyDome_ = std::make_unique<SkyDome>(player->GetTransform());
 			skyDome_->Init();
 
-
+			// カメラの設定
 			SceneManager::GetInstance().GetCamera().lock()->SetFollow(&player->GetTransform());
 			SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FOLLOW);
 		}
 
 		players_.push_back(std::move(player));
 	}
+	// ステージにプレイヤーを参照させる
 	stage_->SetPlayers(players_);
 
 	// 背景初期化
@@ -181,13 +178,13 @@ void GameScene::Init(void)
 	timer_ = std::make_unique<Timer>(LIMIT_TIME);
 	timer_->Start();
 
+	// マウスポインタ非表示
 	SetMouseDispFlag(false);
-
 }
 
 void GameScene::Update(void)
 {
-
+	// ホストならゲーム時間を進める
 	auto& nIns = NetManager::GetInstance();
 	if (nIns.GetMode() == NET_MODE::HOST)
 	{
@@ -489,9 +486,8 @@ void GameScene::Draw(void)
 
 #endif // DEBUG
 
-	// 最後
+	// フェードの描画
 	fader_->Draw();
-
 }
 
 void GameScene::Release(void)
@@ -499,9 +495,7 @@ void GameScene::Release(void)
 
 }
 
-
-
-
+// 弾の生成
 void GameScene::CreateShot(ShotBase::TYPE type, int damage, const VECTOR& birthPos, const VECTOR& dir, int key)
 {
 	bool isEnd = false;
@@ -536,6 +530,7 @@ void GameScene::CreateShot(ShotBase::TYPE type, int damage, const VECTOR& birthP
 		shots_.push_back(std::move(shot));
 	}
 }
+
 // ステージオブジェクトの生成
 void GameScene::CreateObject(const Transform& _trans)
 {
@@ -644,8 +639,6 @@ void GameScene::Collision(void)
 				}
 			}
 		}
-
-
 	}
 
 	// 弾の当たり判定
@@ -786,11 +779,7 @@ void GameScene::Collision(void)
 					boss_->Damage(shot->GetDamage(), true);
 					shot->ChangeState();
 				}
-
-			}
-			
-
-			
+			}				
 		}
 	}
 }

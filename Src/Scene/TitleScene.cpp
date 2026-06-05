@@ -11,7 +11,7 @@
 #include "../Utility/AsoUtility.h"
 #include "../Object/Player/ViewPlayer.h"
 #include "../Object/Common/InputController.h"
-
+// シェーダ
 #include "../Renderer/PixelMaterial.h"
 #include "../Renderer/PixelRenderer.h"
 
@@ -20,12 +20,12 @@
 TitleScene::TitleScene(void)
 	:
 	SceneBase(),
-	player_(nullptr),
+	viewPlayer_(nullptr),
 	inputTextArea_(nullptr),
 	cursorMaterial_(nullptr),
 	cursorRenderer_(nullptr),
-	Material_(nullptr),
-	Renderer_(nullptr),
+	backGroundMaterial_(nullptr),
+	backGroundRenderer_(nullptr),
 	titleMaterial_(nullptr),
 	titleRenderer_(nullptr),
 	isTitle_(false),
@@ -65,6 +65,7 @@ void TitleScene::Init(void)
 	backImg_ = LoadGraph((Application::PATH_IMAGE + L"img.png").c_str());
 	titleImg_ = LoadGraph((Application::PATH_IMAGE + L"TitleRogo.png").c_str());
 
+	// IPアドレス入力エリア生成
 	auto hostIp = NetManager::GetInstance().GetHostIp();
 	inputTextArea_ = new InputTextArea(//ここの１５は最大文字数
 		{ IP_S_POS.x, IP_S_POS.y }, { IP_E_POS.x - IP_S_POS.x, IP_E_POS.y - IP_S_POS.y }, 15);
@@ -79,12 +80,14 @@ void TitleScene::Init(void)
 	// IPアドレス初期設定
 	inputTextArea_->SetText(defaultIp);
 
-	NetManager::GetInstance().Init(); // ソケット再生成、ユーザー情報リセット
+	// ソケット再生成、ユーザー情報リセット
+	NetManager::GetInstance().Init(); 
 
-	player_ = std::make_unique<ViewPlayer>();
-	player_->Init();
-	player_->SetChar(0);
-	player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
+	// プレイヤー生成
+	viewPlayer_ = std::make_unique<ViewPlayer>();
+	viewPlayer_->Init();
+	viewPlayer_->SetChar(0);
+	viewPlayer_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 
 	// 選択中の項目
 	selectId_ = (int)MENU::GAME_START;
@@ -99,7 +102,8 @@ void TitleScene::Init(void)
 	AddPosTri(L"弓", 2, Vector2(WIDTH, HEIGHT)
 		, Vector2(WP_C_POS.x + 50, WP_C_POS.y + (HEIGHT * 3)));
 
-	isPad_ = false;	// デフォルトはマウス操作
+	// マウス操作の設定
+	isPad_ = false;
 	
 	// 更新ステップの初期設定
 	typeUpdate_ = std::bind(&TitleScene::UpdateMouse, this);
@@ -121,11 +125,11 @@ void TitleScene::Init(void)
 	cursorRenderer_->SetSize(Vector2(HEIGHT, HEIGHT));
 
 	// 背景画像
-	Material_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
-	Material_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
-	Material_->AddTextureBuf(backImg_);
-	Renderer_ = std::make_unique<PixelRenderer>(*Material_);
-	Renderer_->MakeSquereVertex(
+	backGroundMaterial_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
+	backGroundMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
+	backGroundMaterial_->AddTextureBuf(backImg_);
+	backGroundRenderer_ = std::make_unique<PixelRenderer>(*backGroundMaterial_);
+	backGroundRenderer_->MakeSquereVertex(
 		Vector2(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2),
 		Vector2(Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y)
 	);
@@ -149,14 +153,19 @@ void TitleScene::Update(void)
 	auto& ins = InputManager::GetInstance();
 	Vector2 moPos = ins.GetMousePos();
 
-
+	// 入力情報の更新
 	inputController_->Update();
-	player_->Update();
+
+	// プレイヤーの更新
+	viewPlayer_->Update();
+
+	// IPアドレス入力エリアの更新
 	inputTextArea_->Update();
 		
-
+	// 更新処理の呼び出し
 	typeUpdate_();
 
+	// 前フレームのマウス情報として保存
 	agoMousePos_ = moPos;
 	agoMouseTrg_ = ins.IsClickMouseLeft();
 }
@@ -166,11 +175,12 @@ void TitleScene::Draw(void)
 	auto& ins = InputManager::GetInstance();
 
 	// 背景描画
-	Renderer_->Draw();
+	backGroundRenderer_->Draw();
 
 	// タイトル画面
 	if (isTitle_)
 	{
+		// タイトルロゴの描画
 		titleRenderer_->Draw();
 
 		int cx = Application::SCREEN_SIZE_X / 2;
@@ -183,9 +193,7 @@ void TitleScene::Draw(void)
 	}
 
 	// プレイヤー描画
-	player_->Draw();
-
-
+	viewPlayer_->Draw();
 
 	// ホストorクライアント
 	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0x000000, true);
@@ -193,8 +201,6 @@ void TitleScene::Draw(void)
 	if (GameManager::GetInstance().IsHost())
 	{
 		DrawString(B1_S_POS.x + 50, B1_S_POS.y + 7, L"HOST", 0xffffff);
-
-		// 挑戦クエスト描画
 	}
 	else
 	{
@@ -231,7 +237,7 @@ void TitleScene::Draw(void)
 		switch (selectId_)
 		{
 			// ホストorクライアント選択
-		case (int)MENU::USER_SELECT:
+		case (int)MENU::NET_SELECT:
 			cursorRenderer_->Draw(B1_S_POS.x - HEIGHT, B1_C_POS.y);
 			break;
 			// ゲームスタート
@@ -290,7 +296,7 @@ void TitleScene::UpdateMouse(void)
 		isPad_ = true;
 		// マウスを非表示状態にする
 		SetMouseDispFlag(false);
-		typeUpdate_ = std::bind(&TitleScene::UpdateNormal, this);
+		typeUpdate_ = std::bind(&TitleScene::UpdatePad, this);
 		return;
 	}
 
@@ -306,7 +312,7 @@ void TitleScene::UpdateMouse(void)
 
 	mouseUpdate_();
 }
-void TitleScene::UpdateNormal(void)
+void TitleScene::UpdatePad(void)
 {
 	auto& ins = InputManager::GetInstance();
 	Vector2 moPos = ins.GetMousePos();
@@ -363,7 +369,7 @@ void TitleScene::MouseUpdate(void)
 		{
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
-			selectId_ = (int)MENU::USER_SELECT;
+			selectId_ = (int)MENU::NET_SELECT;
 			if (GameManager::GetInstance().IsHost())
 			{
 				GameManager::GetInstance().SetHost(false);
@@ -452,7 +458,7 @@ void TitleScene::MWeaponUpdate(void)
 				isSlect = true;
 				weponId_ = wPos.first;
 				gns.SetWeaponId(weponId_);
-				player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
+				viewPlayer_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 				break;
 			}
 			else
@@ -484,7 +490,7 @@ void TitleScene::PNormalUpdate(void)
 		selectId_ = (int)MENU::IP_SET;
 	}
 
-	if (inputController_->IsTriggered(InputController::KEY::FORWARD) && selectId_ > (int)MENU::USER_SELECT)
+	if (inputController_->IsTriggered(InputController::KEY::FORWARD) && selectId_ > (int)MENU::NET_SELECT)
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT, Sound::TIMES::ONCE, true);
 		selectId_--;
@@ -498,7 +504,7 @@ void TitleScene::PNormalUpdate(void)
 	{
 		switch (selectId_)
 		{
-		case (int)MENU::USER_SELECT:
+		case (int)MENU::NET_SELECT:
 		{
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
@@ -580,7 +586,7 @@ void TitleScene::PWeaponUpdate(void)
 		weponId_ = (weponId_ - 1 + (int)WEPON_ID::MAX) % ((int)WEPON_ID::MAX);
 		
 		gns.SetWeaponId(weponId_);
-		player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
+		viewPlayer_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 	}
 	else if (inputController_->IsTriggered(InputController::KEY::BACK))
 	{
@@ -588,7 +594,7 @@ void TitleScene::PWeaponUpdate(void)
 		weponId_ = (weponId_ + 1) % ((int)WEPON_ID::MAX);
 
 		gns.SetWeaponId(weponId_);
-		player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
+		viewPlayer_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 	}
 
 

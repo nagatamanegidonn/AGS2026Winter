@@ -94,9 +94,9 @@ namespace
 
 #pragma endregion
 
-GreatSword::GreatSword(int key) 
+GreatSword::GreatSword(int key, GameScene* scene, PLAYER_TYPE type)
 	:
-	Player(key)
+	Player(key, scene, type)
 {
 }
 

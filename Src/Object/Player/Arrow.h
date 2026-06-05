@@ -18,7 +18,7 @@ public:
     static constexpr VECTOR ARROW_RHAND_POS = { 0.0f, 0.0f, -3.0f };
 
     // コンストラクタ
-    Arrow(int key);
+    Arrow(int key, GameScene* scene, PLAYER_TYPE type);
 
     // デストラクタ
     ~Arrow(void);
@@ -27,6 +27,7 @@ public:
 
 private:
 
+    // 武器モデル（矢）
     Transform transSubWeapon_;
 
 	// 初期化
@@ -34,10 +35,14 @@ private:
     void InitAnimation(void) override;
     void InitEffect(void) override;
     void InitAttrckSound(void) override;
+
     // 攻撃音再生
     void PlayAttrckSound(void) override;
 
+    // 武器の描画
     void DrawWeapon()override;
+
+    // 武器の同期
     void SyncWeaponPlay()override;
     void SyncWeaponBattle()override;
 

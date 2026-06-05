@@ -17,8 +17,10 @@ public:
 	// ボタンサイズ
 	const int WIDTH = 200;
 	const int HEIGHT = 30;
+
 	// 画面中心X座標
 	const int HX = Application::SCREEN_SIZE_X / 2;
+
 	// ボタン位置
 	const int B1_Y = Application::SCREEN_SIZE_Y - 100;
 	const Vector2 B1_S_POS = Vector2(HX - WIDTH / 2, B1_Y - HEIGHT / 2);
@@ -46,6 +48,7 @@ private:
 
 	// プレイヤー
 	std::vector<std::unique_ptr<ViewPlayer>> players_;
+
 	// プレイヤー数
 	int playerNum_;
 
@@ -55,12 +58,13 @@ private:
 	// スタート画像
 	int imgStart_;
 
-	//　背景、カーソル画像
-	int backImg_;	// カーソル画像
-	std::unique_ptr<PixelMaterial> Material_;// ピクセルマテリアル
-	std::unique_ptr<PixelRenderer> Renderer_;// ピクセルレンダラー
+	// 背景、カーソル画像
+	int backImg_;
+
+	// 背景画像
+	std::unique_ptr<PixelMaterial> backGroundMaterial_;// ピクセルマテリアル
+	std::unique_ptr<PixelRenderer> backGroundRenderer_;// ピクセルレンダラー
 
 	// プレイヤーの追加
 	void AddPlayer(const VECTOR pos, const VECTOR rot);
-
 };

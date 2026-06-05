@@ -28,8 +28,10 @@ public:
 
 	// ゲームプレイヤー数
 	static constexpr int GAME_PLAYER_NUM = 2;
+
 	// プレイヤーダウンカウント限界数
 	static constexpr int MAX_DOWN_COUNT = 2;
+
 	// 最小距離の初期値
 	static constexpr float START_MIN_DIST = 10000.0f;
 
@@ -55,7 +57,7 @@ public:
 	void DownCountPuls(void) { downCnt_ += 1; }
 
 	// ダウンカウントの取得
-	const int GetDownCount(void)const { return downCnt_; }
+	inline const int GetDownCount(void)const { return downCnt_; }
 
 	// 弾の生成
 	void CreateShot(ShotBase::TYPE type, int damage, const VECTOR& birthPos, const VECTOR& dir, int key);
@@ -65,7 +67,7 @@ public:
 
 private:
 
-	// フェード
+	// フェード（フラッシュ用）
 	std::unique_ptr<Fader> fader_;
 
 	// タイマー
@@ -92,7 +94,7 @@ private:
 	float stepCountDown_;
 	
 	// 最小距離
-	float minDist_ = 10000.0f;
+	float minDist_;
 
 	// ゲームシーン用変数
 	int downCnt_;		// ダウンした回数

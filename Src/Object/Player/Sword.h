@@ -20,7 +20,7 @@ public:
     static constexpr VECTOR SOWRD_HAND_POS = { 0.0f, 0.0f, -3.0f };
 
     // コンストラクタ
-    Sword(int key);
+    Sword(int key, GameScene* scene, PLAYER_TYPE type);
 
     // デストラクタ
     ~Sword(void);
@@ -37,6 +37,7 @@ private:
     // 攻撃音再生
     void PlayAttrckSound(void) override;
 
+    // 武器の同期
     void SyncWeaponPlay()override;
     void SyncWeaponBattle()override;
 };

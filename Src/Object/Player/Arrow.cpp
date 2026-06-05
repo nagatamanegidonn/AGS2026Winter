@@ -88,9 +88,9 @@ namespace
 
 #pragma endregion
 
-Arrow::Arrow(int key) 
+Arrow::Arrow(int key, GameScene* scene, PLAYER_TYPE type)
 	:
-	Player(key)
+	Player(key, scene, type)
 {
 }
 

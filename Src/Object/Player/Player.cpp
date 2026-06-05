@@ -90,10 +90,10 @@ MATRIX GetFrameGlobalMatrix(int modelHandle, int frameIndex) {
 	return MMult(localMat, parentMat); // DxLibの行列乗算
 }
 
-Player::Player(int key)
+Player::Player(int key,GameScene* scene, PLAYER_TYPE type)
 	:
 	CharaBase(),
-	type_(PLAYER_TYPE::PLAYER_1),
+	type_(type),
 	key_(0),
 	itemId_(-1),
 	isHit_(false),
@@ -118,18 +118,17 @@ Player::Player(int key)
 	hpMaskImg_(-1),
 	staFreamImg_(-1),
 	staMaskImg_(-1),
-	Material_(nullptr),
-	Renderer_(nullptr),
+	statusMaterial_(nullptr),
+	statusRenderer_(nullptr),
 	hpMaterial_(nullptr),
 	hpRenderer_(nullptr),
 	staMaterial_(nullptr),
 	staRenderer_(nullptr),
-	demoRot_(),
 	transWeapon_(),
 	animationController_(nullptr),
 	inputController_(nullptr),
 	effectController_(nullptr),
-	gameScene_(nullptr),
+	gameScene_(scene),
 	chageCount_(0.0f)
 {
 	key_ = key;
@@ -161,7 +160,6 @@ Player::Player(int key)
 
 	attrckDamage_ = 0;
 
-
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::RUN); i++)
 	{
 		atkData_.emplace(i, SetActionData(-1));
@@ -182,17 +180,8 @@ Player::~Player(void)
 	MV1DeleteModel(transWeapon_.modelId);
 }
 
-void Player::Init(GameScene* scene, PLAYER_TYPE type)
+void Player::Init(void)
 {
-	demoRot_ = AsoUtility::VECTOR_ZERO;
-
-	// ゲームシーンの機能を使えるように
-	// ここ＆（参照）のほうがいいのか？
-	gameScene_ = scene;
-
-	// プレイヤー種別(プレイヤー番号)
-	type_ = type;
-
 	// 移動速度の初期化
 	speed_ = 0.0f;
 
@@ -330,17 +319,6 @@ void Player::Init(GameScene* scene, PLAYER_TYPE type)
 void Player::Update(void)
 {
 	InputManager& ins = InputManager::GetInstance();
-
-#ifdef _DEBUG
-
-	if (ins.IsNew(KEY_INPUT_1)) { demoRot_.x += 1.0f; }
-	if (ins.IsNew(KEY_INPUT_2)) { demoRot_.x -= 1.0f; }
-	if (ins.IsNew(KEY_INPUT_3)) { demoRot_.y += 1.0f; }
-	if (ins.IsNew(KEY_INPUT_4)) { demoRot_.y -= 1.0f; }
-	if (ins.IsNew(KEY_INPUT_5)) { demoRot_.z += 1.0f; }
-	if (ins.IsNew(KEY_INPUT_6)) { demoRot_.z -= 1.0f; }
-
-#endif // DEBUG
 
 	auto& nIns = NetManager::GetInstance();
 
@@ -684,8 +662,8 @@ void Player::DrawUI(int i)
 	}
 
 	// 共通描画
-	Material_->SetConstBuf(1, { (float)hp_ / (float)hpMax_, 1.0f, 1.0f, 1.0f });
-	Renderer_->Draw(PRAM_POS_X, PRAM_POS_Y + (PRAM_distance_Y * i));
+	statusMaterial_->SetConstBuf(1, { (float)hp_ / (float)hpMax_, 1.0f, 1.0f, 1.0f });
+	statusRenderer_->Draw(PRAM_POS_X, PRAM_POS_Y + (PRAM_distance_Y * i));
 
 #ifdef DEBUG
 	const auto& pos = nIns.GetPostion(key_);
@@ -826,14 +804,14 @@ void Player::InitAttrckSound(void)
 void Player::InitShader(void)
 {
 	// ステータスUI
-	Material_ = std::make_unique<PixelMaterial>(L"PlayerStatus.cso", 2);
-	Material_->AddConstBuf({ 0.3f, 0.7f, 0.5f, 0.05f });// ステータス位置(左上)サイズ
-	Material_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
-	Material_->AddTextureBuf(freamImg_);
-	Material_->AddTextureBuf(hpImg_);
-	Material_->AddTextureBuf(jobImg_);
-	Renderer_ = std::make_unique<PixelRenderer>(*Material_);
-	Renderer_->SetSize(Vector2(PRAM_SIZE_X, PRAM_SIZE_Y));
+	statusMaterial_ = std::make_unique<PixelMaterial>(L"PlayerStatus.cso", 2);
+	statusMaterial_->AddConstBuf({ 0.3f, 0.7f, 0.5f, 0.05f });// ステータス位置(左上)サイズ
+	statusMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
+	statusMaterial_->AddTextureBuf(freamImg_);
+	statusMaterial_->AddTextureBuf(hpImg_);
+	statusMaterial_->AddTextureBuf(jobImg_);
+	statusRenderer_ = std::make_unique<PixelRenderer>(*statusMaterial_);
+	statusRenderer_->SetSize(Vector2(PRAM_SIZE_X, PRAM_SIZE_Y));
 
 	// HP_UI
 	hpMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
@@ -964,19 +942,6 @@ void Player::UpdateBattle(void)
 
 	// 移動処理(攻撃も含む)
 	ProcessBattle();
-
-#ifdef _DEBUG
-
-	InputManager& ins = InputManager::GetInstance();
-
-	if (ins.IsNew(KEY_INPUT_1)) { demoRot_.x += 1.0f; }
-	if (ins.IsNew(KEY_INPUT_2)) { demoRot_.x -= 1.0f; }
-	if (ins.IsNew(KEY_INPUT_3)) { demoRot_.y += 1.0f; }
-	if (ins.IsNew(KEY_INPUT_4)) { demoRot_.y -= 1.0f; }
-	if (ins.IsNew(KEY_INPUT_5)) { demoRot_.z += 1.0f; }
-	if (ins.IsNew(KEY_INPUT_6)) { demoRot_.z -= 1.0f; }
-
-#endif // _DEBUG
 }
 
 void Player::UpdateWeapon(void)
