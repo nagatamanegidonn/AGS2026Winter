@@ -42,7 +42,7 @@ void ViewPlayer::Init(void)
 	transWeapon_.quaRotLocal =
 		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
 	transWeapon_.Update();
-	updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponAxe, this);
+	updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponSowrd, this);
 	updateWeapon_();
 
 	weponId_ = -1;
@@ -122,7 +122,7 @@ void ViewPlayer::SetWeapon(const int weponId)
 			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
 		transWeapon_.Update();
 
-		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponAxe, this);
+		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponSowrd, this);
 		break;
 	case 1:// 両手剣
 		transWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Sword/Sword Two-Hander Base.mv1").c_str());
@@ -217,7 +217,7 @@ void ViewPlayer::SyncWeaponGreatSowrd()
 	// モデルの更新
 	transWeapon_.Update(true);
 }
-void ViewPlayer::SyncWeaponAxe()
+void ViewPlayer::SyncWeaponSowrd()
 {
 	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine");//ナイト腰
 	// プレイヤーの手の位置

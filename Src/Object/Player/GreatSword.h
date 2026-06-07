@@ -30,15 +30,16 @@ public:
 private:
 
     // 初期化
-    void InitParam(void)override;
-    void InitAnimation(void) override;
-    void InitEffect(void) override;
-    void InitAttrckSound(void) override;
+    void InitParam(void)override;          // パラメータ
+    void InitAnimation(void) override;     // アニメーション
+    void InitEffect(void) override;        // エフェクト
+    void InitAttrckSound(void) override;   // サウンド
+
     // 攻撃音再生
     void PlayAttrckSound(void) override;
 
     // 武器の同期
-    void SyncWeaponPlay()override;
-    void SyncWeaponBattle()override;
+    void SyncWeaponPlay()override;      // 通常時
+    void SyncWeaponBattle()override;    // 戦闘時
 };
 
