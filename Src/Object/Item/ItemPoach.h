@@ -11,7 +11,10 @@ class ItemPoach
 
 public:
 
+	// コンストラクタ
 	ItemPoach(void);
+
+	// デストラクタ
 	~ItemPoach(void);
 
 	void Draw(int i);

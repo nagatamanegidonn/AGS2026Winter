@@ -6,8 +6,10 @@ class ItemShot :
 {
 
 public:
+
     // コンストラクタ
     ItemShot(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key);
+
     // デストラクタ
 	~ItemShot(void);
 

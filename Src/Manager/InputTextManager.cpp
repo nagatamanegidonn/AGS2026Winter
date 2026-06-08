@@ -67,14 +67,11 @@ void InputTextManager::SetTextArea(bool isSet)
 		return;
 	}
 
-
 	// 入力された文字列をセット
 	instance_->inputTextArea_->SetKeyInputStringBuffer();
 
 	// キー入力が終了しているはず
 	instance_->inputTextArea_ = nullptr;
-
-
 }
 
 InputTextManager::InputTextManager(void)

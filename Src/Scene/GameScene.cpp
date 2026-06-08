@@ -148,7 +148,7 @@ void GameScene::Init(void)
 			SceneManager::GetInstance().GetCamera().lock()->SetFollow(&player->GetTransform());
 			SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FOLLOW);
 		}
-
+		// プレイヤーを格納
 		players_.push_back(std::move(player));
 	}
 	// ステージにプレイヤーを参照させる
@@ -433,7 +433,6 @@ void GameScene::Draw(void)
 
 	auto& nIns = NetManager::GetInstance();
 
-
 	// ボスの描画
 	boss_->Draw();
 	for (auto& mons : monsters_)
@@ -444,21 +443,12 @@ void GameScene::Draw(void)
 	// プレイヤー情報取得用
 	int playerNo = 0;
 
-	VECTOR playerPos{};
-	VECTOR playerDirF{};
-
 	// プレイヤーの描画
 	for (auto& player : players_)
 	{
-
 		player->Draw();
 		player->DrawUI(playerNo);
 		playerNo++;
-		if (player->IsSelf())
-		{
-			playerPos = player->GetTransform().pos;
-			playerDirF = player->GetTransform().GetForward();
-		}
 	}
 
 	// Draw内
@@ -557,7 +547,6 @@ void GameScene::Collision(void)
 			boss_->Damage(player->GetAttrckPow() * player->GetAttrckRate());
 			// 音の再生
 			SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
-
 		}
 		// 小型の処理
 		for (auto& mons : monsters_)
@@ -574,13 +563,12 @@ void GameScene::Collision(void)
 				&& player->IsAttrck() && player->IsHit() && player->IsSelf())
 			{
 				player->SetHit(true);
-				
+
 				SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
 
 				enemy.lock()->Damage(player->GetAttrckPow() * player->GetAttrckRate());
 				// 音の再生
 				SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
-
 			}
 		}
 		auto& users = NetManager::GetInstance().GetNetUsers();

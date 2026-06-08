@@ -126,11 +126,11 @@ private:
 	bool agoMouseTrg_;		// 前フレームのトリガー情報	
 
 	// このシーンで変更するステータス
-	bool isPad_;	// パッド操作中はの判定
-	int selectId_;	// 選択中の項目ID
-	int weponId_;	// 選択中の武器ID 
-	bool isWpSelect_;
-	std::map<int, std::unique_ptr<PosTri>> weponsPos_;
+	bool isPad_;		// パッド操作中はの判定
+	int selectId_;		// 選択中の項目ID
+	int weponId_;		// 選択中の武器ID 
+	bool isWpSelect_;	// 武器を選択中か
+	std::map<int, std::unique_ptr<PosTri>> weponsPos_;	// 武器一覧用の文字位置リスト
 
 	// 背景、カーソル画像
 	int titleImg_;	// タイトルロゴ

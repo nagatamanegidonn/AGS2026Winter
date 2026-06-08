@@ -17,8 +17,8 @@
 
 #include "../Stage/Planet.h"
 
-#include "HitDamage.h"
-#include "HitPart.h"
+#include "Hit/HitDamage.h"
+#include "Hit/HitPart.h"
 #include "SmallMonster.h"
 
 namespace
@@ -48,7 +48,6 @@ SmallMonster::SmallMonster(int key, int createNo)
 {
 	key_ = key;
 	createNo_ = createNo;
-
 	animationController_ = nullptr;
 	state_ = STATE::NONE;
 
@@ -136,7 +135,6 @@ void SmallMonster::Init(void)
 void SmallMonster::Update(void)
 {
 	auto& nIns = NetManager::GetInstance();
-
 	auto& users = NetManager::GetInstance().GetNetUsers();
 
 	animeAgoType_ = animeType_;
@@ -155,7 +153,6 @@ void SmallMonster::Update(void)
 	{
 		part->Update();
 	}
-
 
 	// 自分のプレイヤーのときだけ入力を処理する
 	if (nIns.GetMode() == NET_MODE::HOST) {
@@ -248,7 +245,7 @@ void SmallMonster::Draw(void)
 	}
 
 	// ダメージの表記
-	for (auto& hitdamage : hitdamages_)
+	for (const auto& hitdamage : hitdamages_)
 	{
 		hitdamage->Draw();
 	}
@@ -271,7 +268,6 @@ void SmallMonster::Damage(int _dama, bool _isConst)
 
 	nIns.SetNetMonsDamage(nIns.GetSelf().key, createNo_,lastDame);
 }
-
 
 const bool SmallMonster::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 {

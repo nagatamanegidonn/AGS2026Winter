@@ -34,29 +34,25 @@ public:
 	enum class STATE
 	{
 		NONE,
-		PLAY,
-		BATTLE,			// 後で消す
+		PLAY,			// 通常
+		BATTLE,			// 戦闘
 		FOLLOW,			// 近づく
-
 		ATTRCK_READY,	// 予備動作
 		ATTRCK,			// 攻撃
-
-		DAMAGE,
-		DEAD,
+		DAMAGE,			// ダメージ
+		DEAD,			// 死亡
 		END
 	};
 
 	// アニメーション種別
 	enum class ANIM_TYPE
 	{
-		IDLE,
-		RUN,
-
+		IDLE,			// 棒立ち
+		RUN,			// 移動
 		ATTRCK_READY,	// 予備動作
 		ATTRCK,			// 攻撃
-
-		DAMAGE,
-		DEAD,
+		DAMAGE,			// ダメージ
+		DEAD,			// 死亡
 	};
 
 	// コンストラクタ
@@ -77,8 +73,10 @@ public:
 	// ダメージ関係
 	void Damage(int dama, bool isConst = false)override;
 
+	// Stateの判定
 	const bool IsState(STATE state)const { return (state_ == state); }
 
+	// 攻撃位置の取得
 	const VECTOR GetAttrckPos(void) const { return attrckPos_; }
 
 	// 外部クラストの当たり判定
@@ -88,23 +86,19 @@ public:
 	// 追従対象の設定
 	void SetFollow(const Transform* follow) override;
 
-
 private:
 
 	// 状態管理
-	STATE state_;
-	int animeType_;
-	int animeAgoType_;
-
+	STATE state_;		// 状態
+	int animeType_;		// アニメーションタイプ
+	int animeAgoType_;	// 前フレームのアニメーション
 	float stateTime_;	// 状態時間
 	
 	//攻撃管理
 	float dameRate_;		// 受けるダメージ倍率
 	int attrckCount_;		// 連続攻撃の際に使用
 	VECTOR attrckPos_;		// 攻撃判定中心位置
-	float attrckRadius = 0.0f;
-
-	
+	float attrckRadius = 0.0f;	
 
 	// 状態管理(状態遷移時初期処理)
 	std::map<STATE, std::function<void(void)>> stateChanges_;
@@ -126,7 +120,6 @@ private:
 	// 攻撃系
 	void ChangeStateAttrckReady(void);
 	void ChangeStateAttrckStamp(void);
-
 	void ChangeStateDamage(void);
 	void ChangeStateDead(void);
 
@@ -138,7 +131,6 @@ private:
 	// 攻撃系
 	void UpdateAttrckReady(void);
 	void UpdateAttrckStamp(void);
-
 	void UpdateDamage(void);
 	void UpdateDead(void);
 

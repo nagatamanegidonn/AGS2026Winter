@@ -168,6 +168,7 @@ Player::Player(int key,GameScene* scene, PLAYER_TYPE type)
 
 Player::~Player(void)
 {
+	// 画像の解放
 	DeleteGraph(freamImg_);
 	DeleteGraph(jobImg_);
 	DeleteGraph(hpImg_);
@@ -176,6 +177,7 @@ Player::~Player(void)
 	DeleteGraph(staFreamImg_);
 	DeleteGraph(staMaskImg_);
 
+	// モデルの解放
 	MV1DeleteModel(transform_.modelId);
 	MV1DeleteModel(transWeapon_.modelId);
 }
@@ -188,8 +190,7 @@ void Player::Init(void)
 	// モデルの基本設定
 	transform_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 		ResourceManager::SRC::PLAYER_NIGHT));
-	transform_.scl = AsoUtility::VECTOR_ONE;
-	// 初期座標
+	transform_.scl = AsoUtility::VECTOR_ONE;	
 	transform_.pos = START_POS;
 	transform_.quaRot = Quaternion();
 	transform_.quaRotLocal =
@@ -298,15 +299,15 @@ void Player::Init(void)
 	capsule_->SetRadius(20.0f);
 	
 	// ステータスの初期化
-	invisibleTime_ = 0.0f;// 無敵時間
-	flyigDir_ = AsoUtility::VECTOR_ZERO;
-	flyigTime_ = downTime_ = 0.0f;
+	invisibleTime_ = 0.0f;				// 無敵時間
+	flyigDir_ = AsoUtility::VECTOR_ZERO;// 吹っ飛ばされる方向
+	flyigTime_ = downTime_ = 0.0f;		// 吹っ飛ばされる時間
 
 	// 武器ごとのパラメータ設定
 	InitParam();
 
 	// 採取の際の情報（仮）
-	itemId_ = -1;
+	itemId_ = -1;	// 採取アイテムID
 	poach_ = std::make_unique<ItemPoach>();
 	for (int i = 0; i < 2; i++) {
 		poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
@@ -497,6 +498,8 @@ void Player::Update(void)
 	{
 		chageCount_ = 1.0f;
 	}
+
+	// エフェクトの更新
 	effectController_->Update(0, transform_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
 	effectController_->LoopUpdate(1, transWeapon_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
 	
@@ -566,6 +569,7 @@ void Player::Update(void)
 			, AsoUtility::VECTOR_ZERO, key_);
 	}
 
+	// 移動時間によるサウンド管理
 	walkTime_ -= SceneManager::GetInstance().GetDeltaTime();
 	if (animeAgoType_ == animeType_ &&
 		walkTime_ <= 0.0f &&
@@ -611,9 +615,11 @@ void Player::Draw(void)
 {
 	auto& nIns = NetManager::GetInstance();
 
+	// 位置の調整（アニメーションのローカル関係）
 	transform_.pos = VAdd(transform_.pos, VScale(transform_.GetForward(), animationController_->GetPos().z));
 	transform_.pos = VAdd(transform_.pos, VScale(transform_.GetRight(), animationController_->GetPos().x));
 	transform_.Update();
+
 	//武器の同期
 	SyncWeapon();
 
@@ -626,9 +632,11 @@ void Player::Draw(void)
 	//武器の描画
 	DrawWeapon();
 
+	// 位置の調整（アニメーションのローカル関係）
 	transform_.pos = VSub(transform_.pos, VScale(transform_.GetForward(), animationController_->GetPos().z));
 	transform_.pos = VSub(transform_.pos, VScale(transform_.GetRight(), animationController_->GetPos().x));
 	transform_.Update();
+
 	//武器の同期
 	SyncWeapon();
 
@@ -665,15 +673,13 @@ void Player::DrawUI(int i)
 	statusMaterial_->SetConstBuf(1, { (float)hp_ / (float)hpMax_, 1.0f, 1.0f, 1.0f });
 	statusRenderer_->Draw(PRAM_POS_X, PRAM_POS_Y + (PRAM_distance_Y * i));
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const auto& pos = nIns.GetPostion(key_);
 	const auto& animeType = nIns.GetAnimeType(key_);
 
 	// プレイヤーデバッグ情報
 	DrawFormatString(300, i * 65, 0x000000, L"プレイヤー番号(%d)", key_);
 	DrawFormatString(300, i * 65 + 16, 0x000000, L"プレイヤー座標(%.2f, %.2f,%2f)", transform_.pos.x, transform_.pos.y, transform_.pos.z);
-	DrawFormatString(300, i * 65 + 48, 0x000000, L"剣ウェポン回転(%.2f, %.2f,%2f)", AsoUtility::GetDisPow(selfPos,transform_.pos)
-		, demoRot_.y, demoRot_.z);
 	DrawFormatString(300, i * 65 + 32, 0x000000, L"アニメーション(%d, %d,%d)", animeType, areaId_, hp_);
 
 #endif // DEBUG
@@ -1735,7 +1741,6 @@ const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 
 	// playerとの衝突判定
 	VECTOR diff = VSub(transform_.pos, pos);
-
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
 	ret = (disPow < capsule_->GetRadius() * r);// ダメージ半径×攻撃半径
@@ -1823,6 +1828,7 @@ bool Player::IsEndLanding(void)
 	return false;
 
 }
+
 // 操作が可能か
 const bool Player::IsInputPlay(void) const
 {
@@ -1926,7 +1932,6 @@ void Player::AttrckUpdate(void)
 		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
 	{
 		effectController_->Update(1, capsuleWeapon_->GetCenter());
-
 		isHitCheck_ = true;
 	}
 

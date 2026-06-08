@@ -10,8 +10,8 @@
 
 #include "../Stage/Planet.h"
 
-#include "HitPart.h"
-#include "HitDamage.h"
+#include "Hit/HitPart.h"
+#include "Hit/HitDamage.h"
 #include "EnemyBase.h"
 
 namespace
@@ -177,7 +177,6 @@ void EnemyBase::CollisionGravity(void)
 	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, checkPow));
 	for (const auto c : colliders_)
 	{
-
 		// 地面との衝突
 		auto hit = MV1CollCheck_Line(
 			c.lock()->modelId_, -1, gravHitPosUp_, gravHitPosDown_);
@@ -193,7 +192,6 @@ void EnemyBase::CollisionGravity(void)
 			// ジャンプリセット
 			jumpPow_ = AsoUtility::VECTOR_ZERO;
 		}
-
 	}
 }
 
@@ -225,12 +223,11 @@ int EnemyBase::DamageUpdate(void)
 			}
 			if (!isEnd)
 			{
-				auto  part = std::make_unique<HitDamage>(transform_.modelId, "Chest_M", userDame);
+				auto  part = std::make_unique<HitDamage>(transform_.modelId, L"Chest_M", userDame);
 				hitdamages_.emplace_back(std::move(part));
 			}
 		}
 	}
-
 	return dame;
 }
 

@@ -44,7 +44,6 @@ public:
 
 protected:
 
-
 	// ƒvƒŒƒCƒ„[
 	Player& player_;
 

@@ -9,6 +9,7 @@ public:
 
 	// コンストラクタ
 	ItemBase(std::wstring _name);
+
 	// デストラクタ
 	~ItemBase(void);
 

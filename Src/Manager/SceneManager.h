@@ -25,7 +25,6 @@ public:
 		RSULT,
 	};
 
-
 	// インスタンスの生成
 	static void CreateInstance(void);
 
@@ -51,8 +50,6 @@ public:
 	void SetTotalGameTime(float time);
 	void ForwardGameTime(void);
 
-	
-
 	// カメラの取得
 	std::weak_ptr<Camera> GetCamera(void) const;
 	// スクリーンの取得
@@ -72,7 +69,6 @@ public:
 	/// 最後に追加したシーンを削除する
 	/// </summary>
 	void PopScene();
-
 
 private:
 

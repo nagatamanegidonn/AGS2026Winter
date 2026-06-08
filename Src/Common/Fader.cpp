@@ -19,8 +19,7 @@ void Fader::SetFade(NET_STATE state)
 	if (state_ != NET_STATE::NONE)
 	{
 		isPreEnd_ = false;
-		isEnd_ = false;
-		
+		isEnd_ = false;		
 	}
 }
 
@@ -89,12 +88,10 @@ void Fader::Update(void)
 	default:
 		return;
 	}
-
 }
 
 void Fader::Draw(void)
 {
-
 	switch (state_)
 	{
 	case NET_STATE::NONE:
@@ -112,5 +109,4 @@ void Fader::Draw(void)
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		break;
 	}
-
 }

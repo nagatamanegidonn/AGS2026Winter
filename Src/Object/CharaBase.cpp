@@ -132,7 +132,6 @@ void CharaBase::DrawShadow(void)
 	// 影を落とすモデルの数だけ繰り返し
 	for (const auto c : colliders_)
 	{
-
 		// チェックするモデルは、jが0の時はステージモデル、1以上の場合はコリジョンモデル
 		ModelHandle = c.lock()->modelId_;
 
@@ -221,7 +220,6 @@ void CharaBase::CalcGravityPow(void)
 		// 重力方向と反対方向(マイナス)でなければ、ジャンプ力を無くす
 		jumpPow_ = gravity;
 	}
-
 }
 
 void CharaBase::CountTime(float& time)
@@ -231,7 +229,6 @@ void CharaBase::CountTime(float& time)
 		time -= SceneManager::GetInstance().GetDeltaTime();
 	}
 }
-
 
 std::unique_ptr<CharaBase::ActionData> CharaBase::SetActionData(
 	int nextAtkId, float sHitTim, float HitTim, float sNewTime, bool isChage, int chargeId)

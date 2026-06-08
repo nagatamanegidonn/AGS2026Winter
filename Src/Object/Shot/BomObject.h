@@ -8,8 +8,10 @@ class BomObject :
 {
 
 public:
+
     // コンストラクタ
     BomObject(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key);
+
     // デストラクタ
     ~BomObject(void);
 

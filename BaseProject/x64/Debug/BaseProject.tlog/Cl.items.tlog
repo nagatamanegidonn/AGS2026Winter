@@ -1,8 +1,6 @@
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\GreatSword.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\GreatSword.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Manager\GameManager.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\GameManager.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Shot\BomObject.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\BomObject.obj
-C:\Users\2316013\Desktop\WildHuntG\Src\Object\Item\RecoveryItem.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\RecoveryItem.obj
-C:\Users\2316013\Desktop\WildHuntG\Src\Object\Item\ShotItem.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\ShotItem.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\SmallMonster.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\SmallMonster.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\EnemyBase.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\EnemyBase.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Shot\ArrowShot.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\ArrowShot.obj
@@ -19,8 +17,8 @@ C:\Users\2316013\Desktop\WildHuntG\Src\Object\Common\EffectController.cpp;C:\Use
 C:\Users\2316013\Desktop\WildHuntG\Src\Manager\Sound.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\Sound.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Manager\SoundManager.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\SoundManager.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Common\AnimationController.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\AnimationController.obj
-C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\HitDamage.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\HitDamage.obj
-C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\HitPart.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\HitPart.obj
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\Hit\HitDamage.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\HitDamage.obj
+C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\Hit\HitPart.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\HitPart.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Common\InputController.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\InputController.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\CharaBase.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\CharaBase.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\Boss.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Debug\Boss.obj

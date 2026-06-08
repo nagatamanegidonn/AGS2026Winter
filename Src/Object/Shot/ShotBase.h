@@ -30,13 +30,19 @@ public:
 
     // コンストラクタ
     ShotBase(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key);
+
     // デストラクタ
     virtual ~ShotBase(void);
 
     void Create(int damage, const VECTOR& birthPos, const VECTOR& dir, int key);
+
+    // 初期化処理
     virtual void Init(void) override;
+    
+    // 更新処理
     virtual void Update(void);
 
+    // 描画処理
     void Draw(void);
 
     // 種類の取得
@@ -57,7 +63,6 @@ public:
 	// カプセルコライダの取得
     std::weak_ptr<Capsule> GetCapsule(void);
 
-
     // 外部クラストの当たり判定
     bool CollisionCapsule(std::weak_ptr<Capsule> _capsule)const;
 
@@ -65,12 +70,16 @@ public:
     void ChangeState(STATE _state= STATE::END);
 
 protected:
+
     // 種類
     TYPE type_;
+
     // ダメージ量
     int damage_;
+
     // 速度
     float speed_;
+
     // 生存時間
     float timeAlive_;
 

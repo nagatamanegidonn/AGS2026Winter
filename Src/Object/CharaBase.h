@@ -94,6 +94,7 @@ protected:
 
 	int imgShadow_;	// 影画像
 
+	// 影の描画
 	void DrawShadow(void);
 
 	// 衝突判定に用いられるコライダ

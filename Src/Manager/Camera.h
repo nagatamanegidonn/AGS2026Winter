@@ -130,6 +130,7 @@ private:
 	void SyncFollowFPS(void);
 	void SetBeforeDrawSelfShot(void);
 
+	// 画面シェイク
 	void UpdateShake(void);
 
 };

@@ -22,8 +22,6 @@
     <ClCompile Include="Src\Object\Player\GreatSword.cpp" />
     <ClCompile Include="Src\Manager\GameManager.cpp" />
     <ClCompile Include="Src\Object\Shot\BomObject.cpp" />
-    <ClCompile Include="Src\Object\Item\RecoveryItem.cpp" />
-    <ClCompile Include="Src\Object\Item\ShotItem.cpp" />
     <ClCompile Include="Src\Object\Enemy\SmallMonster.cpp" />
     <ClCompile Include="Src\Object\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Src\Object\Shot\ArrowShot.cpp" />
@@ -40,8 +38,8 @@
     <ClCompile Include="Src\Manager\Sound.cpp" />
     <ClCompile Include="Src\Manager\SoundManager.cpp" />
     <ClCompile Include="Src\Object\Common\AnimationController.cpp" />
-    <ClCompile Include="Src\Object\Enemy\HitDamage.cpp" />
-    <ClCompile Include="Src\Object\Enemy\HitPart.cpp" />
+    <ClCompile Include="Src\Object\Enemy\Hit\HitDamage.cpp" />
+    <ClCompile Include="Src\Object\Enemy\Hit\HitPart.cpp" />
     <ClCompile Include="Src\Object\Common\InputController.cpp" />
     <ClCompile Include="Src\Object\CharaBase.cpp" />
     <ClCompile Include="Src\Object\Enemy\Boss.cpp" />
@@ -92,8 +90,6 @@
     <ClInclude Include="Src\Object\Player\GreatSword.h" />
     <ClInclude Include="Src\Manager\GameManager.h" />
     <ClInclude Include="Src\Object\Shot\BomObject.h" />
-    <ClInclude Include="Src\Object\Item\RecoveryItem.h" />
-    <ClInclude Include="Src\Object\Item\ShotItem.h" />
     <ClInclude Include="Src\Object\Enemy\SmallMonster.h" />
     <ClInclude Include="Src\Object\Enemy\EnemyBase.h" />
     <ClInclude Include="Src\Object\Shot\ArrowShot.h" />
@@ -110,8 +106,8 @@
     <ClInclude Include="Src\Manager\Sound.h" />
     <ClInclude Include="Src\Manager\SoundManager.h" />
     <ClInclude Include="Src\Object\Common\AnimationController.h" />
-    <ClInclude Include="Src\Object\Enemy\HitDamage.h" />
-    <ClInclude Include="Src\Object\Enemy\HitPart.h" />
+    <ClInclude Include="Src\Object\Enemy\Hit\HitDamage.h" />
+    <ClInclude Include="Src\Object\Enemy\Hit\HitPart.h" />
     <ClInclude Include="Src\Object\Common\InputController.h" />
     <ClInclude Include="Src\Lib\nlohmann\adl_serializer.hpp" />
     <ClInclude Include="Src\Lib\nlohmann\byte_container_with_subtype.hpp" />

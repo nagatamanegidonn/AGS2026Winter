@@ -28,8 +28,6 @@ void SoundManager::Init(void)
 	res.ChengeMaxVolume(0.6f);
 	soundMap_.emplace(SRC::BATTLE_BGM, res);
 
-
-
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"SowrdDamage.mp3");	// ç°âÒégÇ§ÇÃÇÕÇ±ÇÍ
 	res.ChengeMaxVolume(0.6f);
 	soundMap_.emplace(SRC::SLASH_DAMAGE, res);
@@ -55,7 +53,6 @@ void SoundManager::Init(void)
 	res.ChengeMaxVolume(1.0f);
 	soundMap_.emplace(SRC::LOCKON, res);
 
-
 	// SESelect.mp3
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"Deffult/Select.mp3");
 	res.ChengeMaxVolume(1.0f);
@@ -72,11 +69,6 @@ void SoundManager::Init(void)
 	res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"Deffult/StartVose.mp3");
 	res.ChengeMaxVolume(1.0f);
 	soundMap_.emplace(SRC::VOICE, res);
-
-	
-
-	//res = Sound(Sound::TYPE::SOUND_2D, Application::PATH_SOUND + L"TitleBGM.mp3");
-	//soundMap_.emplace(SRC::TITLE_BGM, res);
 }
 
 void SoundManager::Release(void)

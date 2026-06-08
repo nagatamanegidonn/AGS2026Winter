@@ -12,11 +12,8 @@
 class AnimationController;
 class EffectController;
 class SoundController;
-
 class Capsule;
-
 class HitDamage;
-
 class SceneBase;
 class GameScene;
 
@@ -47,7 +44,7 @@ public:
 	static constexpr float ATTRCK_STAMP_RADIUS = 300.0f;
 	static constexpr float ATTRCK_DASH_RADIUS = 450.0f;
 	// 視野関係
-	static constexpr float FOV_RADIUS = 30.0f;			// 視野角
+	static constexpr float FOV_RADIUS = 90.0f;			// 視野角
 	static constexpr float FOV_RADIUS_FLASH = 180.0f;	// 視野
 	// LERP移動関係(エリア移動)
 	static constexpr float MAX_LERP_TIME = 20.0f;		// 在中時間
@@ -66,17 +63,14 @@ public:
 		LERP_MOVE,		// エリア移動
 		BATTLE,			// 後で消す
 		FOLLOW,			// 近づく
-
 		ATTRCK_READY,	// 予備動作
 		ATTRCK_STAMP,	// スタンプ攻撃
 		ATTRCK_L_CLOW,	// 爪攻撃
 		ATTRCK_R_CLOW,	// 爪攻撃
 		ATTRCK_DASH,	// 攻撃
-
 		HOWLING,		// 咆哮
 		STUNNED,		// スタン
 		DAMAGE,			// ダメージ（のけぞり）
-
 		DEAD,			// 死亡
 		END
 	};
@@ -84,31 +78,28 @@ public:
 	// アニメーション種別
 	enum class ANIM_TYPE
 	{
-		IDLE,
-		RUN,
-		FAST_RUN,
-
-		BTLLE_IDLE,
-		BTLLE_RUN,
-
-		READY_ATTRCK,		// 予備動作
-		ATTRCK_STAMP,
-		ATTRCK_L_CLOW,
-		ATTRCK_R_CLOW,
-		ATTRCK_DASH,
-
-		STUNNED,
-		DEAD,
+		IDLE,			// 棒立ち
+		RUN,			// 移動
+		FAST_RUN,		// ダッシュ移動
+		BTLLE_IDLE,		// 攻撃立ち
+		BTLLE_RUN,		// ダッシュ移動
+		READY_ATTRCK,	// 予備動作
+		ATTRCK_STAMP,	// スタンプ攻撃
+		ATTRCK_L_CLOW,	// 爪攻撃（左）
+		ATTRCK_R_CLOW,	// 爪攻撃（右）
+		ATTRCK_DASH,	// ダッシュ攻撃
+		STUNNED,		// スタン
+		DEAD,			// 死亡
 	};
 
 	// 攻撃種別
 	enum class ATTRCK_TYPE
 	{
-		NONE,
-		BITE,
-		CLOW_L,
-		CLOW_R,
-		TACKLE,
+		NONE,	
+		BITE,	// 牙
+		CLOW_L,	// 爪（左）
+		CLOW_R,	// 爪（右）
+		TACKLE,	// タックル
 	};
 
 	// コンストラクタ
@@ -172,10 +163,9 @@ public:
 private:
 
 	// 状態管理
-	STATE state_;
-	int animeType_;
-	int animeAgoType_;
-
+	STATE state_;		// 状態
+	int animeType_;		// アニメーションタイプ
+	int animeAgoType_;	// 前フレームのアニメーション
 	float stateTime_;	// 状態時間
 
 	// 攻撃管理

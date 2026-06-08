@@ -112,15 +112,14 @@ void Stage::ChangeStage(NAME type)
 	// 対象のステージを取得する
 	activePlanet_ = GetPlanet(activeName_);
 
-
 	// ステージの当たり判定をプレイヤーに設定
 	player_.ClearCollider();
 	player_.AddCollider(activePlanet_.lock()->GetTransform().collider);
 	player_.AddCollider(boss_.GetTransform().collider);
-
+	// ステージの当たり判定をボスに設定
 	boss_.ClearCollider();
 	boss_.AddCollider(activePlanet_.lock()->GetTransform().collider);
-
+	// ステージの当たり判定を小型モンスターに設定
 	for (auto& mons : enemys_)
 	{
 		mons.lock()->AddCollider(activePlanet_.lock()->GetTransform().collider);

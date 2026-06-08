@@ -18,8 +18,8 @@
 
 #include "../Stage/Planet.h"
 
-#include "HitDamage.h"
-#include "HitPart.h"
+#include "Hit/HitDamage.h"
+#include "Hit/HitPart.h"
 #include "Boss.h"
 
 namespace
@@ -896,7 +896,7 @@ void Boss::UpdateAttrckDash(void)
 	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK_DASH));
 	animeType_ = static_cast<int>(ANIM_TYPE::ATTRCK_DASH);
 
-	
+
 
 	// 移動
 	movePow_ =
@@ -906,13 +906,8 @@ void Boss::UpdateAttrckDash(void)
 	VECTOR diff = VSub(transform_.pos, follow_->pos);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
-	/*if (IsTargetInFOV(270.0f))
-	{
-
-	}*/
-
 	// 離れていて視線にいると
-	if (IsTargetInFOV(follow_->pos,FOV_RADIUS) && disPow > ATTRCK_RADIUS * ATTRCK_RADIUS)
+	if (IsTargetInFOV(follow_->pos, FOV_RADIUS) && disPow > ATTRCK_RADIUS * ATTRCK_RADIUS)
 	{
 		// ターゲットに向けて回転
 		TargetRotate(follow_->pos);
@@ -943,12 +938,6 @@ void Boss::UpdateDead(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::DEAD), false);
 	animeType_ = static_cast<int>(ANIM_TYPE::DEAD);
-
-
-	if (animationController_->IsEnd())
-	{
-		
-	}
 }
 
 #pragma endregion

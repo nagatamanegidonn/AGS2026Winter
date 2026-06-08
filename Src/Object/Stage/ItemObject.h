@@ -23,6 +23,7 @@ public:
 
 private:
 
+	// ƒAƒCƒeƒ€ID
 	int itemId_;
 };
 

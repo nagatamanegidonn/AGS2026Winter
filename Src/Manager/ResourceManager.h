@@ -14,15 +14,13 @@ public:
 	{
 		TITLE,
 		PUSH_SPACE,
-
-		BOSS,
-		MONSTER,
-		// プレイヤー
-		PLAYER_NIGHT,
+		// オブジェクトモデル
+		BOSS,			// ボス
+		MONSTER,		// 小型モンスター
+		PLAYER_NIGHT,	// プレイヤー
 		PLAYER_SHADOW,
-
+		// ステージモデル
 		SKY_DOME,
-
 		PLANE,
 		ROCKS,
 		COLL,
@@ -35,7 +33,7 @@ public:
 		HEEL,
 
 		FOOT_SMOKE,
-
+		// 武器モデル	
 		SWORD,
 		SWORD2,
 		BOW,

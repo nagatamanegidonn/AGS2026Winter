@@ -16,7 +16,6 @@ ShotBase::~ShotBase(void)
 	MV1DeleteModel(transform_.modelId);
 }
 
-
 void ShotBase::Create(int damage, const VECTOR& birthPos, const VECTOR& dir, int key)
 {
 	damage_ = damage;

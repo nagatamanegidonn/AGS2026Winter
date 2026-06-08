@@ -49,8 +49,13 @@ public:
 	// デストラクタ
 	~Planet(void);
 
+	// 初期化処理
 	void Init(void) override;
+
+	// 更新処理
 	void Update(void) override;
+
+	// 描画処理
 	void Draw(void) override;
 	
 	// 惑星種別
@@ -84,11 +89,14 @@ private:
 	// 惑星名
 	Stage::NAME name_;
 
+	// エリア管理用変数
 	std::map<int,std::shared_ptr<Area>> stageArea_;
-
+	
+	// 移動用ウェイポイント
 	using LerpPosMap = std::map<int, std::shared_ptr<LerpPos>>;
 	std::map<std::string, LerpPosMap> lerpPosMap_;
 
+	// エリア移動用のウェイポイント生成関数
 	std::shared_ptr<LerpPos> MakeLerpPos(VECTOR pos, int next = -1);
 
 };

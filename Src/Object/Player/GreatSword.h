@@ -25,6 +25,7 @@ public:
     // デストラクタ
     ~GreatSword(void);
 
+    // 通信専用の攻撃アニメーション判定
     bool IsSyncAttrck() override;
 
 private:
