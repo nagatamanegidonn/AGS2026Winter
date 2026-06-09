@@ -524,10 +524,12 @@ void Camera::UpdateShake(void)
 	if (stepShake_ < 0.0f)
 	{
 		pos_ = defaultPos_;
-		if (followTransform_ != nullptr){
+		if (followTransform_ != nullptr)
+		{
 			ChangeMode(MODE::FOLLOW);
 		}
-		else {
+		else 
+		{
 			ChangeMode(MODE::FIXED_POINT);
 		}
 		isShaking_ = true;

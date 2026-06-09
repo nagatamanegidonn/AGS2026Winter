@@ -243,7 +243,6 @@ void Arrow::DrawWeapon()
 void Arrow::SyncWeaponPlay()
 {
 	// 武器の同期＿非戦闘時
-
 	// メインウェポン（背中）
 	SyncWeaponToFream(L"mixamorig:Spine", BOW_SPINE_ROT, BOW_SPINE_POS,
 		transform_, transWeapon_);
@@ -251,7 +250,6 @@ void Arrow::SyncWeaponPlay()
 void Arrow::SyncWeaponBattle()
 {
 	// 武器の同期（戦闘時）
-
 	// メインウェポン（左手）
 	SyncWeaponToFream(L"mixamorig:LeftHandMiddle1", BOW_LHAND_ROT, BOW_LHAND_POS,
 		transform_, transWeapon_);

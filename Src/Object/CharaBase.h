@@ -21,8 +21,6 @@ public:
 		float startFrame;
 		float endFrame;
 	};
-	// アニメーションデータ
-	//const CharaBase::AttrckData ATTRCK_STAMP_DATA = { false, -1, 17.0f, 24.0f,-1.0f,0.0f,-1, };
 
 	struct ActionData
 	{
@@ -63,9 +61,7 @@ public:
 	void SetAreaId(int id);
 	const int& GetAreaId(void) const { return areaId_; }
 
-
 protected:
-
 
 #pragma region 移動,回転,重力
 
@@ -92,7 +88,8 @@ protected:
 
 #pragma endregion
 
-	int imgShadow_;	// 影画像
+	// 影画像
+	int imgShadow_;	
 
 	// 影の描画
 	void DrawShadow(void);
@@ -118,7 +115,6 @@ protected:
 	float changeAttackTime_;	// 攻撃チャージ時間
 	int attackDamage_;			// 攻撃力
 	float attackRate_ = 1.0f;	// 攻撃率
-
 
 	/// <summary>
 	/// アタックアニメデータ設定関数（ActionDataのほうが良い）

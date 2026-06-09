@@ -46,18 +46,25 @@ namespace
 	const CharaBase::ActionData ATTRCK_L_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
 	const CharaBase::ActionData ATTRCK_R_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
 	const CharaBase::ActionData ATTRCK_DASH_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
-
-
+	// カプセルの初期値
+	constexpr VECTOR CAP_LOACL_TOP = { 0.0f, 310.0f, 0.0f };
+	constexpr VECTOR CAP_LOACL_DOWN = { 0.0f, 300.0f, 0.0f };
+	constexpr float CAP_RADIUS = 200.0f;
 	constexpr float ROT_RATE = 3.0f;
 }
 
 Boss::Boss(int key, int createNo)
+	:
+	EnemyBase(),
+	state_(STATE::NONE),
+	animeType_(0),
+	animeAgoType_(0),
+	stateTime_(0.0f)
 {
 	key_ = key;
 	createNo_ = createNo;
 
 	animationController_ = nullptr;
-	state_ = STATE::NONE;
 
 	// 状態管理
 	stateChanges_.emplace(STATE::NONE, std::bind(&Boss::ChangeStateNone, this));
@@ -70,7 +77,6 @@ Boss::Boss(int key, int createNo)
 	stateChanges_.emplace(STATE::ATTRCK_L_CLOW, std::bind(&Boss::ChangeStateAttrckLeftClaw, this));
 	stateChanges_.emplace(STATE::ATTRCK_R_CLOW, std::bind(&Boss::ChangeStateAttrckRightClaw, this));
 	stateChanges_.emplace(STATE::ATTRCK_DASH, std::bind(&Boss::ChangeStateAttrckDash, this));
-
 	stateChanges_.emplace(STATE::STUNNED, std::bind(&Boss::ChangeStateStunned, this));
 	stateChanges_.emplace(STATE::DAMAGE, std::bind(&Boss::ChangeStateDamage, this));
 	stateChanges_.emplace(STATE::DEAD, std::bind(&Boss::ChangeStateDead, this));
@@ -79,9 +85,11 @@ Boss::Boss(int key, int createNo)
 	attrckCount_ = 0;
 	attrckTypeState_ = ATTRCK_TYPE::NONE;
 	attackDamage_ = 0;
+
 	// 追跡対象
 	follow_ = nullptr;
 	followTime_ = 0.0f;
+
 	// 攻撃位置
 	attrckPos_ = AsoUtility::VECTOR_ZERO;
 	dameRate_ = 1.0f;
@@ -140,7 +148,7 @@ void Boss::Init(void)
 	// 初期状態
 	ChangeState(STATE::PLAY);
 
-	//位置情報の変数
+	// 位置情報の変数
 	movedPos_ = AsoUtility::VECTOR_ZERO;
 	moveDir_ = AsoUtility::VECTOR_ZERO;
 	movePow_ = AsoUtility::VECTOR_ZERO;
@@ -150,14 +158,14 @@ void Boss::Init(void)
 
 	// カプセルコライダ
 	capsule_ = std::make_unique<Capsule>(transform_);
-	capsule_->SetLocalPosTop({ 0.0f, 310.0f, 0.0f });
-	capsule_->SetLocalPosDown({ 0.0f, 300.0f, 0.0f });
-	capsule_->SetRadius(200.0f);
+	capsule_->SetLocalPosTop(CAP_LOACL_TOP);
+	capsule_->SetLocalPosDown(CAP_LOACL_DOWN);
+	capsule_->SetRadius(CAP_RADIUS);
 
 	auto& nIns = NetManager::GetInstance();
 	auto& users = NetManager::GetInstance().GetNetUsers();
 
-	// ＨＰの初期化
+	// HP初期化
 	hp_ = hpMax_ = static_cast<int>(static_cast<float>(MAX_HP) * static_cast<float>(users.size()));
 
 	isHitCheck_ = false;
@@ -179,20 +187,19 @@ void Boss::Update(void)
 	// 攻撃情報の更新
 	AttackDataUpdate();
 
-	//当たり判定の設定
+	// 当たり判定の設定
 	for (const auto& part : hitParts_)
 	{
 		part->Update();
 	}
 
-
 	// 自分のプレイヤーのときだけ入力を処理する
 	if (nIns.GetMode() == NET_MODE::HOST) {
-		//ダメージを与える
+		// ダメージを与える
 		hp_ -= dame;
 		nIns.SetNetMonsHp(key_, createNo_, hp_);
 
-		//死亡判定
+		// 死亡判定
 		if (hp_ <= 0.0f && state_ != STATE::DEAD) { ChangeState(STATE::DEAD); }
 
 		movePow_ = AsoUtility::VECTOR_ZERO;
@@ -261,7 +268,6 @@ void Boss::Update(void)
 	soundController_->ChengeVolume(1, volume); // ボリュームだけ更新
 	soundController_->ChengeVolume(2, volume); // ボリュームだけ更新
 
-
 	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_STAMP)
 		&& animationController_->GetStepTime() > 23.0f
 		&& animationController_->GetStepTime() < 23.5f)
@@ -325,10 +331,6 @@ void Boss::Update(void)
 }
 void Boss::Draw(void)
 {
-
-	// カメラクリップ外になったら描画しない
-	/*if (!CheckCameraViewClip(transform_.pos))
-	{*/
 	// モデルの描画
 	MV1DrawModel(transform_.modelId);
 
@@ -349,8 +351,6 @@ void Boss::Draw(void)
 	DrawFOV(FOV_RADIUS, MOVE_RADIUS, 15, GetColor(255, 255, 0)); // 視野角90度、半径200、15本の線
 #endif
 }
-
-
 
 void Boss::Damage(int _dama,bool _isConst)
 {
@@ -397,6 +397,7 @@ const bool Boss::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 
 	return ret;
 }
+
 const bool Boss::CollisionAttrck(const int& modelId)
 {
 
@@ -468,7 +469,6 @@ const bool Boss::CollisionAttrck(const int& modelId)
 	return ret;
 }
 
-
 void Boss::SetLerpPos(VECTOR pos)
 {
 	waypoint_ = pos;
@@ -494,7 +494,6 @@ void Boss::StartStunned(void)
 	if (state_ != STATE::STUNNED)ChangeState(STATE::STUNNED);
 }
 
-
 bool Boss::IsBattle(void) const
 {
 	if (
@@ -509,8 +508,6 @@ bool Boss::IsBattle(void) const
 
 	return false;
 }
-
-
 
 void Boss::InitAnimation(void)
 {
@@ -555,7 +552,6 @@ void Boss::InitSound(void)
 	soundController_->Add(0, path + L"Boss/Dash.mp3", 1.0f);
 	soundController_->Add(1, path + L"Boss/Clow.mp3", 1.0f);
 	soundController_->Add(2, path + L"Boss/Stamp.mp3", 2.0f);
-
 }
 
 #pragma region StateによるUpdateの切り替え
@@ -630,7 +626,6 @@ void Boss::ChangeStateDead(void)
 
 #pragma endregion
 
-
 #pragma region StateごとのUpdate
 
 // stateがNONEの時のUpdate
@@ -647,19 +642,17 @@ void Boss::UpdatePlay(void)
 	axis.y = 1.0f;
 
 	// 回転
-	if (!AsoUtility::EqualsVZero(axis)){
+	if (!AsoUtility::EqualsVZero(axis))
+	{
 		playerRotY_ = playerRotY_.Mult(
 			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axis.y), AsoUtility::AXIS_Y
-			));
+				AsoUtility::Deg2RadF(axis.y), AsoUtility::AXIS_Y));
 	}
 
 	// 前方向を取得
 	VECTOR forward = transform_.GetForward();
 	// 移動
-	movePow_ =
-		VScale(forward, SPEED_MOVE);
-
+	movePow_ = VScale(forward, SPEED_MOVE);
 }
 void Boss::UpdateLerpMove(void)
 {
@@ -692,7 +685,6 @@ void Boss::UpdateLerpMove(void)
 // stateがBATTLEの時のUpdate
 void Boss::UpdateBattle(void)
 {
-
 	// タイマー更新
 	rotateTimer_ -= SceneManager::GetInstance().GetDeltaTime(); // フレームの経過時間を使う（環境によって異なります）
 	if (lerpTime_ >= 0.0f)lerpTime_ -= SceneManager::GetInstance().GetDeltaTime();
@@ -715,7 +707,6 @@ void Boss::UpdateBattle(void)
 		animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 		animeType_ = static_cast<int>(ANIM_TYPE::IDLE);
 	}
-
 
 	// 攻撃方法
 	attrckTypeState_ = ATTRCK_TYPE::NONE;
@@ -793,7 +784,6 @@ void Boss::UpdateFollow(void)
 	{
 		ChangeState(STATE::BATTLE);
 	}
-
 }
 void Boss::UpdateAttrckReady(void)
 {
@@ -840,7 +830,6 @@ void Boss::UpdateAttrckStamp(void)
 		ChangeState(STATE::BATTLE);
 	}
 
-
 	auto& nIns = NetManager::GetInstance();
 	nIns.SetAction(PLAYER_ACTION::BOSS_ATTRCK_A);
 
@@ -848,7 +837,6 @@ void Boss::UpdateAttrckStamp(void)
 	{
 
 	}
-
 }
 void Boss::UpdateAttrckLeftClaw(void)
 {
@@ -871,6 +859,7 @@ void Boss::UpdateAttrckLeftClaw(void)
 		}
 	}
 }
+
 void Boss::UpdateAttrckRightClaw(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW), false);
@@ -891,16 +880,14 @@ void Boss::UpdateAttrckRightClaw(void)
 		}	
 	}
 }
+
 void Boss::UpdateAttrckDash(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK_DASH));
 	animeType_ = static_cast<int>(ANIM_TYPE::ATTRCK_DASH);
 
-
-
 	// 移動
-	movePow_ =
-		VScale(transform_.GetForward(), SPEED_RUN);
+	movePow_ = VScale(transform_.GetForward(), SPEED_RUN);
 
 	// プレイヤーとの衝突判定
 	VECTOR diff = VSub(transform_.pos, follow_->pos);
@@ -918,6 +905,7 @@ void Boss::UpdateAttrckDash(void)
 		ChangeState(STATE::BATTLE);
 	}
 }
+
 void Boss::UpdateStunned(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::STUNNED));
@@ -930,10 +918,12 @@ void Boss::UpdateStunned(void)
 		else ChangeState(STATE::PLAY);
 	}
 }
+
 void Boss::UpdateDamage(void)
 {
 	
 }
+
 void Boss::UpdateDead(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::DEAD), false);
@@ -951,7 +941,7 @@ void Boss::CollisionStageCapsule(void)
 	trans.Update();
 	Capsule cap = Capsule(*capsule_, trans);
 	// カプセルとの衝突判定(主にステージ)
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
 		auto hits = MV1CollCheck_Capsule(
 			c.lock()->modelId_, -1,
@@ -1029,6 +1019,7 @@ void Boss::CollisionStageCapsule(void)
 		MV1CollResultPolyDimTerminate(hits);
 	}
 }
+
 void Boss::CollisionGravity(void)
 {
 	// ジャンプ量を加算
@@ -1047,9 +1038,8 @@ void Boss::CollisionGravity(void)
 	gravHitPosUp_ = VAdd(movedPos_, VScale(dirUpGravity, gravityPow));
 	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, checkPow * 2.0f));
 	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, checkPow));
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
-
 		// 地面との衝突
 		auto hit = MV1CollCheck_Line(
 			c.lock()->modelId_, -1, gravHitPosUp_, gravHitPosDown_);
@@ -1091,7 +1081,6 @@ void Boss::DrawDebug(void)
 	DrawFormatString(100, 400, 0x000000, L"Boss_HP(%d)", hp_);
 	DrawFormatString(100, 416, 0x000000, L"Boss_Attrck(%d)", attackDamage_);
 }
-
 
 void Boss::AttrckUpdate(void)
 {

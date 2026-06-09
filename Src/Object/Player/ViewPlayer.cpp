@@ -240,17 +240,17 @@ void ViewPlayer::SyncWeaponSowrd()
 	// âÒì]
 	mixMat = MMult(mixMat,
 		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))//XâÒì]
+			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))// XâÒì]
 			, AsoUtility::Deg2RadF(0.0f))
 	);
 	mixMat = MMult(mixMat,
 		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))//YâÒì]
+			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))// YâÒì]
 			, AsoUtility::Deg2RadF(0.0f))
 	);
 	mixMat = MMult(mixMat,
 		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))//ZâÒì]
+			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))// ZâÒì]
 			, AsoUtility::Deg2RadF(-120.0f))
 	);
 
@@ -267,7 +267,7 @@ void ViewPlayer::SyncWeaponSowrd()
 }
 void ViewPlayer::SyncWeaponBow()
 {
-	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine");//ÉiÉCÉgçò
+	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine");// ÉiÉCÉgçò
 	// ÉvÉåÉCÉÑÅ[ÇÃéËÇÃà íu
 	const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
 
@@ -288,17 +288,17 @@ void ViewPlayer::SyncWeaponBow()
 	// âÒì]
 	mixMat = MMult(mixMat,
 		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))//XâÒì]
+			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))// XâÒì]
 			, AsoUtility::Deg2RadF(0.0f))
 	);
 	mixMat = MMult(mixMat,
 		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))//Y
+			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))// YâÒì]
 			, AsoUtility::Deg2RadF(0.0f))
 	);
 	mixMat = MMult(mixMat,
 		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))//ZâÒì]
+			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))// ZâÒì]
 			, AsoUtility::Deg2RadF(30.0f))
 	);
 

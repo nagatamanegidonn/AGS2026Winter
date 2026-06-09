@@ -65,7 +65,7 @@ void CharaBase::CollisionGravity(void)
 
 void CharaBase::CollisionMoveEnd(void)
 {
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
 		if (c.lock()->type_ == Collider::TYPE::WALL)
 		{
@@ -130,7 +130,7 @@ void CharaBase::DrawShadow(void)
 	SetTextureAddressMode(DX_TEXADDRESS_CLAMP);
 
 	// 影を落とすモデルの数だけ繰り返し
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
 		// チェックするモデルは、jが0の時はステージモデル、1以上の場合はコリジョンモデル
 		ModelHandle = c.lock()->modelId_;

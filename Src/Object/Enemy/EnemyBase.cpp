@@ -21,6 +21,15 @@ namespace
 }
 
 EnemyBase::EnemyBase(void)
+	: createNo_(0)
+	, followTime_(0.0f)
+	, follow_(nullptr)
+	, gravHitPosDown_(AsoUtility::VECTOR_ZERO)
+	, gravHitPosUp_(AsoUtility::VECTOR_ZERO)
+	, hitDamePos_(AsoUtility::VECTOR_ZERO)
+	, hpMax_(0)
+	, hp_(0)
+	, key_(0)
 {
 }
 
@@ -78,7 +87,7 @@ void EnemyBase::CollisionStageCapsule(void)
 	trans.Update();
 	Capsule cap = Capsule(*capsule_, trans);
 	// カプセルとの衝突判定(主にステージ)
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
 		auto hits = MV1CollCheck_Capsule(
 			c.lock()->modelId_, -1,
@@ -175,7 +184,7 @@ void EnemyBase::CollisionGravity(void)
 	gravHitPosUp_ = VAdd(movedPos_, VScale(dirUpGravity, gravityPow));
 	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, checkPow * 2.0f));
 	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, checkPow));
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
 		// 地面との衝突
 		auto hit = MV1CollCheck_Line(
@@ -185,7 +194,6 @@ void EnemyBase::CollisionGravity(void)
 		//if (hit.HitFlag > 0)
 		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > 0.9f)
 		{
-
 			// 衝突地点から、少し上に移動
 			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, 2.0f));
 
@@ -248,7 +256,6 @@ void EnemyBase::TargetRotate(const VECTOR& traPos, float rate)
 	float dot = VDot(forward, toTarget);
 	dot = std::clamp(dot, -1.0f, 1.0f);
 	float angleRad = acosf(dot);
-
 
 	// 右回りか左回りかを判定するために外積を計算
 	float crossY = forward.x * toTarget.z - forward.z * toTarget.x;

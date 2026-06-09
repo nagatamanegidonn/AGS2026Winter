@@ -80,7 +80,7 @@ protected:
 	// 衝突チェック(カプセル)
 	VECTOR gravHitPosDown_; // 衝突用線分
 	VECTOR gravHitPosUp_;	// 衝突用線分
-	VECTOR hitDamePos_;	// 衝突用線分
+	VECTOR hitDamePos_;		// 衝突用線分
 
 	// 最終更新
 	virtual void CollisionStageCapsule(void)override;	// ステージとの判定

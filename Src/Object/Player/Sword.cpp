@@ -51,8 +51,8 @@ namespace
 		{ static_cast<int>(Player::ANIM_TYPE::DOWN), L"Down.mv1", 20.0f, -1, 0.0f, -1.0f },
 		// 攻撃		// 下記にスペルミスがあるから修正
 		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1S), L"Axe/Attrck1.mv1", 40.0f, -1, 0.0f, -1.0f },
-		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1STOP), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	//使用無し
-		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1E), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	//使用無し
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1STOP), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	// 使用無し
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1E), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	// 使用無し
 		{ static_cast<int>(Player::ANIM_TYPE::ATTACK2), L"Axe/Attrck2.mv1", 40.0f, -1, 12.0f, -1.0f  },
 		{ static_cast<int>(Player::ANIM_TYPE::ATTACK3), L"Axe/Attrck3.mv1", 40.0f, 0, 0.0f, -1.0f },
 		// 死亡

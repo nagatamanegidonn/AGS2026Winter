@@ -8,7 +8,6 @@
 #include "../Manager/GameManager.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/ResourceManager.h"
-//#include "../Manager/SoundManager.h"
 
 #include "../Manager/Camera.h"
 
@@ -1238,7 +1237,7 @@ void Player::ProcessNormal(void)
 		}
 		// 採取判定
 		bool isId = false;
-		for (const auto c : colliders_)
+		for (const auto& c : colliders_)
 		{
 			if (c.lock()->type_ == Collider::TYPE::ITEM)
 			{
@@ -1572,7 +1571,7 @@ void Player::CollisionGravity(void)
 	const auto gravHitPosUp = VAdd(gravHitPosUp_, VScale(transform_.GetForward(), COLL_LEG_RATE));
 	const auto gravHitPosDown =VAdd(gravHitPosDown_, VScale(transform_.GetForward(), COLL_LEG_RATE));
 
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
 		if (c.lock()->type_ == Collider::TYPE::STAGE)
 		{
@@ -1606,7 +1605,7 @@ void Player::CollisionStageCapsule(void)
 	trans.Update();
 	Capsule cap = Capsule(*capsule_, trans);
 	// カプセルとの衝突判定(主にステージ)
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
 		auto hits = MV1CollCheck_Capsule(
 			c.lock()->modelId_, -1,

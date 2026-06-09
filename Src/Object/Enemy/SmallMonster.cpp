@@ -73,8 +73,7 @@ SmallMonster::SmallMonster(int key, int createNo)
 
 	// 当たり判定
 	hitParts_.clear();
-	AddHitPart(transform_.modelId, L"Bone002", ATTRCK_BITE_RADIUS, 1.0f);//胴体
-	
+	AddHitPart(transform_.modelId, L"Bone002", ATTRCK_BITE_RADIUS, 1.0f);//胴体	
 }
 
 SmallMonster::~SmallMonster(void)
@@ -148,7 +147,7 @@ void SmallMonster::Update(void)
 		part->Update();
 	}
 
-	//当たり判定の設定
+	// 当たり判定の設定
 	for (const auto& part : hitParts_)
 	{
 		part->Update();
@@ -156,11 +155,11 @@ void SmallMonster::Update(void)
 
 	// 自分のプレイヤーのときだけ入力を処理する
 	if (nIns.GetMode() == NET_MODE::HOST) {
-		//ダメージを与える
+		// ダメージを与える
 		hp_ -= dame;
 		nIns.SetNetMonsHp(key_, createNo_, hp_);
 
-		//死亡判定
+		// 死亡判定
 		if (hp_ <= 0.0f && state_ != STATE::DEAD) { ChangeState(STATE::DEAD); }
 
 		movePow_ = AsoUtility::VECTOR_ZERO;
@@ -214,7 +213,6 @@ void SmallMonster::Update(void)
 		const auto& rot = mons.rot_;
 		transform_.quaRot = rot;
 	}
-
 
 	// ダメージ描画の更新
 	for (auto& hitdamage : hitdamages_)
@@ -327,7 +325,7 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 	// ０番目のフレームのコリジョン情報を更新する
 	MV1RefreshCollInfo(modelId, -1);
 
-	//当たり判定フラグ
+	// 当たり判定フラグ
 	bool ret = false;
 
 	// カプセルとの衝突判定
@@ -337,8 +335,9 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 
 	// 衝突した複数のポリゴンと衝突回避するまで、
 	// プレイヤーのdamage
-	 // 当たったかどうかで処理を分岐
-	if (hits.HitNum >= 1){
+	// 当たったかどうかで処理を分岐
+	if (hits.HitNum >= 1)
+	{
 		// 当たった場合は衝突の情報を描画する
 		ret = true;
 	}
@@ -354,8 +353,6 @@ void SmallMonster::SetFollow(const Transform* follow)
 	follow_ = follow;
 	ChangeState(STATE::BATTLE);
 }
-
-
 
 #pragma region 初期化処理
 
@@ -381,9 +378,11 @@ void SmallMonster::InitAnimation(void)
 	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK), std::move(SetActionData(-1, 10.0f, 14.0f)));
 
 }
+
 void SmallMonster::InitEffect(void)
 {
 }
+
 void SmallMonster::InitSound(void)
 {
 }
@@ -444,6 +443,7 @@ void SmallMonster::ChangeStateDead(void)
 void SmallMonster::UpdateNone(void)
 {
 }
+
 void SmallMonster::UpdatePlay(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
@@ -456,16 +456,15 @@ void SmallMonster::UpdatePlay(void)
 	if (!AsoUtility::EqualsVZero(axis)) {
 		playerRotY_ = playerRotY_.Mult(
 			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axis.y), AsoUtility::AXIS_Y
-			));
+				AsoUtility::Deg2RadF(axis.y), AsoUtility::AXIS_Y));
 	}
 
 	// 前方向を取得
 	VECTOR forward = transform_.GetForward();
 	// 移動
-	movePow_ =
-		VScale(forward, SPEED_MOVE);
+	movePow_ = VScale(forward, SPEED_MOVE);
 }
+
 void SmallMonster::UpdateBattle(void)
 {
 	// タイマー更新
@@ -483,7 +482,6 @@ void SmallMonster::UpdateBattle(void)
 		// この時の回転は歩く
 		animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
 		animeType_ = static_cast<int>(ANIM_TYPE::RUN);
-
 	}
 	else
 	{
@@ -494,7 +492,6 @@ void SmallMonster::UpdateBattle(void)
 	// プレイヤーとの衝突判定
 	const VECTOR diff = VSub(transform_.pos, follow_->pos);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
-
 
 	// 視線の先に至らに変更予定
 	if (stateTime_ < 0.0f || (IsTargetInFOV(follow_->pos, FOV_RADIUS) && stateTime_ < 1.0f)) 
@@ -510,6 +507,7 @@ void SmallMonster::UpdateBattle(void)
 		}
 	}
 }
+
 void SmallMonster::UpdateFollow(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
@@ -539,6 +537,7 @@ void SmallMonster::UpdateFollow(void)
 		ChangeState(STATE::BATTLE);
 	}
 }
+
 void SmallMonster::UpdateAttrckReady(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK), false);
@@ -552,6 +551,7 @@ void SmallMonster::UpdateAttrckReady(void)
 		ChangeState(STATE::ATTRCK);
 	}
 }
+
 void SmallMonster::UpdateAttrckStamp(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK), false);
@@ -562,11 +562,13 @@ void SmallMonster::UpdateAttrckStamp(void)
 		ChangeState(STATE::BATTLE);
 	}
 }
+
 void SmallMonster::UpdateDamage(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::DAMAGE), false);
 	animeType_ = static_cast<int>(ANIM_TYPE::DAMAGE);
 }
+
 void SmallMonster::UpdateDead(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::DEAD), false);
@@ -581,7 +583,7 @@ void SmallMonster::CollisionStageCapsule(void)
 	trans.Update();
 	Capsule cap = Capsule(*capsule_, trans);
 	// カプセルとの衝突判定(主にステージ)
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
 		auto hits = MV1CollCheck_Capsule(
 			c.lock()->modelId_, -1,
@@ -678,9 +680,8 @@ void SmallMonster::CollisionGravity(void)
 	gravHitPosUp_ = VAdd(movedPos_, VScale(dirUpGravity, gravityPow));
 	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, checkPow * 2.0f));
 	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, checkPow));
-	for (const auto c : colliders_)
+	for (const auto& c : colliders_)
 	{
-
 		// 地面との衝突
 		auto hit = MV1CollCheck_Line(
 			c.lock()->modelId_, -1, gravHitPosUp_, gravHitPosDown_);
@@ -689,14 +690,12 @@ void SmallMonster::CollisionGravity(void)
 		//if (hit.HitFlag > 0)
 		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > 0.9f)
 		{
-
 			// 衝突地点から、少し上に移動
 			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, 2.0f));
 
 			// ジャンプリセット
 			jumpPow_ = AsoUtility::VECTOR_ZERO;
 		}
-
 	}
 }
 

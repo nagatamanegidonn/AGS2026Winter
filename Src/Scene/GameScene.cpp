@@ -65,7 +65,6 @@ namespace
 	// カメラシェイク
 	constexpr float CAMERA_SHAKE_TIME = 0.5f;
 	constexpr float CAMERA_SHAKE_POWER = 1.5f;
-
 }
 
 
@@ -101,7 +100,7 @@ GameScene::~GameScene(void)
 
 void GameScene::Init(void)
 {
-	//初期化
+	// 初期化
 	GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
 
 	auto& users = NetManager::GetInstance().GetNetUsers();
@@ -767,7 +766,6 @@ void GameScene::Collision(void)
 						{
 							// 画面を暗転
 							shot->ChangeState();
-
 							// 吹き飛び方向
 							VECTOR mixDir = VScale(VNorm(VSub(player->GetTransform().pos, ShotPos)), 0.001f);
 							// ダメージ
