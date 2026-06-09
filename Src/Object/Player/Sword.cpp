@@ -50,11 +50,11 @@ namespace
 		{ static_cast<int>(Player::ANIM_TYPE::FLYING), L"Flying.mv1", 20.0f, -1, 20.0f, 0.1f },
 		{ static_cast<int>(Player::ANIM_TYPE::DOWN), L"Down.mv1", 20.0f, -1, 0.0f, -1.0f },
 		// 攻撃		// 下記にスペルミスがあるから修正
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1S), L"Axe/Attrck1.mv1", 40.0f, -1, 0.0f, -1.0f },
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1STOP), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	//使用無し
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1E), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	//使用無し
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK2), L"Axe/Attrck2.mv1", 40.0f, -1, 12.0f, -1.0f  },
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK3), L"Axe/Attrck3.mv1", 40.0f, 0, 0.0f, -1.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1S), L"Axe/Attrck1.mv1", 40.0f, -1, 0.0f, -1.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1STOP), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	//使用無し
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1E), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	//使用無し
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK2), L"Axe/Attrck2.mv1", 40.0f, -1, 12.0f, -1.0f  },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK3), L"Axe/Attrck3.mv1", 40.0f, 0, 0.0f, -1.0f },
 		// 死亡
 		{ static_cast<int>(Player::ANIM_TYPE::DEAD), L"Dying.mv1", 30.0f, 0, 0.0f, -1.0f },
 		// 共通アニメーション
@@ -68,8 +68,8 @@ namespace
 
 	// アクションデータリスト
 	// 攻撃情報の設定
-	const CharaBase::ActionData ATTRCK_ATTRCK1S_DATA = { false, -1,  20.0f, 30.0f, 32.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTRCK2) };
-	const CharaBase::ActionData ATTRCK_ATTRCK2_DATA = { false, -1, 25.0f, 30.0f, 32.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTRCK3) };
+	const CharaBase::ActionData ATTRCK_ATTRCK1S_DATA = { false, -1,  20.0f, 30.0f, 32.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTACK2) };
+	const CharaBase::ActionData ATTRCK_ATTRCK2_DATA = { false, -1, 25.0f, 30.0f, 32.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTACK3) };
 	const CharaBase::ActionData ATTRCK_ATTRCK3_DATA = { false, -1, 25.0f, 40.0f, 60.0f,0.0f,-1 };
 	// 共通データ
 	const CharaBase::ActionData FLYING_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::DOWN) };
@@ -103,11 +103,11 @@ Sword::~Sword(void)
 {
 }
 
-bool Sword::IsSyncAttrck()
+bool Sword::IsSyncAttack()
 {
-	return (animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTRCK1S)
-		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTRCK2)
-		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTRCK3)
+	return (animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTACK1S)
+		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTACK2)
+		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTACK3)
 		);
 }
 
@@ -135,9 +135,9 @@ void Sword::InitParam(void)
 	isBattleDash_ = true;
 
 	// 攻撃情報の設定
-	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK1S), ATTRCK_ATTRCK1S_DATA);
-	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK2), ATTRCK_ATTRCK2_DATA);
-	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK3), ATTRCK_ATTRCK3_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTACK1S), ATTRCK_ATTRCK1S_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTACK2), ATTRCK_ATTRCK2_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTACK3), ATTRCK_ATTRCK3_DATA);
 
 	SetActionData(static_cast<int>(ANIM_TYPE::FLYING), FLYING_DATA);
 	SetActionData(static_cast<int>(ANIM_TYPE::DOWN), DOWN_DATA);
@@ -176,9 +176,9 @@ void Sword::InitAnimation(void)
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FLYING), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_RATE_30);
 	// 攻撃
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK1S), true);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK2), true);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK3), true);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK1S), true);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK2), true);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK3), true);
 
 
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE));
@@ -195,33 +195,33 @@ void Sword::InitEffect(void)
 	effectController_->Play(1);
 }
 
-void Sword::InitAttrckSound(void)
+void Sword::InitAttackSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 
-	soundController_->Add(static_cast<int>(SE::ATTRCK1), path + L"Player/SwordSwing.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::ATTRCK2), path + L"Player/SwordSwing.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::ATTRCK3), path + L"Player/SowrdSlash.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK1), path + L"Player/SwordSwing.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK2), path + L"Player/SwordSwing.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK3), path + L"Player/SowrdSlash.mp3", 0.6f);
 }
-void Sword::PlayAttrckSound(void)
+void Sword::PlayAttackSound(void)
 {
-	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1S)
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1S)
 		&& animationController_->GetStepTime() > ATTRCK1_SE_STIME
 		&& animationController_->GetStepTime() < ATTRCK1_SE_STIME + HALF_RATE)
 	{
-		soundController_->Play(static_cast<int>(SE::ATTRCK1), Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::ATTACK1), Sound::TIMES::ONCE);
 	}
-	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK2)
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTACK2)
 		&& animationController_->GetStepTime() > ATTRCK2_SE_STIME
 		&& animationController_->GetStepTime() < ATTRCK2_SE_STIME + HALF_RATE)
 	{
-		soundController_->Play(static_cast<int>(SE::ATTRCK2), Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::ATTACK2), Sound::TIMES::ONCE);
 	}
-	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK3)
+	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTACK3)
 		&& animationController_->GetStepTime() > ATTRCK3_SE_STIME
 		&& animationController_->GetStepTime() < ATTRCK3_SE_STIME + HALF_RATE)
 	{
-		soundController_->Play(static_cast<int>(SE::ATTRCK3), Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::ATTACK3), Sound::TIMES::ONCE);
 	}
 }
 

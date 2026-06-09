@@ -30,7 +30,7 @@ public:
 		
 		DRAW,
 		CLOSE,
-		ATTRCK,
+		ATTACK,
 		DASH,
 		ROLL,
 

@@ -32,7 +32,7 @@ public:
 		float HitTime = 0.0f;
 		float sNewTime = 0.0f;	// n入力受付時間
 		float NewTime = 0.0f;	// n入力受付終了時間
-		int nextAttrck = -1;	// 次の攻撃ID 
+		int nextAttack = -1;	// 次の攻撃ID 
 	};
 
 	// コンストラクタ
@@ -56,8 +56,8 @@ public:
 	void ClearCollider(void);
 
 	// 攻撃量の取得
-	const int GetAttrckPow(void) const { return attrckDamage_; }
-	const float GetAttrckRate(void) const { return attrckRate_; }
+	const int GetAttrckPow(void) const { return attackDamage_; }
+	const float GetAttrckRate(void) const { return attackRate_; }
 
 	// 現エリアの設定：取得
 	void SetAreaId(int id);
@@ -111,13 +111,13 @@ protected:
 
 	// 種類別のアニメーションデータ
 	std::map<int, std::unique_ptr<ActionData>> atkData_;// アタックアニメデータ
-	int attrckType_ = 0;								// アタックデータ使用ID
+	int attackType_ = 0;								// アタックデータ使用ID
 
 	// 攻撃管理
 	bool isHitCheck_;			// 攻撃判定が発生するかの判定
-	float changeAttrckTime_;	// 攻撃チャージ時間
-	int attrckDamage_;			// 攻撃力
-	float attrckRate_ = 1.0f;	// 攻撃率
+	float changeAttackTime_;	// 攻撃チャージ時間
+	int attackDamage_;			// 攻撃力
+	float attackRate_ = 1.0f;	// 攻撃率
 
 
 	/// <summary>

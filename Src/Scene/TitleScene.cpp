@@ -274,7 +274,6 @@ void TitleScene::Draw(void)
 				, weponsPos_.at(weponId_)->CenterPos.y);
 		}
 	}
-
 }
 
 void TitleScene::Release(void)

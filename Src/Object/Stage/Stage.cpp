@@ -65,7 +65,7 @@ void Stage::Update(void)
 
 		for (auto& player : players_)
 		{
-			// playerとの衝突判定
+			// プレイヤーとの衝突判定
 			auto& pPos = player.lock()->GetTransform().pos;
 			diff = VSub(pPos, s.second->pos);
 			disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
@@ -146,7 +146,7 @@ void Stage::ChangeStage(NAME type)
 
 		for (auto& player : players_)
 		{
-			// playerとの衝突判定
+			// プレイヤーとの衝突判定
 			auto& pPos = player.lock()->GetTransform().pos;
 			diff = VSub(pPos, s.second->pos);
 			disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;

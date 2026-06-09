@@ -110,7 +110,7 @@ int Planet::CheckAreaId(const VECTOR& pos)
 	// エリアの設定
 	for (const auto& s : stageArea_)
 	{
-		// playerとの衝突判定
+		// プレイヤーとの衝突判定
 		VECTOR diff = VSub(pos, s.second->pos);
 		float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
@@ -128,7 +128,7 @@ const bool Planet::CheckArea(const VECTOR pos)
 	// エリアの設定
 	for (const auto& s : stageArea_)
 	{
-		// playerとの衝突判定
+		// プレイヤーとの衝突判定
 		VECTOR diff = VSub(pos, s.second->pos);
 		float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 

@@ -63,7 +63,7 @@ bool EnemyBase::IsTargetInFOV(const VECTOR& followPos, float fovDeg)
 }
 void EnemyBase::AddHitPart(int& model, std::wstring boneName, float rad, float rate)
 {
-	auto  part = std::make_unique<HitPart>(model, boneName, rad, rate);
+	auto part = std::make_unique<HitPart>(model, boneName, rad, rate);
 	hitParts_.emplace_back(std::move(part));
 }
 
@@ -223,7 +223,7 @@ int EnemyBase::DamageUpdate(void)
 			}
 			if (!isEnd)
 			{
-				auto  part = std::make_unique<HitDamage>(transform_.modelId, L"Chest_M", userDame);
+				auto part = std::make_unique<HitDamage>(transform_.modelId, L"Chest_M", userDame);
 				hitdamages_.emplace_back(std::move(part));
 			}
 		}

@@ -63,7 +63,7 @@ SmallMonster::SmallMonster(int key, int createNo)
 
 	// 攻撃情報
 	attrckCount_ = 0;
-	attrckDamage_ = 10;
+	attackDamage_ = 10;
 	// 追跡対象
 	follow_ = nullptr;
 	followTime_ = 0.0f;
@@ -303,7 +303,7 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 	auto& nIns = NetManager::GetInstance();
 	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK))
 	{
-		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK);
+		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK);
 		attrckPos_ = VScale(VAdd(AsoUtility::MV1GetFreamPos(transform_.modelId, L"Bone002")
 			, AsoUtility::MV1GetFreamPos(transform_.modelId, L"Bone002")), HALF_RATE);
 		attrckRadius = ATTRCK_STAMP_RADIUS;
@@ -313,8 +313,8 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 		return false;
 	}
 
-	if (atkData_[attrckType_]->sHitTime < animationController_->GetStepTime()
-		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
+	if (atkData_[attackType_]->sHitTime < animationController_->GetStepTime()
+		&& atkData_[attackType_]->HitTime > animationController_->GetStepTime())
 	{
 		isHitCheck_ = true;
 	}
@@ -491,7 +491,7 @@ void SmallMonster::UpdateBattle(void)
 		animeType_ = static_cast<int>(ANIM_TYPE::IDLE);
 	}
 
-	// playerとの衝突判定
+	// プレイヤーとの衝突判定
 	const VECTOR diff = VSub(transform_.pos, follow_->pos);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
@@ -525,7 +525,7 @@ void SmallMonster::UpdateFollow(void)
 	movePow_ =
 		VScale(transform_.GetForward(), SPEED_FOLLOW);
 
-	// playerとの衝突判定
+	// プレイヤーとの衝突判定
 	VECTOR diff = VSub(transform_.pos, follow_->pos);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
@@ -702,11 +702,11 @@ void SmallMonster::CollisionGravity(void)
 
 void SmallMonster::AttrckUpdate(void)
 {
-	animationController_->Play(attrckType_, false);
+	animationController_->Play(attackType_, false);
 
 	//　当たり判定が発生するか
-	if (atkData_[attrckType_]->sHitTime < animationController_->GetStepTime()
-		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
+	if (atkData_[attackType_]->sHitTime < animationController_->GetStepTime()
+		&& atkData_[attackType_]->HitTime > animationController_->GetStepTime())
 	{
 		isHitCheck_ = true;
 	}

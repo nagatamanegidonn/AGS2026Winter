@@ -35,22 +35,15 @@
 
 namespace
 {
-	// アニメーションリスト
-	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
-	{
-		
-	};
-
 	// ステータスの描画位置、サイズ
 	constexpr int PRAM_SIZE_X = 100;
 	constexpr int PRAM_SIZE_Y = 30;
 	constexpr int PRAM_POS_X = 60;
 	constexpr int PRAM_POS_Y = 150;
 	constexpr int PRAM_distance_Y = PRAM_SIZE_Y + 4;
-
+	// HPバーのサイズ
 	constexpr int HP_SIZE_X = 512;
 	constexpr int HP_SIZE_Y = 16;
-
 	// 武器ID
 	constexpr int SWORD_ID = 0;
 	constexpr int GREAT_SWORD_ID = 1;
@@ -59,42 +52,57 @@ namespace
 	constexpr int SWORD_DAMAGE = 10;
 	constexpr int GREAT_SWORD_DAMAGE = 20;
 	constexpr int BOW_DAMAGE = 5;
-
 	// 初期座標
 	constexpr VECTOR START_POS = { 1200.0f,0.0f,-5000.0f };
-
 	// ゲージ関連
 	constexpr int GAGE_X_BASE_OFFSET = 60;	 // ゲージの基準X座標
 	constexpr int GAGE_X_ALIGN_OFFSET = 40;	 // ゲージの追加Xオフセット (アイコン幅など)
 	constexpr int GAGE_Y_BASE_OFFSET = 60;	 // ゲージの基準Y座標 (画面上部からの距離)
 	constexpr int GAGE_Y_HALF_GAP = 2;		 // HPとSTAの間の隙間を計算するためのオフセット
-
-	// HP,スタミナ表示位置
+	// HP、スタミナ表示位置
 	constexpr int GAGE_POS_X = GAGE_X_BASE_OFFSET + GAGE_X_ALIGN_OFFSET + HP_SIZE_X / 2;
 	constexpr int GAGE_POS_Y = GAGE_Y_BASE_OFFSET - GAGE_Y_HALF_GAP - HP_SIZE_Y / 2;
 	constexpr int STA_POS_Y = GAGE_Y_BASE_OFFSET + GAGE_Y_HALF_GAP + HP_SIZE_Y / 2;
-
+	// 画像関連
+	const std::wstring PATH_IMAGE_FREAM = Application::PATH_IMAGE + L"Fream.png";
+	const std::wstring PATH_IMAGE_PRAM_HP = Application::PATH_IMAGE + L"hp.png";
+	const std::wstring PATH_IMAGE_HP_FREAM = Application::PATH_IMAGE + L"UI/hpFream.png";
+	const std::wstring PATH_IMAGE_HP_MASK = Application::PATH_IMAGE + L"UI/hpMask.png";
+	const std::wstring PATH_IMAGE_STAMINA_FREAM = Application::PATH_IMAGE + L"UI/staFream.png";
+	const std::wstring PATH_IMAGE_STAMINA_MASK = Application::PATH_IMAGE + L"UI/staMask.png";
+	const std::wstring PATH_IMAGE_SOWRD_ICON = Application::PATH_IMAGE + L"Job/Sowrd.png";
+	const std::wstring PATH_IMAGE_GREATSOWRD_ICON = Application::PATH_IMAGE + L"Job/GreatSowrd.png";
+	const std::wstring PATH_IMAGE_ARROW_ICON = Application::PATH_IMAGE + L"Job/Arrow.png";
+	// カプセルの初期値
+	constexpr VECTOR CAP_LOACL_TOP = { 0.0f, 110.0f, 0.0f };
+	constexpr VECTOR CAP_LOACL_DOWN = { 0.0f, 30.0f, 0.0f };
+	constexpr float CAP_RADIUS = 20.0f;
+	// アイテム関連
+	constexpr int START_BOM_HOLD = 2;
+	constexpr int START_FLASH_HOLD = 3;
+	const std::wstring ITEM_TYPE_FLASH = L"攻撃";
+	const std::wstring ITEM_TYPE_BOM = L"設置";
+	// アニメーション関連
+	constexpr float BLEND_SPEED = 5.0f;
 }
 
-
-
 MATRIX GetFrameGlobalMatrix(int modelHandle, int frameIndex) {
+	// ローカル行列を取得
 	MATRIX localMat = MV1GetFrameLocalMatrix(modelHandle, frameIndex);
-
 	int parentIndex = MV1GetFrameParent(modelHandle, frameIndex);
 	if (parentIndex == -1) {
 		return localMat; // ルートなのでそのまま返す
 	}
-
+	// 親フレームのグローバル行列を取得
 	MATRIX parentMat = GetFrameGlobalMatrix(modelHandle, parentIndex);
 	return MMult(localMat, parentMat); // DxLibの行列乗算
 }
 
-Player::Player(int key,GameScene* scene, PLAYER_TYPE type)
+Player::Player(int key, GameScene* scene, PLAYER_TYPE type)
 	:
 	CharaBase(),
 	type_(type),
-	key_(0),
+	key_(key),
 	itemId_(-1),
 	isHit_(false),
 	walkTime_(0.0f),
@@ -110,7 +118,6 @@ Player::Player(int key,GameScene* scene, PLAYER_TYPE type)
 	staminaDir_(0.0f),
 	stateChanges_(),
 	isBattleDash_(false),
-	soundController_(nullptr),
 	jobImg_(-1),
 	freamImg_(-1),
 	hpImg_(-1),
@@ -128,42 +135,35 @@ Player::Player(int key,GameScene* scene, PLAYER_TYPE type)
 	animationController_(nullptr),
 	inputController_(nullptr),
 	effectController_(nullptr),
+	soundController_(nullptr),
+	state_(STATE::NONE),
+	animeType_(0),
+	animeAgoType_(0),
 	gameScene_(scene),
-	chageCount_(0.0f)
+	chageCount_(0.0f),
+	downTime_(0.0f),
+	flyigDir_({0.0f, 0.0f, 0.0f}),
+	flyigTime_(0.0f), 
+	gravHitPosDown_({0.0f, 0.0f, 0.0f}),
+	gravHitPosUp_({0.0f, 0.0f, 0.0f}),
+	invisibleTime_(0.0f), 
+	isBreak_(false)
 {
-	key_ = key;
-
-	animationController_ = nullptr;
-	inputController_ = nullptr;
-	effectController_ = nullptr;
 	soundController_.reset();
 	soundController_ = nullptr;
-
-	state_ = STATE::NONE;
-
-	isBattleDash_ = false;
 
 	// 状態管理
 	stateChanges_.emplace(STATE::NONE, std::bind(&Player::ChangeStateNone, this));
 	stateChanges_.emplace(STATE::PLAY, std::bind(&Player::ChangeStatePlay, this));
 	stateChanges_.emplace(STATE::BATTLE, std::bind(&Player::ChangeStateBattle, this));
 	stateChanges_.emplace(STATE::WEAPON, std::bind(&Player::ChangeStateWeapon, this));
-	stateChanges_.emplace(STATE::ATTRCK, std::bind(&Player::ChangeStateAttrck, this));
+	stateChanges_.emplace(STATE::ATTACK, std::bind(&Player::ChangeStateAttack, this));
 	stateChanges_.emplace(STATE::ROWLING, std::bind(&Player::ChangeStateRowling, this));
 	stateChanges_.emplace(STATE::DAMAGE, std::bind(&Player::ChangeStateDamage, this));
 	stateChanges_.emplace(STATE::HI_DAMAGE, std::bind(&Player::ChangeStateHiDamage, this));
 	stateChanges_.emplace(STATE::DEAD, std::bind(&Player::ChangeStateDead, this));
 	stateChanges_.emplace(STATE::GET, std::bind(&Player::ChangeStateGet, this));
 	stateChanges_.emplace(STATE::ITEM_PLAY, std::bind(&Player::ChangeStateItemUse, this));
-
-	walkTime_ = 0.0f;
-
-	attrckDamage_ = 0;
-
-	for (int i = 0; i < static_cast<int>(ANIM_TYPE::RUN); i++)
-	{
-		atkData_.emplace(i, SetActionData(-1));
-	}
 }
 
 Player::~Player(void)
@@ -198,44 +198,43 @@ void Player::Init(void)
 	transform_.Update();
 
 	auto& nIns = NetManager::GetInstance();
-
-	freamImg_ = LoadGraph((Application::PATH_IMAGE + L"Fream.png").c_str());
-	hpImg_ = LoadGraph((Application::PATH_IMAGE + L"hp.png").c_str());
+	// ステータスUI
+	freamImg_ = LoadGraph(PATH_IMAGE_FREAM.c_str());
+	hpImg_ = LoadGraph(PATH_IMAGE_PRAM_HP.c_str());
 	// HP
-	hpFreamImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/hpFream.png").c_str());
-	hpMaskImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/hpMask.png").c_str());
+	hpFreamImg_ = LoadGraph(PATH_IMAGE_HP_FREAM.c_str());
+	hpMaskImg_ = LoadGraph(PATH_IMAGE_HP_MASK.c_str());
 	// スタミナ
-	staFreamImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/staFream.png").c_str());
-	staMaskImg_ = LoadGraph((Application::PATH_IMAGE + L"UI/staMask.png").c_str());
+	staFreamImg_ = LoadGraph(PATH_IMAGE_STAMINA_FREAM.c_str());
+	staMaskImg_ = LoadGraph(PATH_IMAGE_STAMINA_MASK.c_str());
 
 	// モデルの基本設定_武器
 	switch (nIns.GetWeapon(key_))
 	{
 		// 剣
 	case SWORD_ID:
-		jobImg_ = LoadGraph((Application::PATH_IMAGE + L"Job/Sowrd.png").c_str());
+		jobImg_ = LoadGraph(PATH_IMAGE_SOWRD_ICON.c_str());
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::SWORD));
-		attrckDamage_ = SWORD_DAMAGE;
-		hp_ = hpAgo_ = hpMax_ = MAX_HP + 20;
+		attackDamage_ = SWORD_DAMAGE;
+		hp_ = hpAgo_ = hpMax_ = MAX_HP + BONUS_HP;
 		break;
 		// 大剣
 	case GREAT_SWORD_ID:
-		jobImg_ = LoadGraph((Application::PATH_IMAGE + L"Job/GreatSowrd.png").c_str());
+		jobImg_ = LoadGraph(PATH_IMAGE_GREATSOWRD_ICON.c_str());
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::SWORD2));
-		attrckDamage_ = GREAT_SWORD_DAMAGE;
+		attackDamage_ = GREAT_SWORD_DAMAGE;
 		hp_ = hpAgo_ = hpMax_ = MAX_HP;
 		break;
 		// 弓
 	case BOW_ID:
-		jobImg_ = LoadGraph((Application::PATH_IMAGE + L"Job/Arrow.png").c_str());
+		jobImg_ = LoadGraph(PATH_IMAGE_ARROW_ICON.c_str());
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::BOW));
-		attrckDamage_ = BOW_DAMAGE;
+		attackDamage_ = BOW_DAMAGE;
 		hp_ = hpAgo_ = hpMax_ = MAX_HP;
 		break;
-	// デフォルトは大剣
 	default:		
 		break;
 	}
@@ -251,15 +250,15 @@ void Player::Init(void)
 
 	// アニメーションの設定
 	InitAnimation();
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::GET), true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::GET), true, BLEND_SPEED);
 	// 投げるモーション
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_THROW), true, 5.0f);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_THROW_E), true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_THROW), true, BLEND_SPEED);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_THROW_E), true, BLEND_SPEED);
 	// 設置するモーション
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_SET), true, 5.0f);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_SET_E), true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_SET), true, BLEND_SPEED);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_SET_E), true, BLEND_SPEED);
 	// 飲むモーション
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_DRINK), true, 5.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_DRINK), true, BLEND_SPEED);
 
 	// エフェクトの設定
 	InitEffect();
@@ -278,7 +277,7 @@ void Player::Init(void)
 	// 攻撃管理
 	isHit_ = false;
 	isHitCheck_ = false;
-	changeAttrckTime_ = 0.0f;
+	changeAttackTime_ = 0.0f;
 
 	// 位置情報の変数
 	movedPos_ = AsoUtility::VECTOR_ZERO;
@@ -294,9 +293,9 @@ void Player::Init(void)
 
 	// カプセルコライダ
 	capsule_ = std::make_unique<Capsule>(transform_);
-	capsule_->SetLocalPosTop({ 0.0f, 110.0f, 0.0f });
-	capsule_->SetLocalPosDown({ 0.0f, 30.0f, 0.0f });
-	capsule_->SetRadius(20.0f);
+	capsule_->SetLocalPosTop(CAP_LOACL_TOP);
+	capsule_->SetLocalPosDown(CAP_LOACL_DOWN);
+	capsule_->SetRadius(CAP_RADIUS);
 	
 	// ステータスの初期化
 	invisibleTime_ = 0.0f;				// 無敵時間
@@ -309,11 +308,11 @@ void Player::Init(void)
 	// 採取の際の情報（仮）
 	itemId_ = -1;	// 採取アイテムID
 	poach_ = std::make_unique<ItemPoach>();
-	for (int i = 0; i < 2; i++) {
-		poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
+	for (int i = 0; i < START_BOM_HOLD; i++) {
+		poach_->AddItem(std::make_shared<ItemBase>(ITEM_TYPE_FLASH));
 	}
-	for (int i = 0; i < 3; i++) {
-		poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
+	for (int i = 0; i < START_FLASH_HOLD; i++) {
+		poach_->AddItem(std::make_shared<ItemBase>(ITEM_TYPE_BOM));
 	}
 }
 
@@ -325,13 +324,14 @@ void Player::Update(void)
 
 	// ダメージを受けたらエフェクトストップ
 	if (hp_ != hpAgo_) {
-		effectController_->Stop(0);
+		effectController_->Stop(Player::POWER_UP_EFFECT);
 		// 体力が０になっていたら
 		if (hp_ <= 0) { gameScene_->DownCountPuls(); }
 	}
 
 	// 体力の変化を記録
 	hpAgo_ = hp_;
+
 	// アニメーションの種類を記録	
 	animeAgoType_ = animeType_;
 
@@ -381,14 +381,16 @@ void Player::Update(void)
 
 		// スタミナ
 		stamina_ += staminaDir_ * deltaTime;
-		if (staminaMax_ < stamina_) {
+		if (staminaMax_ < stamina_) 
+		{
 			stamina_ = staminaMax_;
 		}
-		if (0.0f >= stamina_) {
+		if (0.0f >= stamina_)
+		{
 			stamina_ = 0.0f;
 			isBreak_ = true;
 		}
-		if (15.0f < stamina_ && isBreak_)
+		if (STAMINA_BREAK < stamina_ && isBreak_)
 		{
 			isBreak_ = false;
 		}
@@ -454,14 +456,14 @@ void Player::Update(void)
 		transform_.quaRot = rot;
 
 		// チャージ処理
-		if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1STOP)
+		if (animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1STOP)
 			)
 		{
-			changeAttrckTime_ += SceneManager::GetInstance().GetDeltaTime();
+			changeAttackTime_ += SceneManager::GetInstance().GetDeltaTime();
 		}
 		else
 		{
-			changeAttrckTime_ = 0.0f;
+			changeAttackTime_ = 0.0f;
 			chageCount_ = 1.0f;
 		}
 
@@ -484,24 +486,24 @@ void Player::Update(void)
 	// エフェクト処理
 #pragma region エフェクト処理
 
-	float rate = changeAttrckTime_ / (CHAGE_MAX_TIME / 4);
-	if (rate >= chageCount_ && animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1STOP)
+	float rate = changeAttackTime_ / CHAGE_UP_RATE;
+	if (rate >= chageCount_ && animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1STOP)
 		)
 	{
-		effectController_->Play(0);
+		effectController_->Play(Player::POWER_UP_EFFECT);
 		soundController_->Play(static_cast<int>(SE::CHAGE), Sound::TIMES::ONCE, true);
 
 		chageCount_ += 1.0f;
 	}
-	else if (animeType_ != static_cast<int>(ANIM_TYPE::ATTRCK1STOP)
+	else if (animeType_ != static_cast<int>(ANIM_TYPE::ATTACK1STOP)
 		)
 	{
 		chageCount_ = 1.0f;
 	}
 
 	// エフェクトの更新
-	effectController_->Update(0, transform_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
-	effectController_->LoopUpdate(1, transWeapon_.pos, AsoUtility::VECTOR_ZERO, 30.0f);
+	effectController_->Update(Player::POWER_UP_EFFECT, transform_.pos, AsoUtility::VECTOR_ZERO, Player::PLAYER_EFFECT_SCALE);
+	effectController_->LoopUpdate(Player::POWER_SLASH_EFFECT, transWeapon_.pos, AsoUtility::VECTOR_ZERO, Player::PLAYER_EFFECT_SCALE);
 	
 	// 音の再生
 	if (animeAgoType_ != static_cast<int>(ANIM_TYPE::DRAW)
@@ -554,7 +556,7 @@ void Player::Update(void)
 
 		// 手の位置とグローバルマトリクスを取得
 		const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
-		gameScene_->CreateShot(ShotBase::TYPE::ITEM, attrckDamage_
+		gameScene_->CreateShot(ShotBase::TYPE::ITEM, attackDamage_
 			, posHand, transform_.GetForward(), key_);
 	}
 	// 設置の完了
@@ -562,7 +564,7 @@ void Player::Update(void)
 		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ITEM_SET_E)
 		)
 	{
-		gameScene_->CreateShot(ShotBase::TYPE::BOM, attrckDamage_
+		gameScene_->CreateShot(ShotBase::TYPE::BOM, attackDamage_
 			, VAdd(VAdd(transform_.pos
 				, VScale(transform_.GetForward(), (capsule_->GetRadius() * 3)))
 				, VScale(AsoUtility::DIR_U, 40.0f))
@@ -589,7 +591,7 @@ void Player::Update(void)
 	}
 
 	// 攻撃時の音再生
-	PlayAttrckSound();
+	PlayAttackSound();
 
 #pragma endregion
 
@@ -644,10 +646,6 @@ void Player::Draw(void)
 #ifdef _DEBUG
 	// デバッグ用
 	DrawDebug();
-
-	auto& pos = animationController_->GetPos();
-	DrawFormatString(0, 380, 0x000000, L"ローカル座標(%.2f, %.2f,%2f)", pos.x, pos.y, pos.z);
-
 	inputController_->DebugDraw();
 
 #endif
@@ -722,7 +720,7 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 		flyigDir_ = VNorm(VAdd(flyigDir_, mixDir));
 		flyigDir_.y = 0.0f;
 
-		attrckType_ = static_cast<int>(ANIM_TYPE::FLYING);
+		attackType_ = static_cast<int>(ANIM_TYPE::FLYING);
 		ChangeState(STATE::HI_DAMAGE);
 	}
 	else
@@ -742,7 +740,7 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 	invisibleTime_ = INVISIBLE_BIG_TIME;// 威力・小のときの無敵時間
 
 	// 攻撃、納刀モーションをリセット
-	AttrckReset();
+	AttackReset();
 }
 
 const bool Player::IsHit(void) const
@@ -799,10 +797,10 @@ void Player::InitSound(void)
 	soundController_->Add(static_cast<int>(SE::HI_DAMAGE), path + L"Player/HiDamage.mp3", 0.6f);
 	soundController_->Add(static_cast<int>(SE::DOWN), path + L"Player/Down.mp3.mp3", 0.6f);
 
-	InitAttrckSound();
+	InitAttackSound();
 }
 
-void Player::InitAttrckSound(void)
+void Player::InitAttackSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 }
@@ -839,10 +837,6 @@ void Player::InitShader(void)
 
 }
 
-void Player::PlayAttrckSound(void)
-{
-}
-
 #pragma region StateによるUpdateの切り替え
 
 void Player::ChangeState(STATE state)
@@ -876,9 +870,9 @@ void Player::ChangeStateBattle(void)
 	stateUpdate_ = std::bind(&Player::UpdateBattle, this);
 }
 
-void Player::ChangeStateAttrck(void)
+void Player::ChangeStateAttack(void)
 {
-	stateUpdate_ = std::bind(&Player::UpdateAttrck, this);
+	stateUpdate_ = std::bind(&Player::UpdateAttack, this);
 }
 
 void Player::ChangeStateRowling(void)
@@ -933,14 +927,14 @@ void Player::UpdateBattle(void)
 #pragma region 攻撃処理
 	
 	// 抜刀してすぐ攻撃できるようIsNewを使用
-	if (inputController_->IsNew(InputController::KEY::ATTRCK) && IsInputPlay())
+	if (inputController_->IsNew(InputController::KEY::ATTACK) && IsInputPlay())
 	{
 		isHit_ = false;
 		isHitCheck_ = false;
 		movePow_ = AsoUtility::VECTOR_ZERO;
 
-		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK1S);
-		ChangeState(STATE::ATTRCK);
+		attackType_ = static_cast<int>(ANIM_TYPE::ATTACK1S);
+		ChangeState(STATE::ATTACK);
 		return;
 	}
 
@@ -990,7 +984,7 @@ void Player::UpdateWeapon(void)
 				
 				isBattle_ = true;
 				// 抜刀してすぐ攻撃できるようIsNewを使用
-				if (inputController_->IsNew(InputController::KEY::ATTRCK))
+				if (inputController_->IsNew(InputController::KEY::ATTACK))
 				{
 					isDrawWeapon_ = false;
 
@@ -999,8 +993,8 @@ void Player::UpdateWeapon(void)
 					movePow_ = AsoUtility::VECTOR_ZERO;
 
 
-					attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK1S);
-					ChangeState(STATE::ATTRCK);
+					attackType_ = static_cast<int>(ANIM_TYPE::ATTACK1S);
+					ChangeState(STATE::ATTACK);
 					return;
 				}
 			}
@@ -1026,9 +1020,9 @@ void Player::UpdateWeapon(void)
 	else{ movePow_ = AsoUtility::VECTOR_ZERO; }
 }
 
-void Player::UpdateAttrck(void)
+void Player::UpdateAttack(void)
 {
-	AttrckUpdate();
+	AttackUpdate();
 }
 
 void Player::UpdateRowling(void)
@@ -1037,8 +1031,6 @@ void Player::UpdateRowling(void)
 	movePow_ = VScale(transform_.GetForward(), SPEED_ROLL);
 
 	ChangeStateAnimeEnd(ANIM_TYPE::ROLL);
-
-
 }
 
 void Player::UpdateDamage(void)
@@ -1053,17 +1045,17 @@ void Player::UpdateHiDamage(void)
 	{
 		flyigTime_ -= SceneManager::GetInstance().GetDeltaTime() * 2.0f;
 
-		animationController_->Play(attrckType_, true);
+		animationController_->Play(attackType_, true);
 		movePow_ = VScale(flyigDir_, SPEED_JUMP * (flyigTime_ + 0.3f));
 
 		if (flyigTime_ < 0.0f)
 		{
 			movePow_ = AsoUtility::VECTOR_ZERO;
-			attrckType_ = atkData_[attrckType_]->nextAttrck;
-			animeType_ = attrckType_;
+			attackType_ = atkData_[attackType_]->nextAttack;
+			animeType_ = attackType_;
 			downTime_ = DOWN_MAX;
 		}
-		else animeType_ = attrckType_;
+		else animeType_ = attackType_;
 
 		return;
 	}
@@ -1071,25 +1063,25 @@ void Player::UpdateHiDamage(void)
 	{
 		downTime_ -= SceneManager::GetInstance().GetDeltaTime();
 
-		animationController_->Play(attrckType_, true);
+		animationController_->Play(attackType_, true);
 
 		if (downTime_ < 0.0f)
 		{
-			attrckType_ = atkData_[attrckType_]->nextAttrck;
-			animeType_ = attrckType_;
+			attackType_ = atkData_[attackType_]->nextAttack;
+			animeType_ = attackType_;
 		}
-		else animeType_ = attrckType_;
+		else animeType_ = attackType_;
 
 		return;
 	}
 
 	// 吹っ飛ばしが終わった後
-	animationController_->Play(attrckType_, false);
+	animationController_->Play(attackType_, false);
 
 	if (!animationController_->IsBlend())
 	{
 		int x = 0;
-		if (atkData_[attrckType_]->nextAttrck <= 0)
+		if (atkData_[attackType_]->nextAttack <= 0)
 		{
 			if (isBattle_)
 			{
@@ -1102,12 +1094,12 @@ void Player::UpdateHiDamage(void)
 			return;
 		}
 
-		attrckType_ = atkData_[attrckType_]->nextAttrck;
-		animeType_ = attrckType_;
+		attackType_ = atkData_[attackType_]->nextAttack;
+		animeType_ = attackType_;
 	}
 	else
 	{
-		animeType_ = attrckType_;
+		animeType_ = attackType_;
 	}
 }
 
@@ -1121,7 +1113,7 @@ void Player::UpdateDead(void)
 	{
 		transform_.pos = START_POS;
 		hp_ = hpAgo_ = hpMax_ = MAX_HP;
-		AttrckReset();
+		AttackReset();
 		ChangeState(STATE::PLAY);
 	}
 }
@@ -1348,7 +1340,6 @@ void Player::ProcessBattle(void)
 	bool isAction = false;
 	auto& nIns = NetManager::GetInstance();
 
-
 	if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, AsoUtility::DIR_F); }
 	if (inputController_->IsNew(InputController::KEY::LEFT)) { dir = VAdd(dir, AsoUtility::DIR_L);}
 	if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, AsoUtility::DIR_B);}
@@ -1391,7 +1382,6 @@ void Player::ProcessBattle(void)
 
 			// 回転処理
 			SetGoalRotate(rotRad);
-
 
 			if (IsEndLanding())// モーションが変えていいやつか？
 			{
@@ -1485,27 +1475,12 @@ const void Player::SyncWeapon()
 {
 	auto& nIns = NetManager::GetInstance();
 
-
+	// 武器の位置同期
 	if (key_ == nIns.GetSelf().key) {
-		if (isBattle_)
-		{
-			SyncWeaponBattle();
-		}
-		else
-		{
-			SyncWeaponPlay();
-		}
+		isBattle_ ? SyncWeaponBattle() : SyncWeaponPlay();
 	}
-	else
-	{
-		if (nIns.IsAction(key_, PLAYER_ACTION::IS_BATTLE))
-		{
-			SyncWeaponBattle();
-		}
-		else
-		{
-			SyncWeaponPlay();
-		}
+	else {
+		nIns.IsAction(key_, PLAYER_ACTION::IS_BATTLE) ? SyncWeaponBattle() : SyncWeaponPlay();
 	}
 }
 void Player::SyncWeaponPlay()
@@ -1522,7 +1497,7 @@ void Player::SyncWeaponBattle()
 }
 #pragma endregion
 
-// オブジェクトのフレーム追従♭
+// オブジェクトのフレーム追従
 const void Player::SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offsetRot, const VECTOR& offsetPos,
 	const Transform& modelTransform, Transform& outWeaponTransform)
 {
@@ -1739,7 +1714,7 @@ const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 {
 	bool ret = false;
 
-	// playerとの衝突判定
+	// プレイヤーとの衝突判定
 	VECTOR diff = VSub(transform_.pos, pos);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
@@ -1751,17 +1726,17 @@ const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 #pragma endregion
 
 // 攻撃状態の判定
-const bool Player::IsAttrck(void)const
+const bool Player::IsAttack(void)const
 {
-	return(state_ == STATE::ATTRCK);
+	return(state_ == STATE::ATTACK);
 }
 const bool Player::IsLoopAnim(void) const
 {
-	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1S) ||
-		animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1STOP) ||
-		animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1E) ||
-		animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK2) ||
-		animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK3) ||
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1S) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1STOP) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1E) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::ATTACK2) ||
+		animeType_ == static_cast<int>(ANIM_TYPE::ATTACK3) ||
 		animeType_ == static_cast<int>(ANIM_TYPE::BATTLE_CLOSE) ||
 		animeType_ == static_cast<int>(ANIM_TYPE::BATTLE_DRAW) ||
 		animeType_ == static_cast<int>(ANIM_TYPE::CLOSE) ||
@@ -1798,11 +1773,11 @@ bool Player::IsTrgAimSet(void)
 	return inputController_->IsTriggered(InputController::KEY::AIM);
 }
 
-bool Player::IsSyncAttrck(void)
+bool Player::IsSyncAttack(void)
 {
-	return (animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTRCK1E)
-		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTRCK2)
-		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTRCK3)
+	return (animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTACK1E)
+		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTACK2)
+		|| animationController_->GetPlayType() == static_cast<int>(ANIM_TYPE::ATTACK3)
 		);
 }
 
@@ -1812,11 +1787,11 @@ bool Player::IsEndLanding(void)
 	bool ret = true;
 	return ret;
 	// アニメーションがジャンプではない
-	if (animationController_->GetPlayType() != static_cast<int>(ANIM_TYPE::ATTRCK1S))
+	if (animationController_->GetPlayType() != static_cast<int>(ANIM_TYPE::ATTACK1S))
 	{
 		return ret;
 	}
-	if (animationController_->GetPlayType() != static_cast<int>(ANIM_TYPE::ATTRCK1S))
+	if (animationController_->GetPlayType() != static_cast<int>(ANIM_TYPE::ATTACK1S))
 	{
 		return ret;
 	}
@@ -1834,19 +1809,19 @@ const bool Player::IsInputPlay(void) const
 {
 	// アニメーションが終了しているか
 	// もし抜刀、納刀、攻撃してないなら操作可能（true）
-	if (!isDrawWeapon_ && !isCloseWeapon_ && state_ != STATE::ATTRCK)
+	if (!isDrawWeapon_ && !isCloseWeapon_ && state_ != STATE::ATTACK)
 	{
 		return true;
 	}
 	return false;
 }
 // 通常状態に戻す
-void Player::AttrckReset(void)
+void Player::AttackReset(void)
 {
 	isDrawWeapon_ = false;
 	isCloseWeapon_ = false;
 		
-	changeAttrckTime_ = 0.0f;
+	changeAttackTime_ = 0.0f;
 }
 
 // 特定のアニメーションが終わったらIdleに戻す処理
@@ -1884,34 +1859,23 @@ void Player::DrawDebug(void)
 	DrawLine3D(gravHitPosUp, gravHitPosDown, 0xffffff);
 
 	capsuleWeapon_->Draw();
-
-	auto r = inputController_->IsNew(InputController::KEY::DASH);
-
-	DrawFormatString(100, 116, 0xFFFFFF, L"Attrck: %s", inputController_->IsNew(InputController::KEY::ATTRCK) ? L"true" : L"false");
-	DrawFormatString(100, 132, 0xFFFFFF, L"ChageT: %.2f", changeAttrckTime_);
-	//倍率設定
-	int rate = changeAttrckTime_ / (CHAGE_MAX_TIME / 4.0f);
-	
-	DrawFormatString(100, 148, 0xFFFFFF, L"ChageR: %d", rate);
-	DrawFormatString(100, 164, 0xFFFFFF, L"Damage: %.2f", attrckDamage_ * attrckRate_);
-	DrawFormatString(100, 180, 0xFFFFFF, L"Postion: X_%.2fY_%.2fZ_%.2f", transform_.pos.x,transform_.pos.y,transform_.pos.z);
 }
 
-void Player::AttrckUpdate(void)
+void Player::AttackUpdate(void)
 {
-	animationController_->Play(attrckType_, false);
+	animationController_->Play(attackType_, false);
 
 	// 操作を受け付けるか
-	if (animationController_->GetStepTime() > atkData_[attrckType_]->sNewTime
-		&& atkData_[attrckType_]->sNewTime > 0.0f)
+	if (animationController_->GetStepTime() > atkData_[attackType_]->sNewTime
+		&& atkData_[attackType_]->sNewTime > 0.0f)
 	{
-		if (inputController_->IsTriggered(InputController::KEY::ATTRCK)
-			&& atkData_[attrckType_]->nextAttrck != -1)
+		if (inputController_->IsTriggered(InputController::KEY::ATTACK)
+			&& atkData_[attackType_]->nextAttack != -1)
 		{
 			isHitCheck_ = false;
 			isHit_ = false;
 
-			attrckType_ = atkData_[attrckType_]->nextAttrck;
+			attackType_ = atkData_[attackType_]->nextAttack;
 			return;
 		}
 		else if (inputController_->IsTriggered(InputController::KEY::ROLL)
@@ -1919,7 +1883,7 @@ void Player::AttrckUpdate(void)
 		{
 			stamina_ -= ROLL_TAF;
 			isHitCheck_ = false;
-			changeAttrckTime_ = 0.0f;
+			changeAttackTime_ = 0.0f;
 
 			invisibleTime_ = INVISIBLE_SMALL_TIME;
 			ChangeState(STATE::ROWLING);
@@ -1928,19 +1892,19 @@ void Player::AttrckUpdate(void)
 	}
 
 	// 当たり判定が発生するか
-	if (atkData_[attrckType_]->sHitTime < animationController_->GetStepTime()
-		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
+	if (atkData_[attackType_]->sHitTime < animationController_->GetStepTime()
+		&& atkData_[attackType_]->HitTime > animationController_->GetStepTime())
 	{
-		effectController_->Update(1, capsuleWeapon_->GetCenter());
+		effectController_->Update(Player::POWER_SLASH_EFFECT, capsuleWeapon_->GetCenter());
 		isHitCheck_ = true;
 	}
 
 	if (animationController_->IsEnd())
 	{
 		// チャージするものか
-		if (atkData_[attrckType_]->isCharge)
+		if (atkData_[attackType_]->isCharge)
 		{
-			if (inputController_->IsNew(InputController::KEY::ATTRCK) && changeAttrckTime_ <= CHAGE_MAX_TIME)
+			if (inputController_->IsNew(InputController::KEY::ATTACK) && changeAttackTime_ <= CHAGE_MAX_TIME)
 			{
 				// チャージ中なら回転可能
 				VECTOR dir = AsoUtility::VECTOR_ZERO;
@@ -1963,18 +1927,18 @@ void Player::AttrckUpdate(void)
 					SetGoalRotate(rotRad);
 				}
 				// チャージ処理
-				changeAttrckTime_ += SceneManager::GetInstance().GetDeltaTime();
-				animeType_ = atkData_[attrckType_]->chargeId;
+				changeAttackTime_ += SceneManager::GetInstance().GetDeltaTime();
+				animeType_ = atkData_[attackType_]->chargeId;
 			}
 			else// チャージ終了なら次のアニメへ(攻撃へ)
 			{
 				// 倍率設定
-				float rate = changeAttrckTime_ / (CHAGE_MAX_TIME / 4);
+				float rate = changeAttackTime_ / CHAGE_UP_RATE;
 				if (rate >= 4)rate = 0.5f;
-				attrckRate_ = 1.0f + (rate * 0.3f);
+				attackRate_ = 1.0f + (rate * 0.3f);
 
-				attrckType_ = atkData_[attrckType_]->nextAttrck;
-				animeType_ = attrckType_;
+				attackType_ = atkData_[attackType_]->nextAttack;
+				animeType_ = attackType_;
 
 				return;
 			}
@@ -1984,13 +1948,13 @@ void Player::AttrckUpdate(void)
 			animationController_->Play(static_cast<int>(ANIM_TYPE::BTLLE_IDLE));
 			animeType_ = static_cast<int>(ANIM_TYPE::BTLLE_IDLE);
 
-			changeAttrckTime_ = 0.0f;
+			changeAttackTime_ = 0.0f;
 			ChangeState(STATE::BATTLE);
 			return;
 		}
 	}
 	else
 	{
-		animeType_ = attrckType_;
+		animeType_ = attackType_;
 	}
 }

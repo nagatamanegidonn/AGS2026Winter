@@ -53,13 +53,13 @@ namespace
 		{ static_cast<int>(Player::ANIM_TYPE::FLYING), L"Flying.mv1", 20.0f, -1, 20.0f, 0.1f },
 		{ static_cast<int>(Player::ANIM_TYPE::DOWN), L"Down.mv1", 20.0f, -1, 0.0f, -1.0f },
 		// 攻撃
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1S), L"Arrow/AttrckS.mv1", 20, 0, 0.0f, -1.0f },
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1STOP), L"Arrow/AttrckC.mv1", 20, 0, 0.0f, -1.0f },
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK1E), L"Arrow/AttrckE.mv1", 20, 0, 0.0f, -1.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1S), L"Arrow/AttrckS.mv1", 20, 0, 0.0f, -1.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1STOP), L"Arrow/AttrckC.mv1", 20, 0, 0.0f, -1.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1E), L"Arrow/AttrckE.mv1", 20, 0, 0.0f, -1.0f },
 		// 2段攻撃
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK2), L"Attrck2.mv1", 30.0f, 0, 0.0f, -1.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK2), L"Attrck2.mv1", 30.0f, 0, 0.0f, -1.0f },
 		// 3段攻撃
-		{ static_cast<int>(Player::ANIM_TYPE::ATTRCK3), L"Attrck3.mv1", 30.0f, 0, 0.0f, -1.0f },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK3), L"Attrck3.mv1", 30.0f, 0, 0.0f, -1.0f },
 		// 死亡
 		{ static_cast<int>(Player::ANIM_TYPE::DEAD), L"Dying.mv1",30.0f, 0, 0.0f, -1.0f },
 		// 共通アニメーション
@@ -74,8 +74,8 @@ namespace
 	// アクションデータリスト
 	// 攻撃情報の設定
 	const CharaBase::ActionData ATTRCK_ATTRCK1S_DATA
-		= { true, static_cast<int>(Player::ANIM_TYPE::ATTRCK1STOP), -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTRCK1E) };
-	const CharaBase::ActionData ATTRCK_ATTRCK1E_DATA = { false, -1, -1.0f, -1.0f,4.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTRCK1S), };
+		= { true, static_cast<int>(Player::ANIM_TYPE::ATTACK1STOP), -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTACK1E) };
+	const CharaBase::ActionData ATTRCK_ATTRCK1E_DATA = { false, -1, -1.0f, -1.0f,4.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTACK1S), };
 	// 共通データ
 	const CharaBase::ActionData FLYING_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::DOWN) };
 	const CharaBase::ActionData DOWN_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::IDLE) };
@@ -99,7 +99,7 @@ Arrow::~Arrow(void)
 	MV1DeleteModel(transSubWeapon_.modelId);
 }
 
-bool Arrow::IsSyncAttrck()
+bool Arrow::IsSyncAttack()
 {
 	return false;
 }
@@ -135,8 +135,8 @@ void Arrow::InitParam(void)
 	isBattleDash_ = false;
 
 	// 攻撃情報の設定
-	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK1S), ATTRCK_ATTRCK1S_DATA);
-	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK1E), ATTRCK_ATTRCK1E_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTACK1S), ATTRCK_ATTRCK1S_DATA);
+	SetActionData(static_cast<int>(ANIM_TYPE::ATTACK1E), ATTRCK_ATTRCK1E_DATA);
 
 	SetActionData(static_cast<int>(ANIM_TYPE::FLYING), FLYING_DATA);
 	SetActionData(static_cast<int>(ANIM_TYPE::DOWN), DOWN_DATA);
@@ -172,9 +172,9 @@ void Arrow::InitAnimation(void)
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FLYING), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_RATE_30);
 	// 攻撃ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK1S), true);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK2), true);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK3), true);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK1S), true);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK2), true);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK3), true);
 	
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE));
 	animeType_ = static_cast<int>(ANIM_TYPE::IDLE);
@@ -190,18 +190,18 @@ void Arrow::InitEffect(void)
 	effectController_->Play(1);
 }
 
-void Arrow::InitAttrckSound(void)
+void Arrow::InitAttackSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 
-	soundController_->Add(static_cast<int>(SE::ATTRCK1), path + L"Player/Bow1.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::ATTRCK2), path + L"Player/BowShot.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK1), path + L"Player/Bow1.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK2), path + L"Player/BowShot.mp3", 0.6f);
 }
-void Arrow::PlayAttrckSound(void)
+void Arrow::PlayAttackSound(void)
 {
 	// 弾の発射
-	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1E)
-		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ATTRCK1E)
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1E)
+		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ATTACK1E)
 		)
 	{
 		// フレームの取得
@@ -210,28 +210,28 @@ void Arrow::PlayAttrckSound(void)
 			// エラー処理またはログ出力
 			return;
 		}
-		soundController_->Play(static_cast<int>(SE::ATTRCK2), Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::ATTACK2), Sound::TIMES::ONCE);
 
 		// 手の位置とグローバルマトリクスを取得
 		const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
-		gameScene_->CreateShot(ShotBase::TYPE::ARROW,attrckDamage_
+		gameScene_->CreateShot(ShotBase::TYPE::ARROW,attackDamage_
 			, posHand, transform_.GetForward(), key_);
 	}
 
 	// 弦を引っ張る音
-	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1STOP)
-		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ATTRCK1S)
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1STOP)
+		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ATTACK1S)
 		)
 	{
-		soundController_->Play(static_cast<int>(SE::ATTRCK1), Sound::TIMES::ONCE);
+		soundController_->Play(static_cast<int>(SE::ATTACK1), Sound::TIMES::ONCE);
 	}
 }
 
 void Arrow::DrawWeapon()
 {
 	auto& nIns = NetManager::GetInstance();
-	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1S)
-		||animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK1STOP)
+	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1S)
+		||animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1STOP)
 		)
 	{
 		MV1DrawModel(transSubWeapon_.modelId);

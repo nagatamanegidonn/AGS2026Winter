@@ -42,6 +42,30 @@ namespace
 	constexpr int TIME_POS_Y = Timer::SIZE_Y / 2 + 10;
 	// 制限時間
 	constexpr float LIMIT_TIME = 60.0f * 5.0f;
+	// フェードスピード
+	constexpr float FLASH_FADE_SPEED = 15.0f;
+	// 武器ID
+	constexpr int SOWRD_ID = 0;
+	constexpr int GREAT_SOWRD_ID = 1;
+	constexpr int ARROW_ID = 2;
+	// 爆発ダメージ倍率（プレイヤー用）
+	constexpr float BLAST_DAMAGE_RATE = 0.1f;
+	// エリア移動用テキストID
+	const std::string AREA_FIRST = "1to2";
+	const std::string AREA_SECOND = "2to1";
+	// デバッグ用
+	constexpr int DEBUG_DRAW_POS_X = 100;
+	constexpr int DEBUG_DRAW_POS_Y = 100;
+	constexpr int WHITE_COLOR = 0xffffff;
+	constexpr int RED_COLOR = 0xff0000;
+	// サウンドの音量変化
+	constexpr float SOUND_RATE_SPEED = 0.3f;
+	// 吹っ飛び方向の補正値
+	constexpr float DAMAGE_VEC_RATE = 0.3f;
+	// カメラシェイク
+	constexpr float CAMERA_SHAKE_TIME = 0.5f;
+	constexpr float CAMERA_SHAKE_POWER = 1.5f;
+
 }
 
 
@@ -85,23 +109,23 @@ void GameScene::Init(void)
 
 	// フラッシュ用フェードクラスの生成
 	fader_ = std::make_unique<Fader>(0xffffff);
-	fader_->Init(15.0f);
+	fader_->Init(FLASH_FADE_SPEED);
 
 	// ボスの生成
-	boss_ = std::make_unique<Boss>(NetManager::GetInstance().GetHost().key,0);
+	boss_ = std::make_unique<Boss>(NetManager::GetInstance().GetHost().key, 0);
 	boss_->Init();
-	
+
 	// モンスターの設定
 	// 1体目
-	auto mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key,1);
+	auto mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 1);
 	mons->Init();
 	monsters_.emplace_back(mons);
 	// 2体目
-	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key,2);
+	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 2);
 	mons->Init();
 	monsters_.emplace_back(mons);
 	// 3体目
-	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key,3);
+	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 3);
 	mons->Init();
 	monsters_.emplace_back(mons);
 
@@ -111,28 +135,28 @@ void GameScene::Init(void)
 
 	for (auto& user : users)
 	{
-		auto  player = std::make_shared<Player>(user.first, this, user.second.playerType);
+		auto player = std::make_shared<Player>(user.first, this, user.second.playerType);
 
 		// モデルの基本設定
 		switch (nIns.GetWeapon(user.first))
 		{
-		case 0:
+		case SOWRD_ID:
 			player = std::make_shared<Sword>(user.first, this, user.second.playerType);
 			break;
-		case 1:
+		case GREAT_SOWRD_ID:
 			player = std::make_shared<GreatSword>(user.first, this, user.second.playerType);
 			break;
-		case 2:
+		case ARROW_ID:
 			player = std::make_shared<Arrow>(user.first, this, user.second.playerType);
 			break;
 		default:
 			break;
 		}
-		
+
 		player->Init();
 
 		// 自分用のクラス	
-		if (user.first== NetManager::GetInstance().GetSelf().key)
+		if (user.first == NetManager::GetInstance().GetSelf().key)
 		{
 			// ステージの設定
 			stage_ = std::make_unique<Stage>(*player, *boss_);
@@ -155,11 +179,11 @@ void GameScene::Init(void)
 	stage_->SetPlayers(players_);
 
 	// 背景初期化
-	grid_ = std::make_unique<Grid>(); 
+	grid_ = std::make_unique<Grid>();
 	grid_->Init();
 
 	// 空の弾の作成
-	auto  shot = std::make_unique<ItemShot>(0, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, -1);
+	auto shot = std::make_unique<ItemShot>(0, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, -1);
 	shot->ChangeState();
 	shots_.push_back(std::move(shot));
 
@@ -218,7 +242,7 @@ void GameScene::Update(void)
 	float limit = stepCountDown_ - SceneManager::GetInstance().GetTotalGameTime();
 	if (limit > 0.0f)
 	{
-		DrawFormatString(100, 100, 0xffffff, L"%f", limit);
+		DrawFormatString(DEBUG_DRAW_POS_X, DEBUG_DRAW_POS_Y, 0xffffff, L"%f", limit);
 		return;
 	}
 	else
@@ -239,6 +263,7 @@ void GameScene::Update(void)
 	stage_->Update();
 	grid_->Update();
 
+	// ボスと一番近いプレイヤーを保存する変数
 	Transform closestTrans;
 	Transform trans = Transform();
 
@@ -254,7 +279,7 @@ void GameScene::Update(void)
 		{
 			if (soundRate_ < 1.0f)
 			{
-				soundRate_ += SceneManager::GetInstance().GetDeltaTime() * 0.3f;
+				soundRate_ += SceneManager::GetInstance().GetDeltaTime() * SOUND_RATE_SPEED;
 			}
 			else
 			{
@@ -263,14 +288,15 @@ void GameScene::Update(void)
 			// 音の再生
 			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
 		}
-		else if(player->IsSelf())
+		else if (player->IsSelf())
 		{
-			if (soundRate_ > 0.0f){
-				soundRate_ -= SceneManager::GetInstance().GetDeltaTime() * 0.3f;
+			if (soundRate_ > 0.0f) {
+				soundRate_ -= SceneManager::GetInstance().GetDeltaTime() * SOUND_RATE_SPEED;
 			}
 			else {
 				soundRate_ = 0.0f;
 			}
+			// BGMの音量設定
 			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
 		}
 
@@ -281,11 +307,10 @@ void GameScene::Update(void)
 		}
 
 		isBattle = true;
-
 		auto& pPos = player->GetTransform().pos;
 		auto& ePos = boss_->GetTransform().pos;
 
-		// playerとの衝突判定
+		// プレイヤーとの衝突判定
 		VECTOR diff = VSub(pPos, ePos);
 		float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
@@ -332,7 +357,7 @@ void GameScene::Update(void)
 	}
 	// 体力が減ったら移動（線形補間）
 	// LerpMove中は使用不可
-	if ((boss_->GetLerpTime() <= 0.0f|| !stage_->GetActivePlanet().lock()->CheckArea(boss_->GetTransform().pos))
+	if ((boss_->GetLerpTime() <= 0.0f || !stage_->GetActivePlanet().lock()->CheckArea(boss_->GetTransform().pos))
 		&& !boss_->IsState(Boss::STATE::LERP_MOVE))
 	{
 		textId_ = std::to_string(boss_->GetAreaId());
@@ -342,10 +367,10 @@ void GameScene::Update(void)
 			switch (boss_->GetAreaId())
 			{
 			case 1:	// エリア1ならエリア2へ
-				textId_ = "1to2";
+				textId_ = AREA_FIRST;
 				break;
 			case 2:	// エリア2ならエリア1へ
-				textId_ = "2to1";
+				textId_ = AREA_SECOND;
 				break;
 			default:
 				break;
@@ -356,7 +381,7 @@ void GameScene::Update(void)
 		boss_->SetLerpPos(stage_->GetActivePlanet().lock()->GetLerpPos(textId_, stepId_));
 	}
 	// 線形補間が終わったら次があるか調べる
-	else if ( !boss_->IsLerp() && boss_->IsState(Boss::STATE::LERP_MOVE))
+	else if (!boss_->IsLerp() && boss_->IsState(Boss::STATE::LERP_MOVE))
 	{
 		stepId_ += 1;
 		if (stage_->GetActivePlanet().lock()->CheckLerpPos(textId_, stepId_))
@@ -401,7 +426,7 @@ void GameScene::Update(void)
 	}
 
 	// タイムアップ判定
-	if (timer_->IsTimeUp()&&!GameManager::GetInstance().IsClear())
+	if (timer_->IsTimeUp() && !GameManager::GetInstance().IsClear())
 	{
 		// ゲームの勝敗判定
 		result = GameManager::GAME_RESULT::TIME_OVER;
@@ -410,7 +435,7 @@ void GameScene::Update(void)
 	}
 	// ボス撃破判定
 	if (GameManager::GetInstance().GetGameResult() != GameManager::GAME_RESULT::NONE)
-	{ 
+	{
 		// ゲームオーバーシーンへ遷移
 		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::RSULT);
 	}
@@ -461,17 +486,20 @@ void GameScene::Draw(void)
 	float remaining = timer_->GetRemainingTime();
 	wchar_t  buf[64];
 	swprintf_s(buf, L"残り時間: %.2f秒", remaining);
-	DrawString(100, 100, buf, GetColor(255, 255, 255));
 
 	if (timer_->IsTimeUp())
 	{
-		DrawString(100, 140, L"タイムアップ！", GetColor(255, 0, 0));
+		DrawString(DEBUG_DRAW_POS_X, DEBUG_DRAW_POS_Y, L"タイムアップ！", RED_COLOR);
+	}
+	else
+	{
+		DrawString(DEBUG_DRAW_POS_X, DEBUG_DRAW_POS_Y, buf, WHITE_COLOR);
 	}
 
 	float limit = stepCountDown_ - SceneManager::GetInstance().GetTotalGameTime();
 	if (limit > 0.0f)
 	{
-		//DrawFormatString(100, 100, 0xffffff, L"%f", limit);
+		DrawFormatString(DEBUG_DRAW_POS_X, DEBUG_DRAW_POS_Y, WHITE_COLOR, L"%f", limit);
 	}
 
 #endif // DEBUG
@@ -539,10 +567,10 @@ void GameScene::Collision(void)
 
 		// 最終的にボスの攻撃判定 // 自分だけ
 		if (boss_->CollisionCapsule(player->GetCapsule())
-			&& player->IsAttrck() && player->IsHit() && player->IsSelf())
+			&& player->IsAttack() && player->IsHit() && player->IsSelf())
 		{
 			player->SetHit(true);
-			SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
+			SceneManager::GetInstance().GetCamera().lock()->StartShake(CAMERA_SHAKE_TIME, CAMERA_SHAKE_POWER);
 
 			boss_->Damage(player->GetAttrckPow() * player->GetAttrckRate());
 			// 音の再生
@@ -560,11 +588,11 @@ void GameScene::Collision(void)
 				continue;
 			}
 			if (enemy.lock()->CollisionCapsule(player->GetCapsule())
-				&& player->IsAttrck() && player->IsHit() && player->IsSelf())
+				&& player->IsAttack() && player->IsHit() && player->IsSelf())
 			{
 				player->SetHit(true);
 
-				SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
+				SceneManager::GetInstance().GetCamera().lock()->StartShake(CAMERA_SHAKE_TIME, CAMERA_SHAKE_POWER);
 
 				enemy.lock()->Damage(player->GetAttrckPow() * player->GetAttrckRate());
 				// 音の再生
@@ -587,29 +615,23 @@ void GameScene::Collision(void)
 			}
 
 			auto& eTrans = boss_->GetTransform();
-
-			VECTOR attrckPos = VAdd(eTrans.pos, VScale(eTrans.GetForward(), 410));
-			attrckPos = VAdd(attrckPos, VScale(eTrans.GetUp(), 170));
-
 			// ボス攻撃の処理
 			if (boss_->CollisionAttrck(player->GetTransform().modelId))
 			{
 				VECTOR mixDir = AsoUtility::VECTOR_ZERO;
 				if (boss_->GetAnim() == (int)Boss::ANIM_TYPE::ATTRCK_DASH)
 				{
-					mixDir = VScale(boss_->GetTransform().GetForward(), 0.3f);
+					mixDir = VScale(boss_->GetTransform().GetForward(), DAMAGE_VEC_RATE);
 				}
 				else if (boss_->GetAnim() == (int)Boss::ANIM_TYPE::ATTRCK_L_CLOW)
 				{
-					mixDir = VScale(boss_->GetTransform().GetRight(), 0.3f);
+					mixDir = VScale(boss_->GetTransform().GetRight(), DAMAGE_VEC_RATE);
 				}
 				else if (boss_->GetAnim() == (int)Boss::ANIM_TYPE::ATTRCK_R_CLOW)
 				{
-					mixDir = VScale(boss_->GetTransform().GetLeft(), 0.3f);
+					mixDir = VScale(boss_->GetTransform().GetLeft(), DAMAGE_VEC_RATE);
 				}
 				player->Damage(boss_->GetAttrckPow() * boss_->GetAttrckRate(), boss_->GetAttrckPos(), mixDir);
-				// playerが無敵か判定した後無敵じゃないならエフェクト
-
 			}
 			// 小型の処理(攻撃)
 			for (auto& mons : monsters_)
@@ -620,10 +642,7 @@ void GameScene::Collision(void)
 				if (enemy.lock()->CollisionAttrck(player->GetTransform().modelId))
 				{
 					VECTOR mixDir = AsoUtility::VECTOR_ZERO;
-
 					player->Damage(mons->GetAttrckPow() * mons->GetAttrckRate(), enemy.lock()->GetAttrckPos(), mixDir);
-					// playerが無敵か判定した後無敵じゃないならエフェクト
-
 				}
 			}
 		}
@@ -671,10 +690,10 @@ void GameScene::Collision(void)
 			&& shot->IsBlast())
 		{
 			// 敵ならスタン
-			// playerとの衝突判定
+			// プレイヤーとの衝突判定
 			float disPow = AsoUtility::GetDisPow(boss_->GetTransform().pos, shot->GetTransform().pos);
 
-			if(boss_->IsTargetInFOV(shot->GetTransform().pos, Boss::FOV_RADIUS_FLASH)
+			if (boss_->IsTargetInFOV(shot->GetTransform().pos, Boss::FOV_RADIUS_FLASH)
 				&& disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
 			{
 				boss_->StartStunned();
@@ -706,9 +725,9 @@ void GameScene::Collision(void)
 			{
 				for (auto& player : players_)
 				{
-					// playerとの衝突判定	
-					if (shot->CollisionCapsule(player->GetCapsule())&& player->IsSyncAttrck())
-					{ 
+					// プレイヤーとの衝突判定	
+					if (shot->CollisionCapsule(player->GetCapsule()) && player->IsSyncAttack())
+					{
 						// 爆発開始
 						shot->ChangeState(ShotBase::STATE::BLAST);
 						// 音・カメラ
@@ -732,7 +751,7 @@ void GameScene::Collision(void)
 				}
 			}
 			// 爆発してるとき
-			else if(shot->IsBlast())
+			else if (shot->IsBlast())
 			{
 				const VECTOR& ShotPos = shot->GetTransform().pos;
 
@@ -752,7 +771,7 @@ void GameScene::Collision(void)
 							// 吹き飛び方向
 							VECTOR mixDir = VScale(VNorm(VSub(player->GetTransform().pos, ShotPos)), 0.001f);
 							// ダメージ
-							player->Damage(shot->GetDamage() * 0.1f, ShotPos, mixDir);
+							player->Damage(shot->GetDamage() * BLAST_DAMAGE_RATE, ShotPos, mixDir);
 							// 音・カメラ
 							SceneManager::GetInstance().GetCamera().lock()->StartShake(1.0f, 2.0f);
 						}
@@ -767,7 +786,7 @@ void GameScene::Collision(void)
 					boss_->Damage(shot->GetDamage(), true);
 					shot->ChangeState();
 				}
-			}				
+			}
 		}
 	}
 }
@@ -784,11 +803,10 @@ void GameScene::ShotHitEnemy(ShotBase& shot, EnemyBase& enemy)
 		{
 			// 音・カメラ・ダメージ
 			SoundManager::GetInstance().Play(SoundManager::SRC::SHOT_DAMAGE, Sound::TIMES::ONCE, true);
-			SceneManager::GetInstance().GetCamera().lock()->StartShake(0.5f, 15.0f);
-
+			SceneManager::GetInstance().GetCamera().lock()->StartShake(CAMERA_SHAKE_TIME, CAMERA_SHAKE_POWER);
+			// 敵にダメージ
 			enemy.Damage(static_cast<int>(static_cast<float>(shot.GetDamage()) * player->GetAttrckRate()));
 		}
-
 		// 戦闘状態へ（Follow設定など）
 		enemy.SetFollow(&player->GetTransform());
 	}

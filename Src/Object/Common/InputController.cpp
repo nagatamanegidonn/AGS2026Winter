@@ -106,7 +106,7 @@ InputController::InputController(int padType)
                 {PeripheralType::MOUSE,MOUSE_INPUT_RIGHT},
             }
         },
-        {KEY::ATTRCK,//攻撃コマンド
+        {KEY::ATTACK,//攻撃コマンド
             {
                 {PeripheralType::KEYBOARD,KEY_INPUT_RETURN},
                 {PeripheralType::GAME_PAD,PAD_INPUT_X},

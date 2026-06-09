@@ -78,7 +78,7 @@ Boss::Boss(int key, int createNo)
 	// 攻撃情報
 	attrckCount_ = 0;
 	attrckTypeState_ = ATTRCK_TYPE::NONE;
-	attrckDamage_ = 0;
+	attackDamage_ = 0;
 	// 追跡対象
 	follow_ = nullptr;
 	followTime_ = 0.0f;
@@ -403,26 +403,26 @@ const bool Boss::CollisionAttrck(const int& modelId)
 	auto& nIns = NetManager::GetInstance();
 	if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_STAMP))
 	{
-		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK_STAMP);
+		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_STAMP);
 		attrckPos_ = VScale(VAdd(AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_L")
 			, AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_R")), 0.5f);
 		attrckRadius = ATTRCK_STAMP_RADIUS;
 	}
 	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW))
 	{
-		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW);
+		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW);
 		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_L");
 		attrckRadius = ATTRCK_BITE_RADIUS;
 	}
 	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW))
 	{
-		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
+		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
 		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_R");
 		attrckRadius = ATTRCK_BITE_RADIUS;
 	}
 	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_DASH))
 	{
-		attrckType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
+		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
 		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, L"Chest_M");
 		attrckRadius = ATTRCK_DASH_RADIUS;
 	}
@@ -431,8 +431,8 @@ const bool Boss::CollisionAttrck(const int& modelId)
 		return false;
 	}
 
-	if (atkData_[attrckType_]->sHitTime < animationController_->GetStepTime()
-		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
+	if (atkData_[attackType_]->sHitTime < animationController_->GetStepTime()
+		&& atkData_[attackType_]->HitTime > animationController_->GetStepTime())
 	{
 		isHitCheck_ = true;
 	}
@@ -675,7 +675,7 @@ void Boss::UpdateLerpMove(void)
 	// ターゲットに向けて回転
 	TargetRotate(waypoint_);
 
-	// playerとの衝突判定
+	// プレイヤーとの衝突判定
 	const VECTOR diff = VSub(transform_.pos, waypoint_);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
@@ -720,7 +720,7 @@ void Boss::UpdateBattle(void)
 	// 攻撃方法
 	attrckTypeState_ = ATTRCK_TYPE::NONE;
 
-	// playerとの衝突判定
+	// プレイヤーとの衝突判定
 	float disPow = AsoUtility::GetDisPow(transform_.pos, follow_->pos);
 
 	// 視線の先に至らに変更予定
@@ -770,7 +770,7 @@ void Boss::UpdateFollow(void)
 	movePow_ =
 		VScale(transform_.GetForward(), SPEED_FOLLOW);
 
-	// playerとの衝突判定
+	// プレイヤーとの衝突判定
 	float disPow = AsoUtility::GetDisPow(transform_.pos, follow_->pos);
 
 	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))//ダメージ半径×攻撃半径
@@ -902,7 +902,7 @@ void Boss::UpdateAttrckDash(void)
 	movePow_ =
 		VScale(transform_.GetForward(), SPEED_RUN);
 
-	// playerとの衝突判定
+	// プレイヤーとの衝突判定
 	VECTOR diff = VSub(transform_.pos, follow_->pos);
 	float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
@@ -1089,17 +1089,17 @@ void Boss::DrawDebug(void)
 	}
 
 	DrawFormatString(100, 400, 0x000000, L"Boss_HP(%d)", hp_);
-	DrawFormatString(100, 416, 0x000000, L"Boss_Attrck(%d)", attrckDamage_);
+	DrawFormatString(100, 416, 0x000000, L"Boss_Attrck(%d)", attackDamage_);
 }
 
 
 void Boss::AttrckUpdate(void)
 {
-	animationController_->Play(attrckType_, false);
+	animationController_->Play(attackType_, false);
 
 	// 当たり判定が発生するか
-	if (atkData_[attrckType_]->sHitTime < animationController_->GetStepTime()
-		&& atkData_[attrckType_]->HitTime > animationController_->GetStepTime())
+	if (atkData_[attackType_]->sHitTime < animationController_->GetStepTime()
+		&& atkData_[attackType_]->HitTime > animationController_->GetStepTime())
 	{
 		isHitCheck_ = true;
 	}
@@ -1114,17 +1114,17 @@ void Boss::AttackDataUpdate(void)
 	//アニメーションに応じて攻撃力設定
 	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_STAMP))
 	{
-		attrckDamage_ = ATTRCK_STAMP;
+		attackDamage_ = ATTRCK_STAMP;
 	}
 	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW)
 		|| animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW)
 		)
 	{
-		attrckDamage_ = ATTRCK_CLOW;
+		attackDamage_ = ATTRCK_CLOW;
 	}
 	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_DASH))
 	{
-		attrckDamage_ = ATTRCK_DASH;
+		attackDamage_ = ATTRCK_DASH;
 		effectController_->LoopPlay(0);
 	}
 	else

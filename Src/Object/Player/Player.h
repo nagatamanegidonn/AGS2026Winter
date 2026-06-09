@@ -24,7 +24,6 @@ class Player :
 
 public:
 
-
 	// 腰
 	static constexpr VECTOR GSOWRD_SPINE_ROT = { 0.0f, 0.0f, 180.0f };
 	static constexpr VECTOR GSOWRD_SPINE_POS = { 0.0f, 50.0f, 15.0f };
@@ -36,7 +35,9 @@ public:
 	// 回転完了までの時間
 	static constexpr float TIME_ROT = 0.1f;
 	static constexpr float TIME_ROT2 = 10.0f;
-	static constexpr float CHAGE_MAX_TIME = 3.0f;
+	// チャージ攻撃
+	static constexpr float CHAGE_MAX_TIME = 3.0f;					// チャージの最大時間
+	static constexpr float CHAGE_UP_RATE = CHAGE_MAX_TIME / 4.0f;	// チャージ1段階にかかる時間
 	static constexpr float INVISIBLE_SMALL_TIME = 0.5f;
 	static constexpr float INVISIBLE_BIG_TIME = 2.5f;
 	// スピード
@@ -49,15 +50,21 @@ public:
 	static constexpr float FAST_FOOT_SMOKE = 0.4f;
 	// 最大ＨＰ
 	static constexpr int MAX_HP = 100;
+	static constexpr int BONUS_HP = 20;
 	static constexpr int MAX_STAMINA = 100;
-	static constexpr float UP_TAF = 12.0f;	//スタミナ回復量
-	static constexpr float DOWN_TAF = -3.0f;//スタミナ減少量
-	static constexpr float ROLL_TAF = 25.0f;//スタミナ消費量（回避）
+	static constexpr float STAMINA_BREAK = 15.0f;	// 疲労じょうたいのボーダーライン
+	static constexpr float UP_TAF = 12.0f;	// スタミナ回復量
+	static constexpr float DOWN_TAF = -3.0f;// スタミナ減少量
+	static constexpr float ROLL_TAF = 25.0f;// スタミナ消費量（回避）
 	// 当たり判定倍率
 	static constexpr float COLL_LEG_RATE = 40;	// 脚当たり判定倍率
 	static constexpr float DOWN_MAX = 1.2f;		// ダウン最大時間
 	// 索敵範囲
 	static constexpr float MAX_EAR_RADIUS = 1000.0f;
+	// エフェクト関連
+	static constexpr int POWER_UP_EFFECT = 0;
+	static constexpr int POWER_SLASH_EFFECT = 1;
+	static constexpr float PLAYER_EFFECT_SCALE = 30.0f;
 
 	// 状態
 	enum class STATE
@@ -66,7 +73,7 @@ public:
 		PLAY,		// 通常状態
 		BATTLE,		// 戦闘状態
 		WEAPON,		// 抜刀、納刀
-		ATTRCK,		// 攻撃
+		ATTACK,		// 攻撃
 		ROWLING,	// 回避	
 		DAMAGE,		// ダメージ（のけぞり）
 		HI_DAMAGE,	// ダメ―ジ（吹っ飛び）
@@ -106,11 +113,11 @@ public:
 		FLYING,
 		DOWN,
 		// 攻撃
-		ATTRCK1S,
-		ATTRCK1STOP,
-		ATTRCK1E,
-		ATTRCK2,
-		ATTRCK3,
+		ATTACK1S,
+		ATTACK1STOP,
+		ATTACK1E,
+		ATTACK2,
+		ATTACK3,
 		// 死亡
 		DEAD,
 	};
@@ -127,9 +134,9 @@ public:
 		DAMAGE,
 		HI_DAMAGE,
 		DOWN,
-		ATTRCK1,
-		ATTRCK2,
-		ATTRCK3,
+		ATTACK1,
+		ATTACK2,
+		ATTACK3,
 		MAX// 音なしfor文用
 	};
 
@@ -182,7 +189,7 @@ public:
 	const bool CollisionUnderSphere(const VECTOR pos,float r)const;
 
 	// 攻撃アニメーション判定
-	const bool IsAttrck(void) const;	// 攻撃をしているか
+	const bool IsAttack(void) const;	// 攻撃をしているか
 	const bool IsLoopAnim(void) const;	// 再生アニメーションがループするか
 
 	// 自身のプレイヤーかどうか
@@ -193,7 +200,7 @@ public:
 	bool IsTrgAimSet(void);	// 注目をしているか
 
 	// 通信専用の攻撃アニメーション判定
-	virtual bool IsSyncAttrck(void);
+	virtual bool IsSyncAttack(void);
 
 	// 採取の際の情報（仮）
 	void SetItemId(int id) { itemId_ = id; }
@@ -264,7 +271,7 @@ protected:
 	VECTOR gravHitPosDown_; //← 衝突用線分
 	VECTOR gravHitPosUp_;	//← 衝突用線分
 
-	// プレイヤー種別(1P or 2P)
+	// プレイヤー種別
 	PLAYER_TYPE type_;
 
 	//キャラごとの固有起動フラグ
@@ -282,7 +289,7 @@ protected:
 	// スタミナ
 	float stamina_;		// 現在スタミナ
 	float staminaMax_;	// 最大スタミナ
-	float staminaDir_;	// 
+	float staminaDir_;	// スタミナの加算値（ダッシュ中はマイナス）
 	bool isBreak_;		// 疲労(スタミナが０になったか判定)
 
 #pragma endregion
@@ -305,10 +312,10 @@ protected:
 	virtual void InitAnimation(void);
 	virtual void InitEffect(void);
 	void InitSound(void);				// 通常サウンド
-	virtual void InitAttrckSound(void);	// 戦闘用サウンド
-	virtual void InitShader(void);	// シェーダー初期化
+	virtual void InitAttackSound(void);	// 戦闘用サウンド
+	virtual void InitShader(void);		// シェーダー初期化
 	// 攻撃音再生
-	virtual void PlayAttrckSound(void);
+	virtual void PlayAttackSound(void) {};
 
 	// 状態遷移
 	void ChangeState(STATE state);
@@ -316,7 +323,7 @@ protected:
 	void ChangeStatePlay(void);
 	void ChangeStateWeapon(void);
 	void ChangeStateBattle(void);
-	void ChangeStateAttrck(void);
+	void ChangeStateAttack(void);
 	void ChangeStateRowling(void);
 	void ChangeStateDamage(void);
 	void ChangeStateHiDamage(void);
@@ -329,7 +336,7 @@ protected:
 	void UpdatePlay(void);
 	void UpdateBattle(void);
 	void UpdateWeapon(void);
-	void UpdateAttrck(void);
+	void UpdateAttack(void);
 	void UpdateRowling(void);
 	void UpdateDamage(void);
 	void UpdateHiDamage(void);
@@ -368,10 +375,10 @@ protected:
 	const void SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offsetRot, const VECTOR& offsetPos,
 		const Transform& modelTransform, Transform& outWeaponTransform);
 
-	// 最終更新
-	void CollisionStageCapsule(void)override;
-	void CollisionGravity(void)override;
-
+	// 当たり判定の最終処理
+	void CollisionStageCapsule(void)override;	// カプセルとステージの判定
+	void CollisionGravity(void)override;		// 重力計算とその後の判定
+		
 	// モーション終了
 	bool IsEndLanding(void);
 
@@ -379,7 +386,7 @@ protected:
 	const bool IsInputPlay(void)const;
 
 	// 攻撃キャンセル時の処理
-	void AttrckReset(void);
+	void AttackReset(void);
 
 	// アニメーション終了時の処理
 	void ChangeStateAnimeEnd(const ANIM_TYPE anim, const std::function<void(void)> function = {});
@@ -388,7 +395,7 @@ protected:
 	void DrawDebug(void);
 
 	// attackDataを基にした更新
-	void AttrckUpdate(void);
+	void AttackUpdate(void);
 
 };
 

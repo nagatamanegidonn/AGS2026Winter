@@ -55,7 +55,7 @@ void RefreshScene::Update(void)
 
 	// シーンへ遷移
 	SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);
-	
+
 	// マウスポインタを表示さ	せる
 	SetMouseDispFlag(true);
 }

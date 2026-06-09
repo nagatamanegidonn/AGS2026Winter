@@ -7,9 +7,9 @@
 CharaBase::CharaBase(void)
 	:
 	areaId_(-1),
-	attrckDamage_(10),
+	attackDamage_(10),
 	isHitCheck_(false),
-	changeAttrckTime_(0.0f),
+	changeAttackTime_(0.0f),
 	speed_(0.0f),
 	stepRotTime_(0.0f),
 	goalQuaRot_(),
@@ -19,7 +19,7 @@ CharaBase::CharaBase(void)
 	movePow_({ 0.0f,0.0f,0.0f }),
 	movedPos_({ 0.0f,0.0f,0.0f }),
 	prePos_({ 0.0f,0.0f,0.0f }),
-	attrckRate_(1.0f),
+	attackRate_(1.0f),
 	ActorBase()
 {
 	// ŠÛ‰e‰æ‘œ
@@ -244,7 +244,7 @@ std::unique_ptr<CharaBase::ActionData> CharaBase::SetActionData(
 	atk->sNewTime = sNewTime;	// n“ü—ÍŽó•tŽžŠÔ
 	atk->NewTime = 0.0f;		// n“ü—ÍŽó•tI—¹ŽžŠÔ
 	// ŽŸ‚ÌUŒ‚ID
-	atk->nextAttrck = nextAtkId;
+	atk->nextAttack = nextAtkId;
 	 
 	return atk;
 }
@@ -261,7 +261,7 @@ void CharaBase::SetActionData(int id, const ActionData& data)
 	atk->sNewTime = data.sNewTime;	// n“ü—ÍŽó•tŽžŠÔ
 	atk->NewTime = 0.0f;			// n“ü—ÍŽó•tI—¹ŽžŠÔ
 	// ŽŸ‚ÌUŒ‚ID
-	atk->nextAttrck = data.nextAttrck;
+	atk->nextAttack = data.nextAttack;
 
 	atkData_.emplace(id, std::move(atk));
 }
