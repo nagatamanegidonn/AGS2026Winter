@@ -34,7 +34,6 @@ void RefreshScene::Init(void)
 
 void RefreshScene::Update(void)
 {
-
 	auto& nIns = NetManager::GetInstance();
 	if (nIns.GetMode() == NET_MODE::HOST)
 	{

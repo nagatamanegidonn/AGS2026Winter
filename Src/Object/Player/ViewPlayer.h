@@ -60,9 +60,9 @@ private:
 	int weponId_;
 
 	// •Ší‚²‚Æ‚É‚æ‚éˆêˆÊ‚Ì“¯Šúˆ—
-	void SyncWeaponGreatSowrd();	// ‘åŒ•
-	void SyncWeaponSowrd();			// •ĞèŒ•
-	void SyncWeaponBow();			// ‹|
+	void SyncWeaponGreatSowrd(void);	// ‘åŒ•
+	void SyncWeaponSowrd(void);			// •ĞèŒ•
+	void SyncWeaponBow(void);			// ‹|
 
 };
 

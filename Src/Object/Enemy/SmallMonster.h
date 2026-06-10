@@ -65,13 +65,13 @@ public:
 	virtual void Init(void) override;
 
 	// 更新処理
-	virtual void Update(void)override;
+	virtual void Update(void) override;
 
 	// 描画処理
-	virtual void Draw(void)override;
+	virtual void Draw(void) override;
 
 	// ダメージ関係
-	void Damage(int dama, bool isConst = false)override;
+	void Damage(int dama, bool isConst = false) override;
 
 	// Stateの判定
 	const bool IsState(STATE state)const { return (state_ == state); }
@@ -102,6 +102,7 @@ private:
 
 	// 状態管理(状態遷移時初期処理)
 	std::map<STATE, std::function<void(void)>> stateChanges_;
+
 	// 状態管理(更新ステップ)
 	std::function<void(void)> stateUpdate_;
 
@@ -135,8 +136,8 @@ private:
 	void UpdateDead(void);
 
 	// 衝突チェック(カプセル)
-	void CollisionStageCapsule(void)override;
-	void CollisionGravity(void)override;
+	void CollisionStageCapsule(void) override;
+	void CollisionGravity(void) override;
 
 	// 攻撃無効化
 	void AttrckUpdate(void);

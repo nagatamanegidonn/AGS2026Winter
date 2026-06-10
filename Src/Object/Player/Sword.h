@@ -26,12 +26,12 @@ public:
     ~Sword(void);
 
     // 通信専用の攻撃アニメーション判定
-	bool IsSyncAttack() override;
+	bool IsSyncAttack(void) override;
 
 private:
 
     // 初期化
-    void InitParam(void)override;          // パラメータ
+    void InitParam(void) override;         // パラメータ
     void InitAnimation(void) override;     // アニメーション
     void InitEffect(void) override;        // エフェクト
     void InitAttackSound(void) override;   // サウンド
@@ -40,7 +40,7 @@ private:
     void PlayAttackSound(void) override;
 
     // 武器の同期
-    void SyncWeaponPlay()override;      // 通常時
-    void SyncWeaponBattle()override;    // 戦闘時
+    void SyncWeaponPlay(void) override;      // 通常時
+    void SyncWeaponBattle(void) override;    // 戦闘時
 };
 

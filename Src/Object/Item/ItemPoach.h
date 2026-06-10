@@ -17,6 +17,7 @@ public:
 	// デストラクタ
 	~ItemPoach(void);
 
+	// 描画処理
 	void Draw(int i);
 
 	// アイテムの管理メソッド

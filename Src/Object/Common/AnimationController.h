@@ -41,9 +41,7 @@ public :
 	};
 	struct BlendState {
 		std::list<BlendData> data;
-		//int fromAttachNo = -1;
 		int toAttachNo = -1;
-		//float blendRate = 0.0f;
 		bool isBlending = false;
 		float blendSpeed = 1.0f; // 1•b‚Å100%‚É
 	};

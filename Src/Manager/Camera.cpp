@@ -87,10 +87,8 @@ void Camera::SetBeforeDraw(void)
 	DrawSphere3D(targetPos_, 10, 10, 0xff00ff, 0xff00ff, true);
 #endif // _DEBUG
 
-
 	// DXライブラリのカメラとEffekseerのカメラを同期する。
 	Effekseer_Sync3DSetting();
-
 }
 
 void Camera::Draw(void)
@@ -196,7 +194,6 @@ void Camera::ChangeMode(MODE mode)
 	case Camera::MODE::SELF_SHOTD:
 		break;
 	}
-
 }
 
 void Camera::StartShake(float _time, float _power)
@@ -228,14 +225,10 @@ void Camera::SetDefault(void)
 	angles_.z = 0.0f;
 
 	rot_ = Quaternion();
-
 }
 
 void Camera::SyncFollow(void)
 {
-
-	//auto& gIns = GravityManager::GetInstance();
-
 	// 同期先の位置
 	VECTOR pos = followTransform_->pos;
 
@@ -261,8 +254,8 @@ void Camera::SyncFollow(void)
 
 	// カメラの上方向
 	cameraUp_ = gRot.GetUp();
-
 }
+
 // カメラ操作
 void Camera::ProcessRot(void)
 {
@@ -317,17 +310,14 @@ void Camera::ProcessRot(void)
 		angles_ = VAdd(angles_, axisDeg);
 
 	}
-
 }
 // カメラ操作(FPS用)
 void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, const bool left)
 {
-
 	// 回転軸と量決め
 	//const float ROT_POW = 1.0f;
 	const float ROT_POW = AsoUtility::Deg2RadF(1.0f);
 	VECTOR axisDeg = AsoUtility::VECTOR_ZERO;
-
 
 	if (angles_.x <= FPS_LIMIT_X_UP_RAD)
 	{
@@ -339,10 +329,8 @@ void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, co
 		if (up) { axisDeg.x = -ROT_POW; }
 	}
 
-
 	if (right) { axisDeg.y = ROT_POW; }
 	if (left) { axisDeg.y = -ROT_POW; }
-
 
 	if (!AsoUtility::EqualsVZero(axisDeg))
 	{
@@ -370,7 +358,6 @@ void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, co
 // カメラ操作(マウス)
 void Camera::ProcessRotMause(float& x_m, float& y_m, const float fov_per)
 {
-	
 	int x_t, y_t;
 	GetMousePoint(&x_t, &y_t);
 	x_m += float(std::clamp(x_t - Application::SCREEN_SIZE_X / 2, -120, 120)) * fov_per / GetFPS();
@@ -388,7 +375,6 @@ void Camera::ProcessRotMause(float& x_m, float& y_m, const float fov_per)
 	{
 		angles_.x = FPS_LIMIT_X_DW_RAD;
 	}
-
 }
 
 
@@ -397,17 +383,17 @@ void Camera::SetBeforeDrawFixedPoint(void)
 {
 	// 何もしない
 }
+
 // 追従モードのカメラ同期
 void Camera::SetBeforeDrawFollow(void)
 {
-
 	// カメラ操作
 	//ProcessRot();
 
 	// 追従対象との相対位置を同期
 	SyncFollow();
-
 }
+
 // FPSモードのカメラ同期
 void Camera::SyncFollowFPS(void)
 {
@@ -452,9 +438,11 @@ void Camera::SyncFollowFPS(void)
 	// カメラの上方向
 	cameraUp_ = gRot.GetUp();
 }
+
 void Camera::SetBeforeDrawSelfShot(void)
 {
 }
+
 // カメラシェイク
 void Camera::UpdateShake(void)
 {
@@ -462,8 +450,7 @@ void Camera::UpdateShake(void)
 
 	// シェイク強度・減衰パラメータ
 	//float shakePower_ = 2.0f;      // 初期の揺れの大きさ
-	//float shakeDuration_ = 1.0f;     // 揺れる時間
-
+	//float shakeDuration_ = 1.0f;   // 揺れる時間
 
 	stepShake_ -= 0.016f; // Δt
 
@@ -486,7 +473,6 @@ void Camera::UpdateShake(void)
 	VECTOR randomDir = VNorm({ dx, dy, dz });
 	pos_ = VAdd(defaultPos_, VScale(randomDir, currentPower));
 	return;
-
 
 	if (stepShake_ > 0.0f)
 	{

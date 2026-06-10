@@ -190,10 +190,10 @@ void GreatSword::InitEffect(void)
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
 	// チャージアニメーション
-	effectController_->Add(0, path + L"PowerUp/PowerUp.efkefc");
+	effectController_->Add(POWER_UP_EFFECT, path + L"PowerUp/PowerUp.efkefc");
 
-	effectController_->Add(1, path + L"Slash/Slash.efkefc");
-	effectController_->Play(1);
+	effectController_->Add(POWER_SLASH_EFFECT, path + L"Slash/Slash.efkefc");
+	effectController_->Play(POWER_SLASH_EFFECT);
 }
 
 void GreatSword::InitAttackSound(void)

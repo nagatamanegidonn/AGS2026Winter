@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 
-
 class ItemBase
 {
 
@@ -13,9 +12,16 @@ public:
 	// デストラクタ
 	~ItemBase(void);
 
+	// 初期化処理
 	virtual void Init(int _id);
+
+	// 更新処理
 	virtual void Update(void);
+
+	// 描画処理
 	virtual void Draw(void);
+
+	// 解放処理
 	virtual void Release(void);
 
 	// 格納IDの取得

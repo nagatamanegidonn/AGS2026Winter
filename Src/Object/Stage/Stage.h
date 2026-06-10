@@ -42,9 +42,14 @@ public:
 	// デストラクタ
 	~Stage(void);
 
-	void Init(void)override;
-	void Update(void)override;
-	void Draw(void)override;
+	// 初期化処理
+	void Init(void) override;
+
+	// 更新処理
+	void Update(void) override;
+
+	// 描画処理
+	void Draw(void) override;
 
 	// ステージ変更
 	void ChangeStage(NAME type);
@@ -53,9 +58,13 @@ public:
 	std::weak_ptr<Planet> GetPlanet(NAME type);
 	std::weak_ptr<Planet> GetActivePlanet(void);
 
+	// プレイヤーの設定
 	void SetPlayers(std::vector<std::shared_ptr <Player>> players);
+
+	// エネミーの設定
 	void SetEnemy(std::vector<std::shared_ptr <EnemyBase>> enemy);
 
+	// ボムオブジェクトの追加
 	void AddBom(const Transform& _trans);
 
 private:

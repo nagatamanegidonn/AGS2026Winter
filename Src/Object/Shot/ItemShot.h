@@ -18,10 +18,10 @@ public:
 protected:
 
     // ƒpƒ‰ƒ[ƒ^‚Ìİ’è
-    void SetParam(void)override;
+    void SetParam(void) override;
 
-    void UpdateShot(void)override;
-    void UpdateBlast(void)override;
+    void UpdateShot(void) override;
+    void UpdateBlast(void) override;
                         
 };
 

@@ -16,7 +16,6 @@
 #include "./Net/NetManager.h"
 #include "Application.h"
 
-
 Application* Application::instance_ = nullptr;
 
 const std::wstring Application::PATH_IMAGE = L"Data/Image/";
@@ -117,7 +116,6 @@ void Application::Init(void)
 	// Œv‘ª
 	Measure::CreateInstance();
 	Measure::GetInstance().Start();
-
 }
 
 void Application::Run(void)
@@ -163,7 +161,6 @@ void Application::Destroy(void)
 		isError_ = true;
 		return;
 	}
-
 }
 
 bool Application::IsError(void)

@@ -40,7 +40,6 @@ GameManager::GameManager(void)
 	clearPramList_(),
 	currentParam_({ 0,1.0f,1.0f,1.0f }),
 	clearImg_(-1),
-
 	charId_(0),
 	weponId_(0),
 	IsHost_(true),
@@ -55,7 +54,7 @@ GameManager::~GameManager(void)
 void GameManager::Init(void)
 {
 	// 初期化
-	clearFlag_ = false;//クリアフラグ
+	clearFlag_ = false;// クリアフラグ
 
 	charId_ = 0;
 	weponId_ = 0;
@@ -64,7 +63,7 @@ void GameManager::Init(void)
 	Load();
 	Save(true);
 
-	//　クリアロゴの読み込み
+	// クリアロゴの読み込み
 	clearImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::CLEAR_LOGO).handleId_;
 
 	clearPramList_.push_back(FIRST_PRAM);
@@ -74,7 +73,7 @@ void GameManager::Init(void)
 	paramRate_ = 0.0f;
 	currentParam_ = clearPramList_.front();
 
-	//接続はHost
+	// 接続はHost
 	IsHost_ = true;
 }
 void GameManager::Update(void)
@@ -83,7 +82,7 @@ void GameManager::Update(void)
 void GameManager::Draw(void)
 {
 }
-//　clearTime_が一定の数値以下になったときに呼ばれる
+// clearTime_が一定の数値以下になったときに呼ばれる
 void GameManager::DrawClear(void)
 {
 	if (clearTime_ <= 2.5f && IsClear())

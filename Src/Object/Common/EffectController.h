@@ -26,7 +26,10 @@ public:
 		}
 	};
 
+	// コンストラクタ
 	EffectController(void);
+
+	// デストラクタ
 	~EffectController(void);
 
 	void Add(int type, std::wstring str);
@@ -42,9 +45,6 @@ public:
 	void Update(int type = -1);
 
 private:
-
-
-
 
 	// 種類別のアニメーションデータ
 	std::map<int, std::unique_ptr<EFFECT>> effects_;

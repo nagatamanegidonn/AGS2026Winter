@@ -111,15 +111,15 @@ public:
 	virtual void Init(void) override;
 
 	// 更新処理
-	virtual void Update(void)override;
+	virtual void Update(void) override;
 
 	// 描画処理
-	virtual void Draw(void)override;
+	virtual void Draw(void) override;
 
 	// ＨＰの取得
 	const int GetHp(void) const { return hp_; }
 	// ダメージ関係
-	void Damage(int _dama, bool _isConst = false)override;
+	void Damage(int _dama, bool _isConst = false) override;
 
 	const bool IsState(STATE state)const { return (state_ == state); }
 
@@ -170,7 +170,9 @@ private:
 	// 攻撃管理
 	ATTRCK_TYPE attrckTypeState_;// 攻撃種別
 
-	float dameRate_;		// 受けるダメージ倍率
+	// ダメージ倍率
+	float dameRate_;
+
 	// ボス限定
 	int attrckCount_;		// 連続攻撃の際に使用
 	VECTOR attrckPos_;		// 攻撃判定中心位置
@@ -178,14 +180,15 @@ private:
 
 	// 状態管理(状態遷移時初期処理)
 	std::map<STATE, std::function<void(void)>> stateChanges_;
+
 	// 状態管理(更新ステップ)
 	std::function<void(void)> stateUpdate_;
 
 	// 目的移動位置//※小型は範囲外に出たら消すので使わない
-	float lerpTime_;
-	VECTOR waypoint_;
-	bool isLerp_;
-	int lerpId_;
+	float lerpTime_;	// エリア移動時間
+	VECTOR waypoint_;	// 移動位置
+	bool isLerp_;		// エリア移動しているか
+	int lerpId_;		// 現在のエリア位置ID
 
 	// 複数の初期化処理
 	void InitAnimation(void);
@@ -230,8 +233,8 @@ private:
 	void UpdateDead(void);
 
 	// 最終更新
-	void CollisionStageCapsule(void)override;
-	void CollisionGravity(void)override;
+	void CollisionStageCapsule(void) override;
+	void CollisionGravity(void) override;
 
 	// 攻撃無効化
 	void AttrckUpdate(void);
@@ -239,7 +242,5 @@ private:
 
 	// デバッグ用描画
 	void DrawDebug(void);
-
-	
 };
 

@@ -340,7 +340,6 @@ void TitleScene::UpdatePad(void)
 
 	// 更新処理
 	padUpdate_();
-
 }
 
 #pragma endregion
@@ -349,7 +348,6 @@ void TitleScene::UpdatePad(void)
 void TitleScene::MouseUpdate(void)
 {
 	auto& ins = InputManager::GetInstance();
-
 
 	if (inputTextArea_->IsActive())
 	{
@@ -433,7 +431,6 @@ void TitleScene::MouseUpdate(void)
 			InputTextManager::GetInstance().SetTextArea(false); // ←ここでnullptrにしてるはず
 		}
 	}
-
 }
 void TitleScene::MWeaponUpdate(void)
 {
@@ -476,7 +473,6 @@ void TitleScene::MWeaponUpdate(void)
 			return;
 		}
 	}
-
 }
 // 通常更新（コントロ－ラー）
 void TitleScene::PNormalUpdate(void)
@@ -559,8 +555,6 @@ void TitleScene::PNormalUpdate(void)
 		default:
 			break;
 		}
-
-
 	}
 }
 void TitleScene::PWeaponUpdate(void)
@@ -595,8 +589,6 @@ void TitleScene::PWeaponUpdate(void)
 		gns.SetWeaponId(weponId_);
 		viewPlayer_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 	}
-
-
 }
 void TitleScene::PIpUpdate(void)
 {

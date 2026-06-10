@@ -67,7 +67,6 @@ namespace
 	constexpr float CAMERA_SHAKE_POWER = 1.5f;
 }
 
-
 GameScene::GameScene(void)
 	:
 	SceneBase(),
@@ -212,7 +211,7 @@ void GameScene::Update(void)
 	if (nIns.GetMode() == NET_MODE::HOST)
 	{
 		// ゲーム時間進行
-		SceneManager::GetInstance().ForwardGameTime();//進めるゲーム時間(GameTotalTime　+=　デルタタイム)
+		SceneManager::GetInstance().ForwardGameTime();// 進めるゲーム時間(GameTotalTime　+=　デルタタイム)
 	}
 
 	// フェード更新
@@ -390,7 +389,7 @@ void GameScene::Update(void)
 		else
 		{
 			stepId_ = 0;
-			boss_->SetBattleCancel();//バトル中止
+			boss_->SetBattleCancel();// バトル中止
 		}
 	}
 
@@ -475,8 +474,8 @@ void GameScene::Draw(void)
 		playerNo++;
 	}
 
-	// Draw内
-	timer_->DrawNeedle(TIME_POS_X, TIME_POS_Y); // 中心位置 (x, y)
+	// タイマーの描画
+	timer_->DrawTimer(TIME_POS_X, TIME_POS_Y); // 中心位置 (x, y)
 
 	GameManager::GetInstance().DrawClear();
 
@@ -717,7 +716,7 @@ void GameScene::Collision(void)
 			}
 		}
 		// 爆弾の処理
-		else if (shot->GetType() == ShotBase::TYPE::BOM)//ここでほしいのは全てのプレイヤーの攻撃判定と自分の管理しているクラスの判定
+		else if (shot->GetType() == ShotBase::TYPE::BOM)// ここでほしいのは全てのプレイヤーの攻撃判定と自分の管理しているクラスの判定
 		{
 			// 通常状態(設置状態)
 			if (shot->IsShot())

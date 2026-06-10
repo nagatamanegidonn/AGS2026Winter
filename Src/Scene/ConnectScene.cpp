@@ -225,24 +225,6 @@ void ConnectScene::Draw(void)
 			DrawString(B1_S_POS.x + 50, B1_S_POS.y + 5, L"進む", 0xffffff);
 		}
 	}
-
-#ifdef DEBUG
-
-	auto& nIns = NetManager::GetInstance();
-	std::string text = "";
-
-	switch (nIns.GetWeapon(NetManager::GetInstance().GetSelf().key))
-	{
-	case 0:
-		text = "木の剣";
-		break;
-	case 1:
-		text = "バスターソード";
-		break;
-	}
-	DrawFormatString(100, 250, 0xffffff, "使用武器：%s", text.c_str());
-
-#endif // DEBUG
 }
 
 void ConnectScene::Release(void)

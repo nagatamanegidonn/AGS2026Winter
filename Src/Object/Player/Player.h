@@ -218,10 +218,13 @@ protected:
 
 	// アニメーション
 	std::unique_ptr<AnimationController> animationController_;
+
 	// 操作コントローラー
 	std::unique_ptr<InputController> inputController_;
+
 	// エフェクトコントローラー
 	std::unique_ptr<EffectController> effectController_;
+
 	// サウンドコントローラー
 	std::unique_ptr<SoundController> soundController_;
 
@@ -241,6 +244,7 @@ protected:
 	
 	// 状態管理(状態遷移時初期処理)
 	std::map<STATE, std::function<void(void)>> stateChanges_;
+	
 	// 状態管理(更新ステップ)
 	std::function<void(void)> stateUpdate_;
 
@@ -256,9 +260,11 @@ protected:
 	// ステータスUI
 	std::unique_ptr<PixelMaterial> statusMaterial_;
 	std::unique_ptr<PixelRenderer> statusRenderer_;
+
 	// HPバーUI
 	std::unique_ptr<PixelMaterial> hpMaterial_;
 	std::unique_ptr<PixelRenderer> hpRenderer_;
+
 	// スタミナUI
 	std::unique_ptr<PixelMaterial> staMaterial_;
 	std::unique_ptr<PixelRenderer> staRenderer_;
@@ -268,8 +274,8 @@ protected:
 	std::shared_ptr<Capsule> capsuleWeapon_;
 
 	// 衝突チェック
-	VECTOR gravHitPosDown_; //← 衝突用線分
-	VECTOR gravHitPosUp_;	//← 衝突用線分
+	VECTOR gravHitPosDown_; // 衝突用線分
+	VECTOR gravHitPosUp_;	// 衝突用線分
 
 	// プレイヤー種別
 	PLAYER_TYPE type_;
@@ -343,9 +349,9 @@ protected:
 	void UpdateDead(void);
 	void UpdateGet(void);
 	void UpdateItemUse(void);
-#pragma region アイテムごとの関数
+	
+	// アイテムの使用
 	void UseItem(void);
-#pragma endregion
 
 	// 移動
 	void ProcessNormal(void);	// 通常操作
@@ -357,11 +363,11 @@ protected:
 	float CreateRad(const VECTOR& dir);
 
 	// 武器の描画
-	virtual void DrawWeapon();
+	virtual void DrawWeapon(void);
 	// 武器の同期
-	const void SyncWeapon();
-	virtual void SyncWeaponPlay();	// 通常
-	virtual void SyncWeaponBattle();// 戦闘中
+	const void SyncWeapon(void);
+	virtual void SyncWeaponPlay(void);	// 通常
+	virtual void SyncWeaponBattle(void);// 戦闘中
 
 	/// <summary>
 	/// モデルのフレーム追従
@@ -376,8 +382,8 @@ protected:
 		const Transform& modelTransform, Transform& outWeaponTransform);
 
 	// 当たり判定の最終処理
-	void CollisionStageCapsule(void)override;	// カプセルとステージの判定
-	void CollisionGravity(void)override;		// 重力計算とその後の判定
+	void CollisionStageCapsule(void) override;	// カプセルとステージの判定
+	void CollisionGravity(void) override;		// 重力計算とその後の判定
 		
 	// モーション終了
 	bool IsEndLanding(void);

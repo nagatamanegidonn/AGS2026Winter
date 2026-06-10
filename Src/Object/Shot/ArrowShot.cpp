@@ -2,6 +2,13 @@
 #include "../../Manager/ResourceManager.h"
 #include "../Common/Collider/Capsule.h"
 
+namespace {
+	// カプセルの初期値
+	constexpr VECTOR CAP_LOACL_TOP = { 0.0f, 0.0f, 110.0f };
+	constexpr VECTOR CAP_LOACL_DOWN = { 0.0f, 0.0f, -30.0f };
+	constexpr float CAP_RADIUS = 10.0f;
+}
+
 ArrowShot::ArrowShot(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key)
 	:ShotBase(damage, birthPos, shotVec, key)
 {
@@ -14,9 +21,9 @@ ArrowShot::ArrowShot(int damage, const VECTOR& birthPos, const VECTOR& shotVec, 
 
 	// カプセルコライダの作成
 	capsule_ = std::make_shared<Capsule>(transform_);
-	capsule_->SetLocalPosTop({ 0.0f, 0.0f, 110.0f });
-	capsule_->SetLocalPosDown({ 0.0f,0.0f,  -30.0f });
-	radius_ = 10.0f;
+	capsule_->SetLocalPosTop(CAP_LOACL_TOP);
+	capsule_->SetLocalPosDown(CAP_LOACL_DOWN);
+	radius_ = CAP_RADIUS;
 	capsule_->SetRadius(radius_);
 
 	type_ = TYPE::ARROW;
@@ -24,7 +31,6 @@ ArrowShot::ArrowShot(int damage, const VECTOR& birthPos, const VECTOR& shotVec, 
 ArrowShot::~ArrowShot(void)
 {
 }
-
 
 void ArrowShot::Update(void)
 {

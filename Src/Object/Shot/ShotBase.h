@@ -34,6 +34,7 @@ public:
     // デストラクタ
     virtual ~ShotBase(void);
 
+    // 生成関数
     void Create(int damage, const VECTOR& birthPos, const VECTOR& dir, int key);
 
     // 初期化処理
@@ -47,8 +48,10 @@ public:
 
     // 種類の取得
     const TYPE& GetType(void) const { return type_; }
+
     // 座標の取得
     const int& GetTransItem(void) const { return transform_.modelId; }
+
 	// 半径の取得
 	const float& GetRadius(void) const { return radius_; }
 
@@ -60,6 +63,7 @@ public:
 
 	// ダメージ量の取得
     virtual int GetDamage(void) const;
+
 	// カプセルコライダの取得
     std::weak_ptr<Capsule> GetCapsule(void);
 
@@ -96,6 +100,5 @@ protected:
 
     virtual void UpdateShot(void);
     virtual void UpdateBlast(void);
-
 };
 

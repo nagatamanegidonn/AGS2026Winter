@@ -27,10 +27,10 @@ public:
 	virtual void Init(void) override;
 
 	// 更新処理
-	virtual void Update(void)override;
+	virtual void Update(void) override;
 
 	// 描画処理
-	virtual void Draw(void)override;
+	virtual void Draw(void) override;
 
 	// 追従対象の設定
 	virtual void SetFollow(const Transform* follow);
@@ -49,8 +49,10 @@ protected:
 
 	// アニメーション
 	std::unique_ptr<AnimationController> animationController_;
+
 	// エフェクトコントローラー
 	std::unique_ptr<EffectController> effectController_;
+
 	// サウンドコントローラー
 	std::unique_ptr<SoundController> soundController_;
 
@@ -83,8 +85,8 @@ protected:
 	VECTOR hitDamePos_;		// 衝突用線分
 
 	// 最終更新
-	virtual void CollisionStageCapsule(void)override;	// ステージとの判定
-	virtual void CollisionGravity(void)override;		// 重力判定
+	virtual void CollisionStageCapsule(void) override;	// ステージとの判定
+	virtual void CollisionGravity(void) override;		// 重力判定
 
 	// ダメージ描画クラス生成などの更新処理
 	virtual int DamageUpdate(void);

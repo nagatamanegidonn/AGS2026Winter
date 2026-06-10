@@ -32,7 +32,7 @@ private:
     Transform transSubWeapon_;
 
 	// 初期化
-    void InitParam(void)override;          // パラメータ
+    void InitParam(void) override;         // パラメータ
     void InitAnimation(void) override;     // アニメーション
     void InitEffect(void) override;        // エフェクト
     void InitAttackSound(void) override;   // サウンド
@@ -41,11 +41,11 @@ private:
     void PlayAttackSound(void) override;
 
     // 武器の描画
-    void DrawWeapon()override;
+    void DrawWeapon(void) override;
 
     // 武器の同期
-    void SyncWeaponPlay()override;      // 通常時
-    void SyncWeaponBattle()override;    // 戦闘時
+    void SyncWeaponPlay(void) override;      // 通常時
+    void SyncWeaponBattle(void) override;    // 戦闘時
 
 
 };

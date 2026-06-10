@@ -80,6 +80,7 @@ namespace
 	constexpr int START_BOM_HOLD = 2;
 	constexpr int START_FLASH_HOLD = 3;
 	const std::wstring ITEM_TYPE_FLASH = L"攻撃";
+	const std::wstring ITEM_TYPE_HEEL = L"回復";
 	const std::wstring ITEM_TYPE_BOM = L"設置";
 	// アニメーション関連
 	constexpr float BLEND_SPEED = 5.0f;
@@ -249,18 +250,24 @@ void Player::Init(void)
 
 	// アニメーションの設定
 	InitAnimation();
+
+	// 獲得モーション
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::GET), true, BLEND_SPEED);
+
 	// 投げるモーション
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_THROW), true, BLEND_SPEED);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_THROW_E), true, BLEND_SPEED);
+
 	// 設置するモーション
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_SET), true, BLEND_SPEED);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_SET_E), true, BLEND_SPEED);
+
 	// 飲むモーション
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ITEM_DRINK), true, BLEND_SPEED);
 
 	// エフェクトの設定
 	InitEffect();
+
 	// BGM.SEの設定
 	InitSound();
 
@@ -640,7 +647,6 @@ void Player::Draw(void)
 
 	//武器の同期
 	SyncWeapon();
-
 
 #ifdef _DEBUG
 	// デバッグ用
@@ -1126,13 +1132,13 @@ void Player::UpdateGet(void)
 			switch (itemId_)
 			{
 				case 0:// 投擲アイテム
-					poach_->AddItem(std::make_shared<ItemBase>(L"攻撃"));
+					poach_->AddItem(std::make_shared<ItemBase>(ITEM_TYPE_FLASH));
 					break;
 				case 1:// 回復アイテム
-					poach_->AddItem(std::make_shared<ItemBase>(L"回復"));
+					poach_->AddItem(std::make_shared<ItemBase>(ITEM_TYPE_HEEL));
 					break;
 				case 2:// 設置アイテム
-					poach_->AddItem(std::make_shared<ItemBase>(L"設置"));
+					poach_->AddItem(std::make_shared<ItemBase>(ITEM_TYPE_BOM));
 					break;
 			}
 		}
@@ -1142,12 +1148,12 @@ void Player::UpdateGet(void)
 
 void Player::UpdateItemUse(void)
 {
-	if (poach_->IsSelectedItemName(L"回復"))
+	if (poach_->IsSelectedItemName(ITEM_TYPE_HEEL))
 	{
 		ChangeStateAnimeEnd(ANIM_TYPE::ITEM_DRINK, [this]() { UseItem(); });
 	}
 	// 使用アイテムが投擲アイテムなら
-	else if (poach_->IsSelectedItemName(L"攻撃"))
+	else if (poach_->IsSelectedItemName(ITEM_TYPE_FLASH))
 	{
 		if (animeType_ != static_cast<int>(ANIM_TYPE::ITEM_THROW_E))
 		{
@@ -1164,7 +1170,7 @@ void Player::UpdateItemUse(void)
 		}
 	}
 	// 使用アイテムが投擲アイテムなら
-	else if (poach_->IsSelectedItemName(L"設置"))
+	else if (poach_->IsSelectedItemName(ITEM_TYPE_BOM))
 	{
 		if (animeType_ != static_cast<int>(ANIM_TYPE::ITEM_SET_E))
 		{
@@ -1188,7 +1194,7 @@ void Player::UpdateItemUse(void)
 void Player::UseItem(void)
 {
 	// 回復アイテムのIdは１
-	if (poach_->IsSelectedItemName(L"回復"))
+	if (poach_->IsSelectedItemName(ITEM_TYPE_HEEL))
 	{
 		// 体力回復
 		hp_ += 20;
@@ -1468,6 +1474,7 @@ void Player::DrawWeapon()
 {
 	MV1DrawModel(transWeapon_.modelId);
 }
+
 // 武器の同期
 #pragma region 武器の同期
 const void Player::SyncWeapon()

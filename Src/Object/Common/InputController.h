@@ -44,8 +44,8 @@ public:
 	enum class PeripheralType {
 		KEYBOARD,		//
 		GAME_PAD,		//
-		GAME_PAD_INS,	//INputManager用のTyoe
-		GAME_PAD_STICK,	//INputManager用のTyoe
+		GAME_PAD_INS,	// INputManager用のTyoe
+		GAME_PAD_STICK,	// INputManager用のTyoe
 		MOUSE,			//
 	};
 

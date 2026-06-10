@@ -17,18 +17,24 @@ public:
 
     void Start();              // タイマー開始
     void Reset();              // タイマーを止める（再スタートで再使用可）
+    
+    // 残り時間（0以下にならない）
+    float GetRemainingTime() const;
 
-    float GetRemainingTime() const; // 残り時間（0以下にならない）
-    bool IsTimeUp() const;          // 制限時間を過ぎたかどうか
-	bool IsRunning() const { return isRunning_; }// タイマーが動作中かどうか
+    // 制限時間を過ぎたかどうか
+    bool IsTimeUp() const;          
+
+    // タイマーが動作中かどうか
+	bool IsRunning() const { return isRunning_; }
 
      // 針を描画する（中心座標と画像を指定）
     void SetNeedleImage(int handle);
-    void DrawNeedle(int centerX, int centerY, float startDeg = 0.0f, float endDeg = 270.0f) const;
+    void DrawTimer(int centerX, int centerY, float startDeg = 0.0f, float endDeg = 270.0f) const;
 
     
 private:
-
+    
+    // 描画用シェーダ
     std::unique_ptr<PixelMaterial> Material_;
     std::unique_ptr<PixelRenderer> Renderer_;
 

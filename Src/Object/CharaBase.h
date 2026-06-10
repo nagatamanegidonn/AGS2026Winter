@@ -10,7 +10,6 @@ class CharaBase abstract :
 
 public:
 
-
 	// アニメーション情報構造体
 	struct AnimationInfo
 	{
@@ -68,13 +67,15 @@ protected:
 	// 更新前の座標
 	VECTOR prePos_;
 
-	// 移動
 	// 移動スピード
 	float speed_;
+
 	// 移動方向
 	VECTOR moveDir_;
+
 	// 移動量
 	VECTOR movePow_;
+
 	// 移動後の座標
 	VECTOR movedPos_;
 

@@ -2,7 +2,14 @@
 #include "../../Manager/ResourceManager.h"
 #include "../Common/Collider/Capsule.h"
 #include "../../Application.h"
-#include "../Common/EffectController.h" // ★この行を追加
+#include "../Common/EffectController.h" 
+
+namespace {
+	// カプセルの初期値
+	constexpr VECTOR CAP_LOACL_TOP = { 0.0f, 0.0f, 0.0f };
+	constexpr VECTOR CAP_LOACL_DOWN = { 0.0f, 0.0f, 0.0f };
+	constexpr float CAP_RADIUS = 60.0f;
+}
 
 BomObject::BomObject(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key)
 	:ShotBase(damage, birthPos, shotVec, key)
@@ -17,7 +24,7 @@ BomObject::BomObject(int damage, const VECTOR& birthPos, const VECTOR& shotVec, 
 
 	// カプセルコライダの作成
 	capsule_ = nullptr;
-	radius_ = 60.0f;
+	radius_ = CAP_RADIUS;
 
 	type_ = TYPE::BOM;
 

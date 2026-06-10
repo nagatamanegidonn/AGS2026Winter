@@ -31,7 +31,6 @@ AnimationController::~AnimationController(void)
 void AnimationController::Add(int type, const std::wstring& path, float speed, int animNo
 	, float sTime, float eTime)
 {
-
 	Animation anim;
 
 	//anim.model = MV1LoadModel(path.c_str());
@@ -47,8 +46,6 @@ void AnimationController::Add(int type, const std::wstring& path, float speed, i
 	anim.speed = speed;
 
 	anim.attachNo = animNo;
-
-
 
 	if (animations_.count(type) == 0)
 	{
@@ -72,10 +69,6 @@ void AnimationController::Add(int type, const std::wstring& path, float speed, i
 
 	animations_[type].startStep = sTime;
 	animations_[type].endStep = eTime;
-
-
-
-
 }
 //ブレンド設定
 void AnimationController::SetIsBlend(int type, bool isBlend, float blendSpeed)
@@ -84,7 +77,6 @@ void AnimationController::SetIsBlend(int type, bool isBlend, float blendSpeed)
 	animations_[type].blendSpeed = blendSpeed;
 
 }
-
 
 void AnimationController::Play(int type, bool isLoop,
 	bool isStop, bool isForce)
@@ -192,7 +184,6 @@ void AnimationController::Play(int type, bool isLoop,
 		//// モデルにアニメーションを付ける
 		playAnim_.attachNo = GetAttrchNo(type);
 
-
 		// アニメーション総時間の取得
 		//endStepを調べ－１じゃないならそれを入れる
 		if (animations_[type].switchLoopReverse_ >= 0.0f)
@@ -216,7 +207,6 @@ void AnimationController::Play(int type, bool isLoop,
 
 		switchLoopReverse_ = animations_[type].switchLoopReverse_;
 	}
-
 }
 
 void AnimationController::Update(void)
@@ -265,11 +255,8 @@ void AnimationController::Update(void)
 			mRate_ += data.blendRate;
 			
 		}
-
 		//最新アニメーション
-		MV1SetAttachAnimBlendRate(modelId_, blend_.toAttachNo, 1.0f - mRate_);
-
-		
+		MV1SetAttachAnimBlendRate(modelId_, blend_.toAttachNo, 1.0f - mRate_);	
 	}
 
 	//アニメーション再生
@@ -402,9 +389,7 @@ bool AnimationController::IsEnd(void) const
 			return true;
 		}
 	}
-
 	return ret;
-
 }
 
 void AnimationController::SetHitStop(float time)
