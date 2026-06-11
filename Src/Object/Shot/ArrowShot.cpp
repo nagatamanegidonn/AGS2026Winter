@@ -28,6 +28,7 @@ ArrowShot::ArrowShot(int damage, const VECTOR& birthPos, const VECTOR& shotVec, 
 
 	type_ = TYPE::ARROW;
 }
+
 ArrowShot::~ArrowShot(void)
 {
 }

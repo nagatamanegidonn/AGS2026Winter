@@ -11,29 +11,23 @@ public:
 	{
 		//TITLE_BGM,		// タイトルシーンのBGM
 		//SELECT_BGM,		// セレクトシーンのBGM
-		//
 		//RESULT_BGM,		// リザルトシーンのBGM
-
 		BATTLE_BGM,
 		
 		SLASH_DAMAGE,
 		SHOT_DAMAGE,
-		CHAGE,
-		
+		CHAGE,	
 		// コネクトシーンで使用
 		CONECT_START,
 		ADD,
-
 		// ゲームシーンで使用
 		LOCKON,
-
 		// SE
 		SELECT,
 		ENTER,
 		START,
 		GAME_START,
 		VOICE,
-
 		MOVE,
 		REMOVE,
 	};
@@ -60,11 +54,11 @@ public:
 	/// <param name="times">音の出す時間</param>
 	/// <param name="isForce">終了前に流すか？</param>
 	/// <returns></returns>
-	bool Play(SRC src, Sound::TIMES times, bool isForce = false);	//二次元音源用
-	bool Play(SRC src, Sound::TIMES times, VECTOR pos, float radius);	//三次元音源用
+	bool Play(SRC src, Sound::TIMES times, bool isForce = false);	// 二次元音源用
+	bool Play(SRC src, Sound::TIMES times, VECTOR pos, float radius);	// 三次元音源用
 
-	void Stop(SRC src);	//音源を停止する
-	void AllStop(void);	//音源を停止する
+	void Stop(SRC src);	// 音源を停止する
+	void AllStop(void);	// 音源を停止する
 
 	bool Pause(SRC src, Sound::TIMES times);
 	bool Resume(SRC src, Sound::TIMES times);
@@ -72,7 +66,7 @@ public:
 
 	bool CheckMove(SRC src);
 
-	void ChengeVolume(SRC src, float per);	//per 0.0～1.0でパーセントを設定する
+	void ChengeVolume(SRC src, float per);	// per 0.0～1.0でパーセントを設定する
 private:
 	// 静的インスタンス
 	static SoundManager* instance_;

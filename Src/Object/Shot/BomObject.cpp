@@ -97,6 +97,7 @@ void BomObject::UpdateShot(void)
 		return;
 	}
 }
+
 void BomObject::UpdateBlast(void)
 {
 	radius_ += 100.0f;

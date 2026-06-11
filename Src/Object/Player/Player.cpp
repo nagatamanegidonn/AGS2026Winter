@@ -349,11 +349,6 @@ void Player::Update(void)
 
 		inputController_->Update();
 
-		// ポーチの更新
-		if (inputController_->IsTriggered(InputController::KEY::ROLL))
-		{
-			//poach_->OpenClose();
-		}
 		// アイテム選択
 		if (inputController_->IsTriggered(InputController::KEY::ITEM_SELECT))
 		{
@@ -655,6 +650,7 @@ void Player::Draw(void)
 
 #endif
 }
+
 void Player::DrawUI(int i)
 {
 	auto& nIns = NetManager::GetInstance();
@@ -688,6 +684,7 @@ void Player::DrawUI(int i)
 #endif // DEBUG
 
 }
+
 void Player::Release(void)
 {
 }
@@ -706,14 +703,13 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 
 	movePow_ = AsoUtility::VECTOR_ZERO;
 
-
 	if (!AsoUtility::EqualsVZero(mixDir))
 	{
 		flyigTime_ = 1.0f;
 		
 		// 攻撃者の位置（atkPos）に向けて回転する処理
-		VECTOR lookDir = VNorm(VSub(atkPos, transform_.pos)); // 自分 → 攻撃者 のベクトル
-		float rotRad = atan2f(lookDir.x, lookDir.z);          // XZ平面でのラジアン角
+		VECTOR lookDir = VNorm(VSub(atkPos, transform_.pos));	// 自分 → 攻撃者 のベクトル
+		float rotRad = atan2f(lookDir.x, lookDir.z);			// XZ平面でのラジアン角
 
 		// rotRad を使ってワールド空間回転を直接設定する（カメラとは無関係）
 		Quaternion lookRot = Quaternion::AngleAxis(rotRad, AsoUtility::AXIS_Y);
@@ -752,10 +748,12 @@ const bool Player::IsHit(void) const
 {
 	return (isHitCheck_ && !isHit_);
 }
+
 const bool Player::GetHit(void) const
 {
 	return isHit_;
 }
+
 const void Player::SetHit(bool flag)
 {
 	isHit_ = flag;
@@ -766,7 +764,6 @@ std::weak_ptr<Capsule> Player::GetCapsule(void)
 {
 	return capsuleWeapon_;
 }
-
 
 const PLAYER_TYPE& Player::GetPlayerType(void)const
 {
@@ -833,13 +830,12 @@ void Player::InitShader(void)
 
 	// スタミナ_UI
 	staMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
-	staMaterial_->AddConstBuf({ 1.0f, 0.9f,0.0f,  1.0f });// スタミナ位置(左上)サイズ
+	staMaterial_->AddConstBuf({ 1.0f, 0.9f,0.0f, 1.0f });// スタミナ位置(左上)サイズ
 	staMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
 	staMaterial_->AddTextureBuf(staFreamImg_);
 	staMaterial_->AddTextureBuf(staMaskImg_);
 	staRenderer_ = std::make_unique<PixelRenderer>(*staMaterial_);
 	staRenderer_->SetSize(Vector2(HP_SIZE_X, HP_SIZE_Y));
-
 }
 
 #pragma region StateによるUpdateの切り替え
@@ -1428,6 +1424,7 @@ void Player::ProcessBattle(void)
 
 #pragma region 回転関係
 
+// プレイヤーに向かせたい、ゴールとなる回転を設定する
 void Player::SetGoalRotate(double rotRad)
 {
 	VECTOR cameraRot = SceneManager::GetInstance().GetCamera().lock()->GetAngles();
@@ -1447,7 +1444,7 @@ void Player::SetGoalRotate(double rotRad)
 
 	goalQuaRot_ = axis;
 }
-//↑プレイヤーに向かせたい、ゴールとなる回転を設定する
+
 void Player::Rotate(void)
 {
 	// 回転の球面補間を行う。
@@ -1458,6 +1455,7 @@ void Player::Rotate(void)
 	playerRotY_ = Quaternion::Slerp(
 		playerRotY_, goalQuaRot_, (TIME_ROT - stepRotTime_) / TIME_ROT);
 }
+
 float Player::CreateRad(const VECTOR& dir)
 {
 	float angle = atan2f(dir.x, dir.z);
@@ -1477,6 +1475,7 @@ void Player::DrawWeapon()
 
 // 武器の同期
 #pragma region 武器の同期
+
 const void Player::SyncWeapon()
 {
 	auto& nIns = NetManager::GetInstance();
@@ -1489,18 +1488,21 @@ const void Player::SyncWeapon()
 		nIns.IsAction(key_, PLAYER_ACTION::IS_BATTLE) ? SyncWeaponBattle() : SyncWeaponPlay();
 	}
 }
+
 void Player::SyncWeaponPlay()
 {
 	// メインウェポン（腰）
 	SyncWeaponToFream(L"mixamorig:Spine2", GSOWRD_SPINE_ROT, GSOWRD_SPINE_POS,
 		transform_, transWeapon_);
 }
+
 void Player::SyncWeaponBattle()
 {
 	// メインウェポン（右手）
 	SyncWeaponToFream(L"mixamorig:RightHandMiddle1", GSOWRD_HAND_ROT, GSOWRD_HAND_POS,
 		transform_, transWeapon_);
 }
+
 #pragma endregion
 
 // オブジェクトのフレーム追従
@@ -1604,6 +1606,7 @@ void Player::CollisionGravity(void)
 	}
 
 }
+
 void Player::CollisionStageCapsule(void)
 {
 	// カプセルを移動させる
@@ -1690,6 +1693,7 @@ void Player::CollisionStageCapsule(void)
 		MV1CollResultPolyDimTerminate(hits);
 	}
 }
+
 bool Player::CollisionCapsule(int& modelId)const
 {
 	// ０番目のフレームのコリジョン情報を更新する
@@ -1716,6 +1720,7 @@ bool Player::CollisionCapsule(int& modelId)const
 
 	return ret;
 }
+
 const bool Player::CollisionUnderSphere(const VECTOR pos, float r) const
 {
 	bool ret = false;
@@ -1774,6 +1779,7 @@ bool Player::IsAimSet(void)
 {
 	return inputController_->IsNew(InputController::KEY::AIM);
 }
+
 bool Player::IsTrgAimSet(void)
 {
 	return inputController_->IsTriggered(InputController::KEY::AIM);

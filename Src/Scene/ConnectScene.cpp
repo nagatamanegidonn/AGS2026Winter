@@ -45,13 +45,13 @@ void ConnectScene::Init(void)
 	playerNum_ = 1;
 
 	AddPlayer({ -150.0f,-50.0f,-250.0f },
-		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(-20.0f),  AsoUtility::Deg2RadF(0.0f) });
+		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(-20.0f), AsoUtility::Deg2RadF(0.0f) });
 	AddPlayer({ -50.0f,-50.0f,-250.0f },
-		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f),  AsoUtility::Deg2RadF(0.0f) });
+		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f), AsoUtility::Deg2RadF(0.0f) });
 	AddPlayer({ 50.0f,-50.0f,-250.0f },
-		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f),  AsoUtility::Deg2RadF(0.0f) });
+		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f), AsoUtility::Deg2RadF(0.0f) });
 	AddPlayer({ 150.0f,-50.0f,-250.0f },
-		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(20.0f),  AsoUtility::Deg2RadF(0.0f) });
+		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(20.0f), AsoUtility::Deg2RadF(0.0f) });
 
 #pragma endregion
 
@@ -168,7 +168,6 @@ void ConnectScene::Draw(void)
 
 	int HX = Application::SCREEN_SIZE_X / 2;
 	int HY = Application::SCREEN_SIZE_Y / 2;
-	
 	
 	auto& users = NetManager::GetInstance().GetNetUsers();
 	int i = 0;

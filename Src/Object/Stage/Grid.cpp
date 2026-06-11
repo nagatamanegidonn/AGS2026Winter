@@ -36,7 +36,7 @@ void Grid::DrawDebug(void)
 	//VECTOR sPos = { 0.0f, 0.0f, 0.0f };
 	//VECTOR ePos = { HLEN, 0.0f, 0.0f };
 	//VECTOR sPos = { -HLEN, 0.0f, 0.0f };
-	//VECTOR ePos = {  HLEN, 0.0f, 0.0f };
+	//VECTOR ePos = { HLEN, 0.0f, 0.0f };
 	//DrawLine3D(sPos, ePos, 0xff0000);
 
 	// XZ基本軸(グリッド)
@@ -70,7 +70,7 @@ void Grid::DrawDebug(void)
 
 		// Z軸(青)
 		sPos = { num * TERM, 0.0f, -HLEN };
-		ePos = { num * TERM, 0.0f,  HLEN };
+		ePos = { num * TERM, 0.0f, HLEN };
 		DrawLine3D(sPos, ePos, 0x0000ff);
 		DrawSphere3D(ePos, 20.0f, 10, 0x0000ff, 0x0000ff, true);
 
@@ -78,7 +78,7 @@ void Grid::DrawDebug(void)
 
 	// Y軸(緑)
 	sPos = { 0.0f, -HLEN, 0.0f };
-	ePos = { 0.0f,  HLEN, 0.0f };
+	ePos = { 0.0f, HLEN, 0.0f };
 	DrawLine3D(sPos, ePos, 0x00ff00);
 	DrawSphere3D(ePos, 20.0f, 10, 0x00ff00, 0x00ff00, true);
 
@@ -114,7 +114,7 @@ void Grid::DrawDebug(void)
 
 	// Y軸(緑)
 	sPos = { 0.0f, -HLEN, 0.0f };
-	ePos = { 0.0f,  HLEN, 0.0f };
+	ePos = { 0.0f, HLEN, 0.0f };
 	DrawLine3D(sPos, ePos, 0x00ff00);
 	DrawSphere3D(ePos, 20.0f, 10, 0x00ff00, 0x00ff00, true);
 

@@ -13,6 +13,7 @@ public:
     // デストラクタ
 	~ItemShot(void);
 
+    // 更新処理
     void Update(void) override;
 
 protected:

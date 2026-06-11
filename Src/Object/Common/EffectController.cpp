@@ -41,6 +41,7 @@ void EffectController::Play(int type)
 
 	
 }
+
 void EffectController::Play(int type, const VECTOR pos, VECTOR rot, float scale)
 {
 	// 指定されたエフェクトが存在しない場合は処理しない
@@ -57,6 +58,7 @@ void EffectController::Play(int type, const VECTOR pos, VECTOR rot, float scale)
 	SetPosPlayingEffekseer3DEffect(effects_[type]->PlayId_, pos.x, pos.y, pos.z);
 
 }
+
 //アニメーションが終わていたら再生
 void EffectController::LoopPlay(int type)
 {

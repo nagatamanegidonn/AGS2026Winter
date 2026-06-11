@@ -31,7 +31,6 @@ namespace
 	const VECTOR START_POS = VECTOR{ 0.0f, -30.0f, 0.0f };
 	const VECTOR START_LOCAL_ROT
 		= VECTOR{ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) };
-
 	// アニメーションリスト
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
@@ -92,6 +91,7 @@ Arrow::Arrow(int key, GameScene* scene, PLAYER_TYPE type)
 	:
 	Player(key, scene, type)
 {
+
 }
 
 Arrow::~Arrow(void)
@@ -185,9 +185,9 @@ void Arrow::InitEffect(void)
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
 
-	effectController_->Add(0, path + L"PowerUp/PowerUp.efkefc");
-	effectController_->Add(1, path + L"Slash/Slash.efkefc");
-	effectController_->Play(1);
+	effectController_->Add(POWER_UP_EFFECT, path + L"PowerUp/PowerUp.efkefc");
+	effectController_->Add(POWER_SLASH_EFFECT, path + L"Slash/Slash.efkefc");
+	effectController_->Play(POWER_SLASH_EFFECT);
 }
 
 void Arrow::InitAttackSound(void)
@@ -197,6 +197,7 @@ void Arrow::InitAttackSound(void)
 	soundController_->Add(static_cast<int>(SE::ATTACK1), path + L"Player/Bow1.mp3", 0.6f);
 	soundController_->Add(static_cast<int>(SE::ATTACK2), path + L"Player/BowShot.mp3", 0.6f);
 }
+
 void Arrow::PlayAttackSound(void)
 {
 	// 弾の発射
@@ -247,6 +248,7 @@ void Arrow::SyncWeaponPlay()
 	SyncWeaponToFream(L"mixamorig:Spine", BOW_SPINE_ROT, BOW_SPINE_POS,
 		transform_, transWeapon_);
 }
+
 void Arrow::SyncWeaponBattle()
 {
 	// 武器の同期（戦闘時）

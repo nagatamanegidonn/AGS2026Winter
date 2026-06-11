@@ -38,7 +38,7 @@ void RefreshScene::Update(void)
 	if (nIns.GetMode() == NET_MODE::HOST)
 	{
 		// ゲーム時間進行
-		SceneManager::GetInstance().ForwardGameTime();// 進めるゲーム時間(GameTotalTime　+=　デルタタイム)
+		SceneManager::GetInstance().ForwardGameTime();// 進めるゲーム時間(GameTotalTime += デルタタイム)
 	}
 
 	float limit = stepCountDown_ - SceneManager::GetInstance().GetTotalGameTime();

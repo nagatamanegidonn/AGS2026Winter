@@ -36,7 +36,6 @@ namespace
 		{static_cast<int>(SmallMonster::ANIM_TYPE::DAMAGE),L"SmallMonster.mv1",15.0f, 3,0.0f,-1.0f},
 		{static_cast<int>(SmallMonster::ANIM_TYPE::DEAD),L"SmallMonster.mv1",30.0f, 4,0.0f,-1.0f},
 	};
-
 	constexpr float HALF_RATE = 0.5f;
 }
 
@@ -79,7 +78,6 @@ SmallMonster::SmallMonster(int key, int createNo)
 SmallMonster::~SmallMonster(void)
 {
 	soundController_.reset();
-
 	MV1DeleteModel(transform_.modelId);
 }
 
@@ -130,6 +128,7 @@ void SmallMonster::Init(void)
 	transform_.MakeCollider(Collider::TYPE::WALL);
 	hitDamePos_ = AsoUtility::VECTOR_ZERO;
 }
+
 // 更新処理
 void SmallMonster::Update(void)
 {
@@ -165,16 +164,7 @@ void SmallMonster::Update(void)
 		movePow_ = AsoUtility::VECTOR_ZERO;
 
 		// 更新ステップ
-		bool isDebug = true;
-#ifdef _DEBUG
-
-		if (state_ != STATE::DEAD)
-		{
-			//isDebug = false;
-		}
-
-#endif // DEBUG
-		if (isDebug) stateUpdate_();
+		stateUpdate_();
 
 		// 重力による移動量
 		CalcGravityPow();
@@ -295,6 +285,7 @@ const bool SmallMonster::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 
 	return ret;
 }
+
 const bool SmallMonster::CollisionAttrck(const int& modelId)
 {
 
@@ -401,19 +392,23 @@ void SmallMonster::ChangeState(STATE state)
 	// 各状態遷移の初期処理
 	stateChanges_[state_]();
 }
+
 void SmallMonster::ChangeStateNone(void)
 {
 	stateUpdate_ = std::bind(&SmallMonster::UpdateNone, this);
 }
+
 void SmallMonster::ChangeStatePlay(void)
 {
 	stateUpdate_ = std::bind(&SmallMonster::UpdatePlay, this);
 }
+
 void SmallMonster::ChangeStateBattle(void)
 {
 	rotateTimer_ = rotateInterval_; // リセット
 	stateUpdate_ = std::bind(&SmallMonster::UpdateBattle, this);
 }
+
 void SmallMonster::ChangeStateFollow(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
@@ -421,18 +416,22 @@ void SmallMonster::ChangeStateFollow(void)
 
 	stateUpdate_ = std::bind(&SmallMonster::UpdateFollow, this);
 }
+
 void SmallMonster::ChangeStateAttrckReady(void)
 {
 	stateUpdate_ = std::bind(&SmallMonster::UpdateAttrckReady, this);
 }
+
 void SmallMonster::ChangeStateAttrckStamp(void)
 {
 	stateUpdate_ = std::bind(&SmallMonster::UpdateAttrckStamp, this);
 }
+
 void SmallMonster::ChangeStateDamage(void)
 {
 	stateUpdate_ = std::bind(&SmallMonster::UpdateDamage, this);
 }
+
 void SmallMonster::ChangeStateDead(void)
 {
 	stateUpdate_ = std::bind(&SmallMonster::UpdateDead, this);
@@ -496,7 +495,7 @@ void SmallMonster::UpdateBattle(void)
 	// 視線の先に至らに変更予定
 	if (stateTime_ < 0.0f || (IsTargetInFOV(follow_->pos, FOV_RADIUS) && stateTime_ < 1.0f)) 
 	{		
-		//　攻撃半径×攻撃半径
+		// 攻撃半径×攻撃半径
 		if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))
 		{
 			ChangeState(STATE::ATTRCK_READY);
@@ -687,7 +686,6 @@ void SmallMonster::CollisionGravity(void)
 			c.lock()->modelId_, -1, gravHitPosUp_, gravHitPosDown_);
 
 		// 最初は上の行のように実装して、木の上に登ってしまうことを確認する
-		//if (hit.HitFlag > 0)
 		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > 0.9f)
 		{
 			// 衝突地点から、少し上に移動
@@ -703,7 +701,7 @@ void SmallMonster::AttrckUpdate(void)
 {
 	animationController_->Play(attackType_, false);
 
-	//　当たり判定が発生するか
+	// 当たり判定が発生するか
 	if (atkData_[attackType_]->sHitTime < animationController_->GetStepTime()
 		&& atkData_[attackType_]->HitTime > animationController_->GetStepTime())
 	{
@@ -717,11 +715,11 @@ void SmallMonster::AttrckUpdate(void)
 
 void SmallMonster::DrawDebug(void)
 {
-	//　当たり判定
+	// 当たり判定
 	for (const auto& part : hitParts_)
 	{
 		part->Draw();
 	}
-
+	// カプセルの描画
 	capsule_->Draw();
 }

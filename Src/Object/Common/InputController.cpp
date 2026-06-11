@@ -193,21 +193,15 @@ void InputController::Update(void)
 
     const int STICK_THRESHOLD = 10000;
 
-    //if (rightY < -STICK_THRESHOLD) padState |= input.code;
-   /* if (rightY > STICK_THRESHOLD)  padState |= PAD_INPUT_RSTICK_DOWN;
-    if (rightX < -STICK_THRESHOLD) padState |= PAD_INPUT_RSTICK_LEFT;
-    if (rightX > STICK_THRESHOLD)  padState |= PAD_INPUT_RSTICK_RIGHT;*/
-
     //複数のinputTable_を確認
     for (const auto& keyValue : inputTable_)
     {
-        //inputTable_のstd::vector<InputState>の数ぶん回す
+        // inputTable_のstd::vector<InputState>の数ぶん回す
         for (auto& input : keyValue.second)
         {
             bool pressed = false;
             if (input.type == PeripheralType::KEYBOARD)
             {
-                //pressed = keyState[input.code];
                 pressed = ins.IsNew(input.code);
             }
             else if (input.type == PeripheralType::GAME_PAD)
@@ -253,7 +247,6 @@ void InputController::DebugDraw(void)
 
     DrawFormatString(300, 100, GetColor(255, 255, 255), L"アナログスティック右 x:%d  y:%d", rightX, rightY);
     DrawFormatString(300, 126, GetColor(255, 255, 255), L"アナログスティック左 x:%d  y:%d", leftStickX, leftStickY);
-    //DrawFormatString(300, 116, 0xFFFFFF, "flag: %s", inputController_->IsNew(InputController::KEY::ATTRCK) ? "true" : "false");
 
 #endif
 }

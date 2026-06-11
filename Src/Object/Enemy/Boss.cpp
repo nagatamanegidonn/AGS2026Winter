@@ -205,16 +205,7 @@ void Boss::Update(void)
 		movePow_ = AsoUtility::VECTOR_ZERO;
 
 		// 更新ステップ
-		bool isDebug = true;
-#ifdef _DEBUG
-
-		if (state_ != STATE::DEAD)
-		{
-			//isDebug = false;
-		}
-
-#endif // DEBUG
-		if(isDebug) stateUpdate_();
+		stateUpdate_();
 
 		// 重力による移動量
 		CalcGravityPow();
@@ -308,13 +299,8 @@ void Boss::Update(void)
 
 	// アニメーション再生
 	animationController_->Update();
-	if (animationController_->IsEnd() && animeType_ == static_cast<int>(ANIM_TYPE::DEAD))
-	{
-		//// ゲームの勝敗判定//シーン遷移
-		//GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_CLEAR;
-		//GameManager::GetInstance().SetGameResult(result);
-	}
-	//　クエストがボス討伐ならカウントする//bossの死亡アニメーション開始時に1回だけ
+
+	// クエストがボス討伐ならカウントする//bossの死亡アニメーション開始時に1回だけ
 	if (animeAgoType_ != static_cast<int>(ANIM_TYPE::DEAD)
 		&& animeType_ == static_cast<int>(ANIM_TYPE::DEAD)
 		)
@@ -329,6 +315,7 @@ void Boss::Update(void)
 		}
 	}
 }
+
 void Boss::Draw(void)
 {
 	// モデルの描画
@@ -474,21 +461,25 @@ void Boss::SetLerpPos(VECTOR pos)
 	waypoint_ = pos;
 	isLerp_ = true;
 }
+
 void Boss::StartLerp(void)
 {
 	lerpId_ = 0;
 	ChangeState(STATE::LERP_MOVE);
 }
+
 void Boss::SetFollow(const Transform* follow)
 {
 	follow_ = follow;
 	if (state_ != STATE::STUNNED)ChangeState(STATE::BATTLE);
 }
+
 void Boss::SetBattleCancel(void)
 {
 	lerpTime_ = MAX_LERP_TIME;
 	if (state_ != STATE::STUNNED)ChangeState(STATE::PLAY);
 }
+
 void Boss::StartStunned(void)
 {
 	if (state_ != STATE::STUNNED)ChangeState(STATE::STUNNED);
@@ -536,6 +527,7 @@ void Boss::InitAnimation(void)
 	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 	animeAgoType_ = animeType_;
 }
+
 void Boss::InitEffect(void)
 {
 	std::wstring path = Application::PATH_EFFECT;
@@ -566,23 +558,28 @@ void Boss::ChangeState(STATE state)
 	// 各状態遷移の初期処理
 	stateChanges_[state_]();
 }
+
 void Boss::ChangeStateNone(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateNone, this);
 }
+
 void Boss::ChangeStatePlay(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdatePlay, this);
 }
+
 void Boss::ChangeStateLerpMove(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateLerpMove, this);
 }
+
 void Boss::ChangeStateBattle(void)
 {
 	rotateTimer_ = rotateInterval_; // リセット
 	stateUpdate_ = std::bind(&Boss::UpdateBattle, this);
 }
+
 void Boss::ChangeStateFollow(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::FAST_RUN));
@@ -590,35 +587,43 @@ void Boss::ChangeStateFollow(void)
 
 	stateUpdate_ = std::bind(&Boss::UpdateFollow, this);
 }
+
 void Boss::ChangeStateAttrckReady(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateAttrckReady, this);
 }
+
 void Boss::ChangeStateAttrckStamp(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateAttrckStamp, this);
 }
+
 void Boss::ChangeStateAttrckLeftClaw(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateAttrckLeftClaw, this);
 }
+
 void Boss::ChangeStateAttrckRightClaw(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateAttrckRightClaw, this);
 }
+
 void Boss::ChangeStateAttrckDash(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateAttrckDash, this);
 }
+
 void Boss::ChangeStateStunned(void)
 {
 	stateTime_ = 4.0f;
 	stateUpdate_ = std::bind(&Boss::UpdateStunned, this);
 }
+
 void Boss::ChangeStateDamage(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateDamage, this);
 }
+
 void Boss::ChangeStateDead(void)
 {
 	stateUpdate_ = std::bind(&Boss::UpdateDead, this);
@@ -632,6 +637,7 @@ void Boss::ChangeStateDead(void)
 void Boss::UpdateNone(void)
 {
 }
+
 // stateがPLAYの時のUpdate
 void Boss::UpdatePlay(void)
 {
@@ -654,6 +660,7 @@ void Boss::UpdatePlay(void)
 	// 移動
 	movePow_ = VScale(forward, SPEED_MOVE);
 }
+
 void Boss::UpdateLerpMove(void)
 {
 	// アニメーション再生
@@ -661,8 +668,7 @@ void Boss::UpdateLerpMove(void)
 	animeType_ = static_cast<int>(ANIM_TYPE::FAST_RUN);
 
 	// 移動
-	movePow_ =
-		VScale(VNorm(VSub(waypoint_, transform_.pos)), SPEED_RUN);
+	movePow_ = VScale(VNorm(VSub(waypoint_, transform_.pos)), SPEED_RUN);
 	movePow_.y = 0.0f;
 
 	// ターゲットに向けて回転
@@ -682,6 +688,7 @@ void Boss::UpdateLerpMove(void)
 		isLerp_ = true;
 	}
 }
+
 // stateがBATTLEの時のUpdate
 void Boss::UpdateBattle(void)
 {
@@ -746,6 +753,7 @@ void Boss::UpdateBattle(void)
 		}
 	}
 }
+
 void Boss::UpdateFollow(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::FAST_RUN));
@@ -758,8 +766,7 @@ void Boss::UpdateFollow(void)
 	}
 
 	// 移動
-	movePow_ =
-		VScale(transform_.GetForward(), SPEED_FOLLOW);
+	movePow_ = VScale(transform_.GetForward(), SPEED_FOLLOW);	
 
 	// プレイヤーとの衝突判定
 	float disPow = AsoUtility::GetDisPow(transform_.pos, follow_->pos);
@@ -785,6 +792,7 @@ void Boss::UpdateFollow(void)
 		ChangeState(STATE::BATTLE);
 	}
 }
+
 void Boss::UpdateAttrckReady(void)
 {
 	switch (attrckTypeState_)
@@ -820,6 +828,7 @@ void Boss::UpdateAttrckReady(void)
 		break;
 	}
 }
+
 void Boss::UpdateAttrckStamp(void)
 {
 	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK_STAMP), false);
@@ -829,18 +838,10 @@ void Boss::UpdateAttrckStamp(void)
 	{
 		ChangeState(STATE::BATTLE);
 	}
-
-	auto& nIns = NetManager::GetInstance();
-	nIns.SetAction(PLAYER_ACTION::BOSS_ATTRCK_A);
-
-	if (nIns.IsAction(key_, PLAYER_ACTION::BOSS_ATTRCK_A))
-	{
-
-	}
 }
+
 void Boss::UpdateAttrckLeftClaw(void)
 {
-
 	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW), false);
 	animeType_ = static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW);
 
@@ -920,8 +921,7 @@ void Boss::UpdateStunned(void)
 }
 
 void Boss::UpdateDamage(void)
-{
-	
+{	
 }
 
 void Boss::UpdateDead(void)
@@ -1045,10 +1045,8 @@ void Boss::CollisionGravity(void)
 			c.lock()->modelId_, -1, gravHitPosUp_, gravHitPosDown_);
 
 		// 最初は上の行のように実装して、木の上に登ってしまうことを確認する
-		//if (hit.HitFlag > 0)
 		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > 0.9f)
 		{
-
 			// 衝突地点から、少し上に移動
 			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, 2.0f));
 

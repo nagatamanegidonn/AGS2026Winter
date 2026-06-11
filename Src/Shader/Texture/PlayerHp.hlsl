@@ -43,7 +43,7 @@ float4 main(PS_INPUT PSInput) : SV_TARGET
         }
     }
     
-    //HP‚Ó‚ê[‚Ş
+    // HPƒtƒŒ[ƒ€
     float4 freamColor = tex.Sample(texSampler, uv);
     if (freamColor.a > 0.01f) {
         color = freamColor; // Å—Dæ‚Åã‘‚«

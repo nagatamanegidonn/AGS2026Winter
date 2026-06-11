@@ -75,14 +75,14 @@ void SoundManager::Release(void)
 {
 	for (auto& p : soundMap_)
 	{
-		p.second.Release();  // サウンドのリソースを解放
+		p.second.Release();	// サウンドのリソースを解放
 
 		// p.second が動的に確保されたオブジェクトであれば、以下のようにメモリ解放
 		// delete p.second; // 必要に応じて、メモリを解放する
 
 	}
 
-	soundMap_.clear();  // マップをクリア
+	soundMap_.clear();	// マップをクリア
 }
 
 void SoundManager::Destroy(void)

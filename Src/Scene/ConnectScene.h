@@ -1,9 +1,5 @@
 #pragma once
-#include "../Lib/nlohmann/json.hpp"
 #include "SceneBase.h"
-
-// ’·‚¢‚Ì‚Ånamespace‚ÌÈ—ª
-using json = nlohmann::json;
 
 class PixelMaterial;
 class PixelRenderer;

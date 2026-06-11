@@ -29,7 +29,6 @@ void ItemPoach::Draw(int i)
 
 	// アイテムフレーム描画
 	DrawRotaGraph(Application::SCREEN_SIZE_X - 100, Application::SCREEN_SIZE_Y - 100, 1.0f, 0.0f, itemFrameImage_, true);
-
 	
 	if (it != ItemList_.end()) {
 		(*it)->Draw();
@@ -132,14 +131,6 @@ bool ItemPoach::HasSelectedItem(void) const
 	// イテレータをselectIndex_分進める
 	std::advance(it, selectIndex_);
 	return (it != ItemList_.end());
-	/*for (const auto& item : ItemList_)
-	{
-		if (item->GetId() == selectIndex_)
-		{
-			return true;
-		}
-	}
-	return false;*/
 }
 
 //選択中のアイテムが引数の名前かどうか
@@ -153,14 +144,6 @@ bool ItemPoach::IsSelectedItemName(const std::wstring& _name) const
 	// イテレータをselectIndex_分進める
 	std::advance(it, selectIndex_);
 	return ((*it)->GetName() == _name);
-	/*for (const auto& item : ItemList_)
-	{
-		if (item->GetId() == selectIndex_ && item->GetName() == name)
-		{
-			return true;
-		}
-	}
-	return false;*/
 }
 
 bool ItemPoach::IsSelectedItem(const ItemBase& _item) const
@@ -173,5 +156,4 @@ bool ItemPoach::IsSelectedItem(const ItemBase& _item) const
 	std::advance(it, selectIndex_);
 	// 名前と同じかどうかを判定
 	return ((*it)->IsSameItem(_item));
-
 }

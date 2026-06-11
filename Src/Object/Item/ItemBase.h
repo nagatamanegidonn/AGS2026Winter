@@ -26,6 +26,7 @@ public:
 
 	// Ši”[ID‚ÌŽæ“¾
 	const int GetId(void) const { return selectId_; }
+
 	// ƒAƒCƒeƒ€–¼‚ÌŽæ“¾
 	const std::wstring& GetName(void) const { return name_; }
 

@@ -255,8 +255,6 @@ void SceneManager::PopScene()
 
 void SceneManager::DoChangeScene(SCENE_ID sceneId)
 {
-
-
 	// リソースの解放
 	//ResourceManager::GetInstance().Release();
 
@@ -298,7 +296,6 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 	//ResetDeltaTime();
 
 	waitSceneId_ = SCENE_ID::NONE;
-
 
 	// フォントサイズを元に戻す
 	SetFontSize(16);

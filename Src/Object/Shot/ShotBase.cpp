@@ -11,6 +11,7 @@ ShotBase::ShotBase(int damage, const VECTOR& birthPos, const VECTOR& shotVec, in
 {
 	Create(damage,birthPos, shotVec, key);
 }
+
 ShotBase::~ShotBase(void)
 {
 	MV1DeleteModel(transform_.modelId);
@@ -131,7 +132,6 @@ void ShotBase::ChangeState(STATE _state )
 	state_ = _state;
 }
 
-
 void ShotBase::SetParam(void)
 {
 	speed_ = 20.0f;
@@ -139,6 +139,7 @@ void ShotBase::SetParam(void)
 	// ê∂ë∂ÉtÉâÉOÅAéûä‘ÇÃèâä˙âª
 	timeAlive_ = 5.0f;
 }
+
 void ShotBase::CheckAlive(void)
 {
 	// ê∂ë∂éûä‘Çå∏ÇÁÇ∑
@@ -162,6 +163,7 @@ void ShotBase::UpdateShot(void)
 	VECTOR velocity = VScale(shotVec_, speed_);
 	transform_.pos = VAdd(transform_.pos, velocity);
 }
+
 void ShotBase::UpdateBlast(void)
 {
 	ChangeState(STATE::END);

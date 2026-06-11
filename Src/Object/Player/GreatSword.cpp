@@ -237,6 +237,7 @@ void GreatSword::SyncWeaponPlay()
 
 #pragma endregion
 }
+
 void GreatSword::SyncWeaponBattle()
 {
 #pragma region •Ší‚Ì“¯Šúií“¬j

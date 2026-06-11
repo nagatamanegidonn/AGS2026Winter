@@ -31,7 +31,7 @@ void ViewPlayer::Init(void)
 	transform_.pos = { 0.0f,-50.0f,-250.0f };
 	transform_.quaRot = Quaternion();
 	transform_.quaRotLocal =
-		Quaternion::Euler({ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f),  AsoUtility::Deg2RadF(0.0f) });
+		Quaternion::Euler({ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f), AsoUtility::Deg2RadF(0.0f) });
 	transform_.Update();
 
 	// 武器の設定
@@ -40,13 +40,14 @@ void ViewPlayer::Init(void)
 	transWeapon_.pos = { 0.0f, -30.0f, 0.0f };
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal =
-		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
+		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
 	transWeapon_.Update();
 	updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponSowrd, this);
 	updateWeapon_();
 
 	weponId_ = -1;
 }
+
 void ViewPlayer::Update(void)
 {
 	transform_.Update();
@@ -54,6 +55,7 @@ void ViewPlayer::Update(void)
 	animationController_->Update();
 	updateWeapon_();
 }
+
 void ViewPlayer::Draw(void)
 {
 	MV1DrawModel(transform_.modelId);
@@ -63,8 +65,6 @@ void ViewPlayer::Draw(void)
 void ViewPlayer::Release(void)
 {
 }
-
-
 
 void ViewPlayer::SetChar(const int charId)
 {
@@ -119,7 +119,7 @@ void ViewPlayer::SetWeapon(const int weponId)
 		transWeapon_.pos = { 0.0f, -30.0f, 0.0f };
 		transWeapon_.quaRot = Quaternion();
 		transWeapon_.quaRotLocal =
-			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
+			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
 		transWeapon_.Update();
 
 		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponSowrd, this);
@@ -132,7 +132,7 @@ void ViewPlayer::SetWeapon(const int weponId)
 		transWeapon_.pos = { 0.0f, -30.0f, 0.0f };
 		transWeapon_.quaRot = Quaternion();
 		transWeapon_.quaRotLocal =
-			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
+			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
 		transWeapon_.Update();
 
 		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponGreatSowrd, this);
@@ -145,7 +145,7 @@ void ViewPlayer::SetWeapon(const int weponId)
 		transWeapon_.pos = { 0.0f, -30.0f, 0.0f };
 		transWeapon_.quaRot = Quaternion();
 		transWeapon_.quaRotLocal =
-			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
+			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
 		transWeapon_.Update();
 
 		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponBow, this);
@@ -162,10 +162,11 @@ const void ViewPlayer::SetPos(const VECTOR pos)
 	transform_.pos = pos;
 	transform_.Update();
 }
+
 const void ViewPlayer::SetLocalQua(const VECTOR rot)
 {
 	transform_.quaRotLocal =
-		Quaternion::Euler({rot.x, rot.y,  rot.z });
+		Quaternion::Euler({rot.x, rot.y, rot.z });
 	transform_.Update();
 }
 
@@ -217,6 +218,7 @@ void ViewPlayer::SyncWeaponGreatSowrd()
 	// モデルの更新
 	transWeapon_.Update(true);
 }
+
 void ViewPlayer::SyncWeaponSowrd()
 {
 	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine");//ナイト腰
@@ -265,6 +267,7 @@ void ViewPlayer::SyncWeaponSowrd()
 	// モデルの更新
 	transWeapon_.Update(true);
 }
+
 void ViewPlayer::SyncWeaponBow()
 {
 	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine");// ナイト腰

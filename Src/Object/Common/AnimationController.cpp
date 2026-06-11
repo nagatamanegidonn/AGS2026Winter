@@ -33,7 +33,6 @@ void AnimationController::Add(int type, const std::wstring& path, float speed, i
 {
 	Animation anim;
 
-	//anim.model = MV1LoadModel(path.c_str());
 	// すでに同じ path が読み込まれていれば、それを再利用
 	if (animModelCache_.count(path)) {
 		anim.model = animModelCache_[path];
@@ -70,6 +69,7 @@ void AnimationController::Add(int type, const std::wstring& path, float speed, i
 	animations_[type].startStep = sTime;
 	animations_[type].endStep = eTime;
 }
+
 //ブレンド設定
 void AnimationController::SetIsBlend(int type, bool isBlend, float blendSpeed)
 {
@@ -115,9 +115,6 @@ void AnimationController::Play(int type, bool isLoop,
 
 		blend_.data.push_back(bData);
 
-		//printfDx(L"データ数(attachNo=%d,ブレンド割合%.2f)\n", blend_.data.size(), blend_.data.back().blendRate);
-
-
 		// ↓ここで playAnim_ が新しいものに上書きされる
 		playAnim_ = animations_[type];
 
@@ -127,7 +124,6 @@ void AnimationController::Play(int type, bool isLoop,
 		//アニメーションの総時間を獲得
 		float animTotal = MV1GetAttachAnimTotalTime(modelId_, attachNo);
 		if (animTotal <= 0.0f) {
-			//printfDx(L"Warning: totalTime is invalid (attachNo=%d totalTime=%f)\n", attachNo, animTotal);
 			// 適当な仮の時間を設定する（もしくは return でもOK）
 			animTotal = 1.0f;
 		}
@@ -143,7 +139,7 @@ void AnimationController::Play(int type, bool isLoop,
 
 		if (animations_[type].switchLoopReverse_ >= 0.0f)
 		{
-			//endStepを調べ－１じゃないならそれを入れる
+			// endStepを調べ－１じゃないならそれを入れる
 			playAnim_.totalTime = animations_[type].endStep > -1.0f ? animations_[type].endStep : animTotal;
 		}
 		else
@@ -185,7 +181,7 @@ void AnimationController::Play(int type, bool isLoop,
 		playAnim_.attachNo = GetAttrchNo(type);
 
 		// アニメーション総時間の取得
-		//endStepを調べ－１じゃないならそれを入れる
+		// endStepを調べ－１じゃないならそれを入れる
 		if (animations_[type].switchLoopReverse_ >= 0.0f)
 		{
 			playAnim_.totalTime = animations_[type].endStep > -1.0f ? animations_[type].endStep : MV1GetAttachAnimTotalTime(modelId_, playAnim_.attachNo);
@@ -242,9 +238,8 @@ void AnimationController::Update(void)
 			// 前のアニメを外す
 			MV1DetachAnim(modelId_, blend_.data.front().fromAttachNo);
 
-			blend_.data.pop_front();  // 古いものから削除
-			// 再生アニメーションタイプを更新（Playの変更許可に必要）
-			//playType_ = playAnim_.animIndex;
+			// 古いものから削除
+			blend_.data.pop_front();  
 		}
 
 		float mRate_ = 0.0f;
@@ -286,19 +281,12 @@ void AnimationController::Update(void)
 		if (isEnd) {
 			//ループするか
 			if (isLoop_) {
-
 				//再生方向の変更がだいぶ変わっているのでこのままでおｋ
 				playAnim_.step = stepEndLoopStart_;
 				playAnim_.totalTime = stepEndLoopEnd_;
-				//printfDx("正方向のループ\n", stepEndLoopEnd_);
-
 			}
 			else {
 				isStop_ = true; // 再生停止
-				//printfDx("ループなし\n", stepEndLoopEnd_);
-
-				//playAnim_.step = stepEndLoopEnd_;
-				//printfDx("Warning:  playAnim_.step=%f\n", stepEndLoopEnd_);
 			}
 		}
 	}

@@ -6,9 +6,9 @@
 
 /// <summary>
 /// モデル制御の基本情報
-/// 大きさ：VECTOR基準
-/// 回転　：Quaternion基準
-/// 位置　：VECTOR基準
+/// 大きさ	：VECTOR基準
+/// 回転	：Quaternion基準
+/// 位置	：VECTOR基準
 /// </summary>
 class Transform
 {

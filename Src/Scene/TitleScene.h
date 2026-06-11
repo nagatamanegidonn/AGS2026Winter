@@ -42,7 +42,7 @@ public:
 	// ボタン位置情報
 	struct PosTri
 	{
-		std::wstring  Name = L"";	// 表示テキスト
+		std::wstring Name = L"";	// 表示テキスト
 		int WIDTH = 0;				// 横の長さ
 		int HEIGHT = 0;				// 縦の長さ
 		Vector2 CenterPos;			// 生成位置
@@ -144,7 +144,7 @@ private:
 	std::unique_ptr<PixelMaterial> backGroundMaterial_;
 	std::unique_ptr<PixelRenderer> backGroundRenderer_;
 
-	//　カーソル画像
+	// カーソル画像
 	std::unique_ptr<PixelMaterial> cursorMaterial_;
 	std::unique_ptr<PixelRenderer> cursorRenderer_;
 	

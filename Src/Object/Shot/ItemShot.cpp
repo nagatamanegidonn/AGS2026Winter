@@ -70,6 +70,7 @@ void ItemShot::UpdateShot(void)
 	VECTOR velocity = VScale(shotVec_, speed_);
 	transform_.pos = VAdd(transform_.pos, velocity);
 }
+
 void ItemShot::UpdateBlast(void)
 {
 	radius_ += 100.0f;

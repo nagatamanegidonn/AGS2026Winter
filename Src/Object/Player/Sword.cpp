@@ -190,9 +190,9 @@ void Sword::InitEffect(void)
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
 
-	effectController_->Add(0, path + L"PowerUp/PowerUp.efkefc");
-	effectController_->Add(1, path + L"Slash/Slash.efkefc");
-	effectController_->Play(1);
+	effectController_->Add(POWER_UP_EFFECT, path + L"PowerUp/PowerUp.efkefc");
+	effectController_->Add(POWER_SLASH_EFFECT, path + L"Slash/Slash.efkefc");
+	effectController_->Play(POWER_SLASH_EFFECT);
 }
 
 void Sword::InitAttackSound(void)
@@ -203,6 +203,7 @@ void Sword::InitAttackSound(void)
 	soundController_->Add(static_cast<int>(SE::ATTACK2), path + L"Player/SwordSwing.mp3", 0.6f);
 	soundController_->Add(static_cast<int>(SE::ATTACK3), path + L"Player/SowrdSlash.mp3", 0.6f);
 }
+
 void Sword::PlayAttackSound(void)
 {
 	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTACK1S)

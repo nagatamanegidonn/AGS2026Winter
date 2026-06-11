@@ -211,7 +211,7 @@ void GameScene::Update(void)
 	if (nIns.GetMode() == NET_MODE::HOST)
 	{
 		// ゲーム時間進行
-		SceneManager::GetInstance().ForwardGameTime();// 進めるゲーム時間(GameTotalTime　+=　デルタタイム)
+		SceneManager::GetInstance().ForwardGameTime();// 進めるゲーム時間(GameTotalTime += デルタタイム)
 	}
 
 	// フェード更新
@@ -482,7 +482,7 @@ void GameScene::Draw(void)
 #ifdef _DEBUG
 
 	float remaining = timer_->GetRemainingTime();
-	wchar_t  buf[64];
+	wchar_t buf[64];
 	swprintf_s(buf, L"残り時間: %.2f秒", remaining);
 
 	if (timer_->IsTimeUp())
@@ -728,8 +728,6 @@ void GameScene::Collision(void)
 					{
 						// 爆発開始
 						shot->ChangeState(ShotBase::STATE::BLAST);
-						// 音・カメラ
-						//SoundManager::GetInstance().Play(SoundManager::SRC::BOM_BLAST, Sound::TIMES::ONCE, true);
 						break;
 					}
 					for (auto& arrowShot : shots_)
@@ -740,8 +738,6 @@ void GameScene::Collision(void)
 							{
 								// 爆発開始
 								shot->ChangeState(ShotBase::STATE::BLAST);
-								// 音・カメラ
-								//SoundManager::GetInstance().Play(SoundManager::SRC::BOM_BLAST, Sound::TIMES::ONCE, true);
 								break;
 							}
 						}
@@ -810,4 +806,3 @@ void GameScene::ShotHitEnemy(ShotBase& shot, EnemyBase& enemy)
 	// 弾の状態を変更
 	shot.ChangeState();
 }
-

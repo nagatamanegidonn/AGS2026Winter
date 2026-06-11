@@ -173,10 +173,6 @@ VECTOR Camera::GetForward(void) const
 
 void Camera::ChangeMode(MODE mode)
 {
-
-	// カメラの初期設定
-	//SetDefault();
-
 	// カメラモードの変更
 	mode_ = mode;
 
@@ -233,7 +229,6 @@ void Camera::SyncFollow(void)
 	VECTOR pos = followTransform_->pos;
 
 	// 重力の方向制御に従う
-	//Quaternion gRot = gIns.GetTransform().quaRot;
 	Quaternion gRot = Quaternion();
 
 	// 正面から設定されたY軸分、回転させる
@@ -266,9 +261,7 @@ void Camera::ProcessRot(void)
 
 	auto& ins = InputManager::GetInstance();
 
-
 	// 回転軸と量決め
-	//const float ROT_POW = 1.0f;
 	const float ROT_POW = AsoUtility::Deg2RadF(1.0f);
 	VECTOR axisDeg = AsoUtility::VECTOR_ZERO;
 
@@ -283,7 +276,6 @@ void Camera::ProcessRot(void)
 		if (ins.IsNew(KEY_INPUT_UP)) { axisDeg.x = -ROT_POW; }
 	}
 
-
 	if (ins.IsNew(KEY_INPUT_RIGHT)) { axisDeg.y = ROT_POW; }
 	if (ins.IsNew(KEY_INPUT_LEFT)) { axisDeg.y = -ROT_POW; }
 
@@ -293,10 +285,6 @@ void Camera::ProcessRot(void)
 		// 今回回転させたい回転量をクォータニオンで作る
 		Quaternion rotPow = Quaternion();
 
-		/*rotPow = rotPow.Mult(
-			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axisDeg.z), AsoUtility::AXIS_Z
-			));*/
 		rotPow = rotPow.Mult(
 			Quaternion::AngleAxis(
 				AsoUtility::Deg2RadF(axisDeg.x), AsoUtility::AXIS_X
@@ -315,7 +303,6 @@ void Camera::ProcessRot(void)
 void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, const bool left)
 {
 	// 回転軸と量決め
-	//const float ROT_POW = 1.0f;
 	const float ROT_POW = AsoUtility::Deg2RadF(1.0f);
 	VECTOR axisDeg = AsoUtility::VECTOR_ZERO;
 
@@ -337,10 +324,6 @@ void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, co
 		// 今回回転させたい回転量をクォータニオンで作る
 		Quaternion rotPow = Quaternion();
 
-		/*rotPow = rotPow.Mult(
-			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axisDeg.z), AsoUtility::AXIS_Z
-			));*/
 		rotPow = rotPow.Mult(
 			Quaternion::AngleAxis(
 				AsoUtility::Deg2RadF(axisDeg.x), AsoUtility::AXIS_X
@@ -377,8 +360,6 @@ void Camera::ProcessRotMause(float& x_m, float& y_m, const float fov_per)
 	}
 }
 
-
-
 void Camera::SetBeforeDrawFixedPoint(void)
 {
 	// 何もしない
@@ -387,9 +368,6 @@ void Camera::SetBeforeDrawFixedPoint(void)
 // 追従モードのカメラ同期
 void Camera::SetBeforeDrawFollow(void)
 {
-	// カメラ操作
-	//ProcessRot();
-
 	// 追従対象との相対位置を同期
 	SyncFollow();
 }
@@ -399,20 +377,13 @@ void Camera::SyncFollowFPS(void)
 {
 	ProcessRotMause(angles_.y, angles_.x, 0.2f);;
 
-	
-
 	const auto& ins = InputManager::GetInstance();
 	Vector2 moPos = ins.GetMousePos();
-
-	//ProcessRotMause(moPos.x, moPos.y, 0.02f);
-
-	//auto& gIns = GravityManager::GetInstance();
 
 	// 同期先の位置
 	VECTOR pos = followTransform_->pos;
 
 	// 重力の方向制御に従う
-	//Quaternion gRot = gIns.GetTransform().quaRot;
 	Quaternion gRot = Quaternion();
 
 
@@ -425,7 +396,6 @@ void Camera::SyncFollowFPS(void)
 	VECTOR localPos;
 
 	// 注視点(通常重力でいうところのY値を追従対象と同じにする)
-	//localPos = rotOutX_.PosAxis(LOCAL_F2T_POS);
 	localPos = rot_.PosAxis(FPS_LOCAL_F2T_POS);
 	targetPos_ = VAdd(pos, localPos);
 
@@ -448,10 +418,6 @@ void Camera::UpdateShake(void)
 {
 	if (!isShaking_) return;
 
-	// シェイク強度・減衰パラメータ
-	//float shakePower_ = 2.0f;      // 初期の揺れの大きさ
-	//float shakeDuration_ = 1.0f;   // 揺れる時間
-
 	stepShake_ -= 0.016f; // Δt
 
 	if (stepShake_ <= 0.0f)
@@ -469,7 +435,7 @@ void Camera::UpdateShake(void)
 	float dy = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
 	float dz = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
 
-	//  -1～1 のランダム方向
+	// -1～1 のランダム方向
 	VECTOR randomDir = VNorm({ dx, dy, dz });
 	pos_ = VAdd(defaultPos_, VScale(randomDir, currentPower));
 	return;
@@ -503,7 +469,6 @@ void Camera::UpdateShake(void)
 	return;
 
 	// 一定時間カメラを揺らす
-	// stepShake_ -= SceneManager::GetInstance().GetDeltaTime();
 	stepShake_ -= 0.01f;
 
 	// カメラシェイク終了

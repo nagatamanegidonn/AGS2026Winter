@@ -51,8 +51,8 @@ void EnemyBase::Draw(void)
 
 void EnemyBase::SetFollow(const Transform* follow)
 {
-
 }
+
 bool EnemyBase::IsTargetInFOV(const VECTOR& followPos, float fovDeg)
 {
 	VECTOR toTarget = VSub(followPos, transform_.pos);
@@ -191,7 +191,6 @@ void EnemyBase::CollisionGravity(void)
 			c.lock()->modelId_, -1, gravHitPosUp_, gravHitPosDown_);
 
 		// 最初は上の行のように実装して、木の上に登ってしまうことを確認する
-		//if (hit.HitFlag > 0)
 		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > 0.9f)
 		{
 			// 衝突地点から、少し上に移動
@@ -281,6 +280,7 @@ void EnemyBase::TargetRotate(const VECTOR& traPos, float rate)
 			));
 	}
 }
+
 void EnemyBase::DrawFOV(float fovDeg, float radius, int rayCount, unsigned int color)
 {
 	//原点

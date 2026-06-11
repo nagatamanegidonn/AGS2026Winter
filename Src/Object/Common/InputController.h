@@ -2,7 +2,6 @@
 #include <map>
 #include <vector>
 
-
 class InputController
 {
 public:

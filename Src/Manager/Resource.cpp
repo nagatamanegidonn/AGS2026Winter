@@ -83,8 +83,6 @@ void Resource::Load(void)
 		// íœ‚É•¡»•ª‚ğÁ‚·‚½‚ß•Û‘¶iŒ³‚Ì‚Í g_modelCache ‚ª•Ûj
 		duplicateModelIds_.push_back(handleId_);
 	}
-		// ƒ‚ƒfƒ‹
-		//handleId_ = MV1LoadModel(path_.c_str());
 		break;
 
 	case Resource::TYPE::EFFEKSEER:

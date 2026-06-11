@@ -60,8 +60,8 @@ void NetSend::SendUDP_Clients(const char* bufPtr, int bufSize)//clientへデータ送
 
 	auto& users = manager_.GetNetUsers();
 	for (const auto& userPair : users)
-	{//Hostだから自分以外の全員に自分の情報を送る
-
+	{
+		// Hostだから自分以外の全員に自分の情報を送る
 		user = userPair.second;
 		if (user.key == manager_.GetSelf().key)
 		{
@@ -71,9 +71,7 @@ void NetSend::SendUDP_Clients(const char* bufPtr, int bufSize)//clientへデータ送
 
 		// 自分以外へ送信(送る場所のソケット,Ipアドレス,ポート番号,送る情報,情報の大きさ)
 		NetWorkSendUDP(sendSocketId_, user.ip, user.port, bufPtr, bufSize);
-
 	}
-
 }
 
 #pragma endregion
@@ -175,8 +173,6 @@ void NetSend::SendJoinPlayers(void)//接続シーンの通信
 
 	// 送信
 	SendUDP_Clients(buf, SIZE_ALL);
-
-
 
 	//// 基本データを頭に付ける
 	//const int size = sizeof(NET_BASIC_DATA) + sizeof(NET_JOIN_USERS);

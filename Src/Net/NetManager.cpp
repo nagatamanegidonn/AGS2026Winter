@@ -97,7 +97,7 @@ void NetManager::Init(void)
 	// 万が一前回のセッションが生きてたら止める
 	Stop(); 
 
-    // ソケット・ユーザー情報などを初期化
+	// ソケット・ユーザー情報などを初期化
 	if (instance_ != nullptr)
 	{
 		instance_ = new NetManager();
@@ -649,7 +649,7 @@ void NetManager::SetAction(PLAYER_ACTION act)
 	pool_.selfAction_.actBits |= static_cast<int>(act);
 }
 
-// 位置情報　新規
+// 位置情報 新規
 VECTOR NetManager::GetPostion(int key)
 {
 	if (pool_.joinUserActionHis_.find(key) != pool_.joinUserActionHis_.end())
@@ -898,7 +898,7 @@ bool NetManager::IsAction(int key, PLAYER_ACTION action, bool isAction)
 	// selfJoinUser_ = 自身
 	if (pool_.selfJoinUser_.key == key)// 該当するキーを自分が押してるなら
 	{
-		return isAction;// 処理をそのまま通す　操作をややこしくしない
+		return isAction;// 処理をそのまま通す 操作をややこしくしない
 	}
 	return IsAction(key, action);// 再帰処理
 }

@@ -28,6 +28,7 @@ CharaBase::CharaBase(void)
 
 CharaBase::~CharaBase(void)
 {
+
 }
 
 void CharaBase::Collision(void)
@@ -248,6 +249,7 @@ std::unique_ptr<CharaBase::ActionData> CharaBase::SetActionData(
 	 
 	return atk;
 }
+
 void CharaBase::SetActionData(int id, const ActionData& data)
 {
 	auto atk = std::make_unique<ActionData>();

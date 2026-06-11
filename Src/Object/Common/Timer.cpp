@@ -67,6 +67,7 @@ void Timer::SetNeedleImage(int handle)
 {
     needleHandle_ = handle;
 }
+
 void Timer::DrawTimer(int centerX, int centerY, float startDeg, float endDeg) const
 {
     if (needleHandle_ == -1 || !isRunning_) return;

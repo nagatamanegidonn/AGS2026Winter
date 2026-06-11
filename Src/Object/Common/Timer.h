@@ -31,7 +31,6 @@ public:
     void SetNeedleImage(int handle);
     void DrawTimer(int centerX, int centerY, float startDeg = 0.0f, float endDeg = 270.0f) const;
 
-    
 private:
     
     // 描画用シェーダ

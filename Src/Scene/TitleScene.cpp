@@ -182,9 +182,7 @@ void TitleScene::Draw(void)
 	{
 		// タイトルロゴの描画
 		titleRenderer_->Draw();
-
 		int cx = Application::SCREEN_SIZE_X / 2;
-
 		int len = (int)wcslen(L"PushSpace or B");
 		int width = GetDrawStringWidth(L"PushSpace or B", len);
 		DrawFormatString(cx - (width / 2), B2_S_POS.y + HEIGHT / 2, 0xffffff, L"PushSpace or B");
@@ -225,7 +223,7 @@ void TitleScene::Draw(void)
 	Vector2 moPos = ins.GetMousePos();
 	DrawFormatString(0, 32, 0x000000, L"ローカル座標(%d, %d)", moPos.x, moPos.y);
 	DrawFormatString(0, 16, 0x000000, L"モードID(%d)", selectId_);
-	DrawFormatString(0, 0, 0x000000, L"武器　ID(%d)", weponId_);
+	DrawFormatString(0, 0, 0x000000, L"武器ID(%d)", weponId_);
 
 #endif // DEBUG
 
@@ -311,6 +309,7 @@ void TitleScene::UpdateMouse(void)
 
 	mouseUpdate_();
 }
+
 void TitleScene::UpdatePad(void)
 {
 	auto& ins = InputManager::GetInstance();
@@ -425,13 +424,14 @@ void TitleScene::MouseUpdate(void)
 			inputTextArea_->SetKeyInputStringBuffer();
 
 			// 入力を非アクティブにする（＝強制終了）
-			SetActiveKeyInput(-1);  // DxLib関数：現在のキー入力を終了
+			SetActiveKeyInput(-1);	// DxLib関数：現在のキー入力を終了
 
 			// 管理クラスに通知して状態を初期化
 			InputTextManager::GetInstance().SetTextArea(false); // ←ここでnullptrにしてるはず
 		}
 	}
 }
+
 void TitleScene::MWeaponUpdate(void)
 {
 	auto& ins = InputManager::GetInstance();
@@ -474,6 +474,7 @@ void TitleScene::MWeaponUpdate(void)
 		}
 	}
 }
+
 // 通常更新（コントロ－ラー）
 void TitleScene::PNormalUpdate(void)
 {
@@ -557,6 +558,7 @@ void TitleScene::PNormalUpdate(void)
 		}
 	}
 }
+
 void TitleScene::PWeaponUpdate(void)
 {
 	auto& ins = InputManager::GetInstance();
@@ -590,6 +592,7 @@ void TitleScene::PWeaponUpdate(void)
 		viewPlayer_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 	}
 }
+
 void TitleScene::PIpUpdate(void)
 {
 	if (!inputTextArea_->IsActive())
@@ -606,7 +609,7 @@ void TitleScene::PIpUpdate(void)
 		inputTextArea_->SetKeyInputStringBuffer();
 
 		// 入力を非アクティブにする（＝強制終了）
-		SetActiveKeyInput(-1);  // DxLib関数：現在のキー入力を終了
+		SetActiveKeyInput(-1);	// DxLib関数：現在のキー入力を終了
 
 		// 管理クラスに通知して状態を初期化
 		InputTextManager::GetInstance().SetTextArea(false); // ←ここでnullptrにしてるはず
