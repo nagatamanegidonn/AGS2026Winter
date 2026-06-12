@@ -39,8 +39,8 @@ public:
 	// チャージ攻撃
 	static constexpr float CHAGE_MAX_TIME = 3.0f;					// チャージの最大時間
 	static constexpr float CHAGE_UP_RATE = CHAGE_MAX_TIME / 4.0f;	// チャージ1段階にかかる時間
-	static constexpr float CHAGE_ATTACK_RATE = 0.3f;					// チャージにより追加される攻撃倍率
-	static constexpr float CHAGE_OVER_ATTACK_RATE = 0.5f;					// チャージしすぎた際の攻撃倍率
+	static constexpr float CHAGE_ATTACK_RATE = 0.3f;				// チャージにより追加される攻撃倍率
+	static constexpr float CHAGE_OVER_ATTACK_RATE = 0.5f;			// チャージしすぎた際の攻撃倍率
 	static constexpr float INVISIBLE_SMALL_TIME = 0.5f;
 	static constexpr float INVISIBLE_BIG_TIME = 2.5f;
 	// スピード
@@ -51,12 +51,13 @@ public:
 	// 煙エフェクト発生間隔
 	static constexpr float FOOT_SMOKE = 0.3f;
 	static constexpr float FAST_FOOT_SMOKE = 0.4f;
-	// 最大ＨＰ
+	// ＨＰ、スタミナ関連
+	static constexpr int HEEL_HP = 20;
 	static constexpr int MAX_HP = 100;
 	static constexpr int BONUS_HP = 20;
 	static constexpr int MAX_STAMINA = 100;
-	static constexpr float STAMINA_BREAK = 15.0f;	// 疲労じょうたいのボーダーライン
-	static constexpr float UP_TAF = 12.0f;	// スタミナ回復量
+	static constexpr float STAMINA_BREAK = 15.0f;	// 疲労状態のボーダーライン
+	static constexpr float UP_TAF = 12.0f;		// スタミナ回復量
 	static constexpr float DOWN_TAF = -3.0f;// スタミナ減少量
 	static constexpr float ROLL_TAF = 25.0f;// スタミナ消費量（回避）
 	// 当たり判定倍率

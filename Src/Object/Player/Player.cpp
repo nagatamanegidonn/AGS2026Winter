@@ -115,7 +115,6 @@ namespace
 	const CharaBase::ShaderData SHADER_STAMINA = { L"PlayerHp.cso", 2,{{ 1.0f, 0.9f,0.0f, 1.0f },{ 1.0f, 1.0f, 1.0f, 1.0f }} };
 	// 回転関係
 	constexpr float ROT_DIFF = 0.1f;
-
 }
 
 MATRIX GetFrameGlobalMatrix(int modelHandle, int frameIndex)
@@ -233,18 +232,20 @@ void Player::Init(void)
 		AsoUtility::Deg2RadF(PLAYER_LOCAL_ROT.z) });
 	transform_.Update();
 
-	auto& nIns = NetManager::GetInstance();
 	// ステータスUI
 	freamImg_ = LoadGraph(PATH_IMAGE_FREAM.c_str());
 	hpImg_ = LoadGraph(PATH_IMAGE_PRAM_HP.c_str());
+
 	// HP
 	hpFreamImg_ = LoadGraph(PATH_IMAGE_HP_FREAM.c_str());
 	hpMaskImg_ = LoadGraph(PATH_IMAGE_HP_MASK.c_str());
+
 	// スタミナ
 	staFreamImg_ = LoadGraph(PATH_IMAGE_STAMINA_FREAM.c_str());
 	staMaskImg_ = LoadGraph(PATH_IMAGE_STAMINA_MASK.c_str());
 
 	// モデルの基本設定_武器
+	auto& nIns = NetManager::GetInstance();
 	switch (nIns.GetWeapon(key_))
 	{
 		// 剣
@@ -370,7 +371,7 @@ void Player::Update(void)
 	if (hp_ != hpAgo_)
 	{
 		effectController_->Stop(Player::POWER_UP_EFFECT);
-		// 体力が０になっていたら
+		// 体力が0になっていたら
 		if (hp_ <= 0) { gameScene_->DownCountPuls(); }
 	}
 
@@ -386,7 +387,6 @@ void Player::Update(void)
 	// 自分のプレイヤーのときだけ入力を処理する
 	if (key_ == nIns.GetSelf().key)
 	{
-
 		inputController_->Update();
 
 		// アイテム選択
@@ -1239,7 +1239,7 @@ void Player::UseItem(void)
 	if (poach_->IsSelectedItemName(ITEM_TYPE_HEEL))
 	{
 		// 体力回復
-		hp_ += 20;
+		hp_ += HEEL_HP;
 		if (hp_ > hpMax_)
 		{
 			hp_ = hpMax_;
@@ -1289,7 +1289,6 @@ void Player::ProcessNormal(void)
 		{
 			if (c.lock()->type_ == Collider::TYPE::ITEM)
 			{
-
 				if (AsoUtility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
 				{
 					isId = true;
@@ -1316,7 +1315,7 @@ void Player::ProcessNormal(void)
 		if (inputController_->IsTriggered(InputController::KEY::USE) && poach_->HasSelectedItem())
 		{
 			speed_ = SPEED_MOVE;
-			movePow_ = AsoUtility::VECTOR_ZERO;//抜刀時移動しない（帰るなら戻す）
+			movePow_ = AsoUtility::VECTOR_ZERO;// 抜刀時移動しない（帰るなら戻す）
 
 			ChangeState(STATE::ITEM_PLAY);
 			return;
@@ -1380,6 +1379,7 @@ void Player::ProcessNormal(void)
 		SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FOLLOW);
 	}
 }
+
 void Player::ProcessBattle(void)
 {
 	InputManager& ins = InputManager::GetInstance();
@@ -1862,7 +1862,6 @@ bool Player::IsEndLanding(void)
 		return ret;
 	}
 	return false;
-
 }
 
 // 操作が可能か

@@ -19,6 +19,8 @@ public:
 
 	// リセット用回転時間
 	static constexpr float ROT_INTERVAL = 1.6f;
+	// ターゲット回転率
+	static constexpr float TARGET_ROT_RATE = 0.3f;
 
 	// コンストラクタ
 	EnemyBase(void);

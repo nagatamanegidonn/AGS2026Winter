@@ -51,6 +51,13 @@ namespace
 	constexpr VECTOR CAP_LOACL_DOWN = { 0.0f, 300.0f, 0.0f };
 	constexpr float CAP_RADIUS = 200.0f;
 	constexpr float ROT_RATE = 3.0f;
+	// 初期座標
+	constexpr VECTOR START_POS = { 0.0f, -30.0f, 0.0f };
+	// 衝突、判定関係
+	constexpr float JUMP_DOT_BORDER = 0.9f;
+	constexpr float COL_CHECK_UP_POW = 10.0f * 2.0f;
+	constexpr float COL_CHECK_DOWN_POW = 10.0f;
+	constexpr float PUSH_BACK_LENGTH = 2.0f;
 }
 
 Boss::Boss(int key, int createNo)
@@ -134,15 +141,21 @@ void Boss::Init(void)
 		ResourceManager::SRC::BOSS));
 	transform_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_SIZE);
 	// 初期座標
-	transform_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
+	transform_.pos = prePos_ = START_POS;
 	transform_.quaRot = Quaternion();
-	transform_.quaRotLocal =
-		Quaternion::Euler({ 0.0f, AsoUtility::Deg2RadF(180.0f), 0.0f });
+	transform_.quaRotLocal = Quaternion::Euler({
+		AsoUtility::Deg2RadF(BOSS_LOCAL_ROT.x),
+		AsoUtility::Deg2RadF(BOSS_LOCAL_ROT.y),
+		AsoUtility::Deg2RadF(BOSS_LOCAL_ROT.z) });
 	transform_.Update();
 
 	// アニメーションの設定
 	InitAnimation();
+
+	// エフェクトの設定
 	InitEffect();
+
+	// サウンドの設定
 	InitSound();
 
 	// 初期状態
@@ -162,10 +175,8 @@ void Boss::Init(void)
 	capsule_->SetLocalPosDown(CAP_LOACL_DOWN);
 	capsule_->SetRadius(CAP_RADIUS);
 
-	auto& nIns = NetManager::GetInstance();
-	auto& users = NetManager::GetInstance().GetNetUsers();
-
 	// HP初期化
+	auto& users = NetManager::GetInstance().GetNetUsers();
 	hp_ = hpMax_ = static_cast<int>(static_cast<float>(MAX_HP) * static_cast<float>(users.size()));
 
 	isHitCheck_ = false;
@@ -342,15 +353,13 @@ void Boss::Draw(void)
 
 void Boss::Damage(int _dama,bool _isConst)
 {
-	// 無敵中はない
-
 	// ダメージエフェクト再生
 	effectController_->Play(1, hitDamePos_, { 0.0f,0.0f,0.0f }, 7.5f);
 
 	auto& nIns = NetManager::GetInstance();
 
 	float dameRate = dameRate_;
-	if (_isConst)dameRate = 1.0f;//固定ダメージなら倍率無効
+	if (_isConst)dameRate = 1.0f;// 固定ダメージなら倍率無効
 
 	const int lastDame = static_cast<int>(static_cast<float>(_dama) * dameRate);
 	// ダメージの設定
@@ -701,7 +710,7 @@ void Boss::UpdateBattle(void)
 	if (rotateTimer_ <= 1.0f)
 	{
 		// ターゲットに向けて回転
-		TargetRotate(follow_->pos, 0.3f);
+		TargetRotate(follow_->pos, TARGET_ROT_RATE);
 		if (rotateTimer_ <= 0.0f)
 		{
 			rotateTimer_ = ROT_INTERVAL; // リセット
@@ -1037,10 +1046,9 @@ void Boss::CollisionGravity(void)
 	// 重力の強さ
 	float gravityPow = Planet::DEFAULT_GRAVITY_POW;
 
-	float checkPow = 10.0f;
 	gravHitPosUp_ = VAdd(movedPos_, VScale(dirUpGravity, gravityPow));
-	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, checkPow * 2.0f));
-	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, checkPow));
+	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, COL_CHECK_UP_POW));
+	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, COL_CHECK_DOWN_POW));
 	for (const auto& c : colliders_)
 	{
 		// 地面との衝突
@@ -1048,24 +1056,20 @@ void Boss::CollisionGravity(void)
 			c.lock()->modelId_, -1, gravHitPosUp_, gravHitPosDown_);
 
 		// 最初は上の行のように実装して、木の上に登ってしまうことを確認する
-		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > 0.9f)
+		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > JUMP_DOT_BORDER)
 		{
 			// 衝突地点から、少し上に移動
-			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, 2.0f));
+			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, PUSH_BACK_LENGTH));
 
 			// ジャンプリセット
 			jumpPow_ = AsoUtility::VECTOR_ZERO;
 		}
-
 	}
 }
 
 // デバッグ用描画
 void Boss::DrawDebug(void)
 {
-	// カプセルコライダ
-	//capsule_->Draw();
-
 	// 索敵範囲
 	DrawSphere3D(transform_.pos, MOVE_RADIUS, 20, 0x0000ff, 0x0000ff, false);
 	DrawSphere3D(transform_.pos, ATTRCK_RADIUS, 20, 0xff0000, 0xff0000, false);

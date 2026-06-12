@@ -27,6 +27,8 @@ public:
 	static constexpr float TIME_ROT2 = 10.0f;
 	// スケールサイズ
 	static constexpr float SCALE_SIZE = 3.0f;
+	// ローカル回転
+	static constexpr VECTOR BOSS_LOCAL_ROT = { 0.0f, 180.0f,0.0f };
 	// スピード
 	static constexpr float SPEED_MOVE = 4.5f;
 	static constexpr float SPEED_FOLLOW= 12.0f;
