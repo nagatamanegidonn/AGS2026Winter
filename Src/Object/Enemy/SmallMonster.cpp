@@ -153,7 +153,8 @@ void SmallMonster::Update(void)
 	}
 
 	// 自分のプレイヤーのときだけ入力を処理する
-	if (nIns.GetMode() == NET_MODE::HOST) {
+	if (nIns.GetMode() == NET_MODE::HOST)
+	{
 		// ダメージを与える
 		hp_ -= dame;
 		nIns.SetNetMonsHp(key_, createNo_, hp_);
@@ -405,7 +406,7 @@ void SmallMonster::ChangeStatePlay(void)
 
 void SmallMonster::ChangeStateBattle(void)
 {
-	rotateTimer_ = rotateInterval_; // リセット
+	rotateTimer_ = ROT_INTERVAL; // リセット
 	stateUpdate_ = std::bind(&SmallMonster::UpdateBattle, this);
 }
 
@@ -452,7 +453,8 @@ void SmallMonster::UpdatePlay(void)
 	axis.y = -HALF_RATE * (createNo_ + 1);
 
 	//回転
-	if (!AsoUtility::EqualsVZero(axis)) {
+	if (!AsoUtility::EqualsVZero(axis))
+	{
 		playerRotY_ = playerRotY_.Mult(
 			Quaternion::AngleAxis(
 				AsoUtility::Deg2RadF(axis.y), AsoUtility::AXIS_Y));
@@ -476,7 +478,7 @@ void SmallMonster::UpdateBattle(void)
 		TargetRotate(follow_->pos, 0.3f);
 		if (rotateTimer_ <= 0.0f)
 		{
-			rotateTimer_ = rotateInterval_; // リセット
+			rotateTimer_ = ROT_INTERVAL; // リセット
 		}
 		// この時の回転は歩く
 		animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
@@ -501,7 +503,8 @@ void SmallMonster::UpdateBattle(void)
 			ChangeState(STATE::ATTRCK_READY);
 		}
 		// プレイヤーが索敵範囲内	// 回り続けると回転だけなので突進を絡める
-		else if (disPow < MOVE_RADIUS * MOVE_RADIUS) {
+		else if (disPow < MOVE_RADIUS * MOVE_RADIUS)
+		{
 			ChangeState(STATE::FOLLOW);// 接近
 		}
 	}

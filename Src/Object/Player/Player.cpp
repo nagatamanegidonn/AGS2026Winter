@@ -1,5 +1,4 @@
 #include <string>
-#include <DxLib.h>
 #include "../Application.h"
 #include "../Utility/AsoUtility.h"
 #include "../Common/Vector2.h"
@@ -40,6 +39,8 @@ namespace
 	constexpr int PRAM_POS_X = 60;
 	constexpr int PRAM_POS_Y = 150;
 	constexpr int PRAM_distance_Y = PRAM_SIZE_Y + 4;
+	constexpr float FLING_COUNT_RATE = 2.0f;
+	constexpr float FLING_MOVE_RATE = 0.3f;
 	// HPバーのサイズ
 	constexpr int HP_SIZE_X = 512;
 	constexpr int HP_SIZE_Y = 16;
@@ -84,13 +85,46 @@ namespace
 	const std::wstring ITEM_TYPE_BOM = L"設置";
 	// アニメーション関連
 	constexpr float BLEND_SPEED = 5.0f;
+	// 衝突、判定関係
+	constexpr float JUMP_DOT_BORDER = 0.9f;
+	constexpr float COL_CHECK_UP_POW = 10.0f * 2.0f;
+	constexpr float COL_CHECK_DOWN_POW = 10.0f;
+	constexpr float PUSH_BACK_LENGTH = 2.0f;
+	// アニメーションリスト
+	std::wstring path = Application::PATH_SOUND;
+	const std::vector<CharaBase::SoundData> SOUND_LIST =
+	{
+		{static_cast<int>(Player::SE::CHAGE), path + L"Player/Chage.mp3", 1.0f},
+		{static_cast<int>(Player::SE::DRAW), path + L"Weapon/Draw.mp3", 0.6f},
+		{static_cast<int>(Player::SE::CLOSE), path + L"Weapon/Close.mp3", 0.6f},
+		{static_cast<int>(Player::SE::WALK), path + L"Player/Walk.mp3", 0.6f},
+		{static_cast<int>(Player::SE::RUN), path + L"Player/Run.mp3", 0.6f},
+		{static_cast<int>(Player::SE::ROLL), path + L"Player/Roll.mp3", 0.6f},
+		{static_cast<int>(Player::SE::DAMAGE), path + L"Player/Damage.mp3", 0.6f},
+		{static_cast<int>(Player::SE::HI_DAMAGE), path + L"Player/HiDamage.mp3", 0.6f},
+		{static_cast<int>(Player::SE::DOWN), path + L"Player/Down.mp3.mp3", 0.6f},
+	};
+	// ボーン関連
+	const std::wstring RIGHT_SPINE_BONE = L"mixamorig:Spine2";
+	const std::wstring RIGHT_HAND_BONE = L"mixamorig:RightHandMiddle1";
+	const std::wstring RIGHT_ARROW_HAND_BONE = L"mixamorig:RightHand";
+	// ヒットストップ関連
+	constexpr float HITSTOP_TIME = 0.2f;
+	const CharaBase::ShaderData SHADER_STATUS = { L"PlayerStatus.cso", 2,{{ 0.3f, 0.7f, 0.5f, 0.05f },{ 1.0f, 1.0f, 1.0f, 1.0f }} };
+	const CharaBase::ShaderData SHADER_HP = { L"PlayerHp.cso", 2,{{ 0.0f, 1.0f, 0.0f, 1.0f },{ 1.0f, 1.0f, 1.0f, 1.0f }} };
+	const CharaBase::ShaderData SHADER_STAMINA = { L"PlayerHp.cso", 2,{{ 1.0f, 0.9f,0.0f, 1.0f },{ 1.0f, 1.0f, 1.0f, 1.0f }} };
+	// 回転関係
+	constexpr float ROT_DIFF = 0.1f;
+
 }
 
-MATRIX GetFrameGlobalMatrix(int modelHandle, int frameIndex) {
+MATRIX GetFrameGlobalMatrix(int modelHandle, int frameIndex)
+{
 	// ローカル行列を取得
 	MATRIX localMat = MV1GetFrameLocalMatrix(modelHandle, frameIndex);
 	int parentIndex = MV1GetFrameParent(modelHandle, frameIndex);
-	if (parentIndex == -1) {
+	if (parentIndex == -1)
+	{
 		return localMat; // ルートなのでそのまま返す
 	}
 	// 親フレームのグローバル行列を取得
@@ -193,8 +227,10 @@ void Player::Init(void)
 	transform_.scl = AsoUtility::VECTOR_ONE;	
 	transform_.pos = START_POS;
 	transform_.quaRot = Quaternion();
-	transform_.quaRotLocal =
-		Quaternion::Euler({ 0.0f, AsoUtility::Deg2RadF(180.0f), 0.0f });
+	transform_.quaRotLocal = Quaternion::Euler({
+		AsoUtility::Deg2RadF(PLAYER_LOCAL_ROT.x),
+		AsoUtility::Deg2RadF(PLAYER_LOCAL_ROT.y),
+		AsoUtility::Deg2RadF(PLAYER_LOCAL_ROT.z) });
 	transform_.Update();
 
 	auto& nIns = NetManager::GetInstance();
@@ -314,10 +350,12 @@ void Player::Init(void)
 	// 採取の際の情報（仮）
 	itemId_ = -1;	// 採取アイテムID
 	poach_ = std::make_unique<ItemPoach>();
-	for (int i = 0; i < START_BOM_HOLD; i++) {
+	for (int i = 0; i < START_BOM_HOLD; i++)
+	{
 		poach_->AddItem(std::make_shared<ItemBase>(ITEM_TYPE_FLASH));
 	}
-	for (int i = 0; i < START_FLASH_HOLD; i++) {
+	for (int i = 0; i < START_FLASH_HOLD; i++)
+	{
 		poach_->AddItem(std::make_shared<ItemBase>(ITEM_TYPE_BOM));
 	}
 }
@@ -329,7 +367,8 @@ void Player::Update(void)
 	auto& nIns = NetManager::GetInstance();
 
 	// ダメージを受けたらエフェクトストップ
-	if (hp_ != hpAgo_) {
+	if (hp_ != hpAgo_)
+	{
 		effectController_->Stop(Player::POWER_UP_EFFECT);
 		// 体力が０になっていたら
 		if (hp_ <= 0) { gameScene_->DownCountPuls(); }
@@ -345,7 +384,8 @@ void Player::Update(void)
 	const float deltaTime = SceneManager::GetInstance().GetDeltaTime();
 
 	// 自分のプレイヤーのときだけ入力を処理する
-	if (key_ == nIns.GetSelf().key) {
+	if (key_ == nIns.GetSelf().key)
+	{
 
 		inputController_->Update();
 
@@ -442,7 +482,8 @@ void Player::Update(void)
 	{
 		// 攻撃と抜刀納刀のみループなし
 		int nextAnimeType = nIns.GetAnimeType(key_);
-		if (animeType_ != nextAnimeType) {
+		if (animeType_ != nextAnimeType)
+		{
 			animeType_ = nextAnimeType;
 		}
 
@@ -477,7 +518,8 @@ void Player::Update(void)
 		float volume = AsoUtility::CalcVolumeByDistance(selfPos, transform_.pos, MAX_EAR_RADIUS);
 
 		// 無音なら停止
-		for (int i = 0; i < static_cast<int>(SE::MAX); i++) {
+		for (int i = 0; i < static_cast<int>(SE::MAX); i++)
+		{
 			SE se = static_cast<SE>(i);
 			// ここで se を使う処理を書く
 			soundController_->ChengeVolume(i, volume);		// ボリュームだけ更新
@@ -549,8 +591,9 @@ void Player::Update(void)
 		)
 	{
 		// フレームの取得
-		int frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:RightHand");
-		if (frmNo == -1) {
+		int frmNo = MV1SearchFrame(transform_.modelId, RIGHT_ARROW_HAND_BONE.c_str());
+		if (frmNo == -1)
+		{
 			// エラー処理またはログ出力
 			return;
 		}
@@ -567,7 +610,7 @@ void Player::Update(void)
 	{
 		gameScene_->CreateShot(ShotBase::TYPE::BOM, attackDamage_
 			, VAdd(VAdd(transform_.pos
-				, VScale(transform_.GetForward(), (capsule_->GetRadius() * 3)))
+				, VScale(transform_.GetForward(), (capsule_->GetRadius() * 3.0f)))
 				, VScale(AsoUtility::DIR_U, 40.0f))
 			, AsoUtility::VECTOR_ZERO, key_);
 	}
@@ -732,7 +775,8 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 	damage_ = (float)dama;
 	// HPからdamage_分減らす
 	hp_ -= damage_;
-	if (hp_ <= 0) { 
+	if (hp_ <= 0)
+	{ 
 		hp_ = 0; 
 		damage_ = 0;
 		ChangeState(STATE::DEAD);
@@ -757,7 +801,7 @@ const bool Player::GetHit(void) const
 const void Player::SetHit(bool flag)
 {
 	isHit_ = flag;
-	animationController_->SetHitStop(0.2f);
+	animationController_->SetHitStop(HITSTOP_TIME);
 }
 
 std::weak_ptr<Capsule> Player::GetCapsule(void)
@@ -786,18 +830,13 @@ void Player::InitEffect(void)
 
 void Player::InitSound(void)
 {
-	std::wstring path = Application::PATH_SOUND;
 	soundController_ = std::make_unique<SoundController>();
 
-	soundController_->Add(static_cast<int>(SE::CHAGE), path + L"Player/Chage.mp3", 1.0f);
-	soundController_->Add(static_cast<int>(SE::DRAW), path + L"Weapon/Draw.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::CLOSE), path + L"Weapon/Close.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::WALK), path + L"Player/Walk.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::RUN), path + L"Player/Run.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::ROLL), path + L"Player/Roll.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::DAMAGE), path + L"Player/Damage.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::HI_DAMAGE), path + L"Player/HiDamage.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::DOWN), path + L"Player/Down.mp3.mp3", 0.6f);
+	// サウンドの追加
+	for (auto& sound : SOUND_LIST)
+	{
+		soundController_->Add(sound.type, sound.path, sound.vol);
+	}
 
 	InitAttackSound();
 }
@@ -810,9 +849,11 @@ void Player::InitAttackSound(void)
 void Player::InitShader(void)
 {
 	// ステータスUI
-	statusMaterial_ = std::make_unique<PixelMaterial>(L"PlayerStatus.cso", 2);
-	statusMaterial_->AddConstBuf({ 0.3f, 0.7f, 0.5f, 0.05f });// ステータス位置(左上)サイズ
-	statusMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
+	statusMaterial_ = std::make_unique<PixelMaterial>(SHADER_STATUS.path, SHADER_STATUS.bufNum);
+	for (const auto& buf : SHADER_STATUS.bufs)
+	{
+		statusMaterial_->AddConstBuf(buf);
+	}
 	statusMaterial_->AddTextureBuf(freamImg_);
 	statusMaterial_->AddTextureBuf(hpImg_);
 	statusMaterial_->AddTextureBuf(jobImg_);
@@ -820,18 +861,22 @@ void Player::InitShader(void)
 	statusRenderer_->SetSize(Vector2(PRAM_SIZE_X, PRAM_SIZE_Y));
 
 	// HP_UI
-	hpMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
-	hpMaterial_->AddConstBuf({ 0.0f, 1.0f, 0.0f, 1.0f });// HP位置(左上)サイズ
-	hpMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
+	hpMaterial_ = std::make_unique<PixelMaterial>(SHADER_HP.path, SHADER_HP.bufNum);
+	for (const auto& buf : SHADER_HP.bufs)
+	{
+		hpMaterial_->AddConstBuf(buf);
+	}
 	hpMaterial_->AddTextureBuf(hpFreamImg_);
 	hpMaterial_->AddTextureBuf(hpMaskImg_);
 	hpRenderer_ = std::make_unique<PixelRenderer>(*hpMaterial_);
 	hpRenderer_->SetSize(Vector2(HP_SIZE_X, HP_SIZE_Y));
 
 	// スタミナ_UI
-	staMaterial_ = std::make_unique<PixelMaterial>(L"PlayerHp.cso", 2);
-	staMaterial_->AddConstBuf({ 1.0f, 0.9f,0.0f, 1.0f });// スタミナ位置(左上)サイズ
-	staMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
+	staMaterial_ = std::make_unique<PixelMaterial>(SHADER_STAMINA.path, SHADER_STAMINA.bufNum);
+	for (const auto& buf : SHADER_STAMINA.bufs)
+	{
+		staMaterial_->AddConstBuf(buf);
+	}
 	staMaterial_->AddTextureBuf(staFreamImg_);
 	staMaterial_->AddTextureBuf(staMaskImg_);
 	staRenderer_ = std::make_unique<PixelRenderer>(*staMaterial_);
@@ -1016,7 +1061,8 @@ void Player::UpdateWeapon(void)
 	if (inputController_->IsNew(InputController::KEY::FORWARD)
 		|| inputController_->IsNew(InputController::KEY::LEFT)
 		|| inputController_->IsNew(InputController::KEY::BACK)
-		|| inputController_->IsNew(InputController::KEY::RIGHT)) {
+		|| inputController_->IsNew(InputController::KEY::RIGHT))
+	{
 	}
 	else{ movePow_ = AsoUtility::VECTOR_ZERO; }
 }
@@ -1044,10 +1090,10 @@ void Player::UpdateHiDamage(void)
 {
 	if (flyigTime_ > 0.0f)
 	{
-		flyigTime_ -= SceneManager::GetInstance().GetDeltaTime() * 2.0f;
+		flyigTime_ -= SceneManager::GetInstance().GetDeltaTime() * FLING_COUNT_RATE;
 
 		animationController_->Play(attackType_, true);
-		movePow_ = VScale(flyigDir_, SPEED_JUMP * (flyigTime_ + 0.3f));
+		movePow_ = VScale(flyigDir_, SPEED_JUMP * (flyigTime_ + FLING_MOVE_RATE));
 
 		if (flyigTime_ < 0.0f)
 		{
@@ -1288,7 +1334,8 @@ void Player::ProcessNormal(void)
 			// 移動処理
 			speed_ = SPEED_MOVE;
 			bool isDash = inputController_->IsNew(InputController::KEY::DASH);
-			if (isDash && !isBreak_) {
+			if (isDash && !isBreak_)
+			{
 				speed_ = SPEED_RUN;
 				staminaDir_ = DOWN_TAF;
 			}
@@ -1373,7 +1420,8 @@ void Player::ProcessBattle(void)
 			// 移動処理
 			speed_ = SPEED_MOVE;
 			bool isDash = (inputController_->IsNew(InputController::KEY::DASH) && isBattleDash_);
-			if (isDash && !isBreak_) {
+			if (isDash && !isBreak_)
+			{
 				speed_ = SPEED_RUN;
 				staminaDir_ = DOWN_TAF;
 			}
@@ -1437,7 +1485,7 @@ void Player::SetGoalRotate(double rotRad)
 	double angleDiff = Quaternion::Angle(axis, goalQuaRot_);
 
 	// しきい値
-	if (angleDiff > 0.1)
+	if (angleDiff > ROT_DIFF)
 	{
 		stepRotTime_ = TIME_ROT;
 	}
@@ -1459,7 +1507,8 @@ void Player::Rotate(void)
 float Player::CreateRad(const VECTOR& dir)
 {
 	float angle = atan2f(dir.x, dir.z);
-	if (angle < 0.0f) {
+	if (angle < 0.0f)
+	{
 		angle += DX_TWO_PI; // 0~2paiに正規化
 	}
 	return angle;
@@ -1481,7 +1530,8 @@ const void Player::SyncWeapon()
 	auto& nIns = NetManager::GetInstance();
 
 	// 武器の位置同期
-	if (key_ == nIns.GetSelf().key) {
+	if (key_ == nIns.GetSelf().key)
+	{
 		isBattle_ ? SyncWeaponBattle() : SyncWeaponPlay();
 	}
 	else {
@@ -1492,14 +1542,14 @@ const void Player::SyncWeapon()
 void Player::SyncWeaponPlay()
 {
 	// メインウェポン（腰）
-	SyncWeaponToFream(L"mixamorig:Spine2", GSOWRD_SPINE_ROT, GSOWRD_SPINE_POS,
+	SyncWeaponToFream(RIGHT_SPINE_BONE.c_str(), GSOWRD_SPINE_ROT, GSOWRD_SPINE_POS,
 		transform_, transWeapon_);
 }
 
 void Player::SyncWeaponBattle()
 {
 	// メインウェポン（右手）
-	SyncWeaponToFream(L"mixamorig:RightHandMiddle1", GSOWRD_HAND_ROT, GSOWRD_HAND_POS,
+	SyncWeaponToFream(RIGHT_HAND_BONE.c_str(), GSOWRD_HAND_ROT, GSOWRD_HAND_POS,
 		transform_, transWeapon_);
 }
 
@@ -1517,7 +1567,8 @@ const void Player::SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offse
 
 	// フレームの取得
 	int frmNo = MV1SearchFrame(modelTransform.modelId, frameName);
-	if (frmNo == -1) {
+	if (frmNo == -1)
+	{
 		// エラー処理またはログ出力
 		return;
 	}
@@ -1572,10 +1623,9 @@ void Player::CollisionGravity(void)
 	// 重力の強さ
 	float gravityPow = Planet::DEFAULT_GRAVITY_POW;
 
-	float checkPow = 10.0f;
 	gravHitPosUp_ = VAdd(movedPos_, VScale(dirUpGravity, gravityPow));
-	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, checkPow * 2.0f));
-	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, checkPow));
+	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, COL_CHECK_UP_POW));
+	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, COL_CHECK_DOWN_POW));
 
 	const auto gravHitPosUp = VAdd(gravHitPosUp_, VScale(transform_.GetForward(), COLL_LEG_RATE));
 	const auto gravHitPosDown =VAdd(gravHitPosDown_, VScale(transform_.GetForward(), COLL_LEG_RATE));
@@ -1591,20 +1641,19 @@ void Player::CollisionGravity(void)
 				c.lock()->modelId_, -1, gravHitPosUp, gravHitPosDown);
 
 			// 最初は上の行のように実装して、木の上に登ってしまうことを確認する
-			if ((hit.HitFlag > 0|| hitF.HitFlag > 0) && VDot(dirGravity, jumpPow_) > 0.9f)
+			if ((hit.HitFlag > 0|| hitF.HitFlag > 0) && VDot(dirGravity, jumpPow_) > JUMP_DOT_BORDER)
 			{
 				// 使用する衝突位置を選ぶ
 				VECTOR usedHitPosition = hit.HitFlag > 0 ? hit.HitPosition : VSub(hitF.HitPosition, VScale(transform_.GetForward(), COLL_LEG_RATE));
 
 				// 衝突地点から、少し上に移動
-				movedPos_ = VAdd(usedHitPosition, VScale(dirUpGravity, 2.0f));
+				movedPos_ = VAdd(usedHitPosition, VScale(dirUpGravity, PUSH_BACK_LENGTH));
 
 				// ジャンプリセット
 				jumpPow_ = AsoUtility::VECTOR_ZERO;
 			}
 		}
 	}
-
 }
 
 void Player::CollisionStageCapsule(void)
@@ -1942,12 +1991,13 @@ void Player::AttackUpdate(void)
 				changeAttackTime_ += SceneManager::GetInstance().GetDeltaTime();
 				animeType_ = atkData_[attackType_]->chargeId;
 			}
-			else// チャージ終了なら次のアニメへ(攻撃へ)
+			// チャージ終了なら次のアニメへ(攻撃へ)
+			else
 			{
 				// 倍率設定
 				float rate = changeAttackTime_ / CHAGE_UP_RATE;
-				if (rate >= 4)rate = 0.5f;
-				attackRate_ = 1.0f + (rate * 0.3f);
+				if (changeAttackTime_ >= CHAGE_MAX_TIME)rate = CHAGE_OVER_ATTACK_RATE;
+				attackRate_ = 1.0f + (rate * CHAGE_ATTACK_RATE);
 
 				attackType_ = atkData_[attackType_]->nextAttack;
 				animeType_ = attackType_;
@@ -1955,7 +2005,8 @@ void Player::AttackUpdate(void)
 				return;
 			}
 		}
-		else// アニメーションが終わってチャージ処理もないなら終了
+		// アニメーションが終わってチャージ処理もないなら終了
+		else
 		{
 			animationController_->Play(static_cast<int>(ANIM_TYPE::BTLLE_IDLE));
 			animeType_ = static_cast<int>(ANIM_TYPE::BTLLE_IDLE);

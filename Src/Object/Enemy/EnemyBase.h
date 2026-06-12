@@ -12,10 +12,13 @@ class HitPart;
 class HitDamage;
 
 class EnemyBase :
-    public CharaBase
+	public CharaBase
 {
 
 public:
+
+	// リセット用回転時間
+	static constexpr float ROT_INTERVAL = 1.6f;
 
 	// コンストラクタ
 	EnemyBase(void);
@@ -73,8 +76,7 @@ protected:
 	float followTime_;
 
 	// ターゲット回転
-	float rotateTimer_ = 0.0f;          // 回転間隔のためのタイマー
-	const float rotateInterval_ = 1.6f; // 例：0.2秒ごとに向き直す
+	float rotateTimer_ = 0.0f;// 回転間隔のためのタイマー
 
 	// カプセル
 	std::unique_ptr<Capsule> capsule_;

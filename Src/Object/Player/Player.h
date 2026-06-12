@@ -32,12 +32,15 @@ public:
 	static constexpr VECTOR GSOWRD_HAND_POS = { 0.0f, 0.0f, 0.0f };
 	// ローカル回転
 	static constexpr VECTOR WEPON_LOCAL_ROT = { 160.0f, 180.0f,0.0f };
+	static constexpr VECTOR PLAYER_LOCAL_ROT = { 0.0f, 180.0f,0.0f };
 	// 回転完了までの時間
 	static constexpr float TIME_ROT = 0.1f;
 	static constexpr float TIME_ROT2 = 10.0f;
 	// チャージ攻撃
 	static constexpr float CHAGE_MAX_TIME = 3.0f;					// チャージの最大時間
 	static constexpr float CHAGE_UP_RATE = CHAGE_MAX_TIME / 4.0f;	// チャージ1段階にかかる時間
+	static constexpr float CHAGE_ATTACK_RATE = 0.3f;					// チャージにより追加される攻撃倍率
+	static constexpr float CHAGE_OVER_ATTACK_RATE = 0.5f;					// チャージしすぎた際の攻撃倍率
 	static constexpr float INVISIBLE_SMALL_TIME = 0.5f;
 	static constexpr float INVISIBLE_BIG_TIME = 2.5f;
 	// スピード

@@ -207,7 +207,8 @@ void Arrow::PlayAttackSound(void)
 	{
 		// フレームの取得
 		int frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:RightHand");
-		if (frmNo == -1) {
+		if (frmNo == -1)
+		{
 			// エラー処理またはログ出力
 			return;
 		}

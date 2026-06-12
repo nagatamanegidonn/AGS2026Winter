@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <DxLib.h>
 #include "ActorBase.h"
 
 class CharaBase abstract :
@@ -19,6 +20,20 @@ public:
 		int loopNum;
 		float startFrame;
 		float endFrame;
+	};
+
+	struct SoundData
+	{
+		int type;			// ID
+		std::wstring path;	// リソースパス
+		float vol;			// 音量
+	};
+
+	struct ShaderData
+	{
+		std::wstring path;	// リソースパス
+		int bufNum;			// バッファ数
+		std::vector<FLOAT4> bufs;	// バッファの数値
 	};
 
 	struct ActionData

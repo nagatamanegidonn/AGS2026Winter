@@ -62,9 +62,12 @@ namespace
 	constexpr float SOUND_RATE_SPEED = 0.3f;
 	// 吹っ飛び方向の補正値
 	constexpr float DAMAGE_VEC_RATE = 0.3f;
+	constexpr float BLAST_VEC_RATE = 0.001f;
 	// カメラシェイク
 	constexpr float CAMERA_SHAKE_TIME = 0.5f;
 	constexpr float CAMERA_SHAKE_POWER = 1.5f;
+	constexpr float CAMERA_SHAKE_TIME_BLAST = 1.0f;
+	constexpr float CAMERA_SHAKE_POWER_BLAST = 2.0f;
 }
 
 GameScene::GameScene(void)
@@ -409,7 +412,8 @@ void GameScene::Update(void)
 	// ゲームの勝敗判定
 	GameManager::GAME_RESULT result = GameManager::GAME_RESULT::NONE;
 
-	if (GameManager::GetInstance().IsClear()) {
+	if (GameManager::GetInstance().IsClear())
+	{
 		// タイマーが動いてたら止める
 		if (timer_->IsRunning())timer_->Reset();
 		// クリア時間の更新
@@ -762,11 +766,11 @@ void GameScene::Collision(void)
 							// 画面を暗転
 							shot->ChangeState();
 							// 吹き飛び方向
-							VECTOR mixDir = VScale(VNorm(VSub(player->GetTransform().pos, ShotPos)), 0.001f);
+							VECTOR mixDir = VScale(VNorm(VSub(player->GetTransform().pos, ShotPos)), BLAST_VEC_RATE);
 							// ダメージ
 							player->Damage(shot->GetDamage() * BLAST_DAMAGE_RATE, ShotPos, mixDir);
 							// 音・カメラ
-							SceneManager::GetInstance().GetCamera().lock()->StartShake(1.0f, 2.0f);
+							SceneManager::GetInstance().GetCamera().lock()->StartShake(CAMERA_SHAKE_TIME_BLAST, CAMERA_SHAKE_POWER_BLAST);
 						}
 					}
 				}

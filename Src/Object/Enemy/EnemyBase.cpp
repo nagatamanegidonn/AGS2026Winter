@@ -18,6 +18,9 @@ namespace
 {
 	constexpr int DRAW_UP_SCALE = 30;// モデルに埋まらないよう
 	constexpr float HALF_SCALE = 0.5;
+	// 判定用の移動量
+	constexpr float COL_CHECK_UP_POW = 10.0f * 2.0f;
+	constexpr float COL_CHECK_DOWN_POW = 10.0f;
 }
 
 EnemyBase::EnemyBase(void)
@@ -151,7 +154,7 @@ void EnemyBase::CollisionStageCapsule(void)
 						nor.y = 0.0f;
 
 						// 法線の方向にちょっとだけ移動させる
-						movedPos_ = VAdd(movedPos_, VScale(nor, 1.0f));
+						movedPos_ = VAdd(movedPos_, nor);
 						// カプセルも一緒に移動させる
 						trans.pos = movedPos_;
 						trans.Update();
@@ -180,10 +183,9 @@ void EnemyBase::CollisionGravity(void)
 	// 重力の強さ
 	float gravityPow = Planet::DEFAULT_GRAVITY_POW;
 
-	float checkPow = 10.0f;
 	gravHitPosUp_ = VAdd(movedPos_, VScale(dirUpGravity, gravityPow));
-	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, checkPow * 2.0f));
-	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, checkPow));
+	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, COL_CHECK_UP_POW));
+	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, COL_CHECK_DOWN_POW));
 	for (const auto& c : colliders_)
 	{
 		// 地面との衝突
@@ -259,7 +261,8 @@ void EnemyBase::TargetRotate(const VECTOR& traPos, float rate)
 	// 右回りか左回りかを判定するために外積を計算
 	float crossY = forward.x * toTarget.z - forward.z * toTarget.x;
 	// 外積のY成分が正なら右回り、負なら左回り
-	if (crossY > 0.0f) {
+	if (crossY > 0.0f)
+	{
 		angleRad = -angleRad;
 	}
 
