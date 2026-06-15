@@ -55,6 +55,15 @@ public:
 	static constexpr int ATTRCK_CLOW = 28;
 	static constexpr int ATTRCK_STAMP= 34;
 	static constexpr int ATTRCK_DASH = 25;
+	// エフェクト関連
+	static constexpr int DASH_EFFECT = 0;
+	static constexpr float DASH_EFFECT_SIZE = 50.0f;
+	static constexpr int DAMAGE_EFFECT = 1;
+	static constexpr float DAMAGE_EFFECT_SIZE = 7.5f;
+	// サウンド関連
+	static constexpr int DASH_SOUND = 0;
+	static constexpr int CLOW_ATTACK_SOUND = 1;
+	static constexpr int STAMP_ATTACK_SOUND = 2;
 
 	// 状態
 	enum class STATE
@@ -178,7 +187,7 @@ private:
 	// ボス限定
 	int attrckCount_;		// 連続攻撃の際に使用
 	VECTOR attrckPos_;		// 攻撃判定中心位置
-	float attrckRadius = 0.0f;
+	float attrckRadius = 0.0f; // 攻撃半径
 
 	// 状態管理(状態遷移時初期処理)
 	std::map<STATE, std::function<void(void)>> stateChanges_;

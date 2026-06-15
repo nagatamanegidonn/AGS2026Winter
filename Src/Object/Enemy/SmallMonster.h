@@ -3,7 +3,7 @@
 #include "EnemyBase.h"
 
 class SmallMonster :
-    public EnemyBase
+	public EnemyBase
 {
 
 public:

@@ -37,6 +37,8 @@
 
 namespace
 {
+	// ゲーム開始待機時間
+	constexpr float GAME_START_TIME = 1.5f;
 	// タイマーの描画位置
 	constexpr int TIME_POS_X = Timer::SIZE_X / 2 + 10;
 	constexpr int TIME_POS_Y = Timer::SIZE_Y / 2 + 10;
@@ -189,7 +191,7 @@ void GameScene::Init(void)
 	shots_.push_back(std::move(shot));
 
 	// ゲーム開始待機時間
-	stepCountDown_ = 1.5f;
+	stepCountDown_ = GAME_START_TIME;
 
 	// ダウンした回数
 	downCnt_ = 0;

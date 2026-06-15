@@ -48,9 +48,6 @@ public:
 	static constexpr float SPEED_RUN = 10.0f;
 	static constexpr float SPEED_JUMP = SPEED_RUN * 8;
 	static constexpr float SPEED_ROLL = 15.0f;
-	// 煙エフェクト発生間隔
-	static constexpr float FOOT_SMOKE = 0.3f;
-	static constexpr float FAST_FOOT_SMOKE = 0.4f;
 	// ＨＰ、スタミナ関連
 	static constexpr int HEEL_HP = 20;
 	static constexpr int MAX_HP = 100;
@@ -69,6 +66,9 @@ public:
 	static constexpr int POWER_UP_EFFECT = 0;
 	static constexpr int POWER_SLASH_EFFECT = 1;
 	static constexpr float PLAYER_EFFECT_SCALE = 30.0f;
+	// 煙エフェクト発生間隔
+	static constexpr float FOOT_SMOKE = 0.3f;
+	static constexpr float FAST_FOOT_SMOKE = 0.4f;
 
 	// 状態
 	enum class STATE

@@ -53,7 +53,7 @@ namespace
 		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1S), L"Axe/Attrck1.mv1", 40.0f, -1, 0.0f, -1.0f },
 		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1STOP), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	// 使用無し
 		{ static_cast<int>(Player::ANIM_TYPE::ATTACK1E), L"Axe/Attrck1.mv1", 0.0f, 0, 0.0f, -1.0f },	// 使用無し
-		{ static_cast<int>(Player::ANIM_TYPE::ATTACK2), L"Axe/Attrck2.mv1", 40.0f, -1, 12.0f, -1.0f  },
+		{ static_cast<int>(Player::ANIM_TYPE::ATTACK2), L"Axe/Attrck2.mv1", 40.0f, -1, 12.0f, -1.0f },
 		{ static_cast<int>(Player::ANIM_TYPE::ATTACK3), L"Axe/Attrck3.mv1", 40.0f, 0, 0.0f, -1.0f },
 		// 死亡
 		{ static_cast<int>(Player::ANIM_TYPE::DEAD), L"Dying.mv1", 30.0f, 0, 0.0f, -1.0f },
@@ -65,21 +65,18 @@ namespace
 		{ static_cast<int>(Player::ANIM_TYPE::ITEM_SET_E), L"Normal/Tender Placement.mv1", 35.0f, 0, 170.0f, 250.0f },
 		{ static_cast<int>(Player::ANIM_TYPE::ITEM_DRINK), L"Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f },
 	};
-
 	// アクションデータリスト
 	// 攻撃情報の設定
-	const CharaBase::ActionData ATTRCK_ATTRCK1S_DATA = { false, -1,  20.0f, 30.0f, 32.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTACK2) };
+	const CharaBase::ActionData ATTRCK_ATTRCK1S_DATA = { false, -1, 20.0f, 30.0f, 32.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTACK2) };
 	const CharaBase::ActionData ATTRCK_ATTRCK2_DATA = { false, -1, 25.0f, 30.0f, 32.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTACK3) };
 	const CharaBase::ActionData ATTRCK_ATTRCK3_DATA = { false, -1, 25.0f, 40.0f, 60.0f,0.0f,-1 };
 	// 共通データ
 	const CharaBase::ActionData FLYING_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::DOWN) };
 	const CharaBase::ActionData DOWN_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::IDLE) };
 	const CharaBase::ActionData IDLE_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,-1 };
-
 	// 武器カプセル関係
 	constexpr VECTOR WEAPON_CAPSULE_TOP = { 0.0f, 125.0f, 0.0f };
 	constexpr VECTOR WEAPON_CAPSULE_DOWN = { 0.0f, 0.0f, 0.0f };
-
 	// サウンド発生時間
 	constexpr float ATTRCK1_SE_STIME = 20.0f;
 	constexpr float ATTRCK2_SE_STIME = 25.0f;
@@ -119,7 +116,7 @@ void Sword::InitParam(void)
 	transWeapon_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal =
-		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) });
+		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
 	transWeapon_.Update();
 
 	// サブウェポン

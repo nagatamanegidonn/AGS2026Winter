@@ -7,6 +7,13 @@ class HitPart
 
 public:
 
+	struct HitPartData
+	{
+		std::wstring boneName;
+		float rad;
+		float rate;
+	};
+
 	// コンストラクタ
 	HitPart(int& model, std::wstring boneName, float rad, float rate);
 	

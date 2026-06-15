@@ -23,6 +23,8 @@
 
 namespace
 {
+	// ボーンネーム
+	const std::wstring BONE_NAME_BODY = L"Bone002";
 	// アニメーションリスト
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
@@ -36,7 +38,29 @@ namespace
 		{static_cast<int>(SmallMonster::ANIM_TYPE::DAMAGE),L"SmallMonster.mv1",15.0f, 3,0.0f,-1.0f},
 		{static_cast<int>(SmallMonster::ANIM_TYPE::DEAD),L"SmallMonster.mv1",30.0f, 4,0.0f,-1.0f},
 	};
+	// カプセルの初期値
+	constexpr VECTOR CAP_LOACL_TOP = { 0.0f, 300.0f, 0.0f };
+	constexpr VECTOR CAP_LOACL_DOWN = { 0.0f, 290.0f, 0.0f };
+	constexpr float CAP_RADIUS = 200.0f;
+	// 初期座標
+	constexpr VECTOR START_POS = { 0.0f, -30.0f, 0.0f };
+	// 状態にかかる時間
+	constexpr float DEFAULT_STATE_TIME = 3.0f;
 	constexpr float HALF_RATE = 0.5f;
+	// 初期パラメータ
+	constexpr int DEFAULT_HP = 10;
+	constexpr int DEFAULT_ATTACK_DAMAGE = 10;
+	constexpr float DEFAULT_DAMAGE_RATE = 1.0f;
+	// アニメーション設定
+	constexpr float BLEND_TIME_ATTRCK = 1.0f;
+	constexpr float ATK_START_HIT_TIME = 10.0f; // 攻撃当たり判定開始フレーム
+	constexpr float ATK_END_HIT_TIME = 14.0f;	// 攻撃当たり判定終了フレーム
+	// 挙動プロセス
+	constexpr float BATTLE_ROT_RATE = 0.3f;		// バトル中の旋回速度割合
+	// 地面・重力チェック
+	constexpr float GRAVITY_CHECK_POW = 10.0f;
+	constexpr float GRAVITY_PUSH_BACK = 2.0f;
+	constexpr float JUMP_RESET_DOT_BORDER = 0.9f;
 }
 
 SmallMonster::SmallMonster(int key, int createNo)
@@ -62,17 +86,17 @@ SmallMonster::SmallMonster(int key, int createNo)
 
 	// 攻撃情報
 	attrckCount_ = 0;
-	attackDamage_ = 10;
+	attackDamage_ = DEFAULT_ATTACK_DAMAGE;
 	// 追跡対象
 	follow_ = nullptr;
 	followTime_ = 0.0f;
 	// 攻撃位置
 	attrckPos_ = AsoUtility::VECTOR_ZERO;
-	dameRate_ = 1.0f;
+	dameRate_ = DEFAULT_DAMAGE_RATE;
 
 	// 当たり判定
 	hitParts_.clear();
-	AddHitPart(transform_.modelId, L"Bone002", ATTRCK_BITE_RADIUS, 1.0f);//胴体	
+	AddHitPart(transform_.modelId, BONE_NAME_BODY, ATTRCK_BITE_RADIUS, 1.0f);//胴体	
 }
 
 SmallMonster::~SmallMonster(void)
@@ -89,7 +113,7 @@ void SmallMonster::Init(void)
 		ResourceManager::SRC::MONSTER));
 	transform_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_SIZE);
 	// 初期座標
-	transform_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
+	transform_.pos = prePos_ = START_POS;
 	transform_.quaRot = Quaternion();
 	transform_.quaRotLocal =
 		Quaternion::Euler({ 0.0f, AsoUtility::Deg2RadF(0.0f), 0.0f });
@@ -113,15 +137,15 @@ void SmallMonster::Init(void)
 
 	// カプセルコライダ
 	capsule_ = std::make_unique<Capsule>(transform_);
-	capsule_->SetLocalPosTop({ 0.0f, 300.0f, 0.0f });
-	capsule_->SetLocalPosDown({ 0.0f, 290.0f, 0.0f });
-	capsule_->SetRadius(200.0f);
+	capsule_->SetLocalPosTop(CAP_LOACL_TOP);
+	capsule_->SetLocalPosDown(CAP_LOACL_DOWN);
+	capsule_->SetRadius(CAP_RADIUS);
 
 	auto& nIns = NetManager::GetInstance();
 	auto& users = NetManager::GetInstance().GetNetUsers();
 
 	// HPの初期化
-	hp_ = hpMax_ = 10;
+	hp_ = hpMax_ = DEFAULT_HP;
 
 	isHitCheck_ = false;
 
@@ -251,7 +275,7 @@ void SmallMonster::Damage(int _dama, bool _isConst)
 	auto& nIns = NetManager::GetInstance();
 
 	float dameRate = dameRate_;		// ダメージ倍率
-	if (_isConst)dameRate = 1.0f;	// 固定ダメージなら倍率無効
+	if (_isConst)dameRate = DEFAULT_DAMAGE_RATE;	// 固定ダメージなら倍率無効
 
 	const int lastDame = static_cast<int>(static_cast<float>(_dama) * dameRate);
 
@@ -294,8 +318,8 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK))
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK);
-		attrckPos_ = VScale(VAdd(AsoUtility::MV1GetFreamPos(transform_.modelId, L"Bone002")
-			, AsoUtility::MV1GetFreamPos(transform_.modelId, L"Bone002")), HALF_RATE);
+		attrckPos_ = VScale(VAdd(AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_NAME_BODY)
+			, AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_NAME_BODY)), HALF_RATE);
 		attrckRadius = ATTRCK_STAMP_RADIUS;
 	}
 	else
@@ -360,14 +384,15 @@ void SmallMonster::InitAnimation(void)
 			->Add(anim.type, path + anim.name, anim.speed, anim.loopNum, anim.startFrame, anim.endFrame);
 	}
 
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK), true, 1.0f);
+	// ブレンド設定
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK), true, BLEND_TIME_ATTRCK);
 
 	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
 	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 	animeAgoType_ = animeType_;
 
 	//攻撃情報の設定
-	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK), std::move(SetActionData(-1, 10.0f, 14.0f)));
+	atkData_.emplace(static_cast<int>(ANIM_TYPE::ATTRCK), std::move(SetActionData(-1, ATK_START_HIT_TIME, ATK_END_HIT_TIME)));
 
 }
 
@@ -388,7 +413,7 @@ void SmallMonster::ChangeState(STATE state)
 	// 状態変更
 	state_ = state;
 
-	stateTime_ = 3.0f;
+	stateTime_ = DEFAULT_STATE_TIME;
 
 	// 各状態遷移の初期処理
 	stateChanges_[state_]();
@@ -475,7 +500,7 @@ void SmallMonster::UpdateBattle(void)
 	if (rotateTimer_ <= 1.0f)
 	{
 		// ターゲットに向けて回転
-		TargetRotate(follow_->pos, 0.3f);
+		TargetRotate(follow_->pos, BATTLE_ROT_RATE);
 		if (rotateTimer_ <= 0.0f)
 		{
 			rotateTimer_ = ROT_INTERVAL; // リセット
@@ -678,7 +703,7 @@ void SmallMonster::CollisionGravity(void)
 	// 重力の強さ
 	float gravityPow = Planet::DEFAULT_GRAVITY_POW;
 
-	float checkPow = 10.0f;
+	float checkPow = GRAVITY_CHECK_POW;
 	gravHitPosUp_ = VAdd(movedPos_, VScale(dirUpGravity, gravityPow));
 	gravHitPosUp_ = VAdd(gravHitPosUp_, VScale(dirUpGravity, checkPow * 2.0f));
 	gravHitPosDown_ = VAdd(movedPos_, VScale(dirGravity, checkPow));
@@ -689,10 +714,10 @@ void SmallMonster::CollisionGravity(void)
 			c.lock()->modelId_, -1, gravHitPosUp_, gravHitPosDown_);
 
 		// 最初は上の行のように実装して、木の上に登ってしまうことを確認する
-		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > 0.9f)
+		if (hit.HitFlag > 0 && VDot(dirGravity, jumpPow_) > JUMP_RESET_DOT_BORDER)
 		{
 			// 衝突地点から、少し上に移動
-			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, 2.0f));
+			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, GRAVITY_PUSH_BACK));
 
 			// ジャンプリセット
 			jumpPow_ = AsoUtility::VECTOR_ZERO;

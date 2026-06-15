@@ -24,6 +24,10 @@
 
 namespace
 {
+	// ボーン名
+	const std::wstring BONE_CHEST = L"Chest_M";
+	const std::wstring BONE_FINGERS_L = L"Fingers1_L";
+	const std::wstring BONE_FINGERS_R = L"Fingers1_R";
 	// アニメーションリスト
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
@@ -41,6 +45,28 @@ namespace
 		{static_cast<int>(Boss::ANIM_TYPE::STUNNED),L"Boss.mv1",30.0f, 14,0.0f,-1.0f},
 		{static_cast<int>(Boss::ANIM_TYPE::DEAD),L"Boss.mv1", 30.0f, 13,0.0f,-1.0f},
 	};
+	// ヒットパーツリスト
+	const std::vector<HitPart::HitPartData> PART_LIST =
+	{
+		{L"Chest_M", 150.0f, 1.0f},		// 胴体
+		{L"Root_M", 90.0f, 1.5f},		// 尻
+		{L"Spine2_M", 120.0f, 1.2f},	// 腰
+		{L"Tongue1_M", 120.0f, 1.0f},	// 胸
+		// 左前足
+		{L"Shoulder_L", 75.0f, 0.5f},
+		{L"ElbowPart1_L", 75.0f, 0.5f},
+		// 右前足
+		{L"Shoulder_R", 75.0f, 0.5f},
+		{L"ElbowPart1_R", 75.0f, 0.5f},
+		// 左後足
+		{L"Hip_L", 75.0f, 1.0f},
+		{L"Knee_L", 75.0f, 1.0f},
+		// 右後足
+		{L"Hip_R", 75.0f, 1.0f},
+		{L"Knee_R", 75.0f, 1.0f},
+	};
+	// クリア後の待機時間
+	constexpr float CLEAR_WAIT_TIME = 10.0f;
 	// アタックデータリスト
 	const CharaBase::ActionData ATTRCK_STAMP_DATA = { false, -1, 17.0f, 24.0f,-1.0f,0.0f,-1, };
 	const CharaBase::ActionData ATTRCK_L_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
@@ -53,11 +79,24 @@ namespace
 	constexpr float ROT_RATE = 3.0f;
 	// 初期座標
 	constexpr VECTOR START_POS = { 0.0f, -30.0f, 0.0f };
+	// 状態維持時間
+	constexpr float DEFAULT_STATE_TIME = 3.0f;
+	constexpr float STUNNED_STATE_DURATION = 4.0f;
 	// 衝突、判定関係
 	constexpr float JUMP_DOT_BORDER = 0.9f;
 	constexpr float COL_CHECK_UP_POW = 10.0f * 2.0f;
 	constexpr float COL_CHECK_DOWN_POW = 10.0f;
 	constexpr float PUSH_BACK_LENGTH = 2.0f;
+	constexpr float STAMP_POSTION_RATE = 0.5f;
+	// アニメーションブレンド時間
+	constexpr float BLEND_TIME_BATTLE_IDLE = 5.0f;
+	constexpr float BLEND_TIME_STAMP = 1.0f;
+	constexpr float BLEND_TIME_STUNNED = 3.0f;
+	// スタンプ攻撃のSE発音タイミング（アニメーションのステップ時間）
+	constexpr float SE_STAMP_PLAY_START = 23.0f;
+	constexpr float SE_STAMP_PLAY_END = 23.5f;
+	// 視野角デバッグ用パラメータ
+	constexpr int DEBUG_FOV_DIVISIONS = 15;
 }
 
 Boss::Boss(int key, int createNo)
@@ -103,22 +142,10 @@ Boss::Boss(int key, int createNo)
 
 	// 当たり判定
 	hitParts_.clear();
-	AddHitPart(transform_.modelId, L"Chest_M",ATTRCK_BITE_RADIUS, 1.0f);// 胴体
-	AddHitPart(transform_.modelId, L"Root_M",90.0f,1.5f);				// 尻
-	AddHitPart(transform_.modelId, L"Spine2_M", 120.0f, 1.2f);			// 腰
-	AddHitPart(transform_.modelId, L"Tongue1_M",120.0f, 1.0f);			// 胸
-	// 左前足
-	AddHitPart(transform_.modelId, L"Shoulder_L", 75.0f, 0.5f);
-	AddHitPart(transform_.modelId, L"ElbowPart1_L", 75.0f, 0.5f);
-	// 左前足
-	AddHitPart(transform_.modelId, L"Shoulder_R", 75.0f, 0.5f);
-	AddHitPart(transform_.modelId, L"ElbowPart1_R", 75.0f, 0.5f);
-	// 左後足
-	AddHitPart(transform_.modelId, L"Hip_L", 75.0f, 1.0f);
-	AddHitPart(transform_.modelId, L"Knee_L", 75.0f, 1.0f);
-	// 左後足
-	AddHitPart(transform_.modelId, L"Hip_R", 75.0f, 1.0f);
-	AddHitPart(transform_.modelId, L"Knee_R", 75.0f, 1.0f);
+	for (auto& part : PART_LIST)
+	{
+		AddHitPart(transform_.modelId, part.boneName, part.rad, part.rate);;
+	}
 
 	// LERP移動関係
 	lerpTime_ = MAX_LERP_TIME;
@@ -225,6 +252,7 @@ void Boss::Update(void)
 		// 衝突判定
 		Collision();
 
+		// 状態の制限時間カウント
 		if (stateTime_ >= 0.0f)stateTime_ -= SceneManager::GetInstance().GetDeltaTime();
 
 		// 重力方向に沿って回転させる
@@ -258,8 +286,8 @@ void Boss::Update(void)
 	}
 
 	// ダッシュエフェクト
-	effectController_->LoopUpdate(0, transform_.pos, transform_.rot, 50.0f);
-	effectController_->Update(1);
+	effectController_->LoopUpdate(DASH_EFFECT, transform_.pos, transform_.rot, DASH_EFFECT_SIZE);
+	effectController_->Update(DAMAGE_EFFECT);
 
 	// 音の再生
 	const auto& selfPos = nIns.GetPostion(nIns.GetSelf().key);
@@ -267,15 +295,16 @@ void Boss::Update(void)
 	float volume = AsoUtility::CalcVolumeByDistance(selfPos, transform_.pos, (MOVE_RADIUS + MOVE_RADIUS));
 
 	// 無音なら停止
-	soundController_->ChengeVolume(0, volume); // ボリュームだけ更新
-	soundController_->ChengeVolume(1, volume); // ボリュームだけ更新
-	soundController_->ChengeVolume(2, volume); // ボリュームだけ更新
+	soundController_->ChengeVolume(DASH_SOUND, volume);			// ボリュームだけ更新
+	soundController_->ChengeVolume(CLOW_ATTACK_SOUND, volume);	// ボリュームだけ更新
+	soundController_->ChengeVolume(STAMP_ATTACK_SOUND, volume); // ボリュームだけ更新
 
+	// 音の再生
 	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_STAMP)
-		&& animationController_->GetStepTime() > 23.0f
-		&& animationController_->GetStepTime() < 23.5f)
+		&& animationController_->GetStepTime() > SE_STAMP_PLAY_START
+		&& animationController_->GetStepTime() < SE_STAMP_PLAY_END)
 	{
-		soundController_->Play(2, Sound::TIMES::ONCE);
+		soundController_->Play(STAMP_ATTACK_SOUND, Sound::TIMES::ONCE);
 	}
 	else if (
 		(animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW)
@@ -284,13 +313,13 @@ void Boss::Update(void)
 			&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW))
 		)
 	{
-		soundController_->Play(1, Sound::TIMES::ONCE);
+		soundController_->Play(CLOW_ATTACK_SOUND, Sound::TIMES::ONCE);
 	}
 	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_DASH)
 		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::ATTRCK_DASH)
 		)
 	{
-		soundController_->Play(0, Sound::TIMES::ONCE);
+		soundController_->Play(DASH_SOUND, Sound::TIMES::ONCE);
 	}
 	else if (animeType_ == static_cast<int>(ANIM_TYPE::DEAD)
 		&& animeAgoType_ != static_cast<int>(ANIM_TYPE::DEAD))
@@ -303,7 +332,6 @@ void Boss::Update(void)
 	{
 		hitdamage->Update();
 	}
-
 	nIns.SetNetMonsDamage(nIns.GetSelf().key, createNo_, 0);
 
 	// 描画用の位置は、Draw()でNetManagerから取るからOK
@@ -323,7 +351,7 @@ void Boss::Update(void)
 
 		if (GameManager::GetInstance().IsClear())
 		{
-			GameManager::GetInstance().SetClearTime(10.0f);
+			GameManager::GetInstance().SetClearTime(CLEAR_WAIT_TIME);
 		}
 	}
 }
@@ -341,20 +369,16 @@ void Boss::Draw(void)
 
 #ifdef _DEBUG
 
-	DrawFormatString(100, 400, 0x000000, L"Boss_Anim(%d)", animeType_);
-	DrawFormatString(100, 416, 0x000000, L"Boss_State(%d)", state_);
-	DrawFormatString(100, 432, 0x000000, L"Boss_Area(%d)", GetAreaId());
-
 	// デバッグ用
 	DrawDebug();
-	DrawFOV(FOV_RADIUS, MOVE_RADIUS, 15, GetColor(255, 255, 0)); // 視野角90度、半径200、15本の線
+
 #endif
 }
 
 void Boss::Damage(int _dama,bool _isConst)
 {
 	// ダメージエフェクト再生
-	effectController_->Play(1, hitDamePos_, { 0.0f,0.0f,0.0f }, 7.5f);
+	effectController_->Play(DAMAGE_EFFECT, hitDamePos_, AsoUtility::VECTOR_ZERO, DAMAGE_EFFECT_SIZE);
 
 	auto& nIns = NetManager::GetInstance();
 
@@ -391,37 +415,37 @@ const bool Boss::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 			return ret;
 		}
 	}
-
 	return ret;
 }
 
 const bool Boss::CollisionAttrck(const int& modelId)
 {
-
 	auto& nIns = NetManager::GetInstance();
 	if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_STAMP))
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_STAMP);
-		attrckPos_ = VScale(VAdd(AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_L")
-			, AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_R")), 0.5f);
+		attrckPos_ = VScale(VAdd(
+			AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_L),
+			AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_R)),
+			STAMP_POSTION_RATE);
 		attrckRadius = ATTRCK_STAMP_RADIUS;
 	}
 	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW))
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW);
-		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_L");
+		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_L);
 		attrckRadius = ATTRCK_BITE_RADIUS;
 	}
 	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW))
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
-		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, L"Fingers1_R");
+		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_R);
 		attrckRadius = ATTRCK_BITE_RADIUS;
 	}
 	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_DASH))
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
-		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, L"Chest_M");
+		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_CHEST);
 		attrckRadius = ATTRCK_DASH_RADIUS;
 	}
 	else
@@ -506,7 +530,6 @@ bool Boss::IsBattle(void) const
 	{
 		return true;
 	}
-
 	return false;
 }
 
@@ -529,9 +552,9 @@ void Boss::InitAnimation(void)
 	SetActionData(static_cast<int>(ANIM_TYPE::ATTRCK_DASH), ATTRCK_DASH_DATA);
 
 	// ブレンド設定
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, 5.0f);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK_STAMP), true, 1.0f);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::STUNNED), true, 3.0f);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, BLEND_TIME_BATTLE_IDLE);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTRCK_STAMP), true, BLEND_TIME_STAMP);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::STUNNED), true, BLEND_TIME_STUNNED);
 
 	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
 	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
@@ -543,17 +566,17 @@ void Boss::InitEffect(void)
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
 
-	effectController_->Add(0, path + L"Dash/Dash.efkefc");
-	effectController_->Add(1, path + L"Damage/Damage.efkefc");
+	effectController_->Add(DASH_EFFECT, path + L"Dash/Dash.efkefc");
+	effectController_->Add(DAMAGE_EFFECT, path + L"Damage/Damage.efkefc");
 }
 void Boss::InitSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 	soundController_ = std::make_unique<SoundController>();
 
-	soundController_->Add(0, path + L"Boss/Dash.mp3", 1.0f);
-	soundController_->Add(1, path + L"Boss/Clow.mp3", 1.0f);
-	soundController_->Add(2, path + L"Boss/Stamp.mp3", 2.0f);
+	soundController_->Add(DASH_SOUND, path + L"Boss/Dash.mp3", 1.0f);
+	soundController_->Add(CLOW_ATTACK_SOUND, path + L"Boss/Clow.mp3", 1.0f);
+	soundController_->Add(STAMP_ATTACK_SOUND, path + L"Boss/Stamp.mp3", 2.0f);
 }
 
 #pragma region StateによるUpdateの切り替え
@@ -563,7 +586,7 @@ void Boss::ChangeState(STATE state)
 	// 状態変更
 	state_ = state;
 
-	stateTime_ = 3.0f;
+	stateTime_ = DEFAULT_STATE_TIME;
 
 	// 各状態遷移の初期処理
 	stateChanges_[state_]();
@@ -625,7 +648,7 @@ void Boss::ChangeStateAttrckDash(void)
 
 void Boss::ChangeStateStunned(void)
 {
-	stateTime_ = 4.0f;
+	stateTime_ = STUNNED_STATE_DURATION;
 	stateUpdate_ = std::bind(&Boss::UpdateStunned, this);
 }
 
@@ -760,7 +783,8 @@ void Boss::UpdateBattle(void)
 		{
 			ChangeState(STATE::FOLLOW);//接近
 		}
-		else {
+		else 
+		{
 			//ChangeState(STATE::PLAY);//バトル中止
 		}
 	}
@@ -783,7 +807,7 @@ void Boss::UpdateFollow(void)
 	// プレイヤーとの衝突判定
 	float disPow = AsoUtility::GetDisPow(transform_.pos, follow_->pos);
 
-	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))//ダメージ半径×攻撃半径
+	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))
 	{
 		if (static_cast<int>(disPow) % 2 == 0)
 		{
@@ -1085,6 +1109,9 @@ void Boss::DrawDebug(void)
 
 	DrawFormatString(100, 400, 0x000000, L"Boss_HP(%d)", hp_);
 	DrawFormatString(100, 416, 0x000000, L"Boss_Attrck(%d)", attackDamage_);
+
+	// 視野描画
+	DrawFOV(FOV_RADIUS, MOVE_RADIUS, DEBUG_FOV_DIVISIONS, GetColor(255, 255, 0)); // 視野角90度、半径200、15本の線
 }
 
 void Boss::AttrckUpdate(void)
@@ -1119,10 +1146,10 @@ void Boss::AttackDataUpdate(void)
 	else if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK_DASH))
 	{
 		attackDamage_ = ATTRCK_DASH;
-		effectController_->LoopPlay(0);
+		effectController_->LoopPlay(DASH_EFFECT);
 	}
 	else
 	{
-		effectController_->Stop(0);
+		effectController_->Stop(DASH_EFFECT);
 	}
 }
