@@ -28,6 +28,14 @@
 
 namespace
 {
+	// パス・リソース関係
+	const std::wstring DIR_PATH_PLAYER2 = L"Player2/";
+	const std::wstring EFFECT_FILE_POWERUP = L"PowerUp/PowerUp.efkefc";
+	const std::wstring EFFECT_FILE_SLASH = L"Slash/Slash.efkefc";
+	const std::wstring SOUND_FILE_GS_SE = L"Player/GreatSowrd.mp3";
+	// 同期用ボーン名
+	const std::wstring BONE_SPINE2 = L"mixamorig:Spine2";
+	const std::wstring BONE_RIGHT_HAND = L"mixamorig:RightHandMiddle1";
 	// アニメーションリスト
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
@@ -63,7 +71,6 @@ namespace
 		{ static_cast<int>(Player::ANIM_TYPE::ITEM_SET_E), L"Normal/Tender Placement.mv1", 35.0f, 0, 170.0f, 250.0f },
 		{ static_cast<int>(Player::ANIM_TYPE::ITEM_DRINK), L"Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f },
 	};
-
 	// アクションデータリスト
 	// 攻撃情報の設定
 	const CharaBase::ActionData ATTRCK_ATTRCK1S_DATA
@@ -71,25 +78,24 @@ namespace
 	const CharaBase::ActionData ATTRCK_ATTRCK1E_DATA = { false, -1, 16.0f, 24.0f, 22.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTACK2) };
 	const CharaBase::ActionData ATTRCK_ATTRCK2_DATA = { false, -1, 21.0f, 40.0f, 38.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::ATTACK3) };
 	const CharaBase::ActionData ATTRCK_ATTRCK3_DATA = { false, -1, 60.0f, 78.0f, 80.0f,0.0f,-1 };
-
 	// 共通データ
 	const CharaBase::ActionData FLYING_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::DOWN) };
 	const CharaBase::ActionData DOWN_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::IDLE) };
-	const CharaBase::ActionData IDLE_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,-1 };
-	
+	const CharaBase::ActionData IDLE_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,-1 };	
 	// 武器カプセル関係
 	constexpr VECTOR WEAPON_CAPSULE_TOP = { 0.0f, 200.0f, 0.0f };
 	constexpr VECTOR WEAPON_CAPSULE_DOWN = { 0.0f, 10.0f, 0.0f };
-
+	constexpr float CAP_RADIUS = 10.0f;
 	// サウンド発生時間
 	constexpr float ATTRCK1_SE_STIME = 16.0f;
 	constexpr float ATTRCK2_SE_STIME = 21.0f;
 	constexpr float ATTRCK3_SE_STIME = 60.0f;
+	constexpr float SOUND_VOLUME = 0.6f;
 	constexpr float HALF_RATE = 0.5f;
-
-	constexpr float BLEND_RATE_30 = 3.0f;
-	constexpr float BLEND_RATE_50 = 5.0f;
-	constexpr float BLEND_RATE_100 = 10.0f;
+	// アニメーションブレンド関係
+	constexpr float BLEND_SPEED_30 = 3.0f;
+	constexpr float BLEND_SPEED_50 = 5.0f;
+	constexpr float BLEND_SPEED_100 = 10.0f;
 }
 
 #pragma endregion
@@ -117,7 +123,7 @@ void GreatSword::InitParam(void)
 	// メインウェポン
 	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);
 	// 初期座標
-	transWeapon_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
+	transWeapon_.pos = prePos_ = AsoUtility::VECTOR_ZERO;
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal =
 		Quaternion::Euler({ AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.x), AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.y), AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.z) });
@@ -130,7 +136,7 @@ void GreatSword::InitParam(void)
 	capsuleWeapon_ = std::make_shared<Capsule>(transWeapon_);
 	capsuleWeapon_->SetLocalPosTop(WEAPON_CAPSULE_TOP);
 	capsuleWeapon_->SetLocalPosDown(WEAPON_CAPSULE_DOWN);
-	capsuleWeapon_->SetRadius(10.0f);
+	capsuleWeapon_->SetRadius(CAP_RADIUS);
 
 	// 抜刀ダッシュの有無
 	isBattleDash_ = false;
@@ -148,7 +154,7 @@ void GreatSword::InitParam(void)
 
 void GreatSword::InitAnimation(void)
 {
-	std::wstring path = Application::PATH_MODEL + L"Player2/";
+	std::wstring path = Application::PATH_MODEL + DIR_PATH_PLAYER2;
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 
 	// アニメーションの登録
@@ -159,22 +165,22 @@ void GreatSword::InitAnimation(void)
 	}
 
 	// 待機のブレンド設定
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, BLEND_RATE_50);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, BLEND_SPEED_50);
 	// 走りのブレンド設定
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, BLEND_RATE_100);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, BLEND_SPEED_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, BLEND_SPEED_100);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ROLL), true);
 	// 抜刀納刀のブレンド設定
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DRAW), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BATTLE_CLOSE), true);
 	// 戦闘待機のブレンド設定
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, BLEND_SPEED_100);
 	// 戦闘走りのブレンド設定
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, BLEND_RATE_100);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_FAST_RUN), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, BLEND_SPEED_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_FAST_RUN), true, BLEND_SPEED_100);
 	// ダメージのブレンド設定
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FLYING), true);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_RATE_30);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_SPEED_30);
 	// 攻撃のブレンド設定
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK1S), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK2), true);
@@ -190,9 +196,9 @@ void GreatSword::InitEffect(void)
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
 	// チャージアニメーション
-	effectController_->Add(POWER_UP_EFFECT, path + L"PowerUp/PowerUp.efkefc");
+	effectController_->Add(POWER_UP_EFFECT, path + EFFECT_FILE_POWERUP);
 
-	effectController_->Add(POWER_SLASH_EFFECT, path + L"Slash/Slash.efkefc");
+	effectController_->Add(POWER_SLASH_EFFECT, path + EFFECT_FILE_SLASH);
 	effectController_->Play(POWER_SLASH_EFFECT);
 }
 
@@ -200,9 +206,9 @@ void GreatSword::InitAttackSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 
-	soundController_->Add(static_cast<int>(SE::ATTACK1), path + L"Player/GreatSowrd.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::ATTACK2), path + L"Player/GreatSowrd.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::ATTACK3), path + L"Player/GreatSowrd.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK1), path + SOUND_FILE_GS_SE, SOUND_VOLUME);
+	soundController_->Add(static_cast<int>(SE::ATTACK2), path + SOUND_FILE_GS_SE, SOUND_VOLUME);
+	soundController_->Add(static_cast<int>(SE::ATTACK3), path + SOUND_FILE_GS_SE, SOUND_VOLUME);
 }
 
 void GreatSword::PlayAttackSound(void)
@@ -232,7 +238,7 @@ void GreatSword::SyncWeaponPlay()
 #pragma region 武器の同期＿非戦闘時
 
 	// メインウェポン（腰）
-	SyncWeaponToFream(L"mixamorig:Spine2", GSOWRD_SPINE_ROT, GSOWRD_SPINE_POS,
+	SyncWeaponToFream(BONE_SPINE2.c_str(), GSOWRD_SPINE_ROT, GSOWRD_SPINE_POS,
 		transform_, transWeapon_);
 
 #pragma endregion
@@ -243,7 +249,7 @@ void GreatSword::SyncWeaponBattle()
 #pragma region 武器の同期（戦闘時）
 
 	// メインウェポン（右手）
-	SyncWeaponToFream(L"mixamorig:RightHandMiddle1", GSOWRD_HAND_ROT, GSOWRD_HAND_POS,
+	SyncWeaponToFream(BONE_RIGHT_HAND.c_str(), GSOWRD_HAND_ROT, GSOWRD_HAND_POS,
 		transform_, transWeapon_);
 
 #pragma endregion

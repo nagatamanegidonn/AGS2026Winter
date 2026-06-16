@@ -28,6 +28,17 @@
 
 namespace
 {
+	// パス・リソース関係
+	const std::wstring DIR_PATH_PLAYER2 = L"Player2/";
+	const std::wstring EFFECT_FILE_POWERUP = L"PowerUp/PowerUp.efkefc";
+	const std::wstring EFFECT_FILE_SLASH = L"Slash/Slash.efkefc";
+	const std::wstring SOUND_FILE_SWING = L"Player/Bow1.mp3";
+	const std::wstring SOUND_FILE_SHOT = L"Player/BowShot.mp3";
+	// 同期用ボーン名（Mixamoの規格名）
+	const std::wstring BONE_SPINE = L"mixamorig:Spine";
+	const std::wstring BONE_LEFT_HAND = L"mixamorig:LeftHandMiddle1";
+	const std::wstring BONE_RIGHT_HAND = L"mixamorig:RightHand";
+	// 初期化座標、回転
 	const VECTOR START_POS = VECTOR{ 0.0f, -30.0f, 0.0f };
 	const VECTOR START_LOCAL_ROT
 		= VECTOR{ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) };
@@ -69,7 +80,6 @@ namespace
 		{ static_cast<int>(Player::ANIM_TYPE::ITEM_SET_E), L"Normal/Tender Placement.mv1", 35.0f, 0, 170.0f, 250.0f },
 		{ static_cast<int>(Player::ANIM_TYPE::ITEM_DRINK), L"Normal/Drinking.mv1", 50.0f, 0, 40.0f, 160.0f },
 	};
-
 	// アクションデータリスト
 	// 攻撃情報の設定
 	const CharaBase::ActionData ATTRCK_ATTRCK1S_DATA
@@ -79,10 +89,14 @@ namespace
 	const CharaBase::ActionData FLYING_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::DOWN) };
 	const CharaBase::ActionData DOWN_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,static_cast<int>(Player::ANIM_TYPE::IDLE) };
 	const CharaBase::ActionData IDLE_DATA = { false, -1, -1.0f, -1.0f,-1.0f,0.0f,-1 };
+	// 武器カプセル関係
+	constexpr VECTOR WEAPON_CAPSULE_TOP = { 0.0f, 110.0f, 0.0f };
+	constexpr VECTOR WEAPON_CAPSULE_DOWN = { 0.0f, -30.0f, 0.0f };
+	constexpr float CAP_RADIUS = 10.0f;
 
-	constexpr float BLEND_RATE_30 = 3.0f;
-	constexpr float BLEND_RATE_50 = 5.0f;
-	constexpr float BLEND_RATE_100 = 10.0f;
+	constexpr float BLEND_SPEED_30 = 3.0f;
+	constexpr float BLEND_SPEED_50 = 5.0f;
+	constexpr float BLEND_SPEED_100 = 10.0f;
 }
 
 #pragma endregion
@@ -109,7 +123,7 @@ void Arrow::InitParam(void)
 	// メインウェポン
 	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
 	// 初期座標
-	transWeapon_.pos = prePos_ = START_POS;
+	transWeapon_.pos = prePos_ = AsoUtility::VECTOR_ZERO;;
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal =
 		Quaternion::Euler(START_LOCAL_ROT);
@@ -127,9 +141,9 @@ void Arrow::InitParam(void)
 
 	// カプセルの設定
 	capsuleWeapon_ = std::make_shared<Capsule>(transWeapon_);
-	capsuleWeapon_->SetLocalPosTop({ 0.0f, 110.0f, 0.0f });
-	capsuleWeapon_->SetLocalPosDown({ 0.0f, -30.0f, 0.0f });
-	capsuleWeapon_->SetRadius(10.0f);
+	capsuleWeapon_->SetLocalPosTop(WEAPON_CAPSULE_TOP);
+	capsuleWeapon_->SetLocalPosDown(WEAPON_CAPSULE_DOWN);
+	capsuleWeapon_->SetRadius(CAP_RADIUS);
 
 	// 抜刀ダッシュの有無
 	isBattleDash_ = false;
@@ -145,7 +159,7 @@ void Arrow::InitParam(void)
 
 void Arrow::InitAnimation(void)
 {
-	std::wstring path = Application::PATH_MODEL + L"Player2/";
+	std::wstring path = Application::PATH_MODEL + DIR_PATH_PLAYER2;
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 
 	// アニメーションの登録
@@ -156,21 +170,21 @@ void Arrow::InitAnimation(void)
 	}
 
 	// 待機ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, BLEND_RATE_50);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, BLEND_SPEED_50);
 	// 冬からの新規ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, BLEND_RATE_100);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, BLEND_SPEED_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, BLEND_SPEED_100);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ROLL), true);
 	// 抜刀、納刀ブレンド
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DRAW), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BATTLE_CLOSE), true);
 	// 戦闘時待機ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, BLEND_SPEED_100);
 	// 武器持ち移動ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, BLEND_SPEED_100);
 	// ダメージブレンド
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FLYING), true);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_RATE_30);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_SPEED_30);
 	// 攻撃ブレンド
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK1S), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK2), true);
@@ -185,8 +199,8 @@ void Arrow::InitEffect(void)
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
 
-	effectController_->Add(POWER_UP_EFFECT, path + L"PowerUp/PowerUp.efkefc");
-	effectController_->Add(POWER_SLASH_EFFECT, path + L"Slash/Slash.efkefc");
+	effectController_->Add(POWER_UP_EFFECT, path + EFFECT_FILE_POWERUP);
+	effectController_->Add(POWER_SLASH_EFFECT, path + EFFECT_FILE_SLASH);
 	effectController_->Play(POWER_SLASH_EFFECT);
 }
 
@@ -194,8 +208,8 @@ void Arrow::InitAttackSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 
-	soundController_->Add(static_cast<int>(SE::ATTACK1), path + L"Player/Bow1.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::ATTACK2), path + L"Player/BowShot.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK1), path + SOUND_FILE_SWING, 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK2), path + SOUND_FILE_SHOT, 0.6f);
 }
 
 void Arrow::PlayAttackSound(void)
@@ -206,7 +220,7 @@ void Arrow::PlayAttackSound(void)
 		)
 	{
 		// フレームの取得
-		int frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:RightHand");
+		int frmNo = MV1SearchFrame(transform_.modelId, BONE_RIGHT_HAND.c_str());
 		if (frmNo == -1)
 		{
 			// エラー処理またはログ出力
@@ -246,7 +260,7 @@ void Arrow::SyncWeaponPlay()
 {
 	// 武器の同期＿非戦闘時
 	// メインウェポン（背中）
-	SyncWeaponToFream(L"mixamorig:Spine", BOW_SPINE_ROT, BOW_SPINE_POS,
+	SyncWeaponToFream(BONE_SPINE.c_str(), BOW_SPINE_ROT, BOW_SPINE_POS,
 		transform_, transWeapon_);
 }
 
@@ -254,11 +268,11 @@ void Arrow::SyncWeaponBattle()
 {
 	// 武器の同期（戦闘時）
 	// メインウェポン（左手）
-	SyncWeaponToFream(L"mixamorig:LeftHandMiddle1", BOW_LHAND_ROT, BOW_LHAND_POS,
+	SyncWeaponToFream(BONE_LEFT_HAND.c_str(), BOW_LHAND_ROT, BOW_LHAND_POS,
 		transform_, transWeapon_);
 
 	// サブウェポン（右手）
-	SyncWeaponToFream(L"mixamorig:RightHand", ARROW_RHAND_ROT, ARROW_RHAND_POS,
+	SyncWeaponToFream(BONE_RIGHT_HAND.c_str(), ARROW_RHAND_ROT, ARROW_RHAND_POS,
 		transform_, transSubWeapon_);
 }
 

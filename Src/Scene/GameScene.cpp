@@ -107,79 +107,19 @@ void GameScene::Init(void)
 	// 初期化
 	GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
 
-	auto& users = NetManager::GetInstance().GetNetUsers();
-	auto& nIns = NetManager::GetInstance();
-
 	// フラッシュ用フェードクラスの生成
 	fader_ = std::make_unique<Fader>(0xffffff);
 	fader_->Init(FLASH_FADE_SPEED);
 
-	// ボスの生成
-	boss_ = std::make_unique<Boss>(NetManager::GetInstance().GetHost().key, 0);
-	boss_->Init();
-
-	// モンスターの設定
-	// 1体目
-	auto mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 1);
-	mons->Init();
-	monsters_.emplace_back(mons);
-	// 2体目
-	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 2);
-	mons->Init();
-	monsters_.emplace_back(mons);
-	// 3体目
-	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 3);
-	mons->Init();
-	monsters_.emplace_back(mons);
+	// 敵クラスの生成
+	CreateEnemy();
+	
+	// プレイヤーの生成
+	CreatePlayer();
 
 	// 移動用の変数初期化
 	textId_ = "";
 	stepId_ = 0;
-
-	for (auto& user : users)
-	{
-		auto player = std::make_shared<Player>(user.first, this, user.second.playerType);
-
-		// モデルの基本設定
-		switch (nIns.GetWeapon(user.first))
-		{
-		case SOWRD_ID:
-			player = std::make_shared<Sword>(user.first, this, user.second.playerType);
-			break;
-		case GREAT_SOWRD_ID:
-			player = std::make_shared<GreatSword>(user.first, this, user.second.playerType);
-			break;
-		case ARROW_ID:
-			player = std::make_shared<Arrow>(user.first, this, user.second.playerType);
-			break;
-		default:
-			break;
-		}
-
-		player->Init();
-
-		// 自分用のクラス	
-		if (user.first == NetManager::GetInstance().GetSelf().key)
-		{
-			// ステージの設定
-			stage_ = std::make_unique<Stage>(*player, *boss_);
-			stage_->SetEnemy(monsters_);
-			stage_->Init();
-			stage_->ChangeStage(Stage::NAME::MAIN_PLANET);
-
-			// スカイドーム
-			skyDome_ = std::make_unique<SkyDome>(player->GetTransform());
-			skyDome_->Init();
-
-			// カメラの設定
-			SceneManager::GetInstance().GetCamera().lock()->SetFollow(&player->GetTransform());
-			SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FOLLOW);
-		}
-		// プレイヤーを格納
-		players_.push_back(std::move(player));
-	}
-	// ステージにプレイヤーを参照させる
-	stage_->SetPlayers(players_);
 
 	// 背景初期化
 	grid_ = std::make_unique<Grid>();
@@ -220,26 +160,7 @@ void GameScene::Update(void)
 	}
 
 	// フェード更新
-	fader_->Update();
-	Fader::NET_STATE fState = fader_->GetState();
-	switch (fState)
-	{
-		// フェードアウト開始
-	case Fader::NET_STATE::FADE_OUT:
-		if (fader_->IsEnd())
-		{
-			fader_->SetFade(Fader::NET_STATE::FADE_IN);
-		}
-		break;
-		// フェードイン開始
-	case Fader::NET_STATE::FADE_IN:
-		if (fader_->IsEnd())
-		{
-			// 明転後、シーン遷移終了
-			fader_->SetFade(Fader::NET_STATE::NONE);
-		}
-		break;
-	}
+	UpdateFade();
 
 	// シーン遷移が間に合ってないプレイヤーのために待機
 	float limit = stepCountDown_ - SceneManager::GetInstance().GetTotalGameTime();
@@ -253,11 +174,6 @@ void GameScene::Update(void)
 		NetManager::GetInstance().ChangeGameState(GAME_STATE::GAME_PLAYING);
 	}
 
-#ifdef _DEBUG
-	Measure::GetInstance().Start();
-	Measure::GetInstance().Watch(L"01 Application START");
-#endif
-
 	// 自身のアクション記録(履歴じゃない)をリセット
 	NetManager::GetInstance().ResetAction();
 
@@ -266,144 +182,11 @@ void GameScene::Update(void)
 	stage_->Update();
 	grid_->Update();
 
-	// ボスと一番近いプレイヤーを保存する変数
-	Transform closestTrans;
-	Transform trans = Transform();
-
-	bool isBattle = false;
 	// プレイヤーの更新
-	for (auto& player : players_)
-	{
-		player->Update();
-
-		// BGM設定
-		if (player->GetAreaId() == boss_->GetAreaId() && player->IsSelf()
-			&& boss_->IsBattle())
-		{
-			if (soundRate_ < 1.0f)
-			{
-				soundRate_ += SceneManager::GetInstance().GetDeltaTime() * SOUND_RATE_SPEED;
-			}
-			else
-			{
-				soundRate_ = 1.0f;
-			}
-			// 音の再生
-			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
-		}
-		else if (player->IsSelf())
-		{
-			if (soundRate_ > 0.0f) {
-				soundRate_ -= SceneManager::GetInstance().GetDeltaTime() * SOUND_RATE_SPEED;
-			}
-			else {
-				soundRate_ = 0.0f;
-			}
-			// BGMの音量設定
-			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
-		}
-
-		// 同じエリアにいないなら無視
-		if (player->GetAreaId() != boss_->GetAreaId())
-		{
-			continue;
-		}
-
-		isBattle = true;
-		auto& pPos = player->GetTransform().pos;
-		auto& ePos = boss_->GetTransform().pos;
-
-		// プレイヤーとの衝突判定
-		VECTOR diff = VSub(pPos, ePos);
-		float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
-
-		// 状態別処理
-		// PLAY状態でプレイヤーが近づいたらターゲットにする
-		if (boss_->IsState(Boss::STATE::PLAY))
-		{
-			if (disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
-			{
-				boss_->SetFollow(&player->GetTransform());
-				for (auto& mons : monsters_)
-				{
-					mons->SetFollow(&player->GetTransform());
-				}
-
-				trans = player->GetTransform(); // BATTLEに引き継ぐ初期ターゲット
-			}
-		}
-		// BATTLE状態で一番近いプレイヤーをターゲットにする
-		else if (boss_->IsState(Boss::STATE::BATTLE))
-		{
-			if (disPow < minDist_)
-			{
-				minDist_ = disPow;
-				closestTrans = player->GetTransform();
-				boss_->SetFollow(&player->GetTransform());
-				for (auto& mons : monsters_)
-				{
-					mons->SetFollow(&player->GetTransform());
-				}
-			}
-		}
-	}
-	for (auto& shot : shots_)
-	{
-		shot->Update();
-	}
-
-	// 同じエリアにいなくても機能
-	// バトル中同じリアにいるプレイヤーが1人もいなかったら
-	if (!isBattle && boss_->IsState(Boss::STATE::BATTLE))
-	{
-		boss_->SetBattleCancel();//バトル中止
-	}
-	// 体力が減ったら移動（線形補間）
-	// LerpMove中は使用不可
-	if ((boss_->GetLerpTime() <= 0.0f || !stage_->GetActivePlanet().lock()->CheckArea(boss_->GetTransform().pos))
-		&& !boss_->IsState(Boss::STATE::LERP_MOVE))
-	{
-		textId_ = std::to_string(boss_->GetAreaId());
-		if (boss_->GetLerpTime() <= 0.0f)
-		{
-			// ボスの現在エリアから次の移動場所決定のIDを決める
-			switch (boss_->GetAreaId())
-			{
-			case 1:	// エリア1ならエリア2へ
-				textId_ = AREA_FIRST;
-				break;
-			case 2:	// エリア2ならエリア1へ
-				textId_ = AREA_SECOND;
-				break;
-			default:
-				break;
-			}
-		}
-		stepId_ = 0;
-		boss_->StartLerp();// 移動開始
-		boss_->SetLerpPos(stage_->GetActivePlanet().lock()->GetLerpPos(textId_, stepId_));
-	}
-	// 線形補間が終わったら次があるか調べる
-	else if (!boss_->IsLerp() && boss_->IsState(Boss::STATE::LERP_MOVE))
-	{
-		stepId_ += 1;
-		if (stage_->GetActivePlanet().lock()->CheckLerpPos(textId_, stepId_))
-		{
-			boss_->SetLerpPos(stage_->GetActivePlanet().lock()->GetLerpPos(textId_, stepId_));
-		}
-		else
-		{
-			stepId_ = 0;
-			boss_->SetBattleCancel();// バトル中止
-		}
-	}
+	UpdatePlayer();
 
 	// ボスの更新
-	boss_->Update();
-	for (auto& mons : monsters_)
-	{
-		mons->Update();
-	}
+	UpdateEnemy();
 
 	// 通信を送る
 	NetManager::GetInstance().Send(NET_DATA_TYPE::ACTION_HIS_ALL);
@@ -811,4 +594,250 @@ void GameScene::ShotHitEnemy(ShotBase& shot, EnemyBase& enemy)
 	}
 	// 弾の状態を変更
 	shot.ChangeState();
+}
+
+void GameScene::CreateEnemy(void)
+{
+	// ボスの生成
+	boss_ = std::make_unique<Boss>(NetManager::GetInstance().GetHost().key, 0);
+	boss_->Init();
+
+	// モンスターの設定
+	// 1体目
+	auto mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 1);
+	mons->Init();
+	monsters_.emplace_back(mons);
+	// 2体目
+	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 2);
+	mons->Init();
+	monsters_.emplace_back(mons);
+	// 3体目
+	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 3);
+	mons->Init();
+	monsters_.emplace_back(mons);
+
+}
+
+void GameScene::CreatePlayer(void)
+{
+	auto& users = NetManager::GetInstance().GetNetUsers();
+	auto& nIns = NetManager::GetInstance();
+
+	for (auto& user : users)
+	{
+		auto player = std::make_shared<Player>(user.first, this, user.second.playerType);
+
+		// モデルの基本設定
+		switch (nIns.GetWeapon(user.first))
+		{
+		case SOWRD_ID:
+			player = std::make_shared<Sword>(user.first, this, user.second.playerType);
+			break;
+		case GREAT_SOWRD_ID:
+			player = std::make_shared<GreatSword>(user.first, this, user.second.playerType);
+			break;
+		case ARROW_ID:
+			player = std::make_shared<Arrow>(user.first, this, user.second.playerType);
+			break;
+		default:
+			break;
+		}
+
+		player->Init();
+
+		// 自分用のクラス	
+		if (user.first == NetManager::GetInstance().GetSelf().key)
+		{
+			// ステージの設定
+			stage_ = std::make_unique<Stage>(*player, *boss_);
+			stage_->SetEnemy(monsters_);
+			stage_->Init();
+			stage_->ChangeStage(Stage::NAME::MAIN_PLANET);
+
+			// スカイドーム
+			skyDome_ = std::make_unique<SkyDome>(player->GetTransform());
+			skyDome_->Init();
+
+			// カメラの設定
+			SceneManager::GetInstance().GetCamera().lock()->SetFollow(&player->GetTransform());
+			SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FOLLOW);
+		}
+		// プレイヤーを格納
+		players_.push_back(std::move(player));
+	}
+
+	// ステージにプレイヤーを参照させる
+	stage_->SetPlayers(players_);
+}
+
+void GameScene::UpdateFade(void)
+{
+	fader_->Update();
+	Fader::NET_STATE fState = fader_->GetState();
+	switch (fState)
+	{
+		// フェードアウト開始
+	case Fader::NET_STATE::FADE_OUT:
+		if (fader_->IsEnd())
+		{
+			fader_->SetFade(Fader::NET_STATE::FADE_IN);
+		}
+		break;
+		// フェードイン開始
+	case Fader::NET_STATE::FADE_IN:
+		if (fader_->IsEnd())
+		{
+			// 明転後、シーン遷移終了
+			fader_->SetFade(Fader::NET_STATE::NONE);
+		}
+		break;
+	}
+}
+
+void GameScene::UpdatePlayer(void)
+{
+	// ボスと一番近いプレイヤーを保存する変数
+	Transform closestTrans;
+	Transform trans = Transform();
+
+	bool isBattle = false;
+
+	for (auto& player : players_)
+	{
+		player->Update();
+
+		// BGM設定
+		if (player->GetAreaId() == boss_->GetAreaId() && player->IsSelf()
+			&& boss_->IsBattle())
+		{
+			if (soundRate_ < 1.0f)
+			{
+				soundRate_ += SceneManager::GetInstance().GetDeltaTime() * SOUND_RATE_SPEED;
+			}
+			else
+			{
+				soundRate_ = 1.0f;
+			}
+			// 音の再生
+			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
+		}
+		else if (player->IsSelf())
+		{
+			if (soundRate_ > 0.0f) {
+				soundRate_ -= SceneManager::GetInstance().GetDeltaTime() * SOUND_RATE_SPEED;
+			}
+			else {
+				soundRate_ = 0.0f;
+			}
+			// BGMの音量設定
+			SoundManager::GetInstance().ChengeVolume(SoundManager::SRC::BATTLE_BGM, soundRate_);
+		}
+
+		// 同じエリアにいないなら無視
+		if (player->GetAreaId() != boss_->GetAreaId())
+		{
+			continue;
+		}
+
+		isBattle = true;
+		auto& pPos = player->GetTransform().pos;
+		auto& ePos = boss_->GetTransform().pos;
+
+		// プレイヤーとの衝突判定
+		VECTOR diff = VSub(pPos, ePos);
+		float disPow = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
+
+		// 状態別処理
+		// PLAY状態でプレイヤーが近づいたらターゲットにする
+		if (boss_->IsState(Boss::STATE::PLAY))
+		{
+			if (disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
+			{
+				boss_->SetFollow(&player->GetTransform());
+				for (auto& mons : monsters_)
+				{
+					mons->SetFollow(&player->GetTransform());
+				}
+
+				trans = player->GetTransform(); // BATTLEに引き継ぐ初期ターゲット
+			}
+		}
+		// BATTLE状態で一番近いプレイヤーをターゲットにする
+		else if (boss_->IsState(Boss::STATE::BATTLE))
+		{
+			if (disPow < minDist_)
+			{
+				minDist_ = disPow;
+				closestTrans = player->GetTransform();
+				boss_->SetFollow(&player->GetTransform());
+				for (auto& mons : monsters_)
+				{
+					mons->SetFollow(&player->GetTransform());
+				}
+			}
+		}
+	}
+
+	// 同じエリアにいなくても機能
+	// バトル中同じリアにいるプレイヤーが1人もいなかったら
+	if (!isBattle && boss_->IsState(Boss::STATE::BATTLE))
+	{
+		boss_->SetBattleCancel();//バトル中止
+	}
+}
+
+void GameScene::UpdateEnemy(void)
+{
+	// 体力が減ったら移動（線形補間）
+	// LerpMove中は使用不可
+	if ((boss_->GetLerpTime() <= 0.0f || !stage_->GetActivePlanet().lock()->CheckArea(boss_->GetTransform().pos))
+		&& !boss_->IsState(Boss::STATE::LERP_MOVE))
+	{
+		textId_ = std::to_string(boss_->GetAreaId());
+		if (boss_->GetLerpTime() <= 0.0f)
+		{
+			// ボスの現在エリアから次の移動場所決定のIDを決める
+			switch (boss_->GetAreaId())
+			{
+			case 1:	// エリア1ならエリア2へ
+				textId_ = AREA_FIRST;
+				break;
+			case 2:	// エリア2ならエリア1へ
+				textId_ = AREA_SECOND;
+				break;
+			default:
+				break;
+			}
+		}
+		stepId_ = 0;
+		boss_->StartLerp();// 移動開始
+		boss_->SetLerpPos(stage_->GetActivePlanet().lock()->GetLerpPos(textId_, stepId_));
+	}
+	// 線形補間が終わったら次があるか調べる
+	else if (!boss_->IsLerp() && boss_->IsState(Boss::STATE::LERP_MOVE))
+	{
+		stepId_ += 1;
+		if (stage_->GetActivePlanet().lock()->CheckLerpPos(textId_, stepId_))
+		{
+			boss_->SetLerpPos(stage_->GetActivePlanet().lock()->GetLerpPos(textId_, stepId_));
+		}
+		else
+		{
+			stepId_ = 0;
+			boss_->SetBattleCancel();// バトル中止
+		}
+	}
+
+	// 弾の更新
+	for (auto& shot : shots_)
+	{
+		shot->Update();
+	}
+
+	// ボスの更新
+	boss_->Update();
+	for (auto& mons : monsters_)
+	{
+		mons->Update();
+	}
 }

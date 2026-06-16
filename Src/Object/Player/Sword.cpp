@@ -28,6 +28,15 @@
 
 namespace
 {
+	// パス・リソース関係
+	const std::wstring DIR_PATH_PLAYER2 = L"Player2/";
+	const std::wstring EFFECT_FILE_POWERUP = L"PowerUp/PowerUp.efkefc";
+	const std::wstring EFFECT_FILE_SLASH = L"Slash/Slash.efkefc";
+	const std::wstring SOUND_FILE_SWING = L"Player/SwordSwing.mp3";
+	const std::wstring SOUND_FILE_SLASH = L"Player/SowrdSlash.mp3";
+	// 同期用ボーン名（Mixamoの規格名）
+	const std::wstring BONE_SPINE = L"mixamorig:Spine";
+	const std::wstring BONE_RIGHT_HAND = L"mixamorig:RightHandMiddle1";
 	// アニメーションリスト
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
@@ -77,15 +86,17 @@ namespace
 	// 武器カプセル関係
 	constexpr VECTOR WEAPON_CAPSULE_TOP = { 0.0f, 125.0f, 0.0f };
 	constexpr VECTOR WEAPON_CAPSULE_DOWN = { 0.0f, 0.0f, 0.0f };
+	constexpr float CAP_RADIUS = 10.0f;
 	// サウンド発生時間
 	constexpr float ATTRCK1_SE_STIME = 20.0f;
 	constexpr float ATTRCK2_SE_STIME = 25.0f;
 	constexpr float ATTRCK3_SE_STIME = 25.0f;
+	constexpr float SOUND_VOLUME = 0.6f;
 	constexpr float HALF_RATE = 0.5f;
 
-	constexpr float BLEND_RATE_30 = 3.0f;
-	constexpr float BLEND_RATE_50 = 5.0f;
-	constexpr float BLEND_RATE_100 = 10.0f;
+	constexpr float BLEND_SPEED_30 = 3.0f;
+	constexpr float BLEND_SPEED_50 = 5.0f;
+	constexpr float BLEND_SPEED_100 = 10.0f;
 }
 
 #pragma endregion
@@ -113,7 +124,7 @@ void Sword::InitParam(void)
 	// メインウェポン
 	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
 	// 初期座標
-	transWeapon_.pos = prePos_ = { 0.0f, -30.0f, 0.0f };
+	transWeapon_.pos = prePos_ = AsoUtility::VECTOR_ZERO;
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal =
 		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
@@ -126,7 +137,7 @@ void Sword::InitParam(void)
 	capsuleWeapon_ = std::make_shared<Capsule>(transWeapon_);
 	capsuleWeapon_->SetLocalPosTop(WEAPON_CAPSULE_TOP);
 	capsuleWeapon_->SetLocalPosDown(WEAPON_CAPSULE_DOWN);
-	capsuleWeapon_->SetRadius(10.0f); 
+	capsuleWeapon_->SetRadius(CAP_RADIUS);
 
 	// 抜刀ダッシュの有無
 	isBattleDash_ = true;
@@ -143,11 +154,9 @@ void Sword::InitParam(void)
 
 void Sword::InitAnimation(void)
 {
-	std::wstring path = Application::PATH_MODEL + L"Player2/";
+	std::wstring path = Application::PATH_MODEL + DIR_PATH_PLAYER2;
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 
-	animationController_->Add(static_cast<int>(ANIM_TYPE::IDLE), path + L"Axe/Idle.mv1", 20.0f);
-	
 	// アニメーションの登録
 	for (const auto& anim : ANIM_LIST)
 	{
@@ -156,22 +165,22 @@ void Sword::InitAnimation(void)
 	}
 
 	// 従来からのブレンド設定
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, BLEND_RATE_50);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::IDLE), true, BLEND_SPEED_50);
 	// 冬からの新規ブレンド
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, BLEND_RATE_100);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::RUN), true, BLEND_SPEED_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FAST_RUN), true, BLEND_SPEED_100);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ROLL), true);
 	// 抜刀、納刀ブレンド設定
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DRAW), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BATTLE_CLOSE), true);
 	// バトル時アニメーションブレンド設定
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_IDLE), true, BLEND_SPEED_100);
 	// 武器持ち移動
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, BLEND_RATE_100);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_FAST_RUN), true, BLEND_RATE_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_RUN), true, BLEND_SPEED_100);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::BTLLE_FAST_RUN), true, BLEND_SPEED_100);
 	// ダメージ（共通）
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::FLYING), true);
-	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_RATE_30);
+	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::DOWN), true, BLEND_SPEED_30);
 	// 攻撃
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK1S), true);
 	animationController_->SetIsBlend(static_cast<int>(ANIM_TYPE::ATTACK2), true);
@@ -187,8 +196,8 @@ void Sword::InitEffect(void)
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
 
-	effectController_->Add(POWER_UP_EFFECT, path + L"PowerUp/PowerUp.efkefc");
-	effectController_->Add(POWER_SLASH_EFFECT, path + L"Slash/Slash.efkefc");
+	effectController_->Add(POWER_UP_EFFECT, path + EFFECT_FILE_POWERUP);
+	effectController_->Add(POWER_SLASH_EFFECT, path + EFFECT_FILE_SLASH);
 	effectController_->Play(POWER_SLASH_EFFECT);
 }
 
@@ -196,9 +205,9 @@ void Sword::InitAttackSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 
-	soundController_->Add(static_cast<int>(SE::ATTACK1), path + L"Player/SwordSwing.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::ATTACK2), path + L"Player/SwordSwing.mp3", 0.6f);
-	soundController_->Add(static_cast<int>(SE::ATTACK3), path + L"Player/SowrdSlash.mp3", 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK1), path + SOUND_FILE_SWING, SOUND_VOLUME);
+	soundController_->Add(static_cast<int>(SE::ATTACK2), path + SOUND_FILE_SWING, SOUND_VOLUME);
+	soundController_->Add(static_cast<int>(SE::ATTACK3), path + SOUND_FILE_SLASH, SOUND_VOLUME);
 }
 
 void Sword::PlayAttackSound(void)
@@ -228,7 +237,7 @@ void Sword::SyncWeaponPlay()
 #pragma region 武器の同期＿非戦闘時
 
 	// メインウェポン（背中）
-	SyncWeaponToFream(L"mixamorig:Spine", SOWRD_SPINE_ROT, SOWRD_SPINE_POS,
+	SyncWeaponToFream(BONE_SPINE.c_str(), SOWRD_SPINE_ROT, SOWRD_SPINE_POS,
 		transform_, transWeapon_);
 
 #pragma endregion
@@ -238,7 +247,7 @@ void Sword::SyncWeaponBattle()
 #pragma region 武器の同期（戦闘時）
 
 	// メインウェポン（右手）
-	SyncWeaponToFream(L"mixamorig:RightHandMiddle1", SOWRD_HAND_ROT, SOWRD_HAND_POS,
+	SyncWeaponToFream(BONE_RIGHT_HAND.c_str(), SOWRD_HAND_ROT, SOWRD_HAND_POS,
 		transform_, transWeapon_);
 
 #pragma endregion

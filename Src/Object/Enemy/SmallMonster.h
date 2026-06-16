@@ -98,7 +98,7 @@ private:
 	float dameRate_;		// 受けるダメージ倍率
 	int attrckCount_;		// 連続攻撃の際に使用
 	VECTOR attrckPos_;		// 攻撃判定中心位置
-	float attrckRadius = 0.0f;	
+	float attrckRadius;		// 攻撃半径
 
 	// 状態管理(状態遷移時初期処理)
 	std::map<STATE, std::function<void(void)>> stateChanges_;

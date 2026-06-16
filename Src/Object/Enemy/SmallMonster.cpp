@@ -23,6 +23,8 @@
 
 namespace
 {
+	// パス・リソース関係
+	const std::wstring DIR_PATH_MONSTER = L"Enemy/Monster/";
 	// ボーンネーム
 	const std::wstring BONE_NAME_BODY = L"Bone002";
 	// アニメーションリスト
@@ -92,6 +94,7 @@ SmallMonster::SmallMonster(int key, int createNo)
 	followTime_ = 0.0f;
 	// 攻撃位置
 	attrckPos_ = AsoUtility::VECTOR_ZERO;
+	attrckRadius = 0.0f;
 	dameRate_ = DEFAULT_DAMAGE_RATE;
 
 	// 当たり判定
@@ -374,7 +377,7 @@ void SmallMonster::SetFollow(const Transform* follow)
 
 void SmallMonster::InitAnimation(void)
 {
-	std::wstring path = Application::PATH_MODEL + L"Enemy/Monster/";
+	std::wstring path = Application::PATH_MODEL + DIR_PATH_MONSTER;
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 
 	// アニメーションの登録

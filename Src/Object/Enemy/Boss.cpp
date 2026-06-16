@@ -28,6 +28,13 @@ namespace
 	const std::wstring BONE_CHEST = L"Chest_M";
 	const std::wstring BONE_FINGERS_L = L"Fingers1_L";
 	const std::wstring BONE_FINGERS_R = L"Fingers1_R";
+	// パス・リソース関係
+	const std::wstring DIR_PATH_BOSS = L"Enemy/Boss/";
+	const std::wstring EFFECT_FILE_DASH = L"Dash/Dash.efkefc";
+	const std::wstring EFFECT_FILE_DAME = L"Damage/Damage.efkefc";
+	const std::wstring SOUND_FILE_DASH = L"Boss/Dash.mp3";
+	const std::wstring SOUND_FILE_CLOW = L"Boss/Clow.mp3";
+	const std::wstring SOUND_FILE_STAMP = L"Boss/Stamp.mp3";
 	// アニメーションリスト
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
@@ -72,6 +79,7 @@ namespace
 	const CharaBase::ActionData ATTRCK_L_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
 	const CharaBase::ActionData ATTRCK_R_CLOW_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
 	const CharaBase::ActionData ATTRCK_DASH_DATA = { false, -1, 9.0f, 17.0f,-1.0f,0.0f,-1, };
+	constexpr int ATTACK_COUNT = 3;
 	// カプセルの初期値
 	constexpr VECTOR CAP_LOACL_TOP = { 0.0f, 310.0f, 0.0f };
 	constexpr VECTOR CAP_LOACL_DOWN = { 0.0f, 300.0f, 0.0f };
@@ -138,6 +146,7 @@ Boss::Boss(int key, int createNo)
 
 	// 攻撃位置
 	attrckPos_ = AsoUtility::VECTOR_ZERO;
+	attrckRadius = 0.0f;
 	dameRate_ = 1.0f;
 
 	// 当たり判定
@@ -535,7 +544,7 @@ bool Boss::IsBattle(void) const
 
 void Boss::InitAnimation(void)
 {
-	std::wstring path = Application::PATH_MODEL + L"Enemy/Boss/";
+	std::wstring path = Application::PATH_MODEL + DIR_PATH_BOSS;
 	animationController_ = std::make_unique<AnimationController>(transform_.modelId);
 
 	// アニメーションの登録
@@ -566,17 +575,17 @@ void Boss::InitEffect(void)
 	std::wstring path = Application::PATH_EFFECT;
 	effectController_ = std::make_unique<EffectController>();
 
-	effectController_->Add(DASH_EFFECT, path + L"Dash/Dash.efkefc");
-	effectController_->Add(DAMAGE_EFFECT, path + L"Damage/Damage.efkefc");
+	effectController_->Add(DASH_EFFECT, path + EFFECT_FILE_DASH);
+	effectController_->Add(DAMAGE_EFFECT, path + EFFECT_FILE_DAME);
 }
 void Boss::InitSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 	soundController_ = std::make_unique<SoundController>();
 
-	soundController_->Add(DASH_SOUND, path + L"Boss/Dash.mp3", 1.0f);
-	soundController_->Add(CLOW_ATTACK_SOUND, path + L"Boss/Clow.mp3", 1.0f);
-	soundController_->Add(STAMP_ATTACK_SOUND, path + L"Boss/Stamp.mp3", 2.0f);
+	soundController_->Add(DASH_SOUND, path + SOUND_FILE_DASH, 1.0f);
+	soundController_->Add(CLOW_ATTACK_SOUND, path + SOUND_FILE_CLOW, 1.0f);
+	soundController_->Add(STAMP_ATTACK_SOUND, path + SOUND_FILE_STAMP, 2.0f);
 }
 
 #pragma region StateによるUpdateの切り替え
@@ -768,7 +777,7 @@ void Boss::UpdateBattle(void)
 			{
 				// 攻撃方法
 				attrckTypeState_ = ATTRCK_TYPE::CLOW_R;
-				attrckCount_ = 3;
+				attrckCount_ = ATTACK_COUNT;
 			}
 			// 攻撃準備へ
 			ChangeState(STATE::ATTRCK_READY);
@@ -776,12 +785,12 @@ void Boss::UpdateBattle(void)
 		// プレイヤーが索敵範囲内	// 回り続けると回転だけなので突進を絡める
 		else if (disPow > DASH_RADIUS * DASH_RADIUS)
 		{
-			ChangeState(STATE::ATTRCK_DASH);//接近
+			ChangeState(STATE::ATTRCK_DASH);	//接近
 		}
 		// プレイヤーが索敵範囲内	// 回り続けると回転だけなので突進を絡める
 		else if (disPow < MOVE_RADIUS * MOVE_RADIUS)
 		{
-			ChangeState(STATE::FOLLOW);//接近
+			ChangeState(STATE::FOLLOW);			//接近
 		}
 		else 
 		{
@@ -818,7 +827,7 @@ void Boss::UpdateFollow(void)
 		{
 			//攻撃方法
 			attrckTypeState_ = ATTRCK_TYPE::CLOW_R;
-			attrckCount_ = 3;
+			attrckCount_ = ATTACK_COUNT;
 		}
 
 		ChangeState(STATE::ATTRCK_READY);

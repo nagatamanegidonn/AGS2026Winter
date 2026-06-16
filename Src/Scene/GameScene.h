@@ -106,4 +106,13 @@ private:
 	// 投げ物と敵の当たり判定
 	void ShotHitEnemy(ShotBase& shot, EnemyBase& enemy);
 
+	// 生成関数、初期化処理
+	void CreateEnemy(void);
+	void CreatePlayer(void);
+
+	// 更新処理
+	void UpdateFade(void);	// フェード処理
+	void UpdatePlayer(void);
+	void UpdateEnemy(void);
+
 };

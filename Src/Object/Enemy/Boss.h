@@ -187,7 +187,7 @@ private:
 	// ƒ{ƒXŒÀ’è
 	int attrckCount_;		// ˜A‘±UŒ‚‚ÌÛ‚Ég—p
 	VECTOR attrckPos_;		// UŒ‚”»’è’†SˆÊ’u
-	float attrckRadius = 0.0f; // UŒ‚”¼Œa
+	float attrckRadius;		// UŒ‚”¼Œa
 
 	// ó‘ÔŠÇ—(ó‘Ô‘JˆÚ‰Šúˆ—)
 	std::map<STATE, std::function<void(void)>> stateChanges_;
