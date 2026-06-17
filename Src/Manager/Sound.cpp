@@ -7,7 +7,7 @@ Sound::Sound(void)
 	handleId_(-1),
 	pos_({ 0.0f,0.0f,0.0f }),
 	radius_(0.0f),		
-	maxVolume_(255),	// 音の最大音量
+	maxVolume_(255.0f),	// 音の最大音量
 	pauseTime_(0),		// 停止時の再生位置（ミリ秒）
 	isPaused_(false)	// 一時停止状態
 {
@@ -21,7 +21,7 @@ Sound::Sound(TYPE type, const std::wstring& path)
 	handleId_(-1),
 	pos_({ 0.0f,0.0f,0.0f }),
 	radius_(0.0f),
-	maxVolume_(255),	// 音の最大音量
+	maxVolume_(255.0f),	// 音の最大音量
 	pauseTime_(0),		// 停止時の再生位置（ミリ秒）
 	isPaused_(false)	// 一時停止状態
 {
@@ -164,12 +164,12 @@ void Sound::ChengeVolume(float per)
 	{
 		per = 0.0f;
 	}
-	ChangeVolumeSoundMem(static_cast<int>(per * static_cast<float>(maxVolume_)), handleId_);
+	ChangeVolumeSoundMem(static_cast<int>(per * maxVolume_), handleId_);
 }
 // 基本的にInit時のみ使用
 void Sound::ChengeMaxVolume(float per)
 {
-	maxVolume_ = 255 * per;
+	maxVolume_ = 255.0f * per;
 	ChengeVolume(1.0f);
 }
 
@@ -180,7 +180,7 @@ void Sound::Pause(TIMES times)
 
 	if (CheckSoundMem(handleId_) == 1) // 再生中なら
 	{
-		pauseTime_ = GetSoundCurrentTime(handleId_);
+		pauseTime_ = static_cast<int>(GetSoundCurrentTime(handleId_));
 		StopSoundMem(handleId_);
 		isPaused_ = true;
 	}

@@ -392,7 +392,12 @@ void TitleScene::MouseUpdate(void)
 				std::wstring ipStr = inputTextArea_->GetText();
 				int d1, d2, d3, d4;
 				if (swscanf_s(ipStr.c_str(), L"%d.%d.%d.%d", &d1, &d2, &d3, &d4) == 4) {
-					IPDATA hostIp{ d1, d2, d3, d4 };
+					IPDATA hostIp{
+		static_cast<unsigned char>(d1),
+		static_cast<unsigned char>(d2),
+		static_cast<unsigned char>(d3),
+		static_cast<unsigned char>(d4)
+					};
 					NetManager::GetInstance().SetHostIp(hostIp);
 
 					NetManager::GetInstance().Run(NET_MODE::CLIENT);
@@ -531,7 +536,12 @@ void TitleScene::PNormalUpdate(void)
 				std::wstring ipStr = inputTextArea_->GetText();
 				int d1, d2, d3, d4;
 				if (swscanf_s(ipStr.c_str(), L"%d.%d.%d.%d", &d1, &d2, &d3, &d4) == 4) {
-					IPDATA hostIp{ d1, d2, d3, d4 };
+					IPDATA hostIp{
+		static_cast<unsigned char>(d1),
+		static_cast<unsigned char>(d2),
+		static_cast<unsigned char>(d3),
+		static_cast<unsigned char>(d4)
+					};
 					NetManager::GetInstance().SetHostIp(hostIp);
 
 					NetManager::GetInstance().Run(NET_MODE::CLIENT);

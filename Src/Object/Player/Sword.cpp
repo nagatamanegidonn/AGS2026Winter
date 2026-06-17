@@ -126,8 +126,10 @@ void Sword::InitParam(void)
 	// 初期座標
 	transWeapon_.pos = prePos_ = AsoUtility::VECTOR_ZERO;
 	transWeapon_.quaRot = Quaternion();
-	transWeapon_.quaRotLocal =
-		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
+	transWeapon_.quaRotLocal = Quaternion::Euler({
+		AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.x),
+		AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.y),
+		AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.z) });
 	transWeapon_.Update();
 
 	// サブウェポン

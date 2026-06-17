@@ -80,7 +80,7 @@ void ConnectScene::Update(void)
 	if (playerNum_ < users.size())
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::ADD, Sound::TIMES::ONCE, true);
-		playerNum_ = users.size();
+		playerNum_ = static_cast<int>(users.size());
 		
 	}
 	int i = 0;

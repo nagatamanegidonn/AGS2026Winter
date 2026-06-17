@@ -30,6 +30,7 @@ namespace
 {
 	// パス・リソース関係
 	const std::wstring DIR_PATH_PLAYER2 = L"Player2/";
+	const std::wstring NODEL_FILE_ARROW = L"Weapon/Bow/Arrow.mv1";
 	const std::wstring EFFECT_FILE_POWERUP = L"PowerUp/PowerUp.efkefc";
 	const std::wstring EFFECT_FILE_SLASH = L"Slash/Slash.efkefc";
 	const std::wstring SOUND_FILE_SWING = L"Player/Bow1.mp3";
@@ -93,7 +94,9 @@ namespace
 	constexpr VECTOR WEAPON_CAPSULE_TOP = { 0.0f, 110.0f, 0.0f };
 	constexpr VECTOR WEAPON_CAPSULE_DOWN = { 0.0f, -30.0f, 0.0f };
 	constexpr float CAP_RADIUS = 10.0f;
-
+	// サウンド関係
+	constexpr float SOUND_VOLUME = 0.6f;
+	// アニメーションブレンド関係
 	constexpr float BLEND_SPEED_30 = 3.0f;
 	constexpr float BLEND_SPEED_50 = 5.0f;
 	constexpr float BLEND_SPEED_100 = 10.0f;
@@ -131,7 +134,7 @@ void Arrow::InitParam(void)
 
 	// サブウェポン
 	const std::wstring PATH_MDL = Application::PATH_MODEL;
-	transSubWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Weapon/Bow/Arrow.mv1").c_str());
+	transSubWeapon_.modelId = MV1LoadModel((PATH_MDL + NODEL_FILE_ARROW).c_str());
 	transSubWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);
 	// 初期座標
 	transSubWeapon_.pos = prePos_ = START_POS;
@@ -208,8 +211,8 @@ void Arrow::InitAttackSound(void)
 {
 	std::wstring path = Application::PATH_SOUND;
 
-	soundController_->Add(static_cast<int>(SE::ATTACK1), path + SOUND_FILE_SWING, 0.6f);
-	soundController_->Add(static_cast<int>(SE::ATTACK2), path + SOUND_FILE_SHOT, 0.6f);
+	soundController_->Add(static_cast<int>(SE::ATTACK1), path + SOUND_FILE_SWING, SOUND_VOLUME);
+	soundController_->Add(static_cast<int>(SE::ATTACK2), path + SOUND_FILE_SHOT, SOUND_VOLUME);
 }
 
 void Arrow::PlayAttackSound(void)

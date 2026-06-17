@@ -39,20 +39,16 @@ public:
 	// 解放
 	void Release(void);
 
-
 	TYPE soundType_;
-
 
 	// リソースの読み込み先
 	std::wstring path_;
 
-
 	// 音のハンドルID
 	int handleId_;
 
-
 	// 音の最大音量
-	int maxVolume_;
+	float maxVolume_;
 	
 	// 3D用
 	VECTOR pos_;	// 座標

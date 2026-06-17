@@ -114,5 +114,5 @@ private:
 	void UpdateFade(void);	// フェード処理
 	void UpdatePlayer(void);
 	void UpdateEnemy(void);
-
+	void UpdateJudgeGameResult(void);	// 終了判定
 };

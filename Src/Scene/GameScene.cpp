@@ -195,37 +195,7 @@ void GameScene::Update(void)
 	Collision();
 
 	// ゲームの勝敗判定
-	GameManager::GAME_RESULT result = GameManager::GAME_RESULT::NONE;
-
-	if (GameManager::GetInstance().IsClear())
-	{
-		// タイマーが動いてたら止める
-		if (timer_->IsRunning())timer_->Reset();
-		// クリア時間の更新
-		GameManager::GetInstance().UpdateClearTime(SceneManager::GetInstance().GetDeltaTime());
-
-		if (GameManager::GetInstance().GetClearTime() <= 0.0f)
-		{
-			// ゲームの勝敗判定//シーン遷移
-			GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_CLEAR;
-			GameManager::GetInstance().SetGameResult(result);
-		}
-	}
-
-	// タイムアップ判定
-	if (timer_->IsTimeUp() && !GameManager::GetInstance().IsClear())
-	{
-		// ゲームの勝敗判定
-		result = GameManager::GAME_RESULT::TIME_OVER;
-		GameManager::GetInstance().SetGameResult(result);
-		SceneManager::GetInstance().CaptureMainScreen();
-	}
-	// ボス撃破判定
-	if (GameManager::GetInstance().GetGameResult() != GameManager::GAME_RESULT::NONE)
-	{
-		// ゲームオーバーシーンへ遷移
-		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::RSULT);
-	}
+	UpdateJudgeGameResult();
 }
 
 void GameScene::Draw(void)
@@ -359,7 +329,7 @@ void GameScene::Collision(void)
 			player->SetHit(true);
 			SceneManager::GetInstance().GetCamera().lock()->StartShake(CAMERA_SHAKE_TIME, CAMERA_SHAKE_POWER);
 
-			boss_->Damage(player->GetAttrckPow() * player->GetAttrckRate());
+			boss_->Damage(static_cast<int>(static_cast<float>(player->GetAttrckPow()) * player->GetAttrckRate()));
 			// 音の再生
 			SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
 		}
@@ -381,7 +351,7 @@ void GameScene::Collision(void)
 
 				SceneManager::GetInstance().GetCamera().lock()->StartShake(CAMERA_SHAKE_TIME, CAMERA_SHAKE_POWER);
 
-				enemy.lock()->Damage(player->GetAttrckPow() * player->GetAttrckRate());
+				enemy.lock()->Damage(static_cast<int>(static_cast<float>(player->GetAttrckPow()) * player->GetAttrckRate()));
 				// 音の再生
 				SoundManager::GetInstance().Play(SoundManager::SRC::SLASH_DAMAGE, Sound::TIMES::ONCE, true);
 			}
@@ -418,7 +388,7 @@ void GameScene::Collision(void)
 				{
 					mixDir = VScale(boss_->GetTransform().GetLeft(), DAMAGE_VEC_RATE);
 				}
-				player->Damage(boss_->GetAttrckPow() * boss_->GetAttrckRate(), boss_->GetAttrckPos(), mixDir);
+				player->Damage(static_cast<int>(static_cast<float>(boss_->GetAttrckPow()) * boss_->GetAttrckRate()), boss_->GetAttrckPos(), mixDir);
 			}
 			// 小型の処理(攻撃)
 			for (auto& mons : monsters_)
@@ -429,7 +399,7 @@ void GameScene::Collision(void)
 				if (enemy.lock()->CollisionAttrck(player->GetTransform().modelId))
 				{
 					VECTOR mixDir = AsoUtility::VECTOR_ZERO;
-					player->Damage(mons->GetAttrckPow() * mons->GetAttrckRate(), enemy.lock()->GetAttrckPos(), mixDir);
+					player->Damage(static_cast<int>(static_cast<float>(mons->GetAttrckPow()) * mons->GetAttrckRate()), enemy.lock()->GetAttrckPos(), mixDir);
 				}
 			}
 		}
@@ -553,7 +523,7 @@ void GameScene::Collision(void)
 							// 吹き飛び方向
 							VECTOR mixDir = VScale(VNorm(VSub(player->GetTransform().pos, ShotPos)), BLAST_VEC_RATE);
 							// ダメージ
-							player->Damage(shot->GetDamage() * BLAST_DAMAGE_RATE, ShotPos, mixDir);
+							player->Damage(static_cast<int>(static_cast<float>(shot->GetDamage()) * BLAST_DAMAGE_RATE), ShotPos, mixDir);
 							// 音・カメラ
 							SceneManager::GetInstance().GetCamera().lock()->StartShake(CAMERA_SHAKE_TIME_BLAST, CAMERA_SHAKE_POWER_BLAST);
 						}
@@ -839,5 +809,40 @@ void GameScene::UpdateEnemy(void)
 	for (auto& mons : monsters_)
 	{
 		mons->Update();
+	}
+}
+
+void GameScene::UpdateJudgeGameResult(void)
+{
+	GameManager::GAME_RESULT result = GameManager::GAME_RESULT::NONE;
+
+	if (GameManager::GetInstance().IsClear())
+	{
+		// タイマーが動いてたら止める
+		if (timer_->IsRunning())timer_->Reset();
+		// クリア時間の更新
+		GameManager::GetInstance().UpdateClearTime(SceneManager::GetInstance().GetDeltaTime());
+
+		if (GameManager::GetInstance().GetClearTime() <= 0.0f)
+		{
+			// ゲームの勝敗判定//シーン遷移
+			GameManager::GAME_RESULT result = GameManager::GAME_RESULT::GAME_CLEAR;
+			GameManager::GetInstance().SetGameResult(result);
+		}
+	}
+
+	// タイムアップ判定
+	if (timer_->IsTimeUp() && !GameManager::GetInstance().IsClear())
+	{
+		// ゲームの勝敗判定
+		result = GameManager::GAME_RESULT::TIME_OVER;
+		GameManager::GetInstance().SetGameResult(result);
+		SceneManager::GetInstance().CaptureMainScreen();
+	}
+	// ボス撃破判定
+	if (GameManager::GetInstance().GetGameResult() != GameManager::GAME_RESULT::NONE)
+	{
+		// ゲームオーバーシーンへ遷移
+		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::RSULT);
 	}
 }

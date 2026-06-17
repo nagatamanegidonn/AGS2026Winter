@@ -294,7 +294,7 @@ protected:
 	int hp_;	// 現在HP
 	int hpAgo_;	// 前フレームのHP
 	int hpMax_;	// 最大HP 
-	float damage_;	// ダメージ
+	int damage_;	// ダメージ
 
 	// スタミナ
 	float stamina_;		// 現在スタミナ

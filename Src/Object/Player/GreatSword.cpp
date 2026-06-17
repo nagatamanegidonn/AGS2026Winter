@@ -86,6 +86,7 @@ namespace
 	constexpr VECTOR WEAPON_CAPSULE_TOP = { 0.0f, 200.0f, 0.0f };
 	constexpr VECTOR WEAPON_CAPSULE_DOWN = { 0.0f, 10.0f, 0.0f };
 	constexpr float CAP_RADIUS = 10.0f;
+	constexpr float WEAPON_SCALE = 2.0f;
 	// サウンド発生時間
 	constexpr float ATTRCK1_SE_STIME = 16.0f;
 	constexpr float ATTRCK2_SE_STIME = 21.0f;
@@ -121,7 +122,7 @@ bool GreatSword::IsSyncAttack()
 void GreatSword::InitParam(void)
 {
 	// メインウェポン
-	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);
+	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, WEAPON_SCALE);
 	// 初期座標
 	transWeapon_.pos = prePos_ = AsoUtility::VECTOR_ZERO;
 	transWeapon_.quaRot = Quaternion();

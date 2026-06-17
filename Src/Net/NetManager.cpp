@@ -133,7 +133,7 @@ void NetManager::Update(void)
 			}
 			else
 			{
-				timeoutCounter_ += SYNC_TERM_MSEC; // WaitTimer ‚ÌŠÔ•ªi‚ß‚é
+				timeoutCounter_ += static_cast<unsigned int>(SYNC_TERM_MSEC); // WaitTimer ‚ÌŠÔ•ªi‚ß‚é
 				if (timeoutCounter_ >= TIMEOUT_LIMIT)
 				{
 #ifdef _DEBUG

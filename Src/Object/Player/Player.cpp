@@ -145,7 +145,7 @@ Player::Player(int key, GameScene* scene, PLAYER_TYPE type)
 	hp_(0),
 	hpAgo_(0),
 	hpMax_(0),
-	damage_(0.0f),
+	damage_(0),
 	stamina_(0.0f),
 	staminaMax_(0.0f),
 	staminaDir_(0.0f),
@@ -413,11 +413,10 @@ void Player::Update(void)
 			invisibleTime_ -= deltaTime;
 		}
 		// 赤ダメージ
-		if (damage_ > 0.0f)
+		if (damage_ > 0)
 		{
-			damage_ -= damage_ * deltaTime;
-			if (damage_ < 0.0f)
-				damage_ = 0.0f;
+			damage_ -= static_cast<int>(static_cast<float>(damage_) * deltaTime);
+			if (damage_ < 0) damage_ = 0;
 		}
 
 		// スタミナ
@@ -772,7 +771,7 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 		ChangeState(STATE::DAMAGE);
 	}
 	
-	damage_ = (float)dama;
+	damage_ = dama;
 	// HPからdamage_分減らす
 	hp_ -= damage_;
 	if (hp_ <= 0)
@@ -1509,7 +1508,7 @@ float Player::CreateRad(const VECTOR& dir)
 	float angle = atan2f(dir.x, dir.z);
 	if (angle < 0.0f)
 	{
-		angle += DX_TWO_PI; // 0~2paiに正規化
+		angle += static_cast<float>(DX_TWO_PI); // 0~2paiに正規化
 	}
 	return angle;
 }
