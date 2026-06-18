@@ -5,6 +5,7 @@
 #include "../Manager/SceneManager.h"
 #include "../Manager/GameManager.h"
 #include "../Manager/SoundManager.h"
+#include "../Manager/ResourceManager.h"
 
 #include "../Net/NetManager.h"
 #include "../Utility/AsoUtility.h"
@@ -16,10 +17,36 @@
 
 #include "ConnectScene.h"
 
+namespace
+{
+	// ファイルパス・リソース名
+	const std::wstring SHADER_TEX = L"Texture.cso";
+	// UI表示用テキスト
+	const std::wstring TEXT_CONNECTING = L"接続中";
+	const std::wstring TEXT_WAIT_CONNECT = L"接続待ち";
+	const std::wstring TEXT_PREFIX_NUM = L"接続番号:";
+	const std::wstring TEXT_DOT = L".";
+	const std::wstring TEXT_GO_AHEAD = L"進む";
+	// UI配置・文字列描画用の微調整（オフセット）
+	constexpr int UI_TEXT_OFFSET_X = 50;	// ボタン左端からテキスト開始位置までの余白
+	constexpr int UI_TEXT_OFFSET_Y = 5;		// ボタン上端からテキスト開始位置までの余白
+	constexpr int UI_BOX_MARGIN_X = 10;		// IPアドレス背景ボックスの横方向の余白
+	constexpr int UI_Y_STEP = 20;			// IPアドレス一覧を下にずらす幅
+	constexpr int INITIAL_Y_OFFSET = 50;	// 画面中央からIPアドレス表示開始位置までの初期オフセット
+	// カラーコード (RGB) 
+	constexpr unsigned int COLOR_BLACK = 0x000000;
+	constexpr unsigned int COLOR_WHITE = 0xffffff;
+	// キャラクター初期設定
+	constexpr int INITIAL_CHAR_ID = 0;       // ナイト
+	constexpr int INITIAL_PLAYER_COUNT = 1;
+	// クエスト設定
+	constexpr int FIRST_QUEST_ID = 1;        // 最初に読み込むクエスト番号
+	// シェーダ・レンダラー設定
+	constexpr int SHADER_BUFFER_NUM = 1;
+}
+
 ConnectScene::ConnectScene(void)
 {
-	imgStart_ = -1;
-	imgTitle_ = -1;
 	DeleteGraph(backImg_);
 }
 
@@ -29,9 +56,11 @@ ConnectScene::~ConnectScene(void)
 
 void ConnectScene::Init(void)
 {
-	backImg_ = LoadGraph((Application::PATH_IMAGE + L"img.png").c_str());
+	// 画像の読み込み
+	backImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::TITLE_BACK).handleId_;
+
 	// ポストエフェクト用(モノトーン)
-	backGroundMaterial_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
+	backGroundMaterial_ = std::make_unique<PixelMaterial>(SHADER_TEX.c_str(), SHADER_BUFFER_NUM);
 	backGroundMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
 	backGroundMaterial_->AddTextureBuf(backImg_);
 	backGroundRenderer_ = std::make_unique<PixelRenderer>(*backGroundMaterial_);
@@ -42,7 +71,7 @@ void ConnectScene::Init(void)
 
 #pragma region プレイヤーの作成
 
-	playerNum_ = 1;
+	playerNum_ = INITIAL_PLAYER_COUNT;
 
 	AddPlayer({ -150.0f,-50.0f,-250.0f },
 		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(-20.0f), AsoUtility::Deg2RadF(0.0f) });
@@ -56,10 +85,10 @@ void ConnectScene::Init(void)
 #pragma endregion
 
 	// ネットマネージャの状態変更
-	NetManager::GetInstance().ChangeGameState(GAME_STATE::CONNECTING);// ネット通信受け付ける状態に変更
+	NetManager::GetInstance().ChangeGameState(GAME_STATE::CONNECTING); // ネット通信受け付ける状態に変更
 
 	auto& nIns = NetManager::GetInstance();
-	if (nIns.GetMode() == NET_MODE::HOST)// ModeがHost(リーダー)なら
+	if (nIns.GetMode() == NET_MODE::HOST) // ModeがHost(リーダー)なら
 	{
 		// 音の再生
 		SoundManager::GetInstance().Play(SoundManager::SRC::CONECT_START, Sound::TIMES::ONCE, true);
@@ -67,7 +96,7 @@ void ConnectScene::Init(void)
 }
 
 void ConnectScene::Update(void)
-{ 
+{
 	// インスタンスクラスの取得
 	auto& nIns = NetManager::GetInstance();
 	const auto& ins = InputManager::GetInstance();
@@ -81,8 +110,8 @@ void ConnectScene::Update(void)
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::ADD, Sound::TIMES::ONCE, true);
 		playerNum_ = static_cast<int>(users.size());
-		
 	}
+
 	int i = 0;
 	for (const auto& user : users)
 	{
@@ -98,13 +127,13 @@ void ConnectScene::Update(void)
 	}
 
 	// ここでプレイヤー同士の接続を行う
-	if (nIns.GetMode() == NET_MODE::HOST)// ModeがHost(リーダー)なら
+	if (nIns.GetMode() == NET_MODE::HOST) // ModeがHost(リーダー)なら
 	{
 		auto& players = NetManager::GetInstance().GetNetUsers();
-		if (players.size() >= 1)// 自分のほかにつながっているプレイヤーがいるなら
+		if (players.size() >= 1) // 自分のほかにつながっているプレイヤーがいるなら
 		{
 			// マウスでの操作
-			if (ins.IsClickMouseLeft())// 左クリックで
+			if (ins.IsClickMouseLeft()) // 左クリックで
 			{
 				Vector2 moPos = ins.GetMousePos();
 
@@ -116,10 +145,10 @@ void ConnectScene::Update(void)
 
 					// リザルトの初期化
 					GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
-					GameManager::GetInstance().InitQuest(1);
+					GameManager::GetInstance().InitQuest(FIRST_QUEST_ID);
 
 					// ネットマネージャの状態変更
-					NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
+					NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME); // ゲーム準備OK!
 				}
 			}
 			// キーボード、コントローラーでの操作
@@ -131,10 +160,10 @@ void ConnectScene::Update(void)
 
 				// リザルトの初期化
 				GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
-				GameManager::GetInstance().InitQuest(1);
+				GameManager::GetInstance().InitQuest(FIRST_QUEST_ID);
 
 				// ネットマネージャの状態変更
-				NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME);//ゲーム準備OK!
+				NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME); // ゲーム準備OK!
 			}
 		}
 	}
@@ -156,9 +185,9 @@ void ConnectScene::Update(void)
 		SoundManager::GetInstance().Play(SoundManager::SRC::GAME_START, Sound::TIMES::ONCE, true);
 		// リザルトの初期化
 		GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
-		GameManager::GetInstance().InitQuest(1);
+		GameManager::GetInstance().InitQuest(FIRST_QUEST_ID);
 
-		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);//ゲームスタート！
+		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME); // ゲームスタート！
 	}
 }
 
@@ -168,7 +197,7 @@ void ConnectScene::Draw(void)
 
 	int HX = Application::SCREEN_SIZE_X / 2;
 	int HY = Application::SCREEN_SIZE_Y / 2;
-	
+
 	auto& users = NetManager::GetInstance().GetNetUsers();
 	int i = 0;
 	for (const auto& user : users)
@@ -177,16 +206,16 @@ void ConnectScene::Draw(void)
 		i++;
 	}
 
-	std::wstring msg = L"接続中";
+	std::wstring msg = TEXT_CONNECTING;
 	if (NetManager::GetInstance().GetMode() == NET_MODE::HOST)
 	{
-		msg = L"接続待ち";
+		msg = TEXT_WAIT_CONNECT;
 	}
 
 	// 接続待ちの表示
-	DrawString(HX - 100, HY, msg.c_str(), 0xffffff);
+	DrawString(HX - 100, HY, msg.c_str(), COLOR_WHITE);
 
-	int y = HY + 50;
+	int y = HY + INITIAL_Y_OFFSET;
 
 	for (const auto& user : users)
 	{
@@ -195,23 +224,23 @@ void ConnectScene::Draw(void)
 			IPDATA ip = user.second.ip;
 			Vector2(HX - WIDTH / 2, B1_Y - HEIGHT / 2);
 
-			std::wstring out = L"接続番号:";
+			std::wstring out = TEXT_PREFIX_NUM;
 			out += std::to_wstring(ip.d1);
-			out += L".";
+			out += TEXT_DOT;
 			out += std::to_wstring(ip.d2);
-			out += L".";
+			out += TEXT_DOT;
 			out += std::to_wstring(ip.d3);
-			out += L".";
+			out += TEXT_DOT;
 			out += std::to_wstring(ip.d4);
 
 			int len = (int)wcslen(out.c_str());
 			int width = GetDrawStringWidth(out.c_str(), len);
 
-			DrawBox(HX - (width / 2) - 10, y - (HEIGHT / 2)
-				, HX + (width / 2) + 10, y + (HEIGHT / 2), 0x000000, true);
-			DrawFormatString(HX - (width / 2), y- (len/2), 0xffffff, out.c_str());
+			DrawBox(HX - (width / 2) - UI_BOX_MARGIN_X, y - (HEIGHT / 2),
+				HX + (width / 2) + UI_BOX_MARGIN_X, y + (HEIGHT / 2), COLOR_BLACK, true);
+			DrawFormatString(HX - (width / 2), y - (len / 2), COLOR_WHITE, out.c_str());
 
-			y += 20;
+			y += UI_Y_STEP;
 		}
 	}
 
@@ -220,8 +249,8 @@ void ConnectScene::Draw(void)
 		auto& players = NetManager::GetInstance().GetNetUsers();
 		if (players.size() >= 1)
 		{
-			DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0x000000, true);
-			DrawString(B1_S_POS.x + 50, B1_S_POS.y + 5, L"進む", 0xffffff);
+			DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, COLOR_BLACK, true);
+			DrawString(B1_S_POS.x + UI_TEXT_OFFSET_X, B1_S_POS.y + UI_TEXT_OFFSET_Y, TEXT_GO_AHEAD.c_str(), COLOR_WHITE);
 		}
 	}
 }
@@ -235,7 +264,7 @@ void ConnectScene::AddPlayer(const VECTOR pos, const VECTOR rot)
 {
 	auto player_ = std::make_unique<ViewPlayer>();
 	player_->Init();
-	player_->SetChar(0);
+	player_->SetChar(INITIAL_CHAR_ID);
 	player_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 	player_->SetPos(pos);
 	player_->SetLocalQua(rot);

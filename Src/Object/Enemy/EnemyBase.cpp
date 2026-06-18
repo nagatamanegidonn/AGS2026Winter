@@ -204,7 +204,7 @@ void EnemyBase::CollisionGravity(void)
 	}
 }
 
-int EnemyBase::DamageUpdate(void)
+int EnemyBase::DamageUpdate(const std::wstring bone)
 {
 	auto& nIns = NetManager::GetInstance();
 	auto& users = nIns.GetNetUsers();
@@ -232,7 +232,7 @@ int EnemyBase::DamageUpdate(void)
 			}
 			if (!isEnd)
 			{
-				auto part = std::make_unique<HitDamage>(transform_.modelId, L"Chest_M", userDame);
+				auto part = std::make_unique<HitDamage>(transform_.modelId, bone, userDame);
 				hitdamages_.emplace_back(std::move(part));
 			}
 		}

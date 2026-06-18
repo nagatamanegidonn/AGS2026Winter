@@ -4,6 +4,7 @@
 #include "../Manager/SceneManager.h"
 #include "../Manager/GameManager.h"
 #include "../Manager/SoundManager.h"
+#include "../Manager/ResourceManager.h"
 #include "../Manager/Camera.h"
 
 #include "../Net/NetManager.h"
@@ -16,6 +17,33 @@
 #include "../Renderer/PixelRenderer.h"
 
 #include "TitleScene.h"
+
+namespace
+{
+	// ファイルパス・リソース名
+	const std::wstring SHADER_TEX = L"Texture.cso";
+	// UI表示用文字列
+	const std::wstring TEXT_PUSH_START = L"PushSpace or B";
+	const std::wstring TEXT_HOST = L"HOST";
+	const std::wstring TEXT_CLIENT = L"CLIENT";
+	const std::wstring TEXT_DOT = L".";
+	const std::wstring TEXT_CHANGE_WP = L"武器変更";
+	const std::wstring TEXT_GAME_START = L"出撃";
+	const std::wstring WP_NAME_SWORD = L"片手剣";
+	const std::wstring WP_NAME_GREAT = L"大剣";
+	const std::wstring WP_NAME_BOW = L"弓";
+	// UI配置・文字列描画用の微調整（オフセット）
+	constexpr int UI_TEXT_OFFSET_X = 50;	// ボタン左端からテキスト開始位置までの余白
+	constexpr int UI_TEXT_OFFSET_Y = 7;		// ボタン上端からテキスト開始位置までの余白
+	constexpr int IP_MAX_LENGTH = 15;	// IPアドレスの最大文字数 ("xxx.xxx.xxx.xxx")
+	// カラーコード (RGB)
+	constexpr unsigned int COLOR_BLACK = 0x000000;
+	constexpr unsigned int COLOR_WHITE = 0xffffff;
+	// キャラクター初期設定
+	constexpr int INITIAL_CHAR_ID = 0; // ナイト
+	// シェーダ・レンダラー設定
+	constexpr int SHADER_BUFFER_NUM = 1;
+}
 
 TitleScene::TitleScene(void)
 	:
@@ -47,9 +75,6 @@ TitleScene::TitleScene(void)
 
 TitleScene::~TitleScene(void)
 {
-	DeleteGraph(titleImg_);
-	DeleteGraph(backImg_);
-	DeleteGraph(cursorImg_);
 }
 
 void TitleScene::Init(void)
@@ -58,35 +83,38 @@ void TitleScene::Init(void)
 	SceneManager::GetInstance().GetCamera().lock()->ChangeMode(Camera::MODE::FIXED_POINT);
 
 	// コントローラーの登録
- 	inputController_ = std::make_unique<InputController>(GameManager::GetInstance().GetControllId());
+	inputController_ = std::make_unique<InputController>(GameManager::GetInstance().GetControllId());
 
 	// 画像の読み込み
-	cursorImg_ = LoadGraph((Application::PATH_IMAGE + L"tile_0072.png").c_str());
-	backImg_ = LoadGraph((Application::PATH_IMAGE + L"img.png").c_str());
-	titleImg_ = LoadGraph((Application::PATH_IMAGE + L"TitleRogo.png").c_str());
+	cursorImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::CURSOR).handleId_;
+	backImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::TITLE_BACK).handleId_;
+	titleImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::TITLE_LOGO).handleId_;
 
 	// IPアドレス入力エリア生成
 	auto hostIp = NetManager::GetInstance().GetHostIp();
-	inputTextArea_ = new InputTextArea(//ここの１５は最大文字数
-		{ IP_S_POS.x, IP_S_POS.y }, { IP_E_POS.x - IP_S_POS.x, IP_E_POS.y - IP_S_POS.y }, 15);
+	inputTextArea_ = new InputTextArea(
+		{ IP_S_POS.x, IP_S_POS.y },
+		{ IP_E_POS.x - IP_S_POS.x, IP_E_POS.y - IP_S_POS.y },
+		IP_MAX_LENGTH
+	);
 
 	// デフォルトIPアドレス設定
 	std::wstring defaultIp =
-		std::to_wstring(hostIp.d1) + L"." +
-		std::to_wstring(hostIp.d2) + L"." +
-		std::to_wstring(hostIp.d3) + L"." +
+		std::to_wstring(hostIp.d1) + TEXT_DOT +
+		std::to_wstring(hostIp.d2) + TEXT_DOT +
+		std::to_wstring(hostIp.d3) + TEXT_DOT +
 		std::to_wstring(hostIp.d4);
 
 	// IPアドレス初期設定
 	inputTextArea_->SetText(defaultIp);
 
 	// ソケット再生成、ユーザー情報リセット
-	NetManager::GetInstance().Init(); 
+	NetManager::GetInstance().Init();
 
 	// プレイヤー生成
 	viewPlayer_ = std::make_unique<ViewPlayer>();
 	viewPlayer_->Init();
-	viewPlayer_->SetChar(0);
+	viewPlayer_->SetChar(INITIAL_CHAR_ID);
 	viewPlayer_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 
 	// 選択中の項目
@@ -95,16 +123,13 @@ void TitleScene::Init(void)
 	isWpSelect_ = false;
 
 	// 武器選択用の位置登録
-	AddPosTri(L"片手剣", 0, Vector2(WIDTH, HEIGHT)
-		, Vector2(WP_C_POS.x + 50, WP_C_POS.y + (HEIGHT)));
-	AddPosTri(L"大剣", 1, Vector2(WIDTH, HEIGHT)
-		, Vector2(WP_C_POS.x + 50, WP_C_POS.y + (HEIGHT * 2)));
-	AddPosTri(L"弓", 2, Vector2(WIDTH, HEIGHT)
-		, Vector2(WP_C_POS.x + 50, WP_C_POS.y + (HEIGHT * 3)));
+	AddPosTri(WP_NAME_SWORD, 0, Vector2(WIDTH, HEIGHT), Vector2(WP_C_POS.x + UI_TEXT_OFFSET_X, WP_C_POS.y + (HEIGHT)));
+	AddPosTri(WP_NAME_GREAT, 1, Vector2(WIDTH, HEIGHT), Vector2(WP_C_POS.x + UI_TEXT_OFFSET_X, WP_C_POS.y + (HEIGHT * 2)));
+	AddPosTri(WP_NAME_BOW, 2, Vector2(WIDTH, HEIGHT), Vector2(WP_C_POS.x + UI_TEXT_OFFSET_X, WP_C_POS.y + (HEIGHT * 3)));
 
 	// マウス操作の設定
 	isPad_ = false;
-	
+
 	// 更新ステップの初期設定
 	typeUpdate_ = std::bind(&TitleScene::UpdateMouse, this);
 	padUpdate_ = std::bind(&TitleScene::PNormalUpdate, this);
@@ -118,14 +143,14 @@ void TitleScene::Init(void)
 	agoMouseTrg_ = true;
 
 	// カーソル画像
-	cursorMaterial_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
+	cursorMaterial_ = std::make_unique<PixelMaterial>(SHADER_TEX.c_str(), SHADER_BUFFER_NUM);
 	cursorMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
 	cursorMaterial_->AddTextureBuf(cursorImg_);
 	cursorRenderer_ = std::make_unique<PixelRenderer>(*cursorMaterial_);
 	cursorRenderer_->SetSize(Vector2(HEIGHT, HEIGHT));
 
 	// 背景画像
-	backGroundMaterial_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
+	backGroundMaterial_ = std::make_unique<PixelMaterial>(SHADER_TEX.c_str(), SHADER_BUFFER_NUM);
 	backGroundMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
 	backGroundMaterial_->AddTextureBuf(backImg_);
 	backGroundRenderer_ = std::make_unique<PixelRenderer>(*backGroundMaterial_);
@@ -133,9 +158,9 @@ void TitleScene::Init(void)
 		Vector2(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2),
 		Vector2(Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y)
 	);
-	
+
 	// タイトル画像
-	titleMaterial_ = std::make_unique<PixelMaterial>(L"Texture.cso", 1);
+	titleMaterial_ = std::make_unique<PixelMaterial>(SHADER_TEX.c_str(), SHADER_BUFFER_NUM);
 	titleMaterial_->AddConstBuf({ 1.0f, 1.0f, 1.0f, 1.0f });
 	titleMaterial_->AddTextureBuf(titleImg_);
 	titleRenderer_ = std::make_unique<PixelRenderer>(*titleMaterial_);
@@ -161,7 +186,7 @@ void TitleScene::Update(void)
 
 	// IPアドレス入力エリアの更新
 	inputTextArea_->Update();
-		
+
 	// 更新処理の呼び出し
 	typeUpdate_();
 
@@ -183,9 +208,9 @@ void TitleScene::Draw(void)
 		// タイトルロゴの描画
 		titleRenderer_->Draw();
 		int cx = Application::SCREEN_SIZE_X / 2;
-		int len = (int)wcslen(L"PushSpace or B");
-		int width = GetDrawStringWidth(L"PushSpace or B", len);
-		DrawFormatString(cx - (width / 2), B2_S_POS.y + HEIGHT / 2, 0xffffff, L"PushSpace or B");
+		int len = (int)wcslen(TEXT_PUSH_START.c_str());
+		int width = GetDrawStringWidth(TEXT_PUSH_START.c_str(), len);
+		DrawFormatString(cx - (width / 2), B2_S_POS.y + HEIGHT / 2, COLOR_WHITE, TEXT_PUSH_START.c_str());
 
 		return;
 	}
@@ -194,38 +219,29 @@ void TitleScene::Draw(void)
 	viewPlayer_->Draw();
 
 	// ホストorクライアント
-	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0x000000, true);
-	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, 0xffffff, false);
+	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, COLOR_BLACK, true);
+	DrawBox(B1_S_POS.x, B1_S_POS.y, B1_E_POS.x, B1_E_POS.y, COLOR_WHITE, false);
 	if (GameManager::GetInstance().IsHost())
 	{
-		DrawString(B1_S_POS.x + 50, B1_S_POS.y + 7, L"HOST", 0xffffff);
+		DrawString(B1_S_POS.x + UI_TEXT_OFFSET_X, B1_S_POS.y + UI_TEXT_OFFSET_Y, TEXT_HOST.c_str(), COLOR_WHITE);
 	}
 	else
 	{
-		DrawString(B1_S_POS.x + 50, B1_S_POS.y + 7, L"CLIENT", 0xffffff);
+		DrawString(B1_S_POS.x + UI_TEXT_OFFSET_X, B1_S_POS.y + UI_TEXT_OFFSET_Y, TEXT_CLIENT.c_str(), COLOR_WHITE);
 	}
 
 	// 武器変更
-	DrawBox(WP_S_POS.x, WP_S_POS.y, WP_E_POS.x, WP_E_POS.y, 0x000000, true);
-	DrawBox(WP_S_POS.x, WP_S_POS.y, WP_E_POS.x, WP_E_POS.y, 0xffffff, false);
-	DrawString(WP_S_POS.x + 50, WP_S_POS.y + 7, L"武器変更", 0xffffff);
+	DrawBox(WP_S_POS.x, WP_S_POS.y, WP_E_POS.x, WP_E_POS.y, COLOR_BLACK, true);
+	DrawBox(WP_S_POS.x, WP_S_POS.y, WP_E_POS.x, WP_E_POS.y, COLOR_WHITE, false);
+	DrawString(WP_S_POS.x + UI_TEXT_OFFSET_X, WP_S_POS.y + UI_TEXT_OFFSET_Y, TEXT_CHANGE_WP.c_str(), COLOR_WHITE);
 
 	// 出撃
-	DrawBox(B2_S_POS.x, B2_S_POS.y, B2_E_POS.x, B2_E_POS.y, 0x000000, true);
-	DrawBox(B2_S_POS.x, B2_S_POS.y, B2_E_POS.x, B2_E_POS.y, 0xffffff, false);
-	DrawString(B2_S_POS.x + 50, B2_S_POS.y + 7, L"出撃", 0xffffff);
+	DrawBox(B2_S_POS.x, B2_S_POS.y, B2_E_POS.x, B2_E_POS.y, COLOR_BLACK, true);
+	DrawBox(B2_S_POS.x, B2_S_POS.y, B2_E_POS.x, B2_E_POS.y, COLOR_WHITE, false);
+	DrawString(B2_S_POS.x + UI_TEXT_OFFSET_X, B2_S_POS.y + UI_TEXT_OFFSET_Y, TEXT_GAME_START.c_str(), COLOR_WHITE);
 
 	// IPアドレス
 	inputTextArea_->Draw();
-
-#ifdef _DEBUG
-
-	Vector2 moPos = ins.GetMousePos();
-	DrawFormatString(0, 32, 0x000000, L"ローカル座標(%d, %d)", moPos.x, moPos.y);
-	DrawFormatString(0, 16, 0x000000, L"モードID(%d)", selectId_);
-	DrawFormatString(0, 0, 0x000000, L"武器ID(%d)", weponId_);
-
-#endif // DEBUG
 
 	// カーソル描画
 	if (!isWpSelect_)
@@ -234,19 +250,15 @@ void TitleScene::Draw(void)
 
 		switch (selectId_)
 		{
-			// ホストorクライアント選択
 		case (int)MENU::NET_SELECT:
 			cursorRenderer_->Draw(B1_S_POS.x - HEIGHT, B1_C_POS.y);
 			break;
-			// ゲームスタート
 		case (int)MENU::GAME_START:
 			cursorRenderer_->Draw(B2_S_POS.x - HEIGHT, B2_C_POS.y);
 			break;
-			// 武器設定
 		case (int)MENU::WEPON_SELECT:
 			cursorRenderer_->Draw(WP_S_POS.x - HEIGHT, WP_C_POS.y);
 			break;
-			// IPアドレス設定
 		case (int)MENU::IP_SET:
 			cursorRenderer_->Draw(IP_S_POS.x - HEIGHT, IP_C_POS.y);
 			break;
@@ -260,16 +272,13 @@ void TitleScene::Draw(void)
 		// 武器選択肢描画
 		for (const auto& wPos : weponsPos_)
 		{
-			DrawBox(wPos.second->StartPos.x, wPos.second->StartPos.y
-				, wPos.second->EndPos.x, wPos.second->EndPos.y, 0x000000, true);
-			DrawString(wPos.second->StartPos.x + 50, wPos.second->StartPos.y + 7
-				, wPos.second->Name.c_str(), 0xffffff);
+			DrawBox(wPos.second->StartPos.x, wPos.second->StartPos.y, wPos.second->EndPos.x, wPos.second->EndPos.y, COLOR_BLACK, true);
+			DrawString(wPos.second->StartPos.x + UI_TEXT_OFFSET_X, wPos.second->StartPos.y + UI_TEXT_OFFSET_Y, wPos.second->Name.c_str(), COLOR_WHITE);
 		}
 		// カーソル描画
 		if (isPad_)
 		{
-			cursorRenderer_->Draw(weponsPos_.at(weponId_)->StartPos.x - HEIGHT
-				, weponsPos_.at(weponId_)->CenterPos.y);
+			cursorRenderer_->Draw(weponsPos_.at(weponId_)->StartPos.x - HEIGHT, weponsPos_.at(weponId_)->CenterPos.y);
 		}
 	}
 }
@@ -393,10 +402,10 @@ void TitleScene::MouseUpdate(void)
 				int d1, d2, d3, d4;
 				if (swscanf_s(ipStr.c_str(), L"%d.%d.%d.%d", &d1, &d2, &d3, &d4) == 4) {
 					IPDATA hostIp{
-		static_cast<unsigned char>(d1),
-		static_cast<unsigned char>(d2),
-		static_cast<unsigned char>(d3),
-		static_cast<unsigned char>(d4)
+						static_cast<unsigned char>(d1),
+						static_cast<unsigned char>(d2),
+						static_cast<unsigned char>(d3),
+						static_cast<unsigned char>(d4)
 					};
 					NetManager::GetInstance().SetHostIp(hostIp);
 
@@ -432,7 +441,7 @@ void TitleScene::MouseUpdate(void)
 			SetActiveKeyInput(-1);	// DxLib関数：現在のキー入力を終了
 
 			// 管理クラスに通知して状態を初期化
-			InputTextManager::GetInstance().SetTextArea(false); // ←ここでnullptrにしてるはず
+			InputTextManager::GetInstance().SetTextArea(false);
 		}
 	}
 }
@@ -461,10 +470,6 @@ void TitleScene::MWeaponUpdate(void)
 				gns.SetWeaponId(weponId_);
 				viewPlayer_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 				break;
-			}
-			else
-			{
-				continue;
 			}
 		}
 		// 選択してないなら戻る
@@ -537,10 +542,10 @@ void TitleScene::PNormalUpdate(void)
 				int d1, d2, d3, d4;
 				if (swscanf_s(ipStr.c_str(), L"%d.%d.%d.%d", &d1, &d2, &d3, &d4) == 4) {
 					IPDATA hostIp{
-		static_cast<unsigned char>(d1),
-		static_cast<unsigned char>(d2),
-		static_cast<unsigned char>(d3),
-		static_cast<unsigned char>(d4)
+						static_cast<unsigned char>(d1),
+						static_cast<unsigned char>(d2),
+						static_cast<unsigned char>(d3),
+						static_cast<unsigned char>(d4)
 					};
 					NetManager::GetInstance().SetHostIp(hostIp);
 
@@ -589,7 +594,7 @@ void TitleScene::PWeaponUpdate(void)
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::SELECT, Sound::TIMES::ONCE, true);
 		weponId_ = (weponId_ - 1 + (int)WEPON_ID::MAX) % ((int)WEPON_ID::MAX);
-		
+
 		gns.SetWeaponId(weponId_);
 		viewPlayer_->SetWeapon(GameManager::GetInstance().GetWeaponId());
 	}
@@ -619,10 +624,10 @@ void TitleScene::PIpUpdate(void)
 		inputTextArea_->SetKeyInputStringBuffer();
 
 		// 入力を非アクティブにする（＝強制終了）
-		SetActiveKeyInput(-1);	// DxLib関数：現在のキー入力を終了
+		SetActiveKeyInput(-1);
 
 		// 管理クラスに通知して状態を初期化
-		InputTextManager::GetInstance().SetTextArea(false); // ←ここでnullptrにしてるはず
+		InputTextManager::GetInstance().SetTextArea(false);
 
 		padUpdate_ = std::bind(&TitleScene::PNormalUpdate, this);
 	}
@@ -631,12 +636,10 @@ void TitleScene::PIpUpdate(void)
 const bool TitleScene::IsTrggerdMleft(void) const
 {
 	auto& ins = InputManager::GetInstance();
-
 	return ins.IsClickMouseLeft() && !agoMouseTrg_;
 }
 
-void TitleScene::AddPosTri(std::wstring name, int weponId
-	, const Vector2 size, const Vector2 cPos)
+void TitleScene::AddPosTri(std::wstring name, int weponId, const Vector2 size, const Vector2 cPos)
 {
 	auto posTri = std::make_unique<PosTri>();
 	posTri->Name = name;

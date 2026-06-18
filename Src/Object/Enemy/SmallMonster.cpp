@@ -165,13 +165,7 @@ void SmallMonster::Update(void)
 	animeAgoType_ = animeType_;
 
 	// ダメージの更新
-	int dame = EnemyBase::DamageUpdate();
-
-	// 当たり判定の設定
-	for (const auto& part : hitParts_)
-	{
-		part->Update();
-	}
+	int dame = EnemyBase::DamageUpdate(BONE_NAME_BODY);
 
 	// 当たり判定の設定
 	for (const auto& part : hitParts_)

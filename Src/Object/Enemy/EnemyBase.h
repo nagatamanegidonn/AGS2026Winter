@@ -93,7 +93,7 @@ protected:
 	virtual void CollisionGravity(void) override;		// 重力判定
 
 	// ダメージ描画クラス生成などの更新処理
-	virtual int DamageUpdate(void);
+	virtual int DamageUpdate(const std::wstring bone);
 
 	// 目標位置まで回転させる関数
 	void TargetRotate(const VECTOR& traPos, float rate = 1.0f);

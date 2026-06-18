@@ -48,12 +48,6 @@ private:
 	// プレイヤー数
 	int playerNum_;
 
-	// タイトル画像
-	int imgTitle_;
-
-	// スタート画像
-	int imgStart_;
-
 	// 背景、カーソル画像
 	int backImg_;
 

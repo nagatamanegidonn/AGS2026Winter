@@ -229,7 +229,7 @@ void Boss::Update(void)
 	animeAgoType_ = animeType_;
 
 	// ダメージの更新
-	int dame = EnemyBase::DamageUpdate();
+	int dame = EnemyBase::DamageUpdate(BONE_CHEST);
 
 	// 攻撃情報の更新
 	AttackDataUpdate();

@@ -30,9 +30,17 @@ void ResourceManager::Init(void)
 
 	std::unique_ptr<Resource> res;
 
-	// タイトル画像
+	// カーソル画像
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"tile_0072.png");
+	resourcesMap_.emplace(SRC::CURSOR, std::move(res));
+
+	// タイトルロゴ画像
 	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"TitleRogo.png");
-	resourcesMap_.emplace(SRC::TITLE, std::move(res));
+	resourcesMap_.emplace(SRC::TITLE_LOGO, std::move(res));
+
+	// タイトル背景
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"img.png");
+	resourcesMap_.emplace(SRC::TITLE_BACK, std::move(res));
 
 	// PushSpace
 	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"PushSpace.png");
@@ -80,9 +88,16 @@ void ResourceManager::Init(void)
 	res = std::make_unique<RES>(RES_T::MODEL, PATH_MDL + L"ItemObject/Flash/IncaProps_Bag.mv1");
 	resourcesMap_.emplace(SRC::SMALL_BAG, std::move(res));
 	
+	// アイテム画像
+	// 閃光アイテム画像
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"Item/items/item283.png");
+	resourcesMap_.emplace(SRC::FLASH_ITEM, std::move(res));
 	// ヒールアイテム画像
-	res = std::make_unique<RES>(RES_T::IMG, PATH_MDL + L"Item/items/item489.png");
-	resourcesMap_.emplace(SRC::HEEL, std::move(res));
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"Item/items/item489.png");
+	resourcesMap_.emplace(SRC::HEEL_ITEM, std::move(res));
+	// 爆弾アイテム画像
+	res = std::make_unique<RES>(RES_T::IMG, PATH_IMG + L"Item/items/item345.png");
+	resourcesMap_.emplace(SRC::BOM_ITEM, std::move(res));
 	
 	// 足煙
 	res = std::make_unique<RES>(RES_T::EFFEKSEER, PATH_EFF + L"Smoke/Smoke.efkefc");

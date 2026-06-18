@@ -12,7 +12,10 @@ public:
 	// リソース名
 	enum class SRC
 	{
-		TITLE,
+		CURSOR,
+		TITLE_LOGO,
+		TITLE_BACK,
+
 		PUSH_SPACE,
 		// オブジェクトモデル
 		BOSS,			// ボス
@@ -29,8 +32,10 @@ public:
 		ROCK,
 		BOM,
 		SMALL_BAG,
-
-		HEEL,
+		// アイテム画像
+		FLASH_ITEM,
+		HEEL_ITEM,
+		BOM_ITEM,
 
 		FOOT_SMOKE,
 		// 武器モデル	

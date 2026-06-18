@@ -7,6 +7,10 @@
 namespace
 {
 	constexpr int WEAK_DAMAGE = 20;
+	constexpr int FONT_SIZE_BEGIN = 28;
+	constexpr int FONT_SIZE_END = 16;
+
+	constexpr float BLEND_ALPHA_MAX = 255.0f;
 }
 
 HitDamage::HitDamage(int& model, std::wstring boneName, int damage)
@@ -36,7 +40,7 @@ void HitDamage::Init(int damage)
 void HitDamage::Update(void)
 {
 	// ダメージ表記の位置を更新
-	uiPos_ = AsoUtility::MV1GetFreamPos(parModel_, L"Chest_M");
+	uiPos_ = AsoUtility::MV1GetFreamPos(parModel_, boneName_);
 
 	if (uiRate_ > 0.0f)
 	{
@@ -57,9 +61,10 @@ void HitDamage::Draw(void) const
 		VECTOR twoDPos = ConvWorldPosToScreenPos(uiPos_);
 		if (twoDPos.z >= 0.0f && twoDPos.z <= 1.0f)
 		{
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255.0f * uiRate_));
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(BLEND_ALPHA_MAX * uiRate_));
 			std::wstring msg = std::to_wstring(uiDame_);
-			SetFontSize(28);
+			SetFontSize(FONT_SIZE_BEGIN);
+
 			int len = static_cast<int>(wcslen(msg.c_str()));
 			int width = GetDrawStringWidth(msg.c_str(), len);
 
@@ -72,7 +77,7 @@ void HitDamage::Draw(void) const
 				DrawFormatString(static_cast<int>(twoDPos.x) + randPosX_, static_cast<int>(twoDPos.y) + randPosY_, 0xffffff, msg.c_str());
 			}
 
-			SetFontSize(16);
+			SetFontSize(FONT_SIZE_END);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}

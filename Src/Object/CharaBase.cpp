@@ -4,21 +4,40 @@
 #include "../Utility/AsoUtility.h"
 #include "Stage/Planet.h"
 
+namespace
+{
+	// 初期座標・落下救済ライン
+	const VECTOR RESPAWN_POS = { 0.0f, -30.0f, 0.0f };
+	constexpr float FALL_OUT_LINE = -1000.0f; // このY座標以下に落ちたらリスポーン
+	// コリジョン・レイキャスト設定
+	constexpr float COLL_LINE_OFFSET = 200.0f; // 地面判定レイのブレ防止用上方向オフセット
+
+	// 丸影描画（ポリスープ投影）設定
+	constexpr float PLAYER_SHADOW_HEIGHT = 300.0f; // 影が届く最大高度
+	constexpr float PLAYER_SHADOW_SIZE = 30.0f;  // 影の半径
+	constexpr float SHADOW_SLIDE_FACTOR = 0.5f;   // 地面ポリゴンとのZファイティング（チラつき）防止オフセット
+	constexpr float SHADOW_MAX_ALPHA = 128.0f; // 最低高度（密着時）の不透明度最大値
+
+	// カラー・ブレンド設定
+	constexpr unsigned char COLOR_RGB_MAX = 255;
+	constexpr unsigned char COLOR_RGB_MIN = 0;
+}
+
 CharaBase::CharaBase(void)
 	:
 	areaId_(-1),
-	attackDamage_(10),
+	attackDamage_(0),
 	isHitCheck_(false),
 	changeAttackTime_(0.0f),
 	speed_(0.0f),
 	stepRotTime_(0.0f),
 	goalQuaRot_(),
-	jumpPow_({ 0.0f,0.0f,0.0f }),
+	jumpPow_(AsoUtility::VECTOR_ZERO),
 	imgShadow_(-1),
-	moveDir_({ 0.0f,0.0f,0.0f }),
-	movePow_({ 0.0f,0.0f,0.0f }),
-	movedPos_({ 0.0f,0.0f,0.0f }),
-	prePos_({ 0.0f,0.0f,0.0f }),
+	moveDir_(AsoUtility::VECTOR_ZERO),
+	movePow_(AsoUtility::VECTOR_ZERO),
+	movedPos_(AsoUtility::VECTOR_ZERO),
+	prePos_(AsoUtility::VECTOR_ZERO),
 	attackRate_(1.0f),
 	ActorBase()
 {
@@ -47,9 +66,9 @@ void CharaBase::Collision(void)
 	// 移動
 	transform_.pos = movedPos_;
 
-	if (transform_.pos.y <= -1000.0f)
+	if (transform_.pos.y <= FALL_OUT_LINE)
 	{
-		transform_.pos = { 0.0f, -30.0f, 0.0f };
+		transform_.pos = RESPAWN_POS;
 	}
 
 	// 移動判定
@@ -72,8 +91,8 @@ void CharaBase::CollisionMoveEnd(void)
 		{
 			// 地面との衝突
 			auto hit = MV1CollCheck_Line(
-				c.lock()->modelId_, -1, VAdd(prePos_,VScale(AsoUtility::DIR_U, 200.0f))
-				, VAdd(transform_.pos, VScale(AsoUtility::DIR_U, 200.0f)));
+				c.lock()->modelId_, -1, VAdd(prePos_,VScale(AsoUtility::DIR_U, COLL_LINE_OFFSET))
+				, VAdd(transform_.pos, VScale(AsoUtility::DIR_U, COLL_LINE_OFFSET)));
 			
 			auto hitD = MV1CollCheck_Line(
 				c.lock()->modelId_, -1, prePos_, transform_.pos);
@@ -111,9 +130,6 @@ void CharaBase::SetAreaId(int id)
 
 void CharaBase::DrawShadow(void)
 {
-	float PLAYER_SHADOW_HEIGHT = 300.0f;
-	float PLAYER_SHADOW_SIZE = 30.0f;
-
 	int i;
 	MV1_COLL_RESULT_POLY_DIM HitResDim;
 	MV1_COLL_RESULT_POLY* HitRes;
@@ -142,8 +158,8 @@ void CharaBase::DrawShadow(void)
 			transform_.pos, VAdd(transform_.pos, { 0.0f, -PLAYER_SHADOW_HEIGHT, 0.0f }), PLAYER_SHADOW_SIZE);
 
 		// 頂点データで変化が無い部分をセット
-		Vertex[0].dif = GetColorU8(255, 255, 255, 255);
-		Vertex[0].spc = GetColorU8(0, 0, 0, 0);
+		Vertex[0].dif = GetColorU8(COLOR_RGB_MAX, COLOR_RGB_MAX, COLOR_RGB_MAX, COLOR_RGB_MAX);
+		Vertex[0].spc = GetColorU8(COLOR_RGB_MIN, COLOR_RGB_MIN, COLOR_RGB_MIN, COLOR_RGB_MIN);
 		Vertex[0].su = 0.0f;
 		Vertex[0].sv = 0.0f;
 		Vertex[1] = Vertex[0];
@@ -158,24 +174,25 @@ void CharaBase::DrawShadow(void)
 			Vertex[1].pos = HitRes->Position[1];
 			Vertex[2].pos = HitRes->Position[2];
 
-			// ちょっと持ち上げて重ならないようにする
-			SlideVec = VScale(HitRes->Normal, 0.5f);
+			// ちょっと持ち上げて重ならないようにする（Zファイティング対策）
+			SlideVec = VScale(HitRes->Normal, SHADOW_SLIDE_FACTOR);
 			Vertex[0].pos = VAdd(Vertex[0].pos, SlideVec);
 			Vertex[1].pos = VAdd(Vertex[1].pos, SlideVec);
 			Vertex[2].pos = VAdd(Vertex[2].pos, SlideVec);
 
-			// ポリゴンの不透明度を設定する
-			Vertex[0].dif.a = 0;
-			Vertex[1].dif.a = 0;
-			Vertex[2].dif.a = 0;
+			// ポリゴンの不透明度を設定する（高さに応じて薄くする）
+			Vertex[0].dif.a = COLOR_RGB_MIN;
+			Vertex[1].dif.a = COLOR_RGB_MIN;
+			Vertex[2].dif.a = COLOR_RGB_MIN;
+
 			if (HitRes->Position[0].y > transform_.pos.y - PLAYER_SHADOW_HEIGHT)
-				Vertex[0].dif.a = static_cast<int>(roundf(128.0f * (1.0f - fabs(HitRes->Position[0].y - transform_.pos.y) / PLAYER_SHADOW_HEIGHT)));
+				Vertex[0].dif.a = static_cast<int>(roundf(SHADOW_MAX_ALPHA * (1.0f - fabs(HitRes->Position[0].y - transform_.pos.y) / PLAYER_SHADOW_HEIGHT)));
 
 			if (HitRes->Position[1].y > transform_.pos.y - PLAYER_SHADOW_HEIGHT)
-				Vertex[1].dif.a = static_cast<int>(roundf(128.0f * (1.0f - fabs(HitRes->Position[1].y - transform_.pos.y) / PLAYER_SHADOW_HEIGHT)));
+				Vertex[1].dif.a = static_cast<int>(roundf(SHADOW_MAX_ALPHA * (1.0f - fabs(HitRes->Position[1].y - transform_.pos.y) / PLAYER_SHADOW_HEIGHT)));
 
 			if (HitRes->Position[2].y > transform_.pos.y - PLAYER_SHADOW_HEIGHT)
-				Vertex[2].dif.a = static_cast<int>(roundf(128.0f * (1.0f - fabs(HitRes->Position[2].y - transform_.pos.y) / PLAYER_SHADOW_HEIGHT)));
+				Vertex[2].dif.a = static_cast<int>(roundf(SHADOW_MAX_ALPHA * (1.0f - fabs(HitRes->Position[2].y - transform_.pos.y) / PLAYER_SHADOW_HEIGHT)));
 
 			// ＵＶ値は地面ポリゴンとプレイヤーの相対座標から割り出す
 			Vertex[0].u = (HitRes->Position[0].x - transform_.pos.x) / (PLAYER_SHADOW_SIZE * 2.0f) + 0.5f;
@@ -198,7 +215,6 @@ void CharaBase::DrawShadow(void)
 
 	// Ｚバッファを無効にする
 	SetUseZBuffer3D(FALSE);
-
 }
 
 void CharaBase::CalcGravityPow(void)

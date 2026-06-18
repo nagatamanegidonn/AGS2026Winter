@@ -20,8 +20,10 @@ public:
 	// 描画処理
 	void Draw(int i);
 
-	// アイテムの管理メソッド
+	// アイテムの追加
 	void AddItem(std::shared_ptr<ItemBase> _item);
+
+	// アイテムの変更
 	void UseSelectedItem(void);
 
 	// 選択中のアイテムIDの設定、取得
@@ -45,6 +47,5 @@ private:
 
 	// アイテムリスト
 	std::list<std::shared_ptr<ItemBase>> ItemList_;
-
 };
 

@@ -5,6 +5,48 @@
 
 #include "ViewPlayer.h"
 
+namespace
+{
+	// ボーン・フレーム名
+	const std::wstring FRAME_SPINE2 = L"mixamorig:Spine2";
+	const std::wstring FRAME_SPINE = L"mixamorig:Spine";
+	// アニメーション・ファイル名
+	const std::wstring DIR_PLAYER2 = L"Player2/";
+	const std::wstring FILE_PLAYER2_MDL = L"Player2/Player2.mv1";
+	const std::wstring FILE_ANIM_IDLE = L"Idle.mv1";
+	const std::wstring FILE_WEAPON_SWORD = L"Sword/Sword.mv1";
+	const std::wstring FILE_WEAPON_GREAT = L"Sword/Sword Two-Hander Base.mv1";
+	const std::wstring FILE_WEAPON_BOW = L"Weapon/Bow/Bow.mv1";
+	// プレイヤー初期トランスフォーム
+	const VECTOR PLAYER_INIT_POS = { 0.0f, -50.0f, -250.0f };
+	const VECTOR PLAYER_INIT_ROT_LOCAL = { 10.0f, 0.0f, 0.0f };
+	// 武器共通の初期トランスフォーム
+	const VECTOR WEAPON_INIT_POS = { 0.0f, -30.0f, 0.0f };
+	const VECTOR WEAPON_INIT_ROT_LOCAL = { 160.0f, 180.0f, 0.0f };
+	// 武器ごとの個別スケール
+	constexpr float SCALE_SWORD = 1.0f;
+	constexpr float SCALE_GREAT = 2.0f;
+	constexpr float SCALE_BOW = 1.0f;
+	// マトリクス抽出用
+	constexpr float INVERSE_SCALE_BASE = 1.0f;
+	// 両手剣（GreatSword）の調整値
+	constexpr VECTOR GREAT_ROT = { 0.0f, 0.0f, 180.0f };
+	constexpr float GREAT_POS_OFFSET_DOWN = 50.0f;
+	constexpr float GREAT_POS_OFFSET_FORWARD = 15.0f;
+	// 片手剣（Sword）の調整値
+	constexpr VECTOR SWORD_ROT = { 0.0f, 0.0f, -120.0f };
+	constexpr float SWORD_POS_OFFSET_FORWARD = 15.0f;
+	constexpr float SWORD_POS_OFFSET_RIGHT = -30.0f;
+	// 弓（Bow）の調整値
+	constexpr VECTOR BOW_ROT = { 0.0f, 0.0f, 30.0f };
+	constexpr float BOW_POS_OFFSET_FORWARD = 15.0f;
+	// アニメーション用定数
+	constexpr int ANIM_INDEX_IDLE = 0;
+	constexpr float ANIM_SPEED_IDLE = 20.0f;
+	// 武器ID初期値
+	constexpr int WEAPON_ID_NONE = -1;
+}
+
 ViewPlayer::ViewPlayer()
 	:
 	animationController_(nullptr),
@@ -25,27 +67,33 @@ void ViewPlayer::Init(void)
 	static std::wstring PATH_MDL = Application::PATH_MODEL;
 
 	// モデルの基本設定
-	transform_.modelId = MV1LoadModel((PATH_MDL + L"Player2/Player2.mv1").c_str());
+	transform_.modelId = MV1LoadModel((PATH_MDL + FILE_PLAYER2_MDL).c_str());
 	transform_.scl = AsoUtility::VECTOR_ONE;
 	// 初期座標
-	transform_.pos = { 0.0f,-50.0f,-250.0f };
+	transform_.pos = PLAYER_INIT_POS;
 	transform_.quaRot = Quaternion();
-	transform_.quaRotLocal =
-		Quaternion::Euler({ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f), AsoUtility::Deg2RadF(0.0f) });
+	transform_.quaRotLocal = Quaternion::Euler({
+		AsoUtility::Deg2RadF(PLAYER_INIT_ROT_LOCAL.x),
+		AsoUtility::Deg2RadF(PLAYER_INIT_ROT_LOCAL.y),
+		AsoUtility::Deg2RadF(PLAYER_INIT_ROT_LOCAL.z)
+		});
 	transform_.Update();
 
 	// 武器の設定
 	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
 	// 初期座標
-	transWeapon_.pos = { 0.0f, -30.0f, 0.0f };
+	transWeapon_.pos = WEAPON_INIT_POS;
 	transWeapon_.quaRot = Quaternion();
-	transWeapon_.quaRotLocal =
-		Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
+	transWeapon_.quaRotLocal = Quaternion::Euler({
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
+		});
 	transWeapon_.Update();
 	updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponSowrd, this);
 	updateWeapon_();
 
-	weponId_ = -1;
+	weponId_ = WEAPON_ID_NONE;
 }
 
 void ViewPlayer::Update(void)
@@ -77,14 +125,14 @@ void ViewPlayer::SetChar(const int charId)
 	{
 	case 0:// ナイト
 	{
-		transform_.modelId = MV1LoadModel((PATH_MDL + L"Player2/Player2.mv1").c_str());
+		transform_.modelId = MV1LoadModel((PATH_MDL + FILE_PLAYER2_MDL).c_str());
 
-		std::wstring path = Application::PATH_MODEL + L"Player2/";
+		std::wstring path = Application::PATH_MODEL + DIR_PLAYER2;
 		animationController_.reset();
 		animationController_ = std::make_unique<AnimationController>(transform_.modelId);
-		animationController_->Add(0, path + L"Idle.mv1", 20.0f);
+		animationController_->Add(ANIM_INDEX_IDLE, path + FILE_ANIM_IDLE, ANIM_SPEED_IDLE);
 
-		animationController_->Play(0);
+		animationController_->Play(ANIM_INDEX_IDLE);
 	}
 		break;
 	case 1:
@@ -112,40 +160,49 @@ void ViewPlayer::SetWeapon(const int weponId)
 	switch (weponId)
 	{
 	case 0:// 片手剣
-		transWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Sword/Sword.mv1").c_str());
+		transWeapon_.modelId = MV1LoadModel((PATH_MDL + FILE_WEAPON_SWORD).c_str());
 
-		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
+		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_SWORD);
 		// 初期座標
-		transWeapon_.pos = { 0.0f, -30.0f, 0.0f };
+		transWeapon_.pos = WEAPON_INIT_POS;
 		transWeapon_.quaRot = Quaternion();
-		transWeapon_.quaRotLocal =
-			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
+		transWeapon_.quaRotLocal = Quaternion::Euler({
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
+			});
 		transWeapon_.Update();
 
 		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponSowrd, this);
 		break;
 	case 1:// 両手剣
-		transWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Sword/Sword Two-Hander Base.mv1").c_str());
+		transWeapon_.modelId = MV1LoadModel((PATH_MDL + FILE_WEAPON_GREAT).c_str());
 
-		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);
+		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_GREAT);
 		// 初期座標
-		transWeapon_.pos = { 0.0f, -30.0f, 0.0f };
+		transWeapon_.pos = WEAPON_INIT_POS;
 		transWeapon_.quaRot = Quaternion();
-		transWeapon_.quaRotLocal =
-			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
+		transWeapon_.quaRotLocal = Quaternion::Euler({
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
+			});
 		transWeapon_.Update();
 
 		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponGreatSowrd, this);
 		break;
 	case 2:// 弓
-		transWeapon_.modelId = MV1LoadModel((PATH_MDL + L"Weapon/Bow/Bow.mv1").c_str());
+		transWeapon_.modelId = MV1LoadModel((PATH_MDL + FILE_WEAPON_BOW).c_str());
 
-		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
+		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_BOW);
 		// 初期座標
-		transWeapon_.pos = { 0.0f, -30.0f, 0.0f };
+		transWeapon_.pos = WEAPON_INIT_POS;
 		transWeapon_.quaRot = Quaternion();
-		transWeapon_.quaRotLocal =
-			Quaternion::Euler({ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f), AsoUtility::Deg2RadF(0.0f) });
+		transWeapon_.quaRotLocal = Quaternion::Euler({
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
+			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
+			});
 		transWeapon_.Update();
 
 		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponBow, this);
@@ -172,146 +229,83 @@ const void ViewPlayer::SetLocalQua(const VECTOR rot)
 
 void ViewPlayer::SyncWeaponGreatSowrd()
 {
-	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine2");//ナイト
-	// プレイヤーの手の位置
+	auto frmNo = MV1SearchFrame(transform_.modelId, FRAME_SPINE2.c_str());
 	const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
 
-	// プレイヤーの手のグローバルマトリクス
 	MATRIX handRot = MV1GetFrameLocalWorldMatrix(transform_.modelId, frmNo);
-	// 手のワールド回転
 	Quaternion handWorldRot = Quaternion::GetRotation(handRot);
 
-	// 参照元の大きさを考慮
 	auto scl = transform_.scl;
-	scl.x = 1.0f / scl.x;
-	scl.y = 1.0f / scl.y;
-	scl.z = 1.0f / scl.z;
+	scl.x = INVERSE_SCALE_BASE / scl.x;
+	scl.y = INVERSE_SCALE_BASE / scl.y;
+	scl.z = INVERSE_SCALE_BASE / scl.z;
 
-	// 回転だけを取り出す（大きさも出るので考慮）
 	auto mixMat = MMult(MGetRotElem(handRot), MGetScale(scl));
 
-	// 回転
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))//X回転
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))//Y回転
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))//Z回転
-			, AsoUtility::Deg2RadF(180.0f))
-	);
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_R, handRot)), AsoUtility::Deg2RadF(GREAT_ROT.x)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_U, handRot)), AsoUtility::Deg2RadF(GREAT_ROT.y)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_F, handRot)), AsoUtility::Deg2RadF(GREAT_ROT.z)));
 
-	// 最終回転（手 + 握り補正）
 	transWeapon_.matRot = mixMat;
 
-	// 最終位置
 	transWeapon_.pos = posHand;
-	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(transWeapon_.quaRot.GetDown(), 50.0f));
-	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(transWeapon_.quaRot.GetForward(), 15.0f));
+	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(transWeapon_.quaRot.GetDown(), GREAT_POS_OFFSET_DOWN));
+	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(transWeapon_.quaRot.GetForward(), GREAT_POS_OFFSET_FORWARD));
 
-	// モデルの更新
 	transWeapon_.Update(true);
 }
 
 void ViewPlayer::SyncWeaponSowrd()
 {
-	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine");//ナイト腰
-	// プレイヤーの手の位置
+	auto frmNo = MV1SearchFrame(transform_.modelId, FRAME_SPINE.c_str());
 	const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
 
-	// プレイヤーの手のグローバルマトリクス
 	MATRIX handRot = MV1GetFrameLocalWorldMatrix(transform_.modelId, frmNo);
-	// 手のワールド回転
 	Quaternion handWorldRot = Quaternion::GetRotation(handRot);
 
-	// 参照元の大きさを考慮
 	auto scl = transform_.scl;
-	scl.x = 1.0f / scl.x;
-	scl.y = 1.0f / scl.y;
-	scl.z = 1.0f / scl.z;
+	scl.x = INVERSE_SCALE_BASE / scl.x;
+	scl.y = INVERSE_SCALE_BASE / scl.y;
+	scl.z = INVERSE_SCALE_BASE / scl.z;
 
-	// 回転だけを取り出す（大きさも出るので考慮）
 	auto mixMat = MMult(MGetRotElem(handRot), MGetScale(scl));
 
-	// 回転
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))// X回転
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))// Y回転
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))// Z回転
-			, AsoUtility::Deg2RadF(-120.0f))
-	);
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_R, handRot)), AsoUtility::Deg2RadF(SWORD_ROT.x)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_U, handRot)), AsoUtility::Deg2RadF(SWORD_ROT.y)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_F, handRot)), AsoUtility::Deg2RadF(SWORD_ROT.z)));
 
-	// 最終回転（手 + 握り補正）
 	transWeapon_.matRot = mixMat;
 
-	// 最終位置
 	transWeapon_.pos = posHand;
-	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(handWorldRot.GetForward(), 15.0f));
-	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(handWorldRot.GetRight(), -30.0f));
+	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(handWorldRot.GetForward(), SWORD_POS_OFFSET_FORWARD));
+	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(handWorldRot.GetRight(), SWORD_POS_OFFSET_RIGHT));
 
-	// モデルの更新
 	transWeapon_.Update(true);
 }
 
 void ViewPlayer::SyncWeaponBow()
 {
-	auto frmNo = MV1SearchFrame(transform_.modelId, L"mixamorig:Spine");// ナイト腰
-	// プレイヤーの手の位置
+	auto frmNo = MV1SearchFrame(transform_.modelId, FRAME_SPINE.c_str());
 	const auto& posHand = MV1GetFramePosition(transform_.modelId, frmNo);
 
-	// プレイヤーの手のグローバルマトリクス
 	MATRIX handRot = MV1GetFrameLocalWorldMatrix(transform_.modelId, frmNo);
-	// 手のワールド回転
 	Quaternion handWorldRot = Quaternion::GetRotation(handRot);
 
-	// 参照元の大きさを考慮
 	auto scl = transform_.scl;
-	scl.x = 1.0f / scl.x;
-	scl.y = 1.0f / scl.y;
-	scl.z = 1.0f / scl.z;
+	scl.x = INVERSE_SCALE_BASE / scl.x;
+	scl.y = INVERSE_SCALE_BASE / scl.y;
+	scl.z = INVERSE_SCALE_BASE / scl.z;
 
-	// 回転だけを取り出す（大きさも出るので考慮）
 	auto mixMat = MMult(MGetRotElem(handRot), MGetScale(scl));
 
-	// 回転
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_R, handRot))// X回転
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_U, handRot))// Y回転
-			, AsoUtility::Deg2RadF(0.0f))
-	);
-	mixMat = MMult(mixMat,
-		MGetRotAxis(
-			VNorm(VTransformSR(AsoUtility::DIR_F, handRot))// Z回転
-			, AsoUtility::Deg2RadF(30.0f))
-	);
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_R, handRot)), AsoUtility::Deg2RadF(BOW_ROT.x)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_U, handRot)), AsoUtility::Deg2RadF(BOW_ROT.y)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_F, handRot)), AsoUtility::Deg2RadF(BOW_ROT.z)));
 
-	// 最終回転（手 + 握り補正）
 	transWeapon_.matRot = mixMat;
 
-	// 最終位置
 	transWeapon_.pos = posHand;
-	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(handWorldRot.GetForward(), 15.0f));
+	transWeapon_.pos = VAdd(transWeapon_.pos, VScale(handWorldRot.GetForward(), BOW_POS_OFFSET_FORWARD));
 
-	// モデルの更新
 	transWeapon_.Update(true);
 }

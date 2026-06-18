@@ -22,6 +22,7 @@ public:
 		float endFrame;
 	};
 
+	// サウンド情報構造体
 	struct SoundData
 	{
 		int type;			// ID
@@ -29,6 +30,7 @@ public:
 		float vol;			// 音量
 	};
 
+	// シェーダ情報構造体
 	struct ShaderData
 	{
 		std::wstring path;	// リソースパス
@@ -36,6 +38,7 @@ public:
 		std::vector<FLOAT4> bufs;	// バッファの数値
 	};
 
+	// アクション情報構造体
 	struct ActionData
 	{
 		bool isCharge = false;	// チャージ攻撃か
@@ -53,8 +56,13 @@ public:
 	// デストラクタ
 	virtual ~CharaBase(void);
 
+	// 初期化処理
 	virtual void Init(void) = 0;
+
+	// 更新処理
 	virtual void Update(void) = 0;
+
+	// 描画処理
 	virtual void Draw(void) = 0;
 
 	// 最終更新
