@@ -72,14 +72,16 @@ public:
 
 	// エリアの取得・設定
 	std::weak_ptr<Planet::Area> GetArea(int areaId) const;
-	const std::map<int, std::shared_ptr<Area>>& GetArea(void)const;
+	const std::map<int, std::shared_ptr<Area>>& GetArea(void) const;
 	void SetArea(VECTOR pos, float rad,int areaId);
+
 	// posがエリアにいるか
 	int CheckAreaId(const VECTOR& pos);
-	const bool CheckArea(const VECTOR pos);
+	bool CheckArea(const VECTOR pos);
 
-	const bool CheckLerpPos(std::string text, int id);
-	const VECTOR GetLerpPos(std::string text, int id);
+	// ウェイポイント
+	bool CheckLerpPos(std::string text, int id);
+	const VECTOR& GetLerpPos(std::string text, int id) const;
 
 private:
 

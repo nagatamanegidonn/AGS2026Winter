@@ -47,6 +47,4 @@ private:
     void SyncWeaponPlay(void) override;      // ’Êí
     void SyncWeaponBattle(void) override;    // í“¬
 
-
 };
-

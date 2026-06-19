@@ -1,5 +1,5 @@
 #include "Vector2F.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "Vector2.h"
 
 // デフォルトコンストラクタ
@@ -18,8 +18,8 @@ Vector2::Vector2(int vX, int vY)
 
 Vector2::Vector2(Vector2F value)
 {
-	x = AsoUtility::Round(value.x);
-	y = AsoUtility::Round(value.y);
+	x = Utility::Round(value.x);
+	y = Utility::Round(value.y);
 }
 
 Vector2F Vector2::ToVector2F(void)

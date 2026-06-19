@@ -101,7 +101,7 @@ private:
 	std::unique_ptr<InputController> inputController_;
 
 	// IPアドレス
-	InputTextArea* inputTextArea_;
+	std::unique_ptr<InputTextArea> inputTextArea_;
 
 	// プレイヤー
 	std::unique_ptr<ViewPlayer> viewPlayer_;

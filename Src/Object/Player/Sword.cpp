@@ -1,7 +1,7 @@
 #include <string>
 #include <DxLib.h>
 #include "../Application.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "../Common/Vector2.h"
 
 #include "../Manager/SceneManager.h"
@@ -122,14 +122,14 @@ bool Sword::IsSyncAttack()
 void Sword::InitParam(void)
 {
 	// メインウェポン
-	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
+	transWeapon_.scl = VScale(Utility::VECTOR_ONE, 1.0f);
 	// 初期座標
-	transWeapon_.pos = prePos_ = AsoUtility::VECTOR_ZERO;
+	transWeapon_.pos = prePos_ = Utility::VECTOR_ZERO;
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal = Quaternion::Euler({
-		AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.x),
-		AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.y),
-		AsoUtility::Deg2RadF(WEPON_LOCAL_ROT.z) });
+		Utility::Deg2RadF(WEPON_LOCAL_ROT.x),
+		Utility::Deg2RadF(WEPON_LOCAL_ROT.y),
+		Utility::Deg2RadF(WEPON_LOCAL_ROT.z) });
 	transWeapon_.Update();
 
 	// サブウェポン

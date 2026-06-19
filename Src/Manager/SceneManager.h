@@ -105,7 +105,7 @@ private:
 	SceneManager(void);
 
 	// デストラクタ
-	~SceneManager(void);
+	~SceneManager(void) = default;
 
 	// シーン遷移
 	void DoChangeScene(SCENE_ID sceneId);

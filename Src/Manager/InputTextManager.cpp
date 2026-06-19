@@ -33,15 +33,18 @@ void InputTextManager::Update(void)
 	int ret = CheckKeyInput(handle);
 	if (ret != 0)
 	{
-
 		// 入力された文字列をセット
 		instance_->inputTextArea_->SetKeyInputStringBuffer();
 		
 		// キー入力が終了しているはず
 		instance_->inputTextArea_ = nullptr;
-
 	}
+}
 
+void InputTextManager::Destroy(void)
+{
+	delete instance_;
+	instance_ = nullptr;
 }
 
 void InputTextManager::SetActive(InputTextArea* inputTextArea)
@@ -77,8 +80,4 @@ void InputTextManager::SetTextArea(bool isSet)
 InputTextManager::InputTextManager(void)
 {
 	inputTextArea_ = nullptr;
-}
-
-InputTextManager::~InputTextManager(void)
-{
 }

@@ -1,7 +1,7 @@
 #include <vector>
 #include <map>
 #include <DxLib.h>
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/Utility.h"
 #include "../../Manager/SceneManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "Object.h"
@@ -62,7 +62,6 @@ void Stage::Update(void)
 		VECTOR diff;
 		float disPow;
 
-
 		for (auto& player : players_)
 		{
 			// プレイヤーとの衝突判定
@@ -106,7 +105,6 @@ void Stage::Draw(void)
 
 void Stage::ChangeStage(NAME type)
 {
-
 	activeName_ = type;
 
 	// 対象のステージを取得する
@@ -217,19 +215,16 @@ void Stage::AddBom(const Transform& _trans)
 	obj = std::make_unique<Object>(player_, _trans, Object::STATE::PLAY);
 	obj->Init();
 	objects_.push_back(std::move(obj));
-
-	
 }
 
 void Stage::MakeMainStage(void)
 {
-
 	// 最初の惑星
 	//------------------------------------------------------------------------------
 	Transform planetTrans;
 	planetTrans.SetModel(
 		resMng_.LoadModelDuplicate(ResourceManager::SRC::PLANE));
-	planetTrans.scl = AsoUtility::VECTOR_ONE;
+	planetTrans.scl = Utility::VECTOR_ONE;
 	planetTrans.quaRot = Quaternion();
 	planetTrans.pos = { 0.0f, -100.0f, 0.0f };
 
@@ -252,7 +247,7 @@ void Stage::MakeMainStage(void)
 	//------------------------------------------------------------------------------
 	trans.SetModel(
 		resMng_.LoadModelDuplicate(ResourceManager::SRC::ROCKS));
-	trans.scl = AsoUtility::VECTOR_ONE;
+	trans.scl = Utility::VECTOR_ONE;
 	trans.quaRot = Quaternion();
 	trans.pos = { 0.0f, -100.0f, 0.0f };
 
@@ -265,10 +260,10 @@ void Stage::MakeMainStage(void)
 	objects_.push_back(std::move(obj));
 	//------------------------------------------------------------------------------
 }
+
 // 採取ポイントの作成
 void Stage::MakeFlour(void)
 {
-
 	Transform trans;
 	std::unique_ptr<Object> obj;
 
@@ -276,7 +271,7 @@ void Stage::MakeFlour(void)
 	//------------------------------------------------------------------------------
 	trans.SetModel(
 		resMng_.LoadModelDuplicate(ResourceManager::SRC::FLOUR));
-	trans.scl = AsoUtility::VECTOR_ONE;
+	trans.scl = Utility::VECTOR_ONE;
 	trans.quaRot = Quaternion();
 	trans.pos = { 1800.0f, -335.0f, -4700.0f };
 
@@ -293,7 +288,7 @@ void Stage::MakeFlour(void)
 	//------------------------------------------------------------------------------
 	trans.SetModel(
 		resMng_.LoadModelDuplicate(ResourceManager::SRC::FLOUR));
-	trans.scl = AsoUtility::VECTOR_ONE;
+	trans.scl = Utility::VECTOR_ONE;
 	trans.quaRot = Quaternion();
 	trans.pos = { 1900.0f, -335.0f, -5000.0f };
 
@@ -310,7 +305,7 @@ void Stage::MakeFlour(void)
 	//------------------------------------------------------------------------------
 	trans.SetModel(
 		resMng_.LoadModelDuplicate(ResourceManager::SRC::ROCK));
-	trans.scl = VScale(AsoUtility::VECTOR_ONE, 0.08f);
+	trans.scl = VScale(Utility::VECTOR_ONE, 0.08f);
 	trans.quaRot = Quaternion();
 	trans.pos = { 700.0f, -335.0f, -4500.0f };
 

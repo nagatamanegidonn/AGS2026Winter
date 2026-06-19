@@ -62,7 +62,7 @@ private:
 	Application(const Application& ins);
 
 	// デストラクタ
-	~Application(void);
+	~Application(void) = default;
 
 	// エラー判定
 	bool isError_;

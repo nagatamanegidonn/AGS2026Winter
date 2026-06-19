@@ -9,7 +9,7 @@
 
 #include "../Net/NetManager.h"
 #include "../Common/InputTextArea.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "../Object/Player/ViewPlayer.h"
 #include "../Object/Common/InputController.h"
 // シェーダ
@@ -92,9 +92,9 @@ void TitleScene::Init(void)
 
 	// IPアドレス入力エリア生成
 	auto hostIp = NetManager::GetInstance().GetHostIp();
-	inputTextArea_ = new InputTextArea(
-		{ IP_S_POS.x, IP_S_POS.y },
-		{ IP_E_POS.x - IP_S_POS.x, IP_E_POS.y - IP_S_POS.y },
+	inputTextArea_ = std::make_unique<InputTextArea>(
+		Vector2{ IP_S_POS.x, IP_S_POS.y }, // 引数が構造体の場合は明示的に型を書くか、そのまま渡す
+		Vector2{ IP_E_POS.x - IP_S_POS.x, IP_E_POS.y - IP_S_POS.y },
 		IP_MAX_LENGTH
 	);
 
@@ -285,8 +285,10 @@ void TitleScene::Draw(void)
 
 void TitleScene::Release(void)
 {
-	inputTextArea_->Release();
-	delete inputTextArea_;
+	if (inputTextArea_)
+	{
+		inputTextArea_->Release();
+	}
 }
 
 #pragma region マウス更新かパッド更新

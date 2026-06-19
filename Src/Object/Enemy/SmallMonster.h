@@ -118,7 +118,6 @@ private:
 	void ChangeStatePlay(void);
 	void ChangeStateBattle(void);
 	void ChangeStateFollow(void);
-	// çUåÇån
 	void ChangeStateAttrckReady(void);
 	void ChangeStateAttrckStamp(void);
 	void ChangeStateDamage(void);
@@ -129,7 +128,6 @@ private:
 	void UpdatePlay(void);
 	void UpdateBattle(void);
 	void UpdateFollow(void);
-	// çUåÇån
 	void UpdateAttrckReady(void);
 	void UpdateAttrckStamp(void);
 	void UpdateDamage(void);

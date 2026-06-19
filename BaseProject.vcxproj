@@ -78,7 +78,7 @@
     <ClCompile Include="Src\Scene\GameScene.cpp" />
     <ClCompile Include="Src\Scene\SceneBase.cpp" />
     <ClCompile Include="Src\Scene\TitleScene.cpp" />
-    <ClCompile Include="Src\Utility\AsoUtility.cpp" />
+    <ClCompile Include="Src\Utility\Utility.cpp" />
     <ClCompile Include="Src\Utility\Measure.cpp" />
     <ClCompile Include="Src\Object\Stage\Grid.cpp" />
     <ClCompile Include="Src\Object\Player\ViewPlayer.cpp" />
@@ -191,7 +191,7 @@
     <ClInclude Include="Src\Scene\GameScene.h" />
     <ClInclude Include="Src\Scene\SceneBase.h" />
     <ClInclude Include="Src\Scene\TitleScene.h" />
-    <ClInclude Include="Src\Utility\AsoUtility.h" />
+    <ClInclude Include="Src\Utility\Utility.h" />
     <ClInclude Include="Src\Utility\Measure.h" />
     <ClInclude Include="Src\Object\Stage\Grid.h" />
     <ClInclude Include="Src\Object\Player\ViewPlayer.h" />

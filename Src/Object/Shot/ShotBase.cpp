@@ -1,5 +1,5 @@
 
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/Utility.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
 
@@ -34,7 +34,7 @@ void ShotBase::Create(int damage, const VECTOR& birthPos, const VECTOR& dir, int
 	// 弾モデルの向き(角度)を指定方向に合わせる
 	transform_.quaRot = Quaternion::LookRotation(shotVec_);
 	transform_.quaRotLocal =
-		Quaternion::Euler({ 0.0f, AsoUtility::Deg2RadF(90.0f), 0.0f });
+		Quaternion::Euler({ 0.0f, Utility::Deg2RadF(90.0f), 0.0f });
 
 	// モデル制御の基本情報更新
 	transform_.Update();

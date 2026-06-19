@@ -1,5 +1,5 @@
 #include "HitPart.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 
 
 HitPart::HitPart(int& model, std::wstring boneName, float rad, float rate) 
@@ -9,7 +9,7 @@ HitPart::HitPart(int& model, std::wstring boneName, float rad, float rate)
 	radius_(rad),
 	damageRate_(rate)
 {
-	pos_ = AsoUtility::MV1GetFreamPos(parModel_, boneName_);
+	pos_ = Utility::MV1GetFreamPos(parModel_, boneName_);
 }
 
 HitPart::~HitPart(void)
@@ -18,7 +18,7 @@ HitPart::~HitPart(void)
 
 void HitPart::Update(void)
 {
-	pos_ = AsoUtility::MV1GetFreamPos(parModel_, boneName_);
+	pos_ = Utility::MV1GetFreamPos(parModel_, boneName_);
 
 }
 

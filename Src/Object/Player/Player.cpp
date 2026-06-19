@@ -1,6 +1,6 @@
 #include <string>
 #include "../Application.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "../Common/Vector2.h"
 
 #include "../Manager/SceneManager.h"
@@ -151,13 +151,7 @@ Player::Player(int key, GameScene* scene, PLAYER_TYPE type)
 	staminaDir_(0.0f),
 	stateChanges_(),
 	isBattleDash_(false),
-	jobImg_(-1),
-	freamImg_(-1),
-	hpImg_(-1),
-	hpFreamImg_(-1),
-	hpMaskImg_(-1),
-	staFreamImg_(-1),
-	staMaskImg_(-1),
+	uiImgs_(),
 	statusMaterial_(nullptr),
 	statusRenderer_(nullptr),
 	hpMaterial_(nullptr),
@@ -202,13 +196,10 @@ Player::Player(int key, GameScene* scene, PLAYER_TYPE type)
 Player::~Player(void)
 {
 	// 画像の解放
-	DeleteGraph(freamImg_);
-	DeleteGraph(jobImg_);
-	DeleteGraph(hpImg_);
-	DeleteGraph(hpFreamImg_);
-	DeleteGraph(hpMaskImg_);
-	DeleteGraph(staFreamImg_);
-	DeleteGraph(staMaskImg_);
+	for (const auto& img : uiImgs_)
+	{
+		DeleteGraph(img.second);
+	}
 
 	// モデルの解放
 	MV1DeleteModel(transform_.modelId);
@@ -223,26 +214,26 @@ void Player::Init(void)
 	// モデルの基本設定
 	transform_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 		ResourceManager::SRC::PLAYER_NIGHT));
-	transform_.scl = AsoUtility::VECTOR_ONE;	
+	transform_.scl = Utility::VECTOR_ONE;	
 	transform_.pos = START_POS;
 	transform_.quaRot = Quaternion();
 	transform_.quaRotLocal = Quaternion::Euler({
-		AsoUtility::Deg2RadF(PLAYER_LOCAL_ROT.x),
-		AsoUtility::Deg2RadF(PLAYER_LOCAL_ROT.y),
-		AsoUtility::Deg2RadF(PLAYER_LOCAL_ROT.z) });
+		Utility::Deg2RadF(PLAYER_LOCAL_ROT.x),
+		Utility::Deg2RadF(PLAYER_LOCAL_ROT.y),
+		Utility::Deg2RadF(PLAYER_LOCAL_ROT.z) });
 	transform_.Update();
 
 	// ステータスUI
-	freamImg_ = LoadGraph(PATH_IMAGE_FREAM.c_str());
-	hpImg_ = LoadGraph(PATH_IMAGE_PRAM_HP.c_str());
+	uiImgs_.emplace(UI_IMG_TYPE::FREAM, LoadGraph(PATH_IMAGE_FREAM.c_str()));
+	uiImgs_.emplace(UI_IMG_TYPE::HP, LoadGraph(PATH_IMAGE_PRAM_HP.c_str()));
 
 	// HP
-	hpFreamImg_ = LoadGraph(PATH_IMAGE_HP_FREAM.c_str());
-	hpMaskImg_ = LoadGraph(PATH_IMAGE_HP_MASK.c_str());
+	uiImgs_.emplace(UI_IMG_TYPE::HP_FREAM, LoadGraph(PATH_IMAGE_HP_FREAM.c_str()));
+	uiImgs_.emplace(UI_IMG_TYPE::HP_MASK, LoadGraph(PATH_IMAGE_HP_MASK.c_str()));
 
 	// スタミナ
-	staFreamImg_ = LoadGraph(PATH_IMAGE_STAMINA_FREAM.c_str());
-	staMaskImg_ = LoadGraph(PATH_IMAGE_STAMINA_MASK.c_str());
+	uiImgs_.emplace(UI_IMG_TYPE::STA_FREAM, LoadGraph(PATH_IMAGE_STAMINA_FREAM.c_str()));
+	uiImgs_.emplace(UI_IMG_TYPE::STA_MASK, LoadGraph(PATH_IMAGE_STAMINA_MASK.c_str()));
 
 	// モデルの基本設定_武器
 	auto& nIns = NetManager::GetInstance();
@@ -250,7 +241,7 @@ void Player::Init(void)
 	{
 		// 剣
 	case SWORD_ID:
-		jobImg_ = LoadGraph(PATH_IMAGE_SOWRD_ICON.c_str());
+		uiImgs_.emplace(UI_IMG_TYPE::JOB, LoadGraph(PATH_IMAGE_SOWRD_ICON.c_str()));
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::SWORD));
 		attackDamage_ = SWORD_DAMAGE;
@@ -258,7 +249,7 @@ void Player::Init(void)
 		break;
 		// 大剣
 	case GREAT_SWORD_ID:
-		jobImg_ = LoadGraph(PATH_IMAGE_GREATSOWRD_ICON.c_str());
+		uiImgs_.emplace(UI_IMG_TYPE::JOB, LoadGraph(PATH_IMAGE_GREATSOWRD_ICON.c_str()));
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::SWORD2));
 		attackDamage_ = GREAT_SWORD_DAMAGE;
@@ -266,7 +257,7 @@ void Player::Init(void)
 		break;
 		// 弓
 	case BOW_ID:
-		jobImg_ = LoadGraph(PATH_IMAGE_ARROW_ICON.c_str());
+		uiImgs_.emplace(UI_IMG_TYPE::JOB, LoadGraph(PATH_IMAGE_ARROW_ICON.c_str()));
 		transWeapon_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 			ResourceManager::SRC::BOW));
 		attackDamage_ = BOW_DAMAGE;
@@ -323,16 +314,16 @@ void Player::Init(void)
 	changeAttackTime_ = 0.0f;
 
 	// 位置情報の変数
-	movedPos_ = AsoUtility::VECTOR_ZERO;
-	moveDir_ = AsoUtility::VECTOR_ZERO;
-	movePow_ = AsoUtility::VECTOR_ZERO;
+	movedPos_ = Utility::VECTOR_ZERO;
+	moveDir_ = Utility::VECTOR_ZERO;
+	movePow_ = Utility::VECTOR_ZERO;
 
 	// 重力兼ジャンプ力
-	jumpPow_ = AsoUtility::VECTOR_ZERO;
+	jumpPow_ = Utility::VECTOR_ZERO;
 
 	// 衝突チェック
-	gravHitPosDown_ = AsoUtility::VECTOR_ZERO;
-	gravHitPosUp_ = AsoUtility::VECTOR_ZERO;
+	gravHitPosDown_ = Utility::VECTOR_ZERO;
+	gravHitPosUp_ = Utility::VECTOR_ZERO;
 
 	// カプセルコライダ
 	capsule_ = std::make_unique<Capsule>(transform_);
@@ -342,7 +333,7 @@ void Player::Init(void)
 	
 	// ステータスの初期化
 	invisibleTime_ = 0.0f;				// 無敵時間
-	flyigDir_ = AsoUtility::VECTOR_ZERO;// 吹っ飛ばされる方向
+	flyigDir_ = Utility::VECTOR_ZERO;// 吹っ飛ばされる方向
 	flyigTime_ = downTime_ = 0.0f;		// 吹っ飛ばされる時間
 
 	// 武器ごとのパラメータ設定
@@ -514,7 +505,7 @@ void Player::Update(void)
 		const auto& selfPos = nIns.GetPostion(nIns.GetSelf().key);
 
 		// 音量設定
-		float volume = AsoUtility::CalcVolumeByDistance(selfPos, transform_.pos, MAX_EAR_RADIUS);
+		float volume = Utility::CalcVolumeByDistance(selfPos, transform_.pos, MAX_EAR_RADIUS);
 
 		// 無音なら停止
 		for (int i = 0; i < static_cast<int>(SE::MAX); i++)
@@ -544,8 +535,8 @@ void Player::Update(void)
 	}
 
 	// エフェクトの更新
-	effectController_->Update(Player::POWER_UP_EFFECT, transform_.pos, AsoUtility::VECTOR_ZERO, Player::PLAYER_EFFECT_SCALE);
-	effectController_->LoopUpdate(Player::POWER_SLASH_EFFECT, transWeapon_.pos, AsoUtility::VECTOR_ZERO, Player::PLAYER_EFFECT_SCALE);
+	effectController_->Update(Player::POWER_UP_EFFECT, transform_.pos, Utility::VECTOR_ZERO, Player::PLAYER_EFFECT_SCALE);
+	effectController_->LoopUpdate(Player::POWER_SLASH_EFFECT, transWeapon_.pos, Utility::VECTOR_ZERO, Player::PLAYER_EFFECT_SCALE);
 	
 	// 音の再生
 	if (animeAgoType_ != static_cast<int>(ANIM_TYPE::DRAW)
@@ -610,8 +601,8 @@ void Player::Update(void)
 		gameScene_->CreateShot(ShotBase::TYPE::BOM, attackDamage_
 			, VAdd(VAdd(transform_.pos
 				, VScale(transform_.GetForward(), (capsule_->GetRadius() * 3.0f)))
-				, VScale(AsoUtility::DIR_U, 40.0f))
-			, AsoUtility::VECTOR_ZERO, key_);
+				, VScale(Utility::DIR_U, 40.0f))
+			, Utility::VECTOR_ZERO, key_);
 	}
 
 	// 移動時間によるサウンド管理
@@ -743,9 +734,9 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 		return;
 	}
 
-	movePow_ = AsoUtility::VECTOR_ZERO;
+	movePow_ = Utility::VECTOR_ZERO;
 
-	if (!AsoUtility::EqualsVZero(mixDir))
+	if (!Utility::EqualsVZero(mixDir))
 	{
 		flyigTime_ = 1.0f;
 		
@@ -754,7 +745,7 @@ void Player::Damage(int dama, const VECTOR atkPos, const VECTOR mixDir)
 		float rotRad = atan2f(lookDir.x, lookDir.z);			// XZ平面でのラジアン角
 
 		// rotRad を使ってワールド空間回転を直接設定する（カメラとは無関係）
-		Quaternion lookRot = Quaternion::AngleAxis(rotRad, AsoUtility::AXIS_Y);
+		Quaternion lookRot = Quaternion::AngleAxis(rotRad, Utility::AXIS_Y);
 		goalQuaRot_ = lookRot;
 		playerRotY_ = lookRot; // ←すぐ向かせたいならこの行も追加
 
@@ -853,9 +844,9 @@ void Player::InitShader(void)
 	{
 		statusMaterial_->AddConstBuf(buf);
 	}
-	statusMaterial_->AddTextureBuf(freamImg_);
-	statusMaterial_->AddTextureBuf(hpImg_);
-	statusMaterial_->AddTextureBuf(jobImg_);
+	statusMaterial_->AddTextureBuf(uiImgs_[UI_IMG_TYPE::FREAM]);
+	statusMaterial_->AddTextureBuf(uiImgs_[UI_IMG_TYPE::HP]);
+	statusMaterial_->AddTextureBuf(uiImgs_[UI_IMG_TYPE::JOB]);
 	statusRenderer_ = std::make_unique<PixelRenderer>(*statusMaterial_);
 	statusRenderer_->SetSize(Vector2(PRAM_SIZE_X, PRAM_SIZE_Y));
 
@@ -865,8 +856,8 @@ void Player::InitShader(void)
 	{
 		hpMaterial_->AddConstBuf(buf);
 	}
-	hpMaterial_->AddTextureBuf(hpFreamImg_);
-	hpMaterial_->AddTextureBuf(hpMaskImg_);
+	hpMaterial_->AddTextureBuf(uiImgs_[UI_IMG_TYPE::HP_FREAM]);
+	hpMaterial_->AddTextureBuf(uiImgs_[UI_IMG_TYPE::HP_MASK]);
 	hpRenderer_ = std::make_unique<PixelRenderer>(*hpMaterial_);
 	hpRenderer_->SetSize(Vector2(HP_SIZE_X, HP_SIZE_Y));
 
@@ -876,8 +867,8 @@ void Player::InitShader(void)
 	{
 		staMaterial_->AddConstBuf(buf);
 	}
-	staMaterial_->AddTextureBuf(staFreamImg_);
-	staMaterial_->AddTextureBuf(staMaskImg_);
+	staMaterial_->AddTextureBuf(uiImgs_[UI_IMG_TYPE::STA_FREAM]);
+	staMaterial_->AddTextureBuf(uiImgs_[UI_IMG_TYPE::STA_MASK]);
 	staRenderer_ = std::make_unique<PixelRenderer>(*staMaterial_);
 	staRenderer_->SetSize(Vector2(HP_SIZE_X, HP_SIZE_Y));
 }
@@ -976,7 +967,7 @@ void Player::UpdateBattle(void)
 	{
 		isHit_ = false;
 		isHitCheck_ = false;
-		movePow_ = AsoUtility::VECTOR_ZERO;
+		movePow_ = Utility::VECTOR_ZERO;
 
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTACK1S);
 		ChangeState(STATE::ATTACK);
@@ -1035,7 +1026,7 @@ void Player::UpdateWeapon(void)
 
 					isHit_ = false;
 					isHitCheck_ = false;
-					movePow_ = AsoUtility::VECTOR_ZERO;
+					movePow_ = Utility::VECTOR_ZERO;
 
 
 					attackType_ = static_cast<int>(ANIM_TYPE::ATTACK1S);
@@ -1063,7 +1054,7 @@ void Player::UpdateWeapon(void)
 		|| inputController_->IsNew(InputController::KEY::RIGHT))
 	{
 	}
-	else{ movePow_ = AsoUtility::VECTOR_ZERO; }
+	else{ movePow_ = Utility::VECTOR_ZERO; }
 }
 
 void Player::UpdateAttack(void)
@@ -1096,7 +1087,7 @@ void Player::UpdateHiDamage(void)
 
 		if (flyigTime_ < 0.0f)
 		{
-			movePow_ = AsoUtility::VECTOR_ZERO;
+			movePow_ = Utility::VECTOR_ZERO;
 			attackType_ = atkData_[attackType_]->nextAttack;
 			animeType_ = attackType_;
 			downTime_ = DOWN_MAX;
@@ -1252,14 +1243,14 @@ void Player::UseItem(void)
 
 void Player::ProcessNormal(void)
 {
-	VECTOR dir = AsoUtility::VECTOR_ZERO;
+	VECTOR dir = Utility::VECTOR_ZERO;
 
 	bool isAction = false;
 
-	if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, AsoUtility::DIR_F); }
-	if (inputController_->IsNew(InputController::KEY::LEFT)) { dir = VAdd(dir, AsoUtility::DIR_L); }
-	if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, AsoUtility::DIR_B); }
-	if (inputController_->IsNew(InputController::KEY::RIGHT)) { dir = VAdd(dir, AsoUtility::DIR_R); }
+	if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, Utility::DIR_F); }
+	if (inputController_->IsNew(InputController::KEY::LEFT)) { dir = VAdd(dir, Utility::DIR_L); }
+	if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, Utility::DIR_B); }
+	if (inputController_->IsNew(InputController::KEY::RIGHT)) { dir = VAdd(dir, Utility::DIR_R); }
 
 	// 移動方向の向き設定
 	float rotRad = CreateRad(dir);
@@ -1270,13 +1261,13 @@ void Player::ProcessNormal(void)
 		// 抜刀処理
 		if (inputController_->IsTriggered(InputController::KEY::DRAW))
 		{
-			if (!AsoUtility::EqualsVZero(movePow_))
+			if (!Utility::EqualsVZero(movePow_))
 			{
 				speed_ = SPEED_MOVE;
 
 				movePow_ = VScale(VNorm(movePow_), speed_);
 			}
-			movePow_ = AsoUtility::VECTOR_ZERO;// 抜刀時移動しない（帰るなら戻す）
+			movePow_ = Utility::VECTOR_ZERO;// 抜刀時移動しない（帰るなら戻す）
 
 			isDrawWeapon_ = true;
 			ChangeState(STATE::WEAPON);
@@ -1288,17 +1279,17 @@ void Player::ProcessNormal(void)
 		{
 			if (c.lock()->type_ == Collider::TYPE::ITEM)
 			{
-				if (AsoUtility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
+				if (Utility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
 				{
 					isId = true;
 				}
 
 				// 採取処理
 				if (inputController_->IsNew(InputController::KEY::GET) &&
-					AsoUtility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
+					Utility::IsHitSpheres(transform_.pos, capsule_->GetRadius(), c.lock()->pos_, c.lock()->radius_))
 				{
 					speed_ = SPEED_MOVE;
-					movePow_ = AsoUtility::VECTOR_ZERO;//抜刀時移動しない（帰るなら戻す）
+					movePow_ = Utility::VECTOR_ZERO;//抜刀時移動しない（帰るなら戻す）
 
 					ChangeState(STATE::GET);
 					return;
@@ -1314,15 +1305,15 @@ void Player::ProcessNormal(void)
 		if (inputController_->IsTriggered(InputController::KEY::USE) && poach_->HasSelectedItem())
 		{
 			speed_ = SPEED_MOVE;
-			movePow_ = AsoUtility::VECTOR_ZERO;// 抜刀時移動しない（帰るなら戻す）
+			movePow_ = Utility::VECTOR_ZERO;// 抜刀時移動しない（帰るなら戻す）
 
 			ChangeState(STATE::ITEM_PLAY);
 			return;
 		}
 
-		movePow_ = AsoUtility::VECTOR_ZERO;
+		movePow_ = Utility::VECTOR_ZERO;
 
-		if ((!AsoUtility::EqualsVZero(dir)))
+		if ((!Utility::EqualsVZero(dir)))
 		{
 			// 入力された方向をかめらの回転情報を使って
 			// カメラの進行方向に変換する
@@ -1382,15 +1373,15 @@ void Player::ProcessNormal(void)
 void Player::ProcessBattle(void)
 {
 	InputManager& ins = InputManager::GetInstance();
-	VECTOR dir = AsoUtility::VECTOR_ZERO;
+	VECTOR dir = Utility::VECTOR_ZERO;
 
 	bool isAction = false;
 	auto& nIns = NetManager::GetInstance();
 
-	if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, AsoUtility::DIR_F); }
-	if (inputController_->IsNew(InputController::KEY::LEFT)) { dir = VAdd(dir, AsoUtility::DIR_L);}
-	if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, AsoUtility::DIR_B);}
-	if (inputController_->IsNew(InputController::KEY::RIGHT)) { dir = VAdd(dir, AsoUtility::DIR_R);}
+	if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, Utility::DIR_F); }
+	if (inputController_->IsNew(InputController::KEY::LEFT)) { dir = VAdd(dir, Utility::DIR_L);}
+	if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, Utility::DIR_B);}
+	if (inputController_->IsNew(InputController::KEY::RIGHT)) { dir = VAdd(dir, Utility::DIR_R);}
 	
 	// 移動方向の向き設定
 	float rotRad = CreateRad(dir);
@@ -1401,15 +1392,15 @@ void Player::ProcessBattle(void)
 		{
 			isCloseWeapon_ = true;
 			ChangeState(STATE::WEAPON);
-			movePow_ = AsoUtility::VECTOR_ZERO;// 納刀時移動しない（帰るなら戻す）
+			movePow_ = Utility::VECTOR_ZERO;// 納刀時移動しない（帰るなら戻す）
 
 			return;
 		}
 
 		// 移動量初期化
-		movePow_ = AsoUtility::VECTOR_ZERO;
+		movePow_ = Utility::VECTOR_ZERO;
 
-		if ((!AsoUtility::EqualsVZero(dir)))
+		if ((!Utility::EqualsVZero(dir)))
 		{
 			// 入力された方向をかめらの回転情報を使って
 			// カメラの進行方向に変換する
@@ -1478,7 +1469,7 @@ void Player::SetGoalRotate(double rotRad)
 
 	Quaternion axis =
 		Quaternion::AngleAxis(
-			(double)cameraRot.y + rotRad, AsoUtility::AXIS_Y);
+			(double)cameraRot.y + rotRad, Utility::AXIS_Y);
 
 	// 現在設定されている回転との角度差を取る
 	double angleDiff = Quaternion::Angle(axis, goalQuaRot_);
@@ -1585,11 +1576,11 @@ const void Player::SyncWeaponToFream(const TCHAR* frameName, const VECTOR& offse
 	// 武器固有のオフセット回転を適用
 	// X, Y, Z軸それぞれに回転を適用している現在のロジックを再現
 	mixMat = MMult(mixMat,
-		MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_R, handWorldMatrix)), AsoUtility::Deg2RadF(offsetRot.x)));
+		MGetRotAxis(VNorm(VTransformSR(Utility::DIR_R, handWorldMatrix)), Utility::Deg2RadF(offsetRot.x)));
 	mixMat = MMult(mixMat,
-		MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_U, handWorldMatrix)), AsoUtility::Deg2RadF(offsetRot.y)));
+		MGetRotAxis(VNorm(VTransformSR(Utility::DIR_U, handWorldMatrix)), Utility::Deg2RadF(offsetRot.y)));
 	mixMat = MMult(mixMat,
-		MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_F, handWorldMatrix)), AsoUtility::Deg2RadF(offsetRot.z)));
+		MGetRotAxis(VNorm(VTransformSR(Utility::DIR_F, handWorldMatrix)), Utility::Deg2RadF(offsetRot.z)));
 
 	// 最終的な武器の回転行列を設定
 	outWeaponTransform.matRot = mixMat;
@@ -1614,10 +1605,10 @@ void Player::CollisionGravity(void)
 	movedPos_ = VAdd(movedPos_, jumpPow_);
 
 	// 重力方向
-	VECTOR dirGravity = AsoUtility::DIR_D;
+	VECTOR dirGravity = Utility::DIR_D;
 
 	// 重力方向の反対
-	VECTOR dirUpGravity = AsoUtility::DIR_U;
+	VECTOR dirUpGravity = Utility::DIR_U;
 
 	// 重力の強さ
 	float gravityPow = Planet::DEFAULT_GRAVITY_POW;
@@ -1649,7 +1640,7 @@ void Player::CollisionGravity(void)
 				movedPos_ = VAdd(usedHitPosition, VScale(dirUpGravity, PUSH_BACK_LENGTH));
 
 				// ジャンプリセット
-				jumpPow_ = AsoUtility::VECTOR_ZERO;
+				jumpPow_ = Utility::VECTOR_ZERO;
 			}
 		}
 	}
@@ -1966,16 +1957,16 @@ void Player::AttackUpdate(void)
 			if (inputController_->IsNew(InputController::KEY::ATTACK) && changeAttackTime_ <= CHAGE_MAX_TIME)
 			{
 				// チャージ中なら回転可能
-				VECTOR dir = AsoUtility::VECTOR_ZERO;
+				VECTOR dir = Utility::VECTOR_ZERO;
 
-				if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, AsoUtility::DIR_F); }
-				if (inputController_->IsNew(InputController::KEY::LEFT)) { dir = VAdd(dir, AsoUtility::DIR_L); }
-				if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, AsoUtility::DIR_B); }
-				if (inputController_->IsNew(InputController::KEY::RIGHT)) { dir = VAdd(dir, AsoUtility::DIR_R); }
+				if (inputController_->IsNew(InputController::KEY::FORWARD)) { dir = VAdd(dir, Utility::DIR_F); }
+				if (inputController_->IsNew(InputController::KEY::LEFT)) { dir = VAdd(dir, Utility::DIR_L); }
+				if (inputController_->IsNew(InputController::KEY::BACK)) { dir = VAdd(dir, Utility::DIR_B); }
+				if (inputController_->IsNew(InputController::KEY::RIGHT)) { dir = VAdd(dir, Utility::DIR_R); }
 
 				// 移動方向の向き設定
 				float rotRad = CreateRad(dir);
-				if (!AsoUtility::EqualsVZero(dir))
+				if (!Utility::EqualsVZero(dir))
 				{
 					// 入力された方向をかめらの回転情報を使って
 					// カメラの進行方向に変換する

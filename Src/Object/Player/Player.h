@@ -3,7 +3,7 @@
 
 #include "../Net/NetStructures.h"
 #include "../Common/Vector2F.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "../CharaBase.h"
 
 class AnimationController;
@@ -69,6 +69,19 @@ public:
 	// 煙エフェクト発生間隔
 	static constexpr float FOOT_SMOKE = 0.3f;
 	static constexpr float FAST_FOOT_SMOKE = 0.4f;
+
+	// UI画像に用いる画像タイプ
+	enum class UI_IMG_TYPE
+	{
+		FREAM,
+		HP,
+		HP_FREAM,
+		HP_MASK,
+		STA_FREAM,
+		STA_MASK,
+		JOB,
+		MAX
+	};
 
 	// 状態
 	enum class STATE
@@ -167,10 +180,10 @@ public:
 	const Transform& GetTransWeapon(void) const { return transWeapon_; }
 
 	// ユーザー番号の取得
-	inline const int GetKey(void) const { return key_; }
+	inline int GetKey(void) const { return key_; }
 
 	// ＨＰの取得
-	inline const int GetHp(void) const { return hp_; }
+	inline int GetHp(void) const { return hp_; }
 
 	// ダメージ関係
 	void Damage(int dama,const VECTOR atkPos, const VECTOR mixDir);
@@ -253,13 +266,14 @@ protected:
 	std::function<void(void)> stateUpdate_;
 
 	// UI
-	int freamImg_;		// フレーム画像
-	int jobImg_;		// ジョブアイコン
-	int hpImg_;			// HP画像（色を変えスタミナにも使用）
-	int hpFreamImg_;	// HPフレーム画像」
-	int hpMaskImg_;		// HPマスク画像
-	int staFreamImg_;	// スタミナフレーム画像
-	int staMaskImg_;	// スタミナマスク画像
+	//int freamImg_;		// フレーム画像
+	//int jobImg_;		// ジョブアイコン
+	//int hpImg_;			// HP画像（色を変えスタミナにも使用）
+	//int hpFreamImg_;	// HPフレーム画像」
+	//int hpMaskImg_;		// HPマスク画像
+	//int staFreamImg_;	// スタミナフレーム画像
+	//int staMaskImg_;	// スタミナマスク画像
+	std::map<UI_IMG_TYPE, int> uiImgs_;
 
 	// ステータスUI
 	std::unique_ptr<PixelMaterial> statusMaterial_;

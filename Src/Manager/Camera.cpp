@@ -1,8 +1,7 @@
 #include <math.h>
 #include <DxLib.h>
 #include <EffekseerForDXLib.h>
-#include "../Utility/AsoUtility.h"
-//#include "../Manager/GravityManager.h"
+#include "../Utility/Utility.h"
 #include "../Object/Common/Transform.h"
 
 #include "InputManager.h"
@@ -16,8 +15,8 @@ Camera::Camera(void)
 	angles_ = VECTOR();
 	cameraUp_ = VECTOR();
 	mode_ = MODE::NONE;
-	pos_ = AsoUtility::VECTOR_ZERO;
-	targetPos_ = AsoUtility::VECTOR_ZERO;
+	pos_ = Utility::VECTOR_ZERO;
+	targetPos_ = Utility::VECTOR_ZERO;
 	followTransform_ = nullptr;
 
 	stepShake_ = stepMaxShake_ = 1.0f;
@@ -32,9 +31,7 @@ Camera::~Camera(void)
 
 void Camera::Init(void)
 {
-
 	ChangeMode(MODE::FIXED_POINT);
-
 }
 
 void Camera::Update(void)
@@ -49,7 +46,6 @@ void Camera::Update(void)
 
 void Camera::SetBeforeDraw(void)
 {
-
 	// クリップ距離を設定する(SetDrawScreenでリセットされる)
 	SetCameraNearFar(CAMERA_NEAR, CAMERA_FAR);
 
@@ -99,6 +95,7 @@ void Camera::SetFollow(const Transform* follow)
 {
 	followTransform_ = follow;
 }
+
 // targetLookAtPosに向かって注目する
 void Camera::LookAtSmoothly(const VECTOR& targetLookAtPos, float interpolationFactor)
 {
@@ -124,14 +121,14 @@ void Camera::LookAtSmoothly(const VECTOR& targetLookAtPos, float interpolationFa
 	float targetYaw = atan2f(smoothDir.x, smoothDir.z);
 
 	// スムーズに角度を補間（-π～π 対応の LerpAngle 推奨）
-	angles_.y = AsoUtility::LerpAngle(angles_.y, targetYaw, interpolationFactor);
+	angles_.y = Utility::LerpAngle(angles_.y, targetYaw, interpolationFactor);
 
 	// X軸回転（仰俯角）はそのまま維持
 	// angles_.x は一切変更しない
 
 	Quaternion gRot = Quaternion();
-	rotOutX_ = gRot.Mult(Quaternion::AngleAxis(angles_.y, AsoUtility::AXIS_Y));
-	rot_ = rotOutX_.Mult(Quaternion::AngleAxis(angles_.x, AsoUtility::AXIS_X)); // X軸角度はそのまま
+	rotOutX_ = gRot.Mult(Quaternion::AngleAxis(angles_.y, Utility::AXIS_Y));
+	rot_ = rotOutX_.Mult(Quaternion::AngleAxis(angles_.x, Utility::AXIS_X)); // X軸角度はそのまま
 
 	// カメラのアップ方向も更新
 	cameraUp_ = gRot.GetUp();
@@ -211,12 +208,12 @@ void Camera::SetDefault(void)
 	pos_ = DEFAULT_CAMERA_POS;
 
 	// 注視点
-	targetPos_ = AsoUtility::VECTOR_ZERO;
+	targetPos_ = Utility::VECTOR_ZERO;
 
 	// カメラの上方向
-	cameraUp_ = AsoUtility::DIR_U;
+	cameraUp_ = Utility::DIR_U;
 
-	angles_.x = AsoUtility::Deg2RadF(30.0f);
+	angles_.x = Utility::Deg2RadF(30.0f);
 	angles_.y = 0.0f;
 	angles_.z = 0.0f;
 
@@ -232,10 +229,10 @@ void Camera::SyncFollow(void)
 	Quaternion gRot = Quaternion();
 
 	// 正面から設定されたY軸分、回転させる
-	rotOutX_ = gRot.Mult(Quaternion::AngleAxis(angles_.y, AsoUtility::AXIS_Y));
+	rotOutX_ = gRot.Mult(Quaternion::AngleAxis(angles_.y, Utility::AXIS_Y));
 
 	// 正面から設定されたX軸分、回転させる
-	rot_ = rotOutX_.Mult(Quaternion::AngleAxis(angles_.x, AsoUtility::AXIS_X));
+	rot_ = rotOutX_.Mult(Quaternion::AngleAxis(angles_.x, Utility::AXIS_X));
 
 	VECTOR localPos;
 
@@ -262,8 +259,8 @@ void Camera::ProcessRot(void)
 	auto& ins = InputManager::GetInstance();
 
 	// 回転軸と量決め
-	const float ROT_POW = AsoUtility::Deg2RadF(1.0f);
-	VECTOR axisDeg = AsoUtility::VECTOR_ZERO;
+	const float ROT_POW = Utility::Deg2RadF(1.0f);
+	VECTOR axisDeg = Utility::VECTOR_ZERO;
 
 
 	if (angles_.x <= LIMIT_X_UP_RAD)
@@ -280,31 +277,31 @@ void Camera::ProcessRot(void)
 	if (ins.IsNew(KEY_INPUT_LEFT)) { axisDeg.y = -ROT_POW; }
 
 
-	if (!AsoUtility::EqualsVZero(axisDeg))
+	if (!Utility::EqualsVZero(axisDeg))
 	{
 		// 今回回転させたい回転量をクォータニオンで作る
 		Quaternion rotPow = Quaternion();
 
 		rotPow = rotPow.Mult(
 			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axisDeg.x), AsoUtility::AXIS_X
+				Utility::Deg2RadF(axisDeg.x), Utility::AXIS_X
 			));
 		rotPow = rotPow.Mult(
 			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axisDeg.y), AsoUtility::AXIS_Y
+				Utility::Deg2RadF(axisDeg.y), Utility::AXIS_Y
 			));
 
 		// 回転量を加える(合成)
 		angles_ = VAdd(angles_, axisDeg);
-
 	}
 }
+
 // カメラ操作(FPS用)
 void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, const bool left)
 {
 	// 回転軸と量決め
-	const float ROT_POW = AsoUtility::Deg2RadF(1.0f);
-	VECTOR axisDeg = AsoUtility::VECTOR_ZERO;
+	const float ROT_POW = Utility::Deg2RadF(1.0f);
+	VECTOR axisDeg = Utility::VECTOR_ZERO;
 
 	if (angles_.x <= FPS_LIMIT_X_UP_RAD)
 	{
@@ -319,25 +316,25 @@ void Camera::ProcessPlayRot(const bool up, const bool down, const bool right, co
 	if (right) { axisDeg.y = ROT_POW; }
 	if (left) { axisDeg.y = -ROT_POW; }
 
-	if (!AsoUtility::EqualsVZero(axisDeg))
+	if (!Utility::EqualsVZero(axisDeg))
 	{
 		// 今回回転させたい回転量をクォータニオンで作る
 		Quaternion rotPow = Quaternion();
 
 		rotPow = rotPow.Mult(
 			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axisDeg.x), AsoUtility::AXIS_X
+				Utility::Deg2RadF(axisDeg.x), Utility::AXIS_X
 			));
 		rotPow = rotPow.Mult(
 			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axisDeg.y), AsoUtility::AXIS_Y
+				Utility::Deg2RadF(axisDeg.y), Utility::AXIS_Y
 			));
 
 		// 回転諒を加える(合成)
 		angles_ = VAdd(angles_, axisDeg);
-
 	}
 }
+
 // カメラ操作(マウス)
 void Camera::ProcessRotMause(float& x_m, float& y_m, const float fov_per)
 {
@@ -388,10 +385,10 @@ void Camera::SyncFollowFPS(void)
 
 
 	// 正面から設定されたY軸分、回転させる
-	rotOutX_ = gRot.Mult(Quaternion::AngleAxis(angles_.y, AsoUtility::AXIS_Y));
+	rotOutX_ = gRot.Mult(Quaternion::AngleAxis(angles_.y, Utility::AXIS_Y));
 
 	// 正面から設定されたX軸分、回転させる
-	rot_ = rotOutX_.Mult(Quaternion::AngleAxis(angles_.x, AsoUtility::AXIS_X));
+	rot_ = rotOutX_.Mult(Quaternion::AngleAxis(angles_.x, Utility::AXIS_X));
 
 	VECTOR localPos;
 
@@ -402,8 +399,6 @@ void Camera::SyncFollowFPS(void)
 	// カメラ位置
 	localPos = rotOutX_.PosAxis(FPS_LOCAL_F2C_POS);
 	pos_ = VAdd(pos, localPos);
-
-
 
 	// カメラの上方向
 	cameraUp_ = gRot.GetUp();

@@ -1,7 +1,7 @@
 ﻿#include <string>
 #include <DxLib.h>
 #include "../../Application.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/Utility.h"
 
 #include "../../Manager/SceneManager.h"
 #include "../../Manager/GameManager.h"
@@ -145,7 +145,7 @@ Boss::Boss(int key, int createNo)
 	followTime_ = 0.0f;
 
 	// 攻撃位置
-	attrckPos_ = AsoUtility::VECTOR_ZERO;
+	attrckPos_ = Utility::VECTOR_ZERO;
 	attrckRadius = 0.0f;
 	dameRate_ = 1.0f;
 
@@ -158,7 +158,7 @@ Boss::Boss(int key, int createNo)
 
 	// LERP移動関係
 	lerpTime_ = MAX_LERP_TIME;
-	waypoint_ = AsoUtility::VECTOR_ZERO;
+	waypoint_ = Utility::VECTOR_ZERO;
 	isLerp_ = false;
 	lerpId_ = 0;
 }
@@ -175,14 +175,14 @@ void Boss::Init(void)
 	// モデルの基本設定
 	transform_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 		ResourceManager::SRC::BOSS));
-	transform_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_SIZE);
+	transform_.scl = VScale(Utility::VECTOR_ONE, SCALE_SIZE);
 	// 初期座標
 	transform_.pos = prePos_ = START_POS;
 	transform_.quaRot = Quaternion();
 	transform_.quaRotLocal = Quaternion::Euler({
-		AsoUtility::Deg2RadF(BOSS_LOCAL_ROT.x),
-		AsoUtility::Deg2RadF(BOSS_LOCAL_ROT.y),
-		AsoUtility::Deg2RadF(BOSS_LOCAL_ROT.z) });
+		Utility::Deg2RadF(BOSS_LOCAL_ROT.x),
+		Utility::Deg2RadF(BOSS_LOCAL_ROT.y),
+		Utility::Deg2RadF(BOSS_LOCAL_ROT.z) });
 	transform_.Update();
 
 	// アニメーションの設定
@@ -198,12 +198,12 @@ void Boss::Init(void)
 	ChangeState(STATE::PLAY);
 
 	// 位置情報の変数
-	movedPos_ = AsoUtility::VECTOR_ZERO;
-	moveDir_ = AsoUtility::VECTOR_ZERO;
-	movePow_ = AsoUtility::VECTOR_ZERO;
+	movedPos_ = Utility::VECTOR_ZERO;
+	moveDir_ = Utility::VECTOR_ZERO;
+	movePow_ = Utility::VECTOR_ZERO;
 
 	//重力兼ジャンプ力
-	jumpPow_ = AsoUtility::VECTOR_ZERO;
+	jumpPow_ = Utility::VECTOR_ZERO;
 
 	// カプセルコライダ
 	capsule_ = std::make_unique<Capsule>(transform_);
@@ -218,7 +218,7 @@ void Boss::Init(void)
 	isHitCheck_ = false;
 
 	transform_.MakeCollider(Collider::TYPE::WALL);
-	hitDamePos_ = AsoUtility::VECTOR_ZERO;
+	hitDamePos_ = Utility::VECTOR_ZERO;
 }
 
 void Boss::Update(void)
@@ -250,7 +250,7 @@ void Boss::Update(void)
 		// 死亡判定
 		if (hp_ <= 0.0f && state_ != STATE::DEAD) { ChangeState(STATE::DEAD); }
 
-		movePow_ = AsoUtility::VECTOR_ZERO;
+		movePow_ = Utility::VECTOR_ZERO;
 
 		// 更新ステップ
 		stateUpdate_();
@@ -301,7 +301,7 @@ void Boss::Update(void)
 	// 音の再生
 	const auto& selfPos = nIns.GetPostion(nIns.GetSelf().key);
 	// 音量設定
-	float volume = AsoUtility::CalcVolumeByDistance(selfPos, transform_.pos, (MOVE_RADIUS + MOVE_RADIUS));
+	float volume = Utility::CalcVolumeByDistance(selfPos, transform_.pos, (MOVE_RADIUS + MOVE_RADIUS));
 
 	// 無音なら停止
 	soundController_->ChengeVolume(DASH_SOUND, volume);			// ボリュームだけ更新
@@ -387,7 +387,7 @@ void Boss::Draw(void)
 void Boss::Damage(int _dama,bool _isConst)
 {
 	// ダメージエフェクト再生
-	effectController_->Play(DAMAGE_EFFECT, hitDamePos_, AsoUtility::VECTOR_ZERO, DAMAGE_EFFECT_SIZE);
+	effectController_->Play(DAMAGE_EFFECT, hitDamePos_, Utility::VECTOR_ZERO, DAMAGE_EFFECT_SIZE);
 
 	auto& nIns = NetManager::GetInstance();
 
@@ -403,7 +403,7 @@ const bool Boss::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 {
 	//当たり判定フラグ
 	bool ret = false;
-	VECTOR hitPos = AsoUtility::VECTOR_ZERO;
+	VECTOR hitPos = Utility::VECTOR_ZERO;
 
 	for (auto& part : hitParts_)
 	{
@@ -434,27 +434,27 @@ const bool Boss::CollisionAttrck(const int& modelId)
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_STAMP);
 		attrckPos_ = VScale(VAdd(
-			AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_L),
-			AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_R)),
+			Utility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_L),
+			Utility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_R)),
 			STAMP_POSTION_RATE);
 		attrckRadius = ATTRCK_STAMP_RADIUS;
 	}
 	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW))
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_L_CLOW);
-		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_L);
+		attrckPos_ = Utility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_L);
 		attrckRadius = ATTRCK_BITE_RADIUS;
 	}
 	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW))
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
-		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_R);
+		attrckPos_ = Utility::MV1GetFreamPos(transform_.modelId, BONE_FINGERS_R);
 		attrckRadius = ATTRCK_BITE_RADIUS;
 	}
 	else if (animeType_==static_cast<int>(ANIM_TYPE::ATTRCK_DASH))
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK_R_CLOW);
-		attrckPos_ = AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_CHEST);
+		attrckPos_ = Utility::MV1GetFreamPos(transform_.modelId, BONE_CHEST);
 		attrckRadius = ATTRCK_DASH_RADIUS;
 	}
 	else
@@ -686,15 +686,15 @@ void Boss::UpdatePlay(void)
 	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
 	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 
-	VECTOR axis = AsoUtility::VECTOR_ZERO;
+	VECTOR axis = Utility::VECTOR_ZERO;
 	axis.y = 1.0f;
 
 	// 回転
-	if (!AsoUtility::EqualsVZero(axis))
+	if (!Utility::EqualsVZero(axis))
 	{
 		playerRotY_ = playerRotY_.Mult(
 			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axis.y), AsoUtility::AXIS_Y));
+				Utility::Deg2RadF(axis.y), Utility::AXIS_Y));
 	}
 
 	// 前方向を取得
@@ -761,7 +761,7 @@ void Boss::UpdateBattle(void)
 	attrckTypeState_ = ATTRCK_TYPE::NONE;
 
 	// プレイヤーとの衝突判定
-	float disPow = AsoUtility::GetDisPow(transform_.pos, follow_->pos);
+	float disPow = Utility::GetDisPow(transform_.pos, follow_->pos);
 
 	// 視線の先に至らに変更予定
 	if (stateTime_ < 0.0f || (IsTargetInFOV(follow_->pos, FOV_RADIUS) && stateTime_ < 1.0f)) 
@@ -814,7 +814,7 @@ void Boss::UpdateFollow(void)
 	movePow_ = VScale(transform_.GetForward(), SPEED_FOLLOW);	
 
 	// プレイヤーとの衝突判定
-	float disPow = AsoUtility::GetDisPow(transform_.pos, follow_->pos);
+	float disPow = Utility::GetDisPow(transform_.pos, follow_->pos);
 
 	if (disPow < ATTRCK_RADIUS * ATTRCK_RADIUS && IsTargetInFOV(follow_->pos, FOV_RADIUS))
 	{
@@ -1071,10 +1071,10 @@ void Boss::CollisionGravity(void)
 	movedPos_ = VAdd(movedPos_, jumpPow_);
 
 	// 重力方向
-	VECTOR dirGravity = AsoUtility::DIR_D;
+	VECTOR dirGravity = Utility::DIR_D;
 
 	// 重力方向の反対
-	VECTOR dirUpGravity = AsoUtility::DIR_U;
+	VECTOR dirUpGravity = Utility::DIR_U;
 
 	// 重力の強さ
 	float gravityPow = Planet::DEFAULT_GRAVITY_POW;
@@ -1095,7 +1095,7 @@ void Boss::CollisionGravity(void)
 			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, PUSH_BACK_LENGTH));
 
 			// ジャンプリセット
-			jumpPow_ = AsoUtility::VECTOR_ZERO;
+			jumpPow_ = Utility::VECTOR_ZERO;
 		}
 	}
 }

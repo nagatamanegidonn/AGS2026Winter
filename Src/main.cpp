@@ -7,13 +7,12 @@
 
 std::atomic<bool> running(true);
 
-void backgroundTask() {
+static void backgroundTask() {
 	while (running) {
 		// バックグラウンドでの処理
 		Sleep(100); // 処理の間隔を調整
 	}
 }
-
 
 // WinMain関数
 //---------------------------------
@@ -46,10 +45,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
 
 	// 解放処理
 	instance.Destroy();
-	if (instance.IsError())
-	{
-		return -1;
-	}
 
 	return 0;
 

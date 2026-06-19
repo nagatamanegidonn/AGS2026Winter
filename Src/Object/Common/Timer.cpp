@@ -1,6 +1,6 @@
 #include <DxLib.h>
 #include "../Application.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 
 #include "../Renderer/PixelMaterial.h"
 #include "../Renderer/PixelRenderer.h"
@@ -78,12 +78,12 @@ void Timer::DrawTimer(int centerX, int centerY, float startDeg, float endDeg) co
 
     float t = elapsed / limitSeconds_;
     float angleDeg = startDeg + (endDeg - startDeg) * t;
-    float rad = AsoUtility::Deg2RadF(angleDeg);
+    float rad = Utility::Deg2RadF(angleDeg);
 
     int w, h;
     GetGraphSize(needleHandle_, &w, &h);
 
-    Material_->SetConstBuf(0, { 0.5f, 0.5f, rad,  AsoUtility::Deg2RadF(endDeg) });
+    Material_->SetConstBuf(0, { 0.5f, 0.5f, rad,  Utility::Deg2RadF(endDeg) });
 
     Renderer_->Draw(centerX, centerY);
 }

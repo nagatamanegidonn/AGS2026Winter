@@ -1,7 +1,7 @@
 #include <string>
 #include <DxLib.h>
 #include "../Application.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "../Common/Vector2.h"
 
 #include "../Manager/SceneManager.h"
@@ -42,7 +42,7 @@ namespace
 	// 初期化座標、回転
 	const VECTOR START_POS = VECTOR{ 0.0f, -30.0f, 0.0f };
 	const VECTOR START_LOCAL_ROT
-		= VECTOR{ AsoUtility::Deg2RadF(160.0f), AsoUtility::Deg2RadF(180.0f),  AsoUtility::Deg2RadF(0.0f) };
+		= VECTOR{ Utility::Deg2RadF(160.0f), Utility::Deg2RadF(180.0f),  Utility::Deg2RadF(0.0f) };
 	// アニメーションリスト
 	const std::vector<CharaBase::AnimationInfo> ANIM_LIST =
 	{
@@ -124,9 +124,9 @@ bool Arrow::IsSyncAttack()
 void Arrow::InitParam(void)
 {
 	// メインウェポン
-	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
+	transWeapon_.scl = VScale(Utility::VECTOR_ONE, 1.0f);
 	// 初期座標
-	transWeapon_.pos = prePos_ = AsoUtility::VECTOR_ZERO;;
+	transWeapon_.pos = prePos_ = Utility::VECTOR_ZERO;;
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal =
 		Quaternion::Euler(START_LOCAL_ROT);
@@ -135,7 +135,7 @@ void Arrow::InitParam(void)
 	// サブウェポン
 	const std::wstring PATH_MDL = Application::PATH_MODEL;
 	transSubWeapon_.modelId = MV1LoadModel((PATH_MDL + NODEL_FILE_ARROW).c_str());
-	transSubWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 2.0f);
+	transSubWeapon_.scl = VScale(Utility::VECTOR_ONE, 2.0f);
 	// 初期座標
 	transSubWeapon_.pos = prePos_ = START_POS;
 	transSubWeapon_.quaRot = Quaternion();

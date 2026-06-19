@@ -85,7 +85,6 @@ private:
 	// ピクセル定数バッファハンドル
 	int constBufPS_;
 
-
 	// テクスチャアドレス
 	TEXADDRESS texAddress_;
 

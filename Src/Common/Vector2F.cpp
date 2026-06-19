@@ -1,5 +1,5 @@
 #include "Vector2.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "Vector2F.h"
 
 Vector2F::Vector2F(void)
@@ -23,7 +23,7 @@ Vector2F::Vector2F(Vector2 value)
 Vector2 Vector2F::ToVector2(void)
 {
 	Vector2 ret;
-	ret.x = AsoUtility::Round(x);
-	ret.y = AsoUtility::Round(y);
+	ret.x = Utility::Round(x);
+	ret.y = Utility::Round(y);
 	return ret;
 }

@@ -6,14 +6,13 @@
 #include "../Common/Transform.h"
 #include "../Player/Player.h"
 
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 
 #include "Object.h"
 
 Object::Object(
 	Player& player, const Transform& transform, STATE state) : player_(player)
 {
-
 	transform_ = transform;
 
 	state_ = state;
@@ -21,7 +20,6 @@ Object::Object(
 	// èÛë‘ä«óù
 	stateChanges_.emplace(STATE::PLAY, std::bind(&Object::ChangeStatePlay, this));
 	stateChanges_.emplace(STATE::ROLL, std::bind(&Object::ChangeStateRoll, this));
-
 }
 
 Object::~Object(void)
@@ -61,10 +59,12 @@ void Object::ChangeState(STATE state)
 void Object::ChangeStateNone(void)
 {
 }
+
 void Object::ChangeStatePlay(void)
 {
 	stateUpdate_ = std::bind(&Object::UpdatePlay, this);
 }
+
 void Object::ChangeStateRoll(void)
 {
 	stateUpdate_ = std::bind(&Object::UpdateRoll, this);
@@ -74,13 +74,14 @@ void Object::ChangeStateRoll(void)
 void Object::UpdateNone(void)
 {
 }
+
 void Object::UpdatePlay(void)
 {
-	
 }
+
 void Object::UpdateRoll(void)
 {
 	transform_.quaRot = transform_.quaRot.Mult(
-		Quaternion::Euler(0.0f, AsoUtility::Deg2RadF(-1.0f), 0.0f));
+		Quaternion::Euler(0.0f, Utility::Deg2RadF(-1.0f), 0.0f));
 	transform_.Update();
 }

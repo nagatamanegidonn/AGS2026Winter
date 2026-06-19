@@ -213,7 +213,6 @@ private:
 	void ChangeStateLerpMove(void);
 	void ChangeStateBattle(void);
 	void ChangeStateFollow(void);
-	// çUåÇån
 	void ChangeStateAttrckReady(void);
 	void ChangeStateAttrckStamp(void);
 	void ChangeStateAttrckLeftClaw(void);

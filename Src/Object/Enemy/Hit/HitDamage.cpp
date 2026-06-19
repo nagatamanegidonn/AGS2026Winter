@@ -1,6 +1,6 @@
 
 #include "../Manager/SceneManager.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 
 #include "HitDamage.h"
 
@@ -18,7 +18,7 @@ HitDamage::HitDamage(int& model, std::wstring boneName, int damage)
 	parModel_(model),
 	boneName_(boneName),
 	state_(STATE::PLAY),
-	uiPos_(AsoUtility::VECTOR_ZERO),
+	uiPos_(Utility::VECTOR_ZERO),
 	uiRate_(1.0f),
 	uiDame_(damage),
 	randPosX_((rand() % RAND_RATE) - (RAND_RATE / 2)),
@@ -40,7 +40,7 @@ void HitDamage::Init(int damage)
 void HitDamage::Update(void)
 {
 	// ダメージ表記の位置を更新
-	uiPos_ = AsoUtility::MV1GetFreamPos(parModel_, boneName_);
+	uiPos_ = Utility::MV1GetFreamPos(parModel_, boneName_);
 
 	if (uiRate_ > 0.0f)
 	{

@@ -1,7 +1,7 @@
 #include "CharaBase.h"
 #include "../Manager/SceneManager.h"
 #include "../Manager/ResourceManager.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "Stage/Planet.h"
 
 namespace
@@ -32,12 +32,12 @@ CharaBase::CharaBase(void)
 	speed_(0.0f),
 	stepRotTime_(0.0f),
 	goalQuaRot_(),
-	jumpPow_(AsoUtility::VECTOR_ZERO),
+	jumpPow_(Utility::VECTOR_ZERO),
 	imgShadow_(-1),
-	moveDir_(AsoUtility::VECTOR_ZERO),
-	movePow_(AsoUtility::VECTOR_ZERO),
-	movedPos_(AsoUtility::VECTOR_ZERO),
-	prePos_(AsoUtility::VECTOR_ZERO),
+	moveDir_(Utility::VECTOR_ZERO),
+	movePow_(Utility::VECTOR_ZERO),
+	movedPos_(Utility::VECTOR_ZERO),
+	prePos_(Utility::VECTOR_ZERO),
 	attackRate_(1.0f),
 	ActorBase()
 {
@@ -91,8 +91,8 @@ void CharaBase::CollisionMoveEnd(void)
 		{
 			// ’n–Ê‚Æ‚ÌÕ“Ë
 			auto hit = MV1CollCheck_Line(
-				c.lock()->modelId_, -1, VAdd(prePos_,VScale(AsoUtility::DIR_U, COLL_LINE_OFFSET))
-				, VAdd(transform_.pos, VScale(AsoUtility::DIR_U, COLL_LINE_OFFSET)));
+				c.lock()->modelId_, -1, VAdd(prePos_,VScale(Utility::DIR_U, COLL_LINE_OFFSET))
+				, VAdd(transform_.pos, VScale(Utility::DIR_U, COLL_LINE_OFFSET)));
 			
 			auto hitD = MV1CollCheck_Line(
 				c.lock()->modelId_, -1, prePos_, transform_.pos);
@@ -220,7 +220,7 @@ void CharaBase::DrawShadow(void)
 void CharaBase::CalcGravityPow(void)
 {
 	// d—Í•ûŒü
-	VECTOR dirGravity = AsoUtility::DIR_D;
+	VECTOR dirGravity = Utility::DIR_D;
 
 	// d—Í‚Ì‹­‚³
 	float gravityPow = Planet::DEFAULT_GRAVITY_POW;

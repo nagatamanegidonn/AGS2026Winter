@@ -1,7 +1,7 @@
 #include <DxLib.h>
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/Utility.h"
 
 #include "../Common/Transform.h"
 #include "Grid.h"
@@ -16,9 +16,6 @@ Grid::~Grid(void)
 
 void Grid::Init(void)
 {
-	//※モデルのテクスチャの参照先がおかしいの白く描画されます
-
-
 }
 
 void Grid::Update(void)
@@ -29,6 +26,7 @@ void Grid::Draw(void)
 {
 	DrawDebug();
 }
+
 void Grid::DrawDebug(void)
 {
 
@@ -46,16 +44,14 @@ void Grid::DrawDebug(void)
 	Quaternion rotPow = Quaternion();
 
 	float dirPow = 360.0f / (HNUM * 2);
-	VECTOR dir = AsoUtility::DIR_R;
+	VECTOR dir = Utility::DIR_R;
 
-	VECTOR sPos = AsoUtility::VECTOR_ZERO;
+	VECTOR sPos = Utility::VECTOR_ZERO;
 	VECTOR ePos;
-	VECTOR eAgoPos = AsoUtility::VECTOR_ZERO;
+	VECTOR eAgoPos = Utility::VECTOR_ZERO;
 
 	DrawSphere3D(sPos, 20.0f, 10, 0xff0000, 0xff0000, true);
 
-
-	
 	//□
 	for (int i = -HNUM; i < HNUM; i++)
 	{
@@ -84,12 +80,11 @@ void Grid::DrawDebug(void)
 
 	return;
 
-
 	//〇
 	for (int i = -HNUM; i < HNUM; i++)
 	{
 
-		float rad = AsoUtility::Deg2RadF(dir.y);
+		float rad = Utility::Deg2RadF(dir.y);
 		float cosA = cosf(rad);
 		float sinA = sinf(rad);
 
@@ -103,7 +98,7 @@ void Grid::DrawDebug(void)
 		DrawLine3D(sPos, ePos, 0xff0000);
 		DrawSphere3D(ePos, 20.0f, 10, 0x0000ff, 0x0000ff, true);
 
-		if (!AsoUtility::EqualsVZero(eAgoPos))
+		if (!Utility::EqualsVZero(eAgoPos))
 		{
 			DrawLine3D(ePos, eAgoPos, 0x0000ff);
 		}
@@ -117,7 +112,6 @@ void Grid::DrawDebug(void)
 	ePos = { 0.0f, HLEN, 0.0f };
 	DrawLine3D(sPos, ePos, 0x00ff00);
 	DrawSphere3D(ePos, 20.0f, 10, 0x00ff00, 0x00ff00, true);
-
 
 	return;
 

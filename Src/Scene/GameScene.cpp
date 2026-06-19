@@ -1,6 +1,6 @@
 #include <DxLib.h>
 #include "../Application.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "../Utility/Measure.h"
 #include "../Manager/SoundManager.h"
 #include "../Manager/InputManager.h"
@@ -126,7 +126,7 @@ void GameScene::Init(void)
 	grid_->Init();
 
 	// 空の弾の作成
-	auto shot = std::make_unique<ItemShot>(0, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, -1);
+	auto shot = std::make_unique<ItemShot>(0, Utility::VECTOR_ZERO, Utility::VECTOR_ZERO, -1);
 	shot->ChangeState();
 	shots_.push_back(std::move(shot));
 
@@ -375,7 +375,7 @@ void GameScene::Collision(void)
 			// ボス攻撃の処理
 			if (boss_->CollisionAttrck(player->GetTransform().modelId))
 			{
-				VECTOR mixDir = AsoUtility::VECTOR_ZERO;
+				VECTOR mixDir = Utility::VECTOR_ZERO;
 				if (boss_->GetAnim() == (int)Boss::ANIM_TYPE::ATTRCK_DASH)
 				{
 					mixDir = VScale(boss_->GetTransform().GetForward(), DAMAGE_VEC_RATE);
@@ -398,7 +398,7 @@ void GameScene::Collision(void)
 
 				if (enemy.lock()->CollisionAttrck(player->GetTransform().modelId))
 				{
-					VECTOR mixDir = AsoUtility::VECTOR_ZERO;
+					VECTOR mixDir = Utility::VECTOR_ZERO;
 					player->Damage(static_cast<int>(static_cast<float>(mons->GetAttrckPow()) * mons->GetAttrckRate()), enemy.lock()->GetAttrckPos(), mixDir);
 				}
 			}
@@ -448,7 +448,7 @@ void GameScene::Collision(void)
 		{
 			// 敵ならスタン
 			// プレイヤーとの衝突判定
-			float disPow = AsoUtility::GetDisPow(boss_->GetTransform().pos, shot->GetTransform().pos);
+			float disPow = Utility::GetDisPow(boss_->GetTransform().pos, shot->GetTransform().pos);
 
 			if (boss_->IsTargetInFOV(shot->GetTransform().pos, Boss::FOV_RADIUS_FLASH)
 				&& disPow < Boss::MOVE_RADIUS * Boss::MOVE_RADIUS)
@@ -462,7 +462,7 @@ void GameScene::Collision(void)
 			{
 				if (nIns.GetSelf().key == player->GetKey())
 				{
-					float disPow = AsoUtility::GetDisPow(player->GetTransform().pos, shot->GetTransform().pos);
+					float disPow = Utility::GetDisPow(player->GetTransform().pos, shot->GetTransform().pos);
 
 					if (disPow < shot->GetRadius() * shot->GetRadius())
 					{
@@ -514,7 +514,7 @@ void GameScene::Collision(void)
 				{
 					if (nIns.GetSelf().key == player->GetKey())
 					{
-						float disPow = AsoUtility::GetDisPow(player->GetTransform().pos, ShotPos);
+						float disPow = Utility::GetDisPow(player->GetTransform().pos, ShotPos);
 
 						if (disPow < shot->GetRadius() * shot->GetRadius())
 						{
@@ -530,7 +530,7 @@ void GameScene::Collision(void)
 					}
 				}
 				// 敵ならダメージ
-				float disPow = AsoUtility::GetDisPow(boss_->GetTransform().pos, ShotPos);
+				float disPow = Utility::GetDisPow(boss_->GetTransform().pos, ShotPos);
 
 				if (disPow < shot->GetRadius() * shot->GetRadius()
 					&& shot->GetKey() == nIns.GetSelf().key)

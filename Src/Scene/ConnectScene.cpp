@@ -8,7 +8,7 @@
 #include "../Manager/ResourceManager.h"
 
 #include "../Net/NetManager.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 
 #include "../Object/Player/ViewPlayer.h"
 
@@ -46,6 +46,8 @@ namespace
 }
 
 ConnectScene::ConnectScene(void)
+	:
+	playerNum_(0)
 {
 	DeleteGraph(backImg_);
 }
@@ -74,13 +76,13 @@ void ConnectScene::Init(void)
 	playerNum_ = INITIAL_PLAYER_COUNT;
 
 	AddPlayer({ -150.0f,-50.0f,-250.0f },
-		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(-20.0f), AsoUtility::Deg2RadF(0.0f) });
+		{ Utility::Deg2RadF(10.0f), Utility::Deg2RadF(-20.0f), Utility::Deg2RadF(0.0f) });
 	AddPlayer({ -50.0f,-50.0f,-250.0f },
-		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f), AsoUtility::Deg2RadF(0.0f) });
+		{ Utility::Deg2RadF(10.0f), Utility::Deg2RadF(0.0f), Utility::Deg2RadF(0.0f) });
 	AddPlayer({ 50.0f,-50.0f,-250.0f },
-		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(0.0f), AsoUtility::Deg2RadF(0.0f) });
+		{ Utility::Deg2RadF(10.0f), Utility::Deg2RadF(0.0f), Utility::Deg2RadF(0.0f) });
 	AddPlayer({ 150.0f,-50.0f,-250.0f },
-		{ AsoUtility::Deg2RadF(10.0f), AsoUtility::Deg2RadF(20.0f), AsoUtility::Deg2RadF(0.0f) });
+		{ Utility::Deg2RadF(10.0f), Utility::Deg2RadF(20.0f), Utility::Deg2RadF(0.0f) });
 
 #pragma endregion
 

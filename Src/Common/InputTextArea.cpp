@@ -20,11 +20,12 @@ InputTextArea::InputTextArea(const Vector2 pos, const Vector2 size, int length)
 
 InputTextArea::~InputTextArea(void)
 {
+	// デストラクタでも安全にハンドルを削除する
+	Release();
 }
 
 void InputTextArea::Update(void)
 {
-
 	// InputManagerの方が早いかもですが、
 	// 無くても動くようにDxLib直接を使用
 	mouseInputNew_ = GetMouseInput();
@@ -48,14 +49,11 @@ void InputTextArea::Update(void)
 		}
 	}
 
-
 	mouseInputOld_ = mouseInputNew_;
-
 }
 
 void InputTextArea::Draw(void)
 {
-
 	if (manager_.IsActiveHandle(this))
 	{
 		DrawActive();
@@ -64,14 +62,17 @@ void InputTextArea::Draw(void)
 	{
 		DrawDefault();
 	}
-
-
 }
 
 void InputTextArea::Release(void)
 {
-	// 用済みのインプットハンドルを削除する
-	DeleteKeyInput(keyInputHandle_);
+	// 二重解放を防ぐため、有効なハンドル（-1以外）のときだけ削除
+	if (keyInputHandle_ != -1)
+	{
+		// 用済みのインプットハンドルを削除する
+		DeleteKeyInput(keyInputHandle_);
+		keyInputHandle_ = -1; // 削除済みフラグとして-1に戻す
+	}
 }
 
 int InputTextArea::GetKeyHandle(void)
@@ -91,10 +92,14 @@ void InputTextArea::SetText(const std::wstring& text)
 
 void InputTextArea::SetKeyInputStringBuffer(void)
 {
-	// 入力内容を取得
-	GetKeyInputString(buffer_, keyInputHandle_);
-	// charからstringへ
-	text_ = std::wstring(buffer_, length_);
+	// 必要なサイズ分のメモリをstd::wstring側に確保する（+1は終端文字用）
+	std::wstring tempBuffer(length_ + 1, L'\0');
+
+	// stringの内部バッファ（&tempBuffer[0]）に直接DxLibから書き込んでもらう
+	GetKeyInputString(&tempBuffer[0], keyInputHandle_);
+
+	// 余分な末尾のヌル文字をカットして、正規のtext_に代入
+	text_ = tempBuffer.c_str();
 }
 
 const bool InputTextArea::IsActive(void)
@@ -140,7 +145,6 @@ const bool InputTextArea::IsCleckText(void)
 
 void InputTextArea::DrawDefault(void)
 {
-
 	// 背景
 	DrawBox(pos_.x, pos_.y,
 		pos_.x + size_.x, pos_.y + size_.y, COLOR_BACK_DEFAULT, true);
@@ -151,7 +155,6 @@ void InputTextArea::DrawDefault(void)
 
 	// 文字表示
 	DrawString(pos_.x + 5, pos_.y + 7, text_.c_str(), COLOR_CHAR);
-
 }
 
 void InputTextArea::DrawActive(void)
@@ -166,5 +169,4 @@ void InputTextArea::DrawActive(void)
 
 	// 入力文字
 	DrawKeyInputString(pos_.x + 5, pos_.y + 7, keyInputHandle_);
-
 }

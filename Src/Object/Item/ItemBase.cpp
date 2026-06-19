@@ -40,13 +40,16 @@ ItemBase::ItemBase(std::wstring _name)
 	count_(INITIAL_COUNT_ONE)
 {
 	// ƒAƒCƒeƒ€–¼‚É‰‚¶‚Ä‰æ‘œ‚ğ“Ç‚İ‚Ş
-	if (name_ == ITEM_NAME_ATTACK) {
+	if (name_ == ITEM_NAME_ATTACK) 
+	{
 		itemImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::FLASH_ITEM).handleId_;
 	}
-	else if (name_ == ITEM_NAME_RECOVER) {
+	else if (name_ == ITEM_NAME_RECOVER) 
+	{
 		itemImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::HEEL_ITEM).handleId_;
 	}
-	else if (name_ == ITEM_NAME_SET) {
+	else if (name_ == ITEM_NAME_SET) 
+	{
 		itemImage_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::BOM_ITEM).handleId_;
 	}
 	else {

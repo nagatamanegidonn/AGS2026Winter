@@ -33,10 +33,10 @@ public:
 	void Release(void);
 
 	// ƒLƒƒƒ‰‚Ìİ’è
-	void SetChar(const int charId);
+	void SetChar(int charId);
 
 	// •Ší‚Ìİ’è
-	void SetWeapon(const int weponId);
+	void SetWeapon(int weponId);
 
 	// ˆÊ’u‚Ìİ’è
 	const void SetPos(const VECTOR pos);

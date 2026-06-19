@@ -10,7 +10,6 @@ PixelRenderer::~PixelRenderer(void)
 
 void PixelRenderer::MakeSquereVertex(Vector2 pos, Vector2 size)
 {
-
 	pos_ = pos;
 	size_ = size;
 
@@ -72,7 +71,6 @@ void PixelRenderer::MakeSquereVertex(Vector2 pos, Vector2 size)
 	　～～～～～～
 	*/
 
-
 	// 頂点インデックス
 	cnt = 0;
 	indexes_[cnt++] = 0;
@@ -82,7 +80,6 @@ void PixelRenderer::MakeSquereVertex(Vector2 pos, Vector2 size)
 	indexes_[cnt++] = 1;
 	indexes_[cnt++] = 2;
 	indexes_[cnt++] = 3;
-
 }
 
 void PixelRenderer::MakeSquereVertex(void)
@@ -102,7 +99,6 @@ void PixelRenderer::SetSize(Vector2 size)
 
 void PixelRenderer::Draw(void)
 {
-
 	// ピクセルシェーダ設定
 	SetUsePixelShader(pixelMaterial_.GetShader());
 
@@ -171,7 +167,6 @@ void PixelRenderer::Draw(void)
 	// オリジナルシェーダ設定(OFF)
 	MV1SetUseOrigShader(false);
 	//-----------------------------------------
-
 }
 
 void PixelRenderer::Draw(int x, int y)

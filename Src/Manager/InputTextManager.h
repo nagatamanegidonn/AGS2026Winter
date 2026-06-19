@@ -16,6 +16,9 @@ public:
 
 	// 更新
 	static void Update(void);
+	
+	// 解放処理
+	static void Destroy(void);
 
 	// 指定されたキー入力ハンドルを有効にする
 	static void SetActive(InputTextArea* inputTextArea);
@@ -34,7 +37,7 @@ private:
 	InputTextManager(void);
 	
 	// デストラクタ
-	~InputTextManager(void);
+	~InputTextManager(void) = default;
 
 	// 有効なキー入力ハンドルを持つInputTextArea
 	InputTextArea* inputTextArea_;

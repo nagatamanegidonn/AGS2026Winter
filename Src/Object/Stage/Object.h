@@ -32,14 +32,18 @@ public:
 	};
 
 	// コンストラクタ
-	Object(
-		Player& player, const Transform& transform, STATE state);
+	Object(Player& player, const Transform& transform, STATE state);
 
 	// デストラクタ
 	virtual ~Object(void);
 
+	// 初期化処理
 	virtual void Init(void) override;
+	
+	// 更新処理
 	virtual void Update(void) override;
+	
+	// 描画処理
 	virtual void Draw(void) override;
 
 protected:
@@ -49,8 +53,10 @@ protected:
 
 	// 状態管理
 	STATE state_;
+
 	// 状態管理(状態遷移時初期処理)
 	std::map<STATE, std::function<void(void)>> stateChanges_;
+
 	// 状態管理(更新ステップ)
 	std::function<void(void)> stateUpdate_;
 

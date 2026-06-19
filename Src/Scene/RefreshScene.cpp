@@ -1,6 +1,6 @@
 #include<DxLib.h>
 #include "../Application.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/Utility.h"
 #include "../Utility/Measure.h"
 
 #include "../Manager/InputManager.h"

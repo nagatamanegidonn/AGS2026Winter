@@ -108,7 +108,6 @@ void NetManager::Init(void)
 
 void NetManager::Update(void)
 {
-
 	if (net_ == nullptr)
 	{
 		// Runが実行されるまで処理しない
@@ -118,7 +117,6 @@ void NetManager::Update(void)
 	// ゲーム通信中なら
 	if (isSync_)
 	{
-
 		// TODO 完全同期になっているので、ある程度非同期でも実行できるようにしたい
 		while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 		{
@@ -306,10 +304,8 @@ NetManager::~NetManager(void)
 
 void NetManager::UdpReceiveThread(void)
 {
-
 	while (isRunning_)
 	{
-
 		{
 			// 排他制御
 			std::lock_guard<std::mutex> lock(poolMutex_);
@@ -337,9 +333,7 @@ void NetManager::UdpReceiveThread(void)
 
 		// 受信ループの待機
 		WaitTimer(static_cast<int>(NetManager::RECEIVE_TERM_MSEC));
-
 	}
-
 }
 
 void NetManager::UdpReceiveData(void)
@@ -430,7 +424,6 @@ void NetManager::UdpReceiveData(void)
 				break;
 			}
 			}
-
 		}
 
 	}
@@ -572,6 +565,7 @@ GAME_STATE NetManager::GetGameStateSelf(void) const
 {
 	return pool_.selfJoinUser_.gameState;
 }
+
 // 接続ユーザーのStateがあっているのか
 bool NetManager::IsSameGameState(GAME_STATE state)
 {
@@ -658,10 +652,12 @@ VECTOR NetManager::GetPostion(int key)
 	}
 	return{ 100.0f,100.0f,100.0f };
 }
+
 void NetManager::SetPostion(int key,VECTOR pos)
 {
 	pool_.selfActionHis_.selfPostion_ = pos;
 }
+
 // 回転情報
 Quaternion NetManager::GetPlayRot(int key)
 {
@@ -671,6 +667,7 @@ Quaternion NetManager::GetPlayRot(int key)
 	}
 	return{ 100.0f,100.0f,100.0f ,100.0f };
 }
+
 void NetManager::SetPlayRot(int key, Quaternion rot)
 {
 	pool_.selfActionHis_.playerRot_ = rot;
@@ -684,6 +681,7 @@ int NetManager::GetAnimeType(int key)
 	}
 	return pool_.joinUserActionHis_[pool_.selfJoinUser_.key].playerAnim_;;
 }
+
 void NetManager::SetAnimeType(int key, int anim)
 {
 	pool_.selfActionHis_.playerAnim_ = anim;
@@ -697,6 +695,7 @@ int NetManager::GetNetHp(int key)
 	}
 	return pool_.joinUserActionHis_[pool_.selfJoinUser_.key].hp_;
 }
+
 void NetManager::SetNetHp(int key, int hp)
 {
 	pool_.selfActionHis_.hp_ = hp;
@@ -711,6 +710,7 @@ int NetManager::GetWeapon(int key)
 	}
 	return 0;
 }
+
 void NetManager::SetWeapon(int key, int id)////なんでこれでいけるか理解する/////
 {
 	// 自分自身の武器IDも変更する場合は selfJoinUser_ も
@@ -741,8 +741,6 @@ void NetManager::SetWeapon(int key, int id)////なんでこれでいけるか理解する/////
 		}
 	}
 }
-
-
 
 bool NetManager::IsSameFrameNo(void)
 {
@@ -798,7 +796,6 @@ const NET_ACTION_HIS NetManager::GetSelfActionHis(void) const
 	return pool_.selfActionHis_;
 }
 
-
 #pragma region 小型用の通信関数
 
 MONSTER_DATA NetManager::GetMonsData(int key, int No)
@@ -809,6 +806,7 @@ MONSTER_DATA NetManager::GetMonsData(int key, int No)
 	}
 	return pool_.joinUserActionHis_[pool_.selfJoinUser_.key].monsters_[No];
 }
+
 void NetManager::SetMonsData(int key, int No, VECTOR pos, Quaternion rot, int anim, int state)
 {
 	pool_.selfActionHis_.monsters_[No].postion_ = pos;
@@ -825,6 +823,7 @@ int NetManager::GetNetMonsDamage(int key, int No)
 	}
 	return 0;
 }
+
 void NetManager::SetNetMonsDamage(int key, int No, int damage)
 {
 	pool_.selfActionHis_.smallDamage_[No] = damage;
@@ -838,6 +837,7 @@ int NetManager::GetNetMonsHp(int key, int No)
 	}
 	return 0;
 }
+
 void NetManager::SetNetMonsHp(int key, int No, int hp)
 {
 	pool_.selfActionHis_.smallHp_[No] = hp;
@@ -845,19 +845,15 @@ void NetManager::SetNetMonsHp(int key, int No, int hp)
 
 #pragma endregion
 
-#pragma endregion
-
-
-
 const NET_ACTION NetManager::GetSelfAction(void) const
 {
 	return pool_.selfAction_;
 }
+
 const std::map<int, NET_ACTION_HIS> NetManager::GetActionHis(void) const
 {
 	return pool_.joinUserActionHis_;
 }
-
 
 void NetManager::ReplaceActionHis(NET_ACTION_HIS entity)
 {
@@ -871,7 +867,6 @@ void NetManager::ReplaceActionHis(NET_ACTION_HIS entity)
 		map[entity.key] = entity;
 	}
 }
-
 
 #pragma region IsAction
 

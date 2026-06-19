@@ -11,7 +11,6 @@ ModelRenderer::~ModelRenderer(void)
 
 void ModelRenderer::Draw(void)
 {
-
 	// オリジナルシェーダ設定(ON)
 	MV1SetUseOrigShader(true);
 
@@ -62,12 +61,10 @@ void ModelRenderer::Draw(void)
 	// オリジナルシェーダ設定(OFF)
 	MV1SetUseOrigShader(false);
 	//-----------------------------------------
-
 }
 
 void ModelRenderer::SetReserveVS(void)
 {
-
 	// 定数バッファハンドル
 	int constBuf = modelMaterial_.GetConstBufVS();
 
@@ -96,12 +93,10 @@ void ModelRenderer::SetReserveVS(void)
 
 	// 頂点シェーダー設定
 	SetUseVertexShader(modelMaterial_.GetShaderVS());
-
 }
 
 void ModelRenderer::SetReservePS(void)
 {
-
 	// ピクセルシェーダーにテクスチャを転送
 	const auto& textures = modelMaterial_.GetTextures();
 	size_t size = textures.size();
@@ -146,5 +141,4 @@ void ModelRenderer::SetReservePS(void)
 
 	// ピクセルシェーダー設定
 	SetUsePixelShader(modelMaterial_.GetShaderPS());
-
 }

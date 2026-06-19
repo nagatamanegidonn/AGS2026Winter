@@ -1,4 +1,4 @@
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/Utility.h"
 
 #include "../../Net/NetManager.h"
 
@@ -27,9 +27,9 @@ EnemyBase::EnemyBase(void)
 	: createNo_(0)
 	, followTime_(0.0f)
 	, follow_(nullptr)
-	, gravHitPosDown_(AsoUtility::VECTOR_ZERO)
-	, gravHitPosUp_(AsoUtility::VECTOR_ZERO)
-	, hitDamePos_(AsoUtility::VECTOR_ZERO)
+	, gravHitPosDown_(Utility::VECTOR_ZERO)
+	, gravHitPosUp_(Utility::VECTOR_ZERO)
+	, hitDamePos_(Utility::VECTOR_ZERO)
 	, hpMax_(0)
 	, hp_(0)
 	, key_(0)
@@ -68,7 +68,7 @@ bool EnemyBase::IsTargetInFOV(const VECTOR& followPos, float fovDeg)
 
 	float dot = VDot(forward, toTarget);					// コサイン角
 	float angleRad = acosf(std::clamp(dot, -1.0f, 1.0f));	// 安定化
-	float angleDeg = AsoUtility::Rad2DegF(angleRad);
+	float angleDeg = Utility::Rad2DegF(angleRad);
 
 	// 視野角の半分以内なら true
 	return angleDeg <= (fovDeg * HALF_SCALE);
@@ -175,10 +175,10 @@ void EnemyBase::CollisionGravity(void)
 	movedPos_ = VAdd(movedPos_, jumpPow_);
 
 	// 重力方向
-	VECTOR dirGravity = AsoUtility::DIR_D;
+	VECTOR dirGravity = Utility::DIR_D;
 
 	// 重力方向の反対
-	VECTOR dirUpGravity = AsoUtility::DIR_U;
+	VECTOR dirUpGravity = Utility::DIR_U;
 
 	// 重力の強さ
 	float gravityPow = Planet::DEFAULT_GRAVITY_POW;
@@ -199,7 +199,7 @@ void EnemyBase::CollisionGravity(void)
 			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, 2.0f));
 
 			// ジャンプリセット
-			jumpPow_ = AsoUtility::VECTOR_ZERO;
+			jumpPow_ = Utility::VECTOR_ZERO;
 		}
 	}
 }
@@ -267,7 +267,7 @@ void EnemyBase::TargetRotate(const VECTOR& traPos, float rate)
 	}
 
 	// ラジアンを度に変換
-	float angleDeg = AsoUtility::Rad2DegF(angleRad);
+	float angleDeg = Utility::Rad2DegF(angleRad);
 
 	const float maxTurnDeg = 3.0f;	// 1フレームあたりの最大回転角度
 	const float deadZoneDeg = 1.0f;	// デッドゾーン(この角度以下は回転しない)
@@ -279,7 +279,7 @@ void EnemyBase::TargetRotate(const VECTOR& traPos, float rate)
 
 		playerRotY_ = playerRotY_.Mult(
 			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(clampedDeg), AsoUtility::AXIS_Y
+				Utility::Deg2RadF(clampedDeg), Utility::AXIS_Y
 			));
 	}
 }
@@ -300,7 +300,7 @@ void EnemyBase::DrawFOV(float fovDeg, float radius, int rayCount, unsigned int c
 	for (int i = 0; i < rayCount; ++i)
 	{
 		float angle = -halfFov + angleStep * i;
-		float rad = AsoUtility::Deg2RadF(angle);
+		float rad = Utility::Deg2RadF(angle);
 
 		// Y軸回転の方向ベクトルを作成
 		VECTOR dir = {

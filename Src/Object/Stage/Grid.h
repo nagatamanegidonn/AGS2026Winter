@@ -18,9 +18,9 @@ public:
 	// 線の間隔
 	static constexpr float TERM = 50.0f;
 	// 線の数
-	static const int NUM = static_cast<int>(LEN / TERM);
+	static constexpr int NUM = static_cast<int>(LEN / TERM);
 	// 線の数の半分
-	static const int HNUM = NUM / 2;
+	static constexpr int HNUM = NUM / 2;
 
 #pragma endregion
 
@@ -40,14 +40,17 @@ public:
 	// デストラクタ
 	~Grid(void);
 
+	// 初期化処理
 	void Init(void);
+	
+	// 更新処理
 	void Update(void);
+	
+	// 描画処理
 	void Draw(void);
-	void DrawDebug(void);
+	void DrawDebug(void);// デバッグ描画
+	
+	// 解放処理
 	void Release(void);
-
-private:
-
-	SpaceDome* spaceDome_;
 
 };

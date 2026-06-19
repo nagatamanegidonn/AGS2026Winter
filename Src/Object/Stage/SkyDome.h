@@ -26,8 +26,13 @@ public:
 	// デストラクタ
 	~SkyDome(void);
 
+	// 初期化処理
 	void Init(void) override;
+	
+	// 更新処理
 	void Update(void) override;
+	
+	// 描画処理
 	void Draw(void) override;
 
 private:

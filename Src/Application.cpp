@@ -41,10 +41,6 @@ Application::Application(const Application& ins)
 	isError_ = false;
 }
 
-Application::~Application(void)
-{
-}
-
 void Application::CreateInstance(void)
 {
 	if (instance_ == nullptr)
@@ -120,7 +116,6 @@ void Application::Init(void)
 
 void Application::Run(void)
 {
-
 	// ゲームループ
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
@@ -144,23 +139,33 @@ void Application::Run(void)
 
 void Application::Destroy(void)
 {           
-	// ネットワーク管理破棄
+	// 各マネージャーの破棄（シーンやゲームから順に消す）
+	SceneManager::GetInstance().Destroy();
+	GameManager::GetInstance().Destroy();
+
+	// 音や入力、ネットワークの破棄
+	SoundManager::GetInstance().Destroy();
+	InputTextManager::GetInstance().Destroy();
+	InputManager::GetInstance().Destroy();
 	NetManager::GetInstance().Destroy();
 
-	InputManager::GetInstance().Destroy();
+	// すべてのオブジェクトが消えた後にリソース管理を破棄
 	ResourceManager::GetInstance().Destroy();
-	SoundManager::GetInstance().Destroy(); 
-	GameManager::GetInstance().Destroy();
-	SceneManager::GetInstance().Destroy();
 
-	// Effekseerを終了する。
+	// 計測クラスのインスタンス破棄（動的に生成している場合）
+	 Measure::GetInstance().Reset();
+
+	// 3. 外部ライブラリの終了処理（★EffekseerはDxLib_Endより前に呼ぶ）
 	Effkseer_End();
 
+	// DxLib終了
 	if (DxLib_End() == -1)
 	{
 		isError_ = true;
-		return;
 	}
+
+	delete instance_;
+	instance_ = nullptr;
 }
 
 bool Application::IsError(void)
@@ -172,7 +177,9 @@ void Application::InitEffekseer(void)
 {
 	if (Effekseer_Init(8000) == -1)
 	{
+		isError_ = true; // エラーフラグを立てる
 		DxLib_End();
+		return;
 	}
 
 	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);

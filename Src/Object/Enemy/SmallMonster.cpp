@@ -1,7 +1,7 @@
 #include <string>
 #include <DxLib.h>
 #include "../../Application.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/Utility.h"
 
 #include "../../Manager/SceneManager.h"
 #include "../../Manager/ResourceManager.h"
@@ -93,7 +93,7 @@ SmallMonster::SmallMonster(int key, int createNo)
 	follow_ = nullptr;
 	followTime_ = 0.0f;
 	// 攻撃位置
-	attrckPos_ = AsoUtility::VECTOR_ZERO;
+	attrckPos_ = Utility::VECTOR_ZERO;
 	attrckRadius = 0.0f;
 	dameRate_ = DEFAULT_DAMAGE_RATE;
 
@@ -114,12 +114,12 @@ void SmallMonster::Init(void)
 	// モデルの基本設定
 	transform_.SetModel(ResourceManager::GetInstance().LoadModelDuplicate(
 		ResourceManager::SRC::MONSTER));
-	transform_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_SIZE);
+	transform_.scl = VScale(Utility::VECTOR_ONE, SCALE_SIZE);
 	// 初期座標
 	transform_.pos = prePos_ = START_POS;
 	transform_.quaRot = Quaternion();
 	transform_.quaRotLocal =
-		Quaternion::Euler({ 0.0f, AsoUtility::Deg2RadF(0.0f), 0.0f });
+		Quaternion::Euler({ 0.0f, Utility::Deg2RadF(0.0f), 0.0f });
 	transform_.Update();
 
 	// アニメーションの設定
@@ -131,12 +131,12 @@ void SmallMonster::Init(void)
 	ChangeState(STATE::PLAY);
 
 	// 位置情報の変数
-	movedPos_ = AsoUtility::VECTOR_ZERO;
-	moveDir_ = AsoUtility::VECTOR_ZERO;
-	movePow_ = AsoUtility::VECTOR_ZERO;
+	movedPos_ = Utility::VECTOR_ZERO;
+	moveDir_ = Utility::VECTOR_ZERO;
+	movePow_ = Utility::VECTOR_ZERO;
 
 	// 重力兼ジャンプ力
-	jumpPow_ = AsoUtility::VECTOR_ZERO;
+	jumpPow_ = Utility::VECTOR_ZERO;
 
 	// カプセルコライダ
 	capsule_ = std::make_unique<Capsule>(transform_);
@@ -153,7 +153,7 @@ void SmallMonster::Init(void)
 	isHitCheck_ = false;
 
 	transform_.MakeCollider(Collider::TYPE::WALL);
-	hitDamePos_ = AsoUtility::VECTOR_ZERO;
+	hitDamePos_ = Utility::VECTOR_ZERO;
 }
 
 // 更新処理
@@ -183,7 +183,7 @@ void SmallMonster::Update(void)
 		// 死亡判定
 		if (hp_ <= 0.0f && state_ != STATE::DEAD) { ChangeState(STATE::DEAD); }
 
-		movePow_ = AsoUtility::VECTOR_ZERO;
+		movePow_ = Utility::VECTOR_ZERO;
 
 		// 更新ステップ
 		stateUpdate_();
@@ -283,7 +283,7 @@ const bool SmallMonster::CollisionCapsule(std::weak_ptr<Capsule> _capsule)
 {
 	// 当たり判定フラグ
 	bool ret = false;
-	VECTOR hitPos = AsoUtility::VECTOR_ZERO;
+	VECTOR hitPos = Utility::VECTOR_ZERO;
 
 	for (auto& part : hitParts_)
 	{
@@ -315,8 +315,8 @@ const bool SmallMonster::CollisionAttrck(const int& modelId)
 	if (animeType_ == static_cast<int>(ANIM_TYPE::ATTRCK))
 	{
 		attackType_ = static_cast<int>(ANIM_TYPE::ATTRCK);
-		attrckPos_ = VScale(VAdd(AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_NAME_BODY)
-			, AsoUtility::MV1GetFreamPos(transform_.modelId, BONE_NAME_BODY)), HALF_RATE);
+		attrckPos_ = VScale(VAdd(Utility::MV1GetFreamPos(transform_.modelId, BONE_NAME_BODY)
+			, Utility::MV1GetFreamPos(transform_.modelId, BONE_NAME_BODY)), HALF_RATE);
 		attrckRadius = ATTRCK_STAMP_RADIUS;
 	}
 	else
@@ -471,15 +471,15 @@ void SmallMonster::UpdatePlay(void)
 	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN));
 	animeType_ = static_cast<int>(ANIM_TYPE::RUN);
 
-	VECTOR axis = AsoUtility::VECTOR_ZERO;
+	VECTOR axis = Utility::VECTOR_ZERO;
 	axis.y = -HALF_RATE * (createNo_ + 1);
 
 	//回転
-	if (!AsoUtility::EqualsVZero(axis))
+	if (!Utility::EqualsVZero(axis))
 	{
 		playerRotY_ = playerRotY_.Mult(
 			Quaternion::AngleAxis(
-				AsoUtility::Deg2RadF(axis.y), AsoUtility::AXIS_Y));
+				Utility::Deg2RadF(axis.y), Utility::AXIS_Y));
 	}
 
 	// 前方向を取得
@@ -692,10 +692,10 @@ void SmallMonster::CollisionGravity(void)
 	movedPos_ = VAdd(movedPos_, jumpPow_);
 
 	// 重力方向
-	VECTOR dirGravity = AsoUtility::DIR_D;
+	VECTOR dirGravity = Utility::DIR_D;
 
 	// 重力方向の反対
-	VECTOR dirUpGravity = AsoUtility::DIR_U;
+	VECTOR dirUpGravity = Utility::DIR_U;
 
 	// 重力の強さ
 	float gravityPow = Planet::DEFAULT_GRAVITY_POW;
@@ -717,7 +717,7 @@ void SmallMonster::CollisionGravity(void)
 			movedPos_ = VAdd(hit.HitPosition, VScale(dirUpGravity, GRAVITY_PUSH_BACK));
 
 			// ジャンプリセット
-			jumpPow_ = AsoUtility::VECTOR_ZERO;
+			jumpPow_ = Utility::VECTOR_ZERO;
 		}
 	}
 }

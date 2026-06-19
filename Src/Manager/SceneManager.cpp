@@ -15,10 +15,21 @@
 #include "../Manager/Camera.h"
 
 #include "SceneManager.h"
+#include "ResourceManager.h"
+
+namespace
+{
+	// フォントサイズ
+	constexpr int FONT_SIZE = 16;
+}
 
 SceneManager* SceneManager::instance_ = nullptr;
 
 SceneManager::SceneManager(void)
+	:
+	deltaTime_(0.0f),
+	mainScreen_(-1),
+	totalGameTime_(0.0f)
 {
 	sceneId_ = SCENE_ID::NONE;
 	waitSceneId_ = SCENE_ID::NONE;
@@ -26,11 +37,6 @@ SceneManager::SceneManager(void)
 	isSceneChanging_ = false;
 
 	camera_ = nullptr;
-}
-
-SceneManager::~SceneManager(void)
-{
-	delete instance_;
 }
 
 void SceneManager::CreateInstance(void)
@@ -69,9 +75,9 @@ void SceneManager::Init(void)
 	// 初期シーンの設定
 	DoChangeScene(SCENE_ID::TITLE);
 }
+
 void SceneManager::Init3D(void)
 {
-
 	// 背景色設定
 	SetBackgroundColor(0, 139, 139);
 
@@ -101,7 +107,6 @@ void SceneManager::Init3D(void)
 
 void SceneManager::Update(void)
 {
-
 	// デルタタイム
 	auto nowTime = std::chrono::system_clock::now();
 	deltaTime_ = static_cast<float>(
@@ -128,7 +133,6 @@ void SceneManager::Update(void)
 
 void SceneManager::Draw(void)
 {
-
 	// 描画先グラフィック領域の指定
 	// (３Ｄ描画で使用するカメラの設定などがリセットされる)
 	SetDrawScreen(mainScreen_);
@@ -155,24 +159,25 @@ void SceneManager::Draw(void)
 
 	SetDrawScreen(DX_SCREEN_BACK);
 	DrawGraph(0, 0, mainScreen_, true);
-
 }
 
 void SceneManager::Destroy(void)
 {
-
-	DeleteGraph(mainScreen_);
-
 	if (capturedScreenGraph_ != -1)
 	{
 		DeleteGraph(capturedScreenGraph_);
 		capturedScreenGraph_ = -1;
 	}
+
+	scene_.clear();
+
+	DeleteGraph(mainScreen_);
+
+	delete instance_;
 }
 
 void SceneManager::ChangeScene(SCENE_ID nextId)
 {
-
 	// フェード処理が終わってからシーンを変える場合もあるため、
 	// 遷移先シーンをメンバ変数に保持
 	waitSceneId_ = nextId;
@@ -180,7 +185,6 @@ void SceneManager::ChangeScene(SCENE_ID nextId)
 	// フェードアウト(暗転)を開始する
 	fader_->SetFade(Fader::NET_STATE::FADE_OUT);
 	isSceneChanging_ = true;
-
 }
 
 SceneManager::SCENE_ID SceneManager::GetSceneID(void)
@@ -246,6 +250,7 @@ void SceneManager::PushScene(std::shared_ptr<SceneBase> scene)
 {
 	scene_.push_back(scene);
 }
+
 void SceneManager::PopScene()
 {
 	if (scene_.size() > 1) {
@@ -256,7 +261,7 @@ void SceneManager::PopScene()
 void SceneManager::DoChangeScene(SCENE_ID sceneId)
 {
 	// リソースの解放
-	//ResourceManager::GetInstance().Release();
+	ResourceManager::GetInstance().Release();
 
 	// シーンを変更する
 	sceneId_ = sceneId;
@@ -271,19 +276,15 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 	{
 	case SCENE_ID::TITLE:
 		scene_.push_back(std::make_shared<TitleScene>());
-		//scene_ = std::make_unique<TitleScene>();
 		break;
 	case SCENE_ID::CONNECT:
 		scene_.push_back(std::make_shared<ConnectScene>());
-		//scene_ = std::make_unique<ConnectScene>();
 		break;
 	case SCENE_ID::GAME:
 		scene_.push_back(std::make_shared<GameScene>());
-		//scene_ = std::make_unique<GameScene>();
 		break;
 	case SCENE_ID::RSULT:
 		scene_.push_back(std::make_shared<RefreshScene>());
-		//scene_ = std::make_unique<RefreshScene>();
 		break;
 	}
 
@@ -293,18 +294,14 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 		scene_.back()->Init();   // ← これでOK
 	}
 
-	//ResetDeltaTime();
-
 	waitSceneId_ = SCENE_ID::NONE;
 
 	// フォントサイズを元に戻す
-	SetFontSize(16);
-
+	SetFontSize(FONT_SIZE);
 }
 
 void SceneManager::Fade(void)
 {
-
 	Fader::NET_STATE fState = fader_->GetState();
 	switch (fState)
 	{
@@ -325,5 +322,4 @@ void SceneManager::Fade(void)
 		}
 		break;
 	}
-
 }

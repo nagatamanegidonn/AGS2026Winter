@@ -1,5 +1,5 @@
 #include "../Manager/ResourceManager.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/Utility.h"
 #include "../../Application.h"
 #include "../Common/AnimationController.h"
 
@@ -43,8 +43,11 @@ namespace
 	// アニメーション用定数
 	constexpr int ANIM_INDEX_IDLE = 0;
 	constexpr float ANIM_SPEED_IDLE = 20.0f;
-	// 武器ID初期値
+	// 武器ID
 	constexpr int WEAPON_ID_NONE = -1;
+	constexpr int SWORD_ID = 0;
+	constexpr int GREAT_SWORD_ID = 1;
+	constexpr int BOW_ID = 2;
 }
 
 ViewPlayer::ViewPlayer()
@@ -68,26 +71,26 @@ void ViewPlayer::Init(void)
 
 	// モデルの基本設定
 	transform_.modelId = MV1LoadModel((PATH_MDL + FILE_PLAYER2_MDL).c_str());
-	transform_.scl = AsoUtility::VECTOR_ONE;
+	transform_.scl = Utility::VECTOR_ONE;
 	// 初期座標
 	transform_.pos = PLAYER_INIT_POS;
 	transform_.quaRot = Quaternion();
 	transform_.quaRotLocal = Quaternion::Euler({
-		AsoUtility::Deg2RadF(PLAYER_INIT_ROT_LOCAL.x),
-		AsoUtility::Deg2RadF(PLAYER_INIT_ROT_LOCAL.y),
-		AsoUtility::Deg2RadF(PLAYER_INIT_ROT_LOCAL.z)
+		Utility::Deg2RadF(PLAYER_INIT_ROT_LOCAL.x),
+		Utility::Deg2RadF(PLAYER_INIT_ROT_LOCAL.y),
+		Utility::Deg2RadF(PLAYER_INIT_ROT_LOCAL.z)
 		});
 	transform_.Update();
 
 	// 武器の設定
-	transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, 1.0f);
+	transWeapon_.scl = VScale(Utility::VECTOR_ONE, 1.0f);
 	// 初期座標
 	transWeapon_.pos = WEAPON_INIT_POS;
 	transWeapon_.quaRot = Quaternion();
 	transWeapon_.quaRotLocal = Quaternion::Euler({
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
 		});
 	transWeapon_.Update();
 	updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponSowrd, this);
@@ -114,10 +117,9 @@ void ViewPlayer::Release(void)
 {
 }
 
-void ViewPlayer::SetChar(const int charId)
+void ViewPlayer::SetChar(int charId)
 {
 	static std::wstring PATH_MDL = Application::PATH_MODEL;
-
 
 	MV1DeleteModel(transform_.modelId);
 
@@ -144,10 +146,9 @@ void ViewPlayer::SetChar(const int charId)
 	}
 
 	transform_.Update();
-
 }
 
-void ViewPlayer::SetWeapon(const int weponId)
+void ViewPlayer::SetWeapon(int weponId)
 {
 	if (weponId_ == weponId) { return; }
 
@@ -159,55 +160,53 @@ void ViewPlayer::SetWeapon(const int weponId)
 
 	switch (weponId)
 	{
-	case 0:// 片手剣
+	case SWORD_ID:// 片手剣
 		transWeapon_.modelId = MV1LoadModel((PATH_MDL + FILE_WEAPON_SWORD).c_str());
 
-		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_SWORD);
+		transWeapon_.scl = VScale(Utility::VECTOR_ONE, SCALE_SWORD);
 		// 初期座標
 		transWeapon_.pos = WEAPON_INIT_POS;
 		transWeapon_.quaRot = Quaternion();
 		transWeapon_.quaRotLocal = Quaternion::Euler({
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
 			});
 		transWeapon_.Update();
 
 		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponSowrd, this);
 		break;
-	case 1:// 両手剣
+	case GREAT_SWORD_ID:// 両手剣
 		transWeapon_.modelId = MV1LoadModel((PATH_MDL + FILE_WEAPON_GREAT).c_str());
 
-		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_GREAT);
+		transWeapon_.scl = VScale(Utility::VECTOR_ONE, SCALE_GREAT);
 		// 初期座標
 		transWeapon_.pos = WEAPON_INIT_POS;
 		transWeapon_.quaRot = Quaternion();
 		transWeapon_.quaRotLocal = Quaternion::Euler({
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
 			});
 		transWeapon_.Update();
 
 		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponGreatSowrd, this);
 		break;
-	case 2:// 弓
+	case BOW_ID:// 弓
 		transWeapon_.modelId = MV1LoadModel((PATH_MDL + FILE_WEAPON_BOW).c_str());
 
-		transWeapon_.scl = VScale(AsoUtility::VECTOR_ONE, SCALE_BOW);
+		transWeapon_.scl = VScale(Utility::VECTOR_ONE, SCALE_BOW);
 		// 初期座標
 		transWeapon_.pos = WEAPON_INIT_POS;
 		transWeapon_.quaRot = Quaternion();
 		transWeapon_.quaRotLocal = Quaternion::Euler({
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
-			AsoUtility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.x),
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.y),
+			Utility::Deg2RadF(WEAPON_INIT_ROT_LOCAL.z)
 			});
 		transWeapon_.Update();
 
 		updateWeapon_ = std::bind(&ViewPlayer::SyncWeaponBow, this);
-		break;
-	case 3:
 		break;
 	}
 	
@@ -242,9 +241,9 @@ void ViewPlayer::SyncWeaponGreatSowrd()
 
 	auto mixMat = MMult(MGetRotElem(handRot), MGetScale(scl));
 
-	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_R, handRot)), AsoUtility::Deg2RadF(GREAT_ROT.x)));
-	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_U, handRot)), AsoUtility::Deg2RadF(GREAT_ROT.y)));
-	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_F, handRot)), AsoUtility::Deg2RadF(GREAT_ROT.z)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(Utility::DIR_R, handRot)), Utility::Deg2RadF(GREAT_ROT.x)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(Utility::DIR_U, handRot)), Utility::Deg2RadF(GREAT_ROT.y)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(Utility::DIR_F, handRot)), Utility::Deg2RadF(GREAT_ROT.z)));
 
 	transWeapon_.matRot = mixMat;
 
@@ -270,9 +269,9 @@ void ViewPlayer::SyncWeaponSowrd()
 
 	auto mixMat = MMult(MGetRotElem(handRot), MGetScale(scl));
 
-	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_R, handRot)), AsoUtility::Deg2RadF(SWORD_ROT.x)));
-	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_U, handRot)), AsoUtility::Deg2RadF(SWORD_ROT.y)));
-	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_F, handRot)), AsoUtility::Deg2RadF(SWORD_ROT.z)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(Utility::DIR_R, handRot)), Utility::Deg2RadF(SWORD_ROT.x)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(Utility::DIR_U, handRot)), Utility::Deg2RadF(SWORD_ROT.y)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(Utility::DIR_F, handRot)), Utility::Deg2RadF(SWORD_ROT.z)));
 
 	transWeapon_.matRot = mixMat;
 
@@ -298,9 +297,9 @@ void ViewPlayer::SyncWeaponBow()
 
 	auto mixMat = MMult(MGetRotElem(handRot), MGetScale(scl));
 
-	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_R, handRot)), AsoUtility::Deg2RadF(BOW_ROT.x)));
-	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_U, handRot)), AsoUtility::Deg2RadF(BOW_ROT.y)));
-	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(AsoUtility::DIR_F, handRot)), AsoUtility::Deg2RadF(BOW_ROT.z)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(Utility::DIR_R, handRot)), Utility::Deg2RadF(BOW_ROT.x)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(Utility::DIR_U, handRot)), Utility::Deg2RadF(BOW_ROT.y)));
+	mixMat = MMult(mixMat, MGetRotAxis(VNorm(VTransformSR(Utility::DIR_F, handRot)), Utility::Deg2RadF(BOW_ROT.z)));
 
 	transWeapon_.matRot = mixMat;
 

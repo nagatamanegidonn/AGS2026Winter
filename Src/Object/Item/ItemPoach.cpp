@@ -60,7 +60,8 @@ void ItemPoach::Draw(int i)
 	// アイテムフレーム描画
 	DrawRotaGraph(Application::SCREEN_SIZE_X - UI_FRAME_OFFSET_X, Application::SCREEN_SIZE_Y - UI_FRAME_OFFSET_Y, 1.0f, 0.0f, itemFrameImage_, true);
 
-	if (it != ItemList_.end()) {
+	if (it != ItemList_.end()) 
+	{
 		(*it)->Draw();
 #ifdef _DEBUG
 		DrawFormatString(Application::SCREEN_SIZE_X - DBG_UI_OFFSET_X, Application::SCREEN_SIZE_Y - DBG_UI_OFFSET_Y,
@@ -90,11 +91,13 @@ void ItemPoach::AddItem(std::shared_ptr<ItemBase> _item)
 			return i->IsSameName(*_item);
 		});
 
-	if (it != ItemList_.end()) {
+	if (it != ItemList_.end()) 
+	{
 		// 既にある → 内容量追加
 		(*it)->Count(ITEM_COUNT_INCREMENT);
 	}
-	else {
+	else 
+	{
 		// 新規追加
 		_item->Init(static_cast<int>(ItemList_.size()));
 		ItemList_.push_back(_item);
@@ -117,27 +120,32 @@ void ItemPoach::UseSelectedItem(void)
 	item->Count(ITEM_COUNT_DECREMENT);
 
 	// アイテム数が0以下なら削除処理
-	if (item->GetCount() <= ITEM_EMPTY_COUNT) {
+	if (item->GetCount() <= ITEM_EMPTY_COUNT) 
+	{
 		// 削除
 		it = ItemList_.erase(it);
 
 		// アイテムのId調整
 		int id = INITIAL_INDEX_ZERO;
-		for (auto& itm : ItemList_) {
+		for (auto& itm : ItemList_) 
+		{
 			itm->Init(id++);
 		}
 
 		// 要素が削除されてリストが空になった場合
-		if (ItemList_.empty()) {
+		if (ItemList_.empty())
+		{
 			selectIndex_ = INITIAL_INDEX_ZERO;
 			return;
 		}
 
 		// 次の要素が存在しない場合は先頭へ戻る
-		if (it == ItemList_.end()) {
+		if (it == ItemList_.end()) 
+		{
 			selectIndex_ = INITIAL_INDEX_ZERO;
 		}
-		else if (selectIndex_ >= static_cast<int>(ItemList_.size())) {
+		else if (selectIndex_ >= static_cast<int>(ItemList_.size())) 
+		{
 			selectIndex_ = static_cast<int>(ItemList_.size()) - ITEM_COUNT_INCREMENT;
 		}
 	}
