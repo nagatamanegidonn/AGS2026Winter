@@ -1,3 +1,4 @@
+#include "../Utility/Utility.h"
 #include "Sound.h"
 
 Sound::Sound(void)
@@ -5,7 +6,7 @@ Sound::Sound(void)
 	soundType_(TYPE::NONE),
 	path_(L""),
 	handleId_(-1),
-	pos_({ 0.0f,0.0f,0.0f }),
+	pos_(Utility::VECTOR_ZERO),
 	radius_(0.0f),		
 	maxVolume_(255.0f),	// 音の最大音量
 	pauseTime_(0),		// 停止時の再生位置（ミリ秒）
@@ -19,7 +20,7 @@ Sound::Sound(TYPE type, const std::wstring& path)
 	soundType_(type),
 	path_(path),
 	handleId_(-1),
-	pos_({ 0.0f,0.0f,0.0f }),
+	pos_(Utility::VECTOR_ZERO),
 	radius_(0.0f),
 	maxVolume_(255.0f),	// 音の最大音量
 	pauseTime_(0),		// 停止時の再生位置（ミリ秒）
@@ -136,11 +137,11 @@ void Sound::Stop(void)
 	{
 		return;
 	}
-	pos_ = { 0.0f,0.0f,0.0f };
+	pos_ = Utility::VECTOR_ZERO;
 	radius_ = 0.0f;
 }
 
-bool Sound::CheckMove(void)
+bool Sound::CheckMove(void) const
 {
 	if (CheckSoundMem(handleId_) != 1)
 	{
@@ -149,7 +150,7 @@ bool Sound::CheckMove(void)
 	return true;
 }
 
-bool Sound::CheckLoad(void)
+bool Sound::CheckLoad(void) const
 {
 	return handleId_ != -1;
 }

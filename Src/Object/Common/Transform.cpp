@@ -40,7 +40,6 @@ Transform::~Transform(void)
 
 void Transform::Update(bool isUseMat)
 {
-
 	// ëÂÇ´Ç≥
 	matScl = MGetScale(scl);
 
@@ -80,13 +79,11 @@ void Transform::Update(bool isUseMat)
 		MV1SetMatrix(modelId, mat); // Ç‹ÇΩÇÕ matMix
 	}
 
-
 	// è’ìÀîªíËÇÃçXêV
 	if (collider != nullptr)
 	{
 		MV1RefreshCollInfo(modelId);
 	}
-
 }
 
 void Transform::SetModel(int model)
@@ -96,7 +93,6 @@ void Transform::SetModel(int model)
 
 void Transform::MakeCollider(Collider::TYPE type, VECTOR pos, float rad)
 {
-
 	if (modelId == -1)
 	{
 		return;
@@ -104,7 +100,6 @@ void Transform::MakeCollider(Collider::TYPE type, VECTOR pos, float rad)
 
 	collider = std::make_shared<Collider>(type, modelId, pos, rad);
 	int ret = MV1SetupCollInfo(modelId, -1, 1, 1, 1);
-
 }
 
 VECTOR Transform::GetForward(void) const

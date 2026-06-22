@@ -43,6 +43,27 @@ namespace
 	constexpr int FIRST_QUEST_ID = 1;        // 最初に読み込むクエスト番号
 	// シェーダ・レンダラー設定
 	constexpr int SHADER_BUFFER_NUM = 1;
+	// ボタンサイズ
+	const int WIDTH = 200;
+	const int HEIGHT = 30;
+	// 画面中心X座標
+	const int HX = Application::SCREEN_SIZE_X / 2;
+	// ボタン位置
+	const int B1_Y = Application::SCREEN_SIZE_Y - 100;
+	const Vector2 B1_S_POS = Vector2(HX - WIDTH / 2, B1_Y - HEIGHT / 2);
+	const Vector2 B1_E_POS = Vector2(HX + WIDTH / 2, B1_Y + HEIGHT / 2);
+	// プレイヤー初期配置の座標・回転角
+	constexpr float INIT_PLAYERS_Y = -50.0f;
+	constexpr float INIT_PLAYERS_Z = -250.0f;
+	// 座標
+	constexpr float PLAYER_0_X = -150.0f;
+	constexpr float PLAYER_1_X = -50.0f;
+	constexpr float PLAYER_2_X = 50.0f;
+	constexpr float PLAYER_3_X = 150.0f;
+	// 回転
+	constexpr float PLAYER_ROT_X = 10.0f;
+	constexpr float PLAYER_ROT_Y_SIDE = 20.0f;
+	constexpr float PLAYER_ROT_ZERO = 0.0f;
 }
 
 ConnectScene::ConnectScene(void)
@@ -75,14 +96,14 @@ void ConnectScene::Init(void)
 
 	playerNum_ = INITIAL_PLAYER_COUNT;
 
-	AddPlayer({ -150.0f,-50.0f,-250.0f },
-		{ Utility::Deg2RadF(10.0f), Utility::Deg2RadF(-20.0f), Utility::Deg2RadF(0.0f) });
-	AddPlayer({ -50.0f,-50.0f,-250.0f },
-		{ Utility::Deg2RadF(10.0f), Utility::Deg2RadF(0.0f), Utility::Deg2RadF(0.0f) });
-	AddPlayer({ 50.0f,-50.0f,-250.0f },
-		{ Utility::Deg2RadF(10.0f), Utility::Deg2RadF(0.0f), Utility::Deg2RadF(0.0f) });
-	AddPlayer({ 150.0f,-50.0f,-250.0f },
-		{ Utility::Deg2RadF(10.0f), Utility::Deg2RadF(20.0f), Utility::Deg2RadF(0.0f) });
+	AddPlayer({ PLAYER_0_X, INIT_PLAYERS_Y, INIT_PLAYERS_Z },
+		{ Utility::Deg2RadF(PLAYER_ROT_X), Utility::Deg2RadF(-PLAYER_ROT_Y_SIDE), Utility::Deg2RadF(PLAYER_ROT_ZERO) });
+	AddPlayer({ PLAYER_1_X, INIT_PLAYERS_Y, INIT_PLAYERS_Z },
+		{ Utility::Deg2RadF(PLAYER_ROT_X), Utility::Deg2RadF(PLAYER_ROT_ZERO), Utility::Deg2RadF(PLAYER_ROT_ZERO) });
+	AddPlayer({ PLAYER_2_X, INIT_PLAYERS_Y, INIT_PLAYERS_Z },
+		{ Utility::Deg2RadF(PLAYER_ROT_X), Utility::Deg2RadF(PLAYER_ROT_ZERO), Utility::Deg2RadF(PLAYER_ROT_ZERO) });
+	AddPlayer({ PLAYER_3_X, INIT_PLAYERS_Y, INIT_PLAYERS_Z },
+		{ Utility::Deg2RadF(PLAYER_ROT_X), Utility::Deg2RadF(PLAYER_ROT_Y_SIDE), Utility::Deg2RadF(PLAYER_ROT_ZERO) });
 
 #pragma endregion
 
@@ -102,11 +123,11 @@ void ConnectScene::Update(void)
 	// インスタンスクラスの取得
 	auto& nIns = NetManager::GetInstance();
 	const auto& ins = InputManager::GetInstance();
+	const InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(GameManager::GetInstance().GetControllId());
 
 	// 武器情報の送信
 	nIns.SetWeapon(NetManager::GetInstance().GetSelf().key, GameManager::GetInstance().GetWeaponId());
 
-	const InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(GameManager::GetInstance().GetControllId());
 	auto& users = NetManager::GetInstance().GetNetUsers();
 	if (playerNum_ < users.size())
 	{
@@ -128,50 +149,12 @@ void ConnectScene::Update(void)
 		player->Update();
 	}
 
-	// ここでプレイヤー同士の接続を行う
-	if (nIns.GetMode() == NET_MODE::HOST) // ModeがHost(リーダー)なら
-	{
-		auto& players = NetManager::GetInstance().GetNetUsers();
-		if (players.size() >= 1) // 自分のほかにつながっているプレイヤーがいるなら
-		{
-			// マウスでの操作
-			if (ins.IsClickMouseLeft()) // 左クリックで
-			{
-				Vector2 moPos = ins.GetMousePos();
-
-				if (B1_S_POS.x <= moPos.x && B1_E_POS.x >= moPos.x
-					&& B1_S_POS.y <= moPos.y && B1_E_POS.y >= moPos.y)
-				{
-					// 音の再生
-					SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
-
-					// リザルトの初期化
-					GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
-					GameManager::GetInstance().InitQuest(FIRST_QUEST_ID);
-
-					// ネットマネージャの状態変更
-					NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME); // ゲーム準備OK!
-				}
-			}
-			// キーボード、コントローラーでの操作
-			else if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::RIGHT)
-				|| ins.IsTrgDown(KEY_INPUT_SPACE))
-			{
-				// 音の再生
-				SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
-
-				// リザルトの初期化
-				GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
-				GameManager::GetInstance().InitQuest(FIRST_QUEST_ID);
-
-				// ネットマネージャの状態変更
-				NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME); // ゲーム準備OK!
-			}
-		}
-	}
+	// ゲーム開始処理
+	PlayStart();
 
 	// プレイ人数が一人のみの場合タイトルに戻れる
-	if (users.size() <= 1) {
+	if (users.size() <= 1)
+	{
 		// タイトルへ戻る
 		if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::DOWN)
 			|| ins.IsTrgDown(KEY_INPUT_BACK))
@@ -272,4 +255,54 @@ void ConnectScene::AddPlayer(const VECTOR pos, const VECTOR rot)
 	player_->SetLocalQua(rot);
 	player_->Update();
 	players_.push_back(std::move(player_));
+}
+
+void ConnectScene::PlayStart(void)
+{
+	// インスタンスクラスの取得
+	auto& nIns = NetManager::GetInstance();
+	const auto& ins = InputManager::GetInstance();
+	const InputManager::JOYPAD_NO jno = static_cast<InputManager::JOYPAD_NO>(GameManager::GetInstance().GetControllId());
+
+	// ここでプレイヤー同士の接続を行う
+	if (nIns.GetMode() == NET_MODE::HOST) // ModeがHost(リーダー)なら
+	{
+		auto& players = NetManager::GetInstance().GetNetUsers();
+		if (players.size() >= 1) // 自分のほかにつながっているプレイヤーがいるなら
+		{
+			// マウスでの操作
+			if (ins.IsClickMouseLeft()) // 左クリックで
+			{
+				Vector2 moPos = ins.GetMousePos();
+
+				if (B1_S_POS.x <= moPos.x && B1_E_POS.x >= moPos.x
+					&& B1_S_POS.y <= moPos.y && B1_E_POS.y >= moPos.y)
+				{
+					// 音の再生
+					SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
+
+					// リザルトの初期化
+					GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
+					GameManager::GetInstance().InitQuest(FIRST_QUEST_ID);
+
+					// ネットマネージャの状態変更
+					NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME); // ゲーム準備OK!
+				}
+			}
+			// キーボード、コントローラーでの操作
+			else if (ins.IsPadBtnTrgDown(jno, InputManager::JOYPAD_BTN::RIGHT)
+				|| ins.IsTrgDown(KEY_INPUT_SPACE))
+			{
+				// 音の再生
+				SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
+
+				// リザルトの初期化
+				GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
+				GameManager::GetInstance().InitQuest(FIRST_QUEST_ID);
+
+				// ネットマネージャの状態変更
+				NetManager::GetInstance().ChangeGameState(GAME_STATE::GOTO_GAME); // ゲーム準備OK!
+			}
+		}
+	}
 }

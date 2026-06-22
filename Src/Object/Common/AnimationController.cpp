@@ -91,11 +91,6 @@ void AnimationController::Play(int type, bool isLoop,
 
 	if (playType_ == type && !isForce) return;
 
-	//ここで防止：同じアニメかつ非ループ中、かつ未終了なら無視
-	/*if (playType_ == type && !isForce && !isLoop_ && !IsEnd()) {
-		return;
-	}*/
-
 	if (playType_ != -1 && !isForce&& animations_[type].isBlend)
 	{
 		auto bData = BlendData();
@@ -164,7 +159,8 @@ void AnimationController::Play(int type, bool isLoop,
 		if (playType_ != -1)
 		{
 			// モデルから現在のアニメーションを外す
-			if (playAnim_.attachNo != -1) {
+			if (playAnim_.attachNo != -1)
+			{
 				MV1DetachAnim(modelId_, playAnim_.attachNo);
 				playAnim_.attachNo = -1;
 			}
@@ -247,15 +243,15 @@ void AnimationController::Update(void)
 		{
 			MV1SetAttachAnimBlendRate(modelId_, data.fromAttachNo, data.blendRate);
 		
-			mRate_ += data.blendRate;
-			
+			mRate_ += data.blendRate;		
 		}
 		//最新アニメーション
 		MV1SetAttachAnimBlendRate(modelId_, blend_.toAttachNo, 1.0f - mRate_);	
 	}
 
 	//アニメーション再生
-	if (!isStop_) {
+	if (!isStop_)
+	{
 		playAnim_.step += (deltaTime * playAnim_.speed * switchLoopReverse_);
 
 		bool isEnd = false;
@@ -278,24 +274,32 @@ void AnimationController::Update(void)
 		}
 
 		//アニメーションが終わったら
-		if (isEnd) {
+		if (isEnd)
+		{
 			//ループするか
-			if (isLoop_) {
+			if (isLoop_)
+			{
 				//再生方向の変更がだいぶ変わっているのでこのままでおｋ
 				playAnim_.step = stepEndLoopStart_;
 				playAnim_.totalTime = stepEndLoopEnd_;
 			}
-			else {
+			else
+			{
 				isStop_ = true; // 再生停止
 			}
 		}
 	}
 
+#ifdef _DEBUG
+
 	//デバッグ
-	if (playAnim_.attachNo == -1) {
+	if (playAnim_.attachNo == -1)
+	{
 		printfDx(L"Warning: playAnim_ にアニメがアタッチされていません\n");
 		return;
 	}
+
+#endif // DEBUG
 
 	//ヒットストップ処理
 	if (isHitStop_)
@@ -331,9 +335,6 @@ void AnimationController::Update(void)
 		VECTOR blendLpos = MV1GetAttachAnimFrameLocalPosition(modelId_, blend_.toAttachNo, rootFrame);
 		localPos_ = VAdd(mlocalPos, VScale(blendLpos, 1.0f - mRate_));
 	}
-
-	//MATRIX invRootTrans = MGetTranslate(VScale(rootPos, -1.0f));
-	//MV1SetAttachAnimMatrix(modelId_, playAnim_.attachNo, invRootTrans);
 }
 
 void AnimationController::SetEndLoop(float startStep, float endStep, float speed)
@@ -350,7 +351,6 @@ int AnimationController::GetPlayType(void) const
 
 bool AnimationController::IsEnd(void) const
 {
-
 	bool ret = false;
 
 	if (isLoop_)
@@ -403,7 +403,8 @@ int AnimationController::GetAttrchNo(int animType)
 	}
 
 	int attachNo = MV1AttachAnim(modelId_, animIdx, playAnim.model);
-	if (attachNo == -1) {
+	if (attachNo == -1)
+	{
 		printfDx(L"MV1AttachAnim failed (modelId=%d animIdx=%d)\n", modelId_, animIdx);
 		return -1;
 	}

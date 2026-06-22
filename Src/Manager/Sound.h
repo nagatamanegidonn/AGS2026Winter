@@ -69,8 +69,8 @@ public:
 
 
 
-	bool CheckMove(void);	//再生中かを確認
-	bool CheckLoad(void);	//ロードしているかを確認
+	bool CheckMove(void) const;	//再生中かを確認
+	bool CheckLoad(void) const;	//ロードしているかを確認
 
 	// ボリューム変更
 	void ChengeVolume(float per);	//音の大きさを変える

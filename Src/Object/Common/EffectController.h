@@ -16,11 +16,13 @@ public:
 		int PlayId_ = -1;
 
 		~EFFECT() {
-			if (PlayId_ != -1 && IsEffekseer3DEffectPlaying(PlayId_) == 0) {
+			if (PlayId_ != -1 && IsEffekseer3DEffectPlaying(PlayId_) == 0)
+			{
 				StopEffekseer3DEffect(PlayId_);
 			}
 
-			if (ResId != -1) {
+			if (ResId != -1)
+			{
 				DeleteEffekseerEffect(ResId);
 			}
 		}

@@ -169,7 +169,6 @@ ResourceManager::ResourceManager(void)
 
 Resource& ResourceManager::_Load(SRC src)
 {
-
 	// ロード済みチェック
 	const auto& lPair = loadedMap_.find(src);
 	if (lPair != loadedMap_.end())
@@ -192,5 +191,4 @@ Resource& ResourceManager::_Load(SRC src)
 	loadedMap_.emplace(src, *rPair->second);
 
 	return *rPair->second;
-
 }

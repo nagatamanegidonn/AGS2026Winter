@@ -66,7 +66,6 @@ void Capsule::Draw(void)
 
 	// カプセルの中心
 	DrawSphere3D(GetCenter(), 5.0f, 10, COLOR, COLOR, true);
-
 }
 
 VECTOR Capsule::GetLocalPosTop(void) const

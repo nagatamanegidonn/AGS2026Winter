@@ -106,6 +106,7 @@ bool SoundManager::Play(SRC src, Sound::TIMES times, bool isForce)
 	}
 	return false;
 }
+
 bool SoundManager::Play(SRC src, Sound::TIMES times, VECTOR pos, float radius)
 {
 	const auto& lPair = soundMap_.find(src);
@@ -128,6 +129,7 @@ void SoundManager::Stop(SRC src)
 		return lPair->second.Stop();
 	}
 }
+
 void SoundManager::AllStop(void)
 {
 	// soundMap_ ‚Ì‚·‚×‚Ä‚Ì—v‘f‚É‘Î‚µ‚Ä Stop() ‚ğŒÄ‚Ño‚·
@@ -151,6 +153,7 @@ bool SoundManager::Pause(SRC src, Sound::TIMES times)
 	}
 	return false;
 }
+
 bool SoundManager::Resume(SRC src, Sound::TIMES times)
 {
 	const auto& lPair = soundMap_.find(src);
@@ -166,6 +169,7 @@ bool SoundManager::Resume(SRC src, Sound::TIMES times)
 	}
 	return false;
 }
+
 // Ä¶’†‚©?
 bool SoundManager::CheckMove(SRC src)
 {
@@ -176,6 +180,7 @@ bool SoundManager::CheckMove(SRC src)
 	}
 	return false;
 }
+
 // ‰¹—Ê
 void SoundManager::ChengeVolume(SRC src, float per)
 {

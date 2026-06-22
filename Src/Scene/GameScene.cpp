@@ -316,7 +316,7 @@ void GameScene::Collision(void)
 {
 	auto& nIns = NetManager::GetInstance();
 
-	// プレイヤーの描画
+	// プレイヤーの判定
 	for (auto& player : players_)
 	{
 		// 参照型要改善
@@ -585,7 +585,6 @@ void GameScene::CreateEnemy(void)
 	mons = std::make_shared<SmallMonster>(NetManager::GetInstance().GetHost().key, 3);
 	mons->Init();
 	monsters_.emplace_back(mons);
-
 }
 
 void GameScene::CreatePlayer(void)

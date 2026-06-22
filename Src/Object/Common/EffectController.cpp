@@ -17,7 +17,6 @@ EffectController::~EffectController(void)
 
 void EffectController::Add(int type, std::wstring str)
 {
-
 	auto effec = std::make_unique<EFFECT>();
 	effec->ResId  = LoadEffekseerEffect(str.c_str());
 
@@ -28,7 +27,8 @@ void EffectController::Play(int type)
 {
 	// 指定されたエフェクトが存在しない場合は処理しない
 	auto it = effects_.find(type);
-	if (it == effects_.end()) {
+	if (it == effects_.end())
+	{
 		return;
 	}
 
@@ -38,15 +38,14 @@ void EffectController::Play(int type)
 	SetScalePlayingEffekseer3DEffect(effects_[type]->PlayId_, 1.0f, 1.0f, 1.0f);
 	SetRotationPlayingEffekseer3DEffect(effects_[type]->PlayId_, 0.0f, 0.0f, 0.0f);
 	SetPosPlayingEffekseer3DEffect(effects_[type]->PlayId_, 1.0f, 1.0f, 1.0f);
-
-	
 }
 
 void EffectController::Play(int type, const VECTOR pos, VECTOR rot, float scale)
 {
 	// 指定されたエフェクトが存在しない場合は処理しない
 	auto it = effects_.find(type);
-	if (it == effects_.end()) {
+	if (it == effects_.end())
+	{
 		return;
 	}
 
@@ -56,7 +55,6 @@ void EffectController::Play(int type, const VECTOR pos, VECTOR rot, float scale)
 	SetScalePlayingEffekseer3DEffect(effects_[type]->PlayId_, scale, scale, scale);
 	SetRotationPlayingEffekseer3DEffect(effects_[type]->PlayId_, rot.x, rot.y, rot.z);
 	SetPosPlayingEffekseer3DEffect(effects_[type]->PlayId_, pos.x, pos.y, pos.z);
-
 }
 
 //アニメーションが終わていたら再生
@@ -64,7 +62,8 @@ void EffectController::LoopPlay(int type)
 {
 	// 指定されたエフェクトが存在しない場合は処理しない
 	auto it = effects_.find(type);
-	if (it == effects_.end()) {
+	if (it == effects_.end())
+	{
 		return;
 	}
 
@@ -89,7 +88,8 @@ void EffectController::LoopUpdate(int type, const VECTOR pos, VECTOR rot, float 
 {
 	// 指定されたエフェクトが存在しない場合は処理しない
 	auto it = effects_.find(type);
-	if (it == effects_.end()) {
+	if (it == effects_.end())
+	{
 		return;
 	}
 
@@ -97,11 +97,13 @@ void EffectController::LoopUpdate(int type, const VECTOR pos, VECTOR rot, float 
 	SetRotationPlayingEffekseer3DEffect(effects_[type]->PlayId_, rot.x, rot.y, rot.z);
 	SetPosPlayingEffekseer3DEffect(effects_[type]->PlayId_, pos.x, pos.y, pos.z);
 }
+
 void EffectController::Update(int type, const VECTOR pos, VECTOR rot, float scale)
 {
 	// 指定されたエフェクトが存在しない場合は処理しない
 	auto it = effects_.find(type);
-	if (it == effects_.end()) {
+	if (it == effects_.end())
+	{
 		return;
 	}
 
@@ -122,10 +124,10 @@ void EffectController::RibbonUpdate(int type, const VECTOR pos, float scale)
 {
 	// 指定されたエフェクトが存在しない場合は処理しない
 	auto it = effects_.find(type);
-	if (it == effects_.end()) {
+	if (it == effects_.end())
+	{
 		return;
 	}
-
 
 	SetPosPlayingEffekseer3DEffect(effects_[type]->PlayId_, pos.x, pos.y, pos.z);
 
@@ -142,7 +144,8 @@ void EffectController::Update(int type)
 {
 	// 指定されたエフェクトが存在しない場合は処理しない
 	auto it = effects_.find(type);
-	if (it == effects_.end()) {
+	if (it == effects_.end())
+	{
 		return;
 	}
 

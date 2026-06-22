@@ -6,7 +6,6 @@
 #include "ResourceManager.h"
 #include "../Application.h"
 
-
 GameManager* GameManager::instance_ = nullptr;
 
 namespace {
@@ -23,6 +22,7 @@ void GameManager::CreateInstance(void)
 	}
 	instance_->Init();
 }
+
 GameManager& GameManager::GetInstance(void)
 {
 	return *instance_;
@@ -46,10 +46,6 @@ GameManager::GameManager(void)
 	ControllerId_(DX_INPUT_PAD1)
 {
 }
-GameManager::~GameManager(void)
-{
-	delete instance_;
-}
 
 void GameManager::Init(void)
 {
@@ -67,8 +63,7 @@ void GameManager::Init(void)
 	clearImg_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::CLEAR_LOGO).handleId_;
 
 	clearPramList_.push_back(FIRST_PRAM);
-	clearPramList_.push_back(SECOND_PRAM);
-	
+	clearPramList_.push_back(SECOND_PRAM);	
 
 	paramRate_ = 0.0f;
 	currentParam_ = clearPramList_.front();
@@ -121,6 +116,7 @@ void GameManager::DrawClear(void)
 void GameManager::Destroy(void)
 {
 	Save(false);
+	delete instance_;
 }
 
 GameManager::GAME_RESULT GameManager::GetGameResult(void) const
@@ -136,14 +132,14 @@ void GameManager::SetHost(bool _value)
 {
 	// タイトル以外は変更不可
 	if (SceneManager::GetInstance().GetSceneID()
-		!= SceneManager::SCENE_ID::TITLE) {
+		!= SceneManager::SCENE_ID::TITLE)
+	{
 		return;
 	}
 
 	IsHost_ = _value;
 }
 	
-
 #pragma region 使用コントローラID保存・読み込み
 
 void GameManager::Load(void)
@@ -157,9 +153,12 @@ void GameManager::Load(void)
 	else { return; }
 
 	// 連想配列の値を順にチェックする
-	for (const auto& [key, valueArray] : ControllerData.items()) {
-		for (const auto& controller : valueArray) {
-			if (!controller["isUse"]) {
+	for (const auto& [key, valueArray] : ControllerData.items())
+	{
+		for (const auto& controller : valueArray)
+		{
+			if (!controller["isUse"])
+			{
 				ControllerId_ = controller["ID"];
 				return;
 			}
@@ -170,16 +169,19 @@ void GameManager::Save(bool isUse)
 {
 	// JSON読み込み（既存ファイル）
 	std::ifstream ifs(Application::PATH_JSON + L"ControllerListDate.json");
-	if (!ifs.is_open()) {
+	if (!ifs.is_open())
+	{
 		printfDx(L"Save失敗: ファイルが開けませんでした\n");
 		return;
 	}
 
 	json LoadData;
-	try {
+	try
+	{
 		ifs >> LoadData;
 	}
-	catch (const json::parse_error& e) {
+	catch (const json::parse_error& e)
+	{
 		printfDx(L"Save失敗: JSON構文エラー (%s)\n", e.what());
 		return;
 	}
@@ -188,7 +190,8 @@ void GameManager::Save(bool isUse)
 	// 保存データ作成
 	json saveData;
 
-	for (const auto& [key, valueArray] : LoadData.items()) {
+	for (const auto& [key, valueArray] : LoadData.items())
+	{
 		// 配列でない or 空ならスキップ
 		if (!valueArray.is_array() || valueArray.empty()) continue;
 
@@ -196,11 +199,13 @@ void GameManager::Save(bool isUse)
 
 		json ControllerData;
 
-		if (Data.contains("ID") && Data["ID"].get<int>() == ControllerId_) {
+		if (Data.contains("ID") && Data["ID"].get<int>() == ControllerId_)
+		{
 			ControllerData["ID"] = ControllerId_;
 			ControllerData["isUse"] = isUse;
 		}
-		else {
+		else
+		{
 			ControllerData["ID"] = Data.contains("ID") ? Data["ID"].get<int>() : -1;
 			ControllerData["isUse"] = Data.contains("isUse") ? Data["isUse"].get<bool>() : false;
 		}
@@ -210,7 +215,8 @@ void GameManager::Save(bool isUse)
 
 	// 書き込み
 	std::ofstream ofs(Application::PATH_JSON + L"ControllerListDate.json");
-	if (!ofs.is_open()) {
+	if (!ofs.is_open())
+	{
 		printfDx(L"Save失敗: 書き込み用ファイルを開けませんでした\n");
 		return;
 	}

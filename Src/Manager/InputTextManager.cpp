@@ -19,7 +19,6 @@ InputTextManager& InputTextManager::GetInstance(void)
 
 void InputTextManager::Update(void)
 {
-
 	if (instance_->inputTextArea_ == nullptr)
 	{
 		return;

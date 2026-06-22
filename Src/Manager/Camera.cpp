@@ -22,7 +22,8 @@ Camera::Camera(void)
 	stepShake_ = stepMaxShake_ = 1.0f;
 	shakePower_ = 0.0f;
 	isShaking_ = false;
-	shakeDir_ = { 0.0f,0.0f,0.0f };
+	shakeDir_ = Utility::VECTOR_ZERO;
+	defaultPos_ = Utility::VECTOR_ZERO;
 }
 
 Camera::~Camera(void)
@@ -251,10 +252,9 @@ void Camera::SyncFollow(void)
 // カメラ操作
 void Camera::ProcessRot(void)
 {
-	//演習① カメラの要件に沿って、カメラ操作を実装してください
-	//	・ Y軸に、360度回転すること
-	//	・ X軸に、上は40度、下は15度回転すること
-	//	・ カメラ操作は矢印キーを用いること
+	// Y軸に、360度回転すること
+	// 軸に、上は40度、下は15度回転すること
+	// カメラ操作は矢印キーを用いること
 
 	auto& ins = InputManager::GetInstance();
 

@@ -95,9 +95,9 @@ private:
 
 	// コンストラクタ
 	GameManager(void);
-	// デストラクタ
-	~GameManager(void);
 
+	// デストラクタ
+	~GameManager(void) = default;
 
 	// ゲーム結果
 	GAME_RESULT gameResult_;

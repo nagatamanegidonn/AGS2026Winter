@@ -89,14 +89,11 @@ void Resource::Load(void)
 
 		handleId_ = LoadEffekseerEffect(path_.c_str());
 		break;
-
 	}
-
 }
 
 void Resource::Release(void)
 {
-
 	switch (type_)
 	{
 	case Resource::TYPE::IMG:
@@ -130,14 +127,11 @@ void Resource::Release(void)
 
 		DeleteEffekseerEffect(handleId_);
 		break;
-
 	}
-
 }
 
 void Resource::CopyHandle(int* imgs)
 {
-
 	if (handleIds_ == nullptr)
 	{
 		return;
@@ -148,5 +142,4 @@ void Resource::CopyHandle(int* imgs)
 	{
 		imgs[i] = handleIds_[i];
 	}
-
 }

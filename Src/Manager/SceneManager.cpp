@@ -122,9 +122,7 @@ void SceneManager::Update(void)
 	else
 	{
 		// 更新
-		for (auto& scene : scene_) {
-			scene->Update();
-		}
+		scene_.back()->Update();
 	}
 
 	// カメラ更新
@@ -147,7 +145,8 @@ void SceneManager::Draw(void)
 	UpdateEffekseer3D();
 
 	// 描画
-	for (auto& scene : scene_) {
+	for (auto& scene : scene_) 
+	{
 		scene->Draw();
 	}
 
@@ -238,6 +237,7 @@ const void SceneManager::CaptureMainScreen(void)
 	// mainScreen_ の内容をコピー
 	GetDrawScreenGraph(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, capturedScreenGraph_, FALSE);
 }
+
 const void SceneManager::DrawCapturedScreen(int x, int y)
 {
 	if (capturedScreenGraph_ != -1)

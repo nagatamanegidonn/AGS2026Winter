@@ -39,7 +39,6 @@ InputController::InputController(int padType)
                 {PeripheralType::GAME_PAD,PAD_INPUT_R},     //STARTボタン
             }
         },
-
         //左十字移動
         {KEY::FORWARD,
             {
@@ -90,7 +89,7 @@ InputController::InputController(int padType)
                 {PeripheralType::GAME_PAD_STICK,PAD_INPUT_RSTICK_LEFT},
             }
         },
-
+        // アクション
         {KEY::DRAW,//抜刀コマンド
             {
                 {PeripheralType::KEYBOARD,KEY_INPUT_RETURN},
@@ -228,7 +227,6 @@ void InputController::Update(void)
             {
                 break;
             }
-
         }
     }
 }

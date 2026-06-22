@@ -84,12 +84,10 @@ void InputManager::Init(void)
 	info.keyTrgDown = false;
 	info.keyTrgUp = false;
 	mouseInfos_.emplace(info.key, info);
-
 }
 
 void InputManager::Update(void)
 {
-
 	// キーボード検知
 	for (auto& p : keyInfos_)
 	{
@@ -117,7 +115,6 @@ void InputManager::Update(void)
 	SetJPadInState(JOYPAD_NO::PAD2);
 	SetJPadInState(JOYPAD_NO::PAD3);
 	SetJPadInState(JOYPAD_NO::PAD4);
-
 }
 
 void InputManager::Destroy(void)
@@ -199,7 +196,6 @@ InputManager::InputManager(void)
 
 const InputManager::Info& InputManager::Find(int key) const
 {
-
 	auto it = keyInfos_.find(key);
 	if (it != keyInfos_.end())
 	{
@@ -207,7 +203,6 @@ const InputManager::Info& InputManager::Find(int key) const
 	}
 
 	return infoEmpty_;
-
 }
 
 const InputManager::MouseInfo& InputManager::FindMouse(int key) const
@@ -242,7 +237,6 @@ XINPUT_STATE InputManager::GetJPadXInputState(JOYPAD_NO no)
 
 void InputManager::SetJPadInState(JOYPAD_NO jpNo)
 {
-
 	int no = static_cast<int>(jpNo);
 	auto stateNew = GetJPadInputState(jpNo);
 	auto& stateNow = padInfos_[no];
@@ -266,14 +260,11 @@ void InputManager::SetJPadInState(JOYPAD_NO jpNo)
 		stateNow.AKeyLY = stateNew.AKeyLY;
 		stateNow.AKeyRX = stateNew.AKeyRX;
 		stateNow.AKeyRY = stateNew.AKeyRY;
-
 	}
-
 }
 
 InputManager::JOYPAD_IN_STATE InputManager::GetJPadInputState(JOYPAD_NO no)
 {
-
 	JOYPAD_IN_STATE ret = JOYPAD_IN_STATE();
 
 	auto type = GetJPadType(no);
@@ -379,13 +370,13 @@ InputManager::JOYPAD_IN_STATE InputManager::GetJPadInputState(JOYPAD_NO no)
 	}
 
 	return ret;
-
 }
 
 bool InputManager::IsPadBtnNew(JOYPAD_NO no, JOYPAD_BTN btn) const
 {
 	return padInfos_[static_cast<int>(no)].IsNew[static_cast<int>(btn)];
 }
+
 bool InputManager::IsPadBtnNew(JOYPAD_NO no, const int btn) const
 {
 	return padInfos_[static_cast<int>(no)].IsNew[static_cast<int>(btn)];

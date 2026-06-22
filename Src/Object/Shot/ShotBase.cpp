@@ -7,6 +7,21 @@
 
 #include "ShotBase.h"
 
+namespace
+{
+	// 弾の挙動・回転パラメータ
+	constexpr float INIT_ROT_Y_DEG = 90.0f;  // 弾モデルの向きを補正する初期Y軸回転（度数）
+	// 弾の初期パラメータ（デフォルト値
+	constexpr float DEFAULT_SHOT_SPEED = 20.0f;
+	constexpr float DEFAULT_ALIVE_TIME = 5.0f;
+	// デバッグ表示用設定
+#ifdef _DEBUG
+	constexpr int DBG_SPHERE_DIV_NUM = 16;         // デバッグ用球体のポリゴン分割数
+	constexpr unsigned int COLOR_BLUE_ALPHA = 0xff0000ff; // デバッグ球体の線色
+	constexpr unsigned int COLOR_GREEN_ALPHA = 0x00ff00ff; // デバッグ球体の塗りつぶし色
+#endif
+}
+
 ShotBase::ShotBase(int damage, const VECTOR& birthPos, const VECTOR& shotVec, int key)
 {
 	Create(damage,birthPos, shotVec, key);
@@ -34,11 +49,10 @@ void ShotBase::Create(int damage, const VECTOR& birthPos, const VECTOR& dir, int
 	// 弾モデルの向き(角度)を指定方向に合わせる
 	transform_.quaRot = Quaternion::LookRotation(shotVec_);
 	transform_.quaRotLocal =
-		Quaternion::Euler({ 0.0f, Utility::Deg2RadF(90.0f), 0.0f });
+		Quaternion::Euler({ 0.0f, Utility::Deg2RadF(INIT_ROT_Y_DEG), 0.0f });
 
 	// モデル制御の基本情報更新
 	transform_.Update();
-
 	
 	// 状態遷移
 	ChangeState(STATE::SHOT);
@@ -63,9 +77,9 @@ void ShotBase::Update(void)
 	case ShotBase::STATE::END:
 		break;
 	}
+
 	// モデル制御の基本情報更新
 	transform_.Update();
-
 }
 
 void ShotBase::Draw(void)
@@ -88,9 +102,10 @@ void ShotBase::Draw(void)
 			break;
 		}
 	}
+
 #ifdef _DEBUG
 	if (capsule_ != nullptr)capsule_->Draw();
-	else DrawSphere3D(transform_.pos, radius_, 16, 0xff0000ff, 0x00ff00ff, FALSE);
+	else DrawSphere3D(transform_.pos, radius_, DBG_SPHERE_DIV_NUM, COLOR_BLUE_ALPHA, COLOR_GREEN_ALPHA, FALSE);
 #endif // _DEBUG
 
 }
@@ -134,10 +149,10 @@ void ShotBase::ChangeState(STATE _state )
 
 void ShotBase::SetParam(void)
 {
-	speed_ = 20.0f;
+	speed_ = DEFAULT_SHOT_SPEED;
 	// 生存時間
 	// 生存フラグ、時間の初期化
-	timeAlive_ = 5.0f;
+	timeAlive_ = DEFAULT_ALIVE_TIME;
 }
 
 void ShotBase::CheckAlive(void)

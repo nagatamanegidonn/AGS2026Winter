@@ -21,18 +21,20 @@ Timer::Timer(float limitSeconds)
     Material_->AddTextureBuf(endHandle_);
     Renderer_ = std::make_unique<PixelRenderer>(*Material_);
     Renderer_->SetSize(Vector2(100, 100));
-
 }
 
 Timer::~Timer(void)
 {
-    if (endHandle_ != -1) {
+    if (endHandle_ != -1)
+    {
         DeleteGraph(endHandle_);
     }
-    if (needleHandle_ != -1) {
+    if (needleHandle_ != -1)
+    {
         DeleteGraph(needleHandle_);
     }
-    if (freamHandle_ != -1) {
+    if (freamHandle_ != -1)
+    {
         DeleteGraph(freamHandle_);
     }
 }
