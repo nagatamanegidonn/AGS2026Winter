@@ -72,7 +72,6 @@ struct NET_JOIN_USER
 
 	// ïêäÌèÓïÒ
 	int weaponId_ = 0;
-
 };
 
 struct NET_JOIN_USERS
@@ -131,7 +130,6 @@ struct NET_ACTION_HIS
 	MONSTER_DATA monsters_[4];
 	int smallHp_[4] = { 10,10,10,10 };
 	int smallDamage_[4] = { 0,0,0,0 };
-
 };
 
 struct NET_USERS_ACTION_HIS

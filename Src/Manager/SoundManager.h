@@ -6,6 +6,7 @@ class SoundManager
 {
 
 public:
+
 	//リソース名
 	enum class SRC
 	{
@@ -63,7 +64,7 @@ public:
 	bool Pause(SRC src, Sound::TIMES times);
 	bool Resume(SRC src, Sound::TIMES times);
 
-
+	// 音の再生確認
 	bool CheckMove(SRC src);
 
 	void ChengeVolume(SRC src, float per);	// per 0.0～1.0でパーセントを設定する

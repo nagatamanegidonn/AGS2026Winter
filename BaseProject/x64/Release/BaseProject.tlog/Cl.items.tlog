@@ -1,15 +1,12 @@
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\GreatSword.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\GreatSword.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Manager\GameManager.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\GameManager.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Shot\BomObject.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\BomObject.obj
-C:\Users\2316013\Desktop\WildHuntG\Src\Object\Item\RecoveryItem.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\RecoveryItem.obj
-C:\Users\2316013\Desktop\WildHuntG\Src\Object\Item\ShotItem.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\ShotItem.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\SmallMonster.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\SmallMonster.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Enemy\EnemyBase.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\EnemyBase.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Shot\ArrowShot.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\ArrowShot.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Shot\ItemShot.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\ItemShot.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Stage\ItemObject.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\ItemObject.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Item\ItemPoach.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\ItemPoach.obj
-C:\Users\2316013\Desktop\WildHuntG\Src\Scene\Sub\MenuScene.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\MenuScene.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Item\ItemBase.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\ItemBase.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\Arrow.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\Arrow.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Shot\ShotBase.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\ShotBase.obj
@@ -60,9 +57,8 @@ C:\Users\2316013\Desktop\WildHuntG\Src\Scene\ConnectScene.cpp;C:\Users\2316013\D
 C:\Users\2316013\Desktop\WildHuntG\Src\Scene\GameScene.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\GameScene.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Scene\SceneBase.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\SceneBase.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Scene\TitleScene.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\TitleScene.obj
-C:\Users\2316013\Desktop\WildHuntG\Src\Utility\AsoUtility.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\AsoUtility.obj
+C:\Users\2316013\Desktop\WildHuntG\Src\Utility\Utility.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\Utility.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Utility\Measure.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\Measure.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Stage\Grid.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\Grid.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Player\ViewPlayer.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\ViewPlayer.obj
 C:\Users\2316013\Desktop\WildHuntG\Src\Object\Common\Timer.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\Timer.obj
-C:\Users\2316013\Desktop\WildHuntG\Src\Manager\UI\TextBox.cpp;C:\Users\2316013\Desktop\WildHuntG\BaseProject\x64\Release\TextBox.obj

@@ -149,8 +149,6 @@ public:
 	int GetWeapon(int key);
 	void SetWeapon(int key, int id);
 
-
-
 	// 全ての接続相手が指定されたゲームカウントか判断
 	bool IsSameFrameNo(void);
 
@@ -264,6 +262,5 @@ private:
 	void ReplaceActionHis(NET_ACTION_HIS entity);
 
 #pragma endregion
-
 
 };

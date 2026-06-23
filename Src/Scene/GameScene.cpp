@@ -67,7 +67,7 @@ namespace
 	constexpr float BLAST_VEC_RATE = 0.001f;
 	// カメラシェイク
 	constexpr float CAMERA_SHAKE_TIME = 0.5f;
-	constexpr float CAMERA_SHAKE_POWER = 1.5f;
+	constexpr float CAMERA_SHAKE_POWER = 5.0f;
 	constexpr float CAMERA_SHAKE_TIME_BLAST = 1.0f;
 	constexpr float CAMERA_SHAKE_POWER_BLAST = 2.0f;
 }
