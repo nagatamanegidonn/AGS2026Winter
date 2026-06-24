@@ -50,33 +50,6 @@ public:
 		Vector2 EndPos;				// 右下
 	};
 
-	// ボタンサイズ
-	const int WIDTH = 200;
-	const int HALF_WIDTH = 200 / 2;
-	const int HEIGHT = 30;
-	const int HALF_HEIGHT = 30 / 2;
-	// 画面中心位置
-	int HX = Application::SCREEN_SIZE_X / 2;
-	int HY = Application::SCREEN_SIZE_Y / 2;
-	// ボタン位置
-	const int B1_Y = Application::SCREEN_SIZE_Y - 100;
-	const Vector2 B1_C_POS = Vector2(845, 80 );
-	const Vector2 B1_S_POS = Vector2(B1_C_POS.x - HALF_WIDTH, B1_C_POS.y - HALF_HEIGHT);
-	const Vector2 B1_E_POS = Vector2(B1_C_POS.x + HALF_WIDTH, B1_C_POS.y + HALF_HEIGHT);
-	// IPアドレスボタンPos
-	const Vector2 IP_C_POS = Vector2(845, 80 + 60);
-	const Vector2 IP_S_POS = Vector2(IP_C_POS.x - HALF_WIDTH, IP_C_POS.y - HALF_HEIGHT);
-	const Vector2 IP_E_POS = Vector2(IP_C_POS.x + HALF_WIDTH, IP_C_POS.y + HALF_HEIGHT);
-	// weaponボタンPos
-	const Vector2 WP_C_POS = Vector2(IP_C_POS.x, IP_C_POS.y + 60);
-	const Vector2 WP_S_POS = Vector2(WP_C_POS.x - HALF_WIDTH, WP_C_POS.y - HALF_HEIGHT);
-	const Vector2 WP_E_POS = Vector2(WP_C_POS.x + HALF_WIDTH, WP_C_POS.y + HALF_HEIGHT);
-	// startボタンPos
-	const int B2_Y = B1_Y + 40;
-	const Vector2 B2_C_POS = Vector2(HX, B2_Y);
-	const Vector2 B2_S_POS = Vector2(B2_C_POS.x - HALF_WIDTH, B2_C_POS.y - HALF_HEIGHT);
-	const Vector2 B2_E_POS = Vector2(B2_C_POS.x + HALF_WIDTH, B2_C_POS.y + HALF_HEIGHT);
-
 	// コンストラクタ
 	TitleScene(void);
 
@@ -123,7 +96,6 @@ private:
 
 	// 前回のマウス情報
 	Vector2 agoMousePos_;	// 前フレームのマウス位置
-	bool agoMouseTrg_;		// 前フレームのトリガー情報	
 
 	// このシーンで変更するステータス
 	bool isPad_;		// パッド操作中はの判定
@@ -151,9 +123,6 @@ private:
 	// タイトルロゴ
 	std::unique_ptr<PixelMaterial> titleMaterial_;
 	std::unique_ptr<PixelRenderer> titleRenderer_;
-
-	// マウスの左クリックがトリガーされたか
-	const bool IsTrggerdMleft(void)const;
 
 	// ボタン位置追加
 	void AddPosTri(std::wstring name, int weponId, const Vector2 size, const Vector2 cPos);

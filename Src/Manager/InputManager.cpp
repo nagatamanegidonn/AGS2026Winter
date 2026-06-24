@@ -279,7 +279,6 @@ InputManager::JOYPAD_IN_STATE InputManager::GetJPadInputState(JOYPAD_NO no)
 	break;
 	case InputManager::JOYPAD_TYPE::XBOX_ONE:
 	{
-
 		auto d = GetJPadDInputState(no);
 		auto x = GetJPadXInputState(no);
 
@@ -322,14 +321,12 @@ InputManager::JOYPAD_IN_STATE InputManager::GetJPadInputState(JOYPAD_NO no)
 		// 右スティック
 		ret.AKeyRX = d.Rx;
 		ret.AKeyRY = d.Ry;
-
 	}
 	break;
 	case InputManager::JOYPAD_TYPE::DUAL_SHOCK_4:
 		break;
 	case InputManager::JOYPAD_TYPE::DUAL_SENSE:
 	{
-
 		auto d = GetJPadDInputState(no);
 		int idx;
 
@@ -356,7 +353,6 @@ InputManager::JOYPAD_IN_STATE InputManager::GetJPadInputState(JOYPAD_NO no)
 		// 右スティック
 		ret.AKeyRX = d.Z;
 		ret.AKeyRY = d.Rz;
-
 	}
 	break;
 	case InputManager::JOYPAD_TYPE::SWITCH_JOY_CON_L:

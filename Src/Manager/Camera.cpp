@@ -204,7 +204,6 @@ void Camera::StartShake(float _time, float _power)
 
 void Camera::SetDefault(void)
 {
-
 	// カメラの初期設定
 	pos_ = DEFAULT_CAMERA_POS;
 
@@ -256,7 +255,7 @@ void Camera::ProcessRot(void)
 	// 軸に、上は40度、下は15度回転すること
 	// カメラ操作は矢印キーを用いること
 
-	auto& ins = InputManager::GetInstance();
+	auto& input = InputManager::GetInstance();
 
 	// 回転軸と量決め
 	const float ROT_POW = Utility::Deg2RadF(1.0f);
@@ -265,16 +264,16 @@ void Camera::ProcessRot(void)
 
 	if (angles_.x <= LIMIT_X_UP_RAD)
 	{
-		if (ins.IsNew(KEY_INPUT_DOWN)) { axisDeg.x = ROT_POW; }
+		if (input.IsNew(KEY_INPUT_DOWN)) { axisDeg.x = ROT_POW; }
 	}
 
 	if (angles_.x >= LIMIT_X_DW_RAD)
 	{
-		if (ins.IsNew(KEY_INPUT_UP)) { axisDeg.x = -ROT_POW; }
+		if (input.IsNew(KEY_INPUT_UP)) { axisDeg.x = -ROT_POW; }
 	}
 
-	if (ins.IsNew(KEY_INPUT_RIGHT)) { axisDeg.y = ROT_POW; }
-	if (ins.IsNew(KEY_INPUT_LEFT)) { axisDeg.y = -ROT_POW; }
+	if (input.IsNew(KEY_INPUT_RIGHT)) { axisDeg.y = ROT_POW; }
+	if (input.IsNew(KEY_INPUT_LEFT)) { axisDeg.y = -ROT_POW; }
 
 
 	if (!Utility::EqualsVZero(axisDeg))

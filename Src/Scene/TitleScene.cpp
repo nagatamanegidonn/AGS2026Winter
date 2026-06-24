@@ -43,6 +43,32 @@ namespace
 	constexpr int INITIAL_CHAR_ID = 0; // ナイト
 	// シェーダ・レンダラー設定
 	constexpr int SHADER_BUFFER_NUM = 1;
+	// ボタンサイズ
+	const int WIDTH = 200;
+	const int HALF_WIDTH = 200 / 2;
+	const int HEIGHT = 30;
+	const int HALF_HEIGHT = 30 / 2;
+	// 画面中心位置
+	int HX = Application::SCREEN_SIZE_X / 2;
+	int HY = Application::SCREEN_SIZE_Y / 2;
+	// ボタン位置
+	const int B1_Y = Application::SCREEN_SIZE_Y - 100;
+	const Vector2 B1_C_POS = Vector2(845, 80);
+	const Vector2 B1_S_POS = Vector2(B1_C_POS.x - HALF_WIDTH, B1_C_POS.y - HALF_HEIGHT);
+	const Vector2 B1_E_POS = Vector2(B1_C_POS.x + HALF_WIDTH, B1_C_POS.y + HALF_HEIGHT);
+	// IPアドレスボタンPos
+	const Vector2 IP_C_POS = Vector2(845, 80 + 60);
+	const Vector2 IP_S_POS = Vector2(IP_C_POS.x - HALF_WIDTH, IP_C_POS.y - HALF_HEIGHT);
+	const Vector2 IP_E_POS = Vector2(IP_C_POS.x + HALF_WIDTH, IP_C_POS.y + HALF_HEIGHT);
+	// weaponボタンPos
+	const Vector2 WP_C_POS = Vector2(IP_C_POS.x, IP_C_POS.y + 60);
+	const Vector2 WP_S_POS = Vector2(WP_C_POS.x - HALF_WIDTH, WP_C_POS.y - HALF_HEIGHT);
+	const Vector2 WP_E_POS = Vector2(WP_C_POS.x + HALF_WIDTH, WP_C_POS.y + HALF_HEIGHT);
+	// startボタンPos
+	const int B2_Y = B1_Y + 40;
+	const Vector2 B2_C_POS = Vector2(HX, B2_Y);
+	const Vector2 B2_S_POS = Vector2(B2_C_POS.x - HALF_WIDTH, B2_C_POS.y - HALF_HEIGHT);
+	const Vector2 B2_E_POS = Vector2(B2_C_POS.x + HALF_WIDTH, B2_C_POS.y + HALF_HEIGHT);
 }
 
 TitleScene::TitleScene(void)
@@ -64,7 +90,6 @@ TitleScene::TitleScene(void)
 	padUpdate_(nullptr),
 	mouseUpdate_(nullptr),
 	isPad_(false),
-	agoMouseTrg_(false),
 	agoMousePos_(),
 	cursorImg_(-1),
 	backImg_(-1),
@@ -138,9 +163,8 @@ void TitleScene::Init(void)
 	// マウスポインタを画面中央に移動
 	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
 
-	auto& ins = InputManager::GetInstance();
-	agoMousePos_ = ins.GetMousePos();
-	agoMouseTrg_ = true;
+	auto& input = InputManager::GetInstance();
+	agoMousePos_ = input.GetMousePos();
 
 	// カーソル画像
 	cursorMaterial_ = std::make_unique<PixelMaterial>(SHADER_TEX.c_str(), SHADER_BUFFER_NUM);
@@ -175,8 +199,8 @@ void TitleScene::Init(void)
 
 void TitleScene::Update(void)
 {
-	auto& ins = InputManager::GetInstance();
-	Vector2 moPos = ins.GetMousePos();
+	auto& input = InputManager::GetInstance();
+	Vector2 moPos = input.GetMousePos();
 
 	// 入力情報の更新
 	inputController_->Update();
@@ -192,12 +216,11 @@ void TitleScene::Update(void)
 
 	// 前フレームのマウス情報として保存
 	agoMousePos_ = moPos;
-	agoMouseTrg_ = ins.IsClickMouseLeft();
 }
 
 void TitleScene::Draw(void)
 {
-	auto& ins = InputManager::GetInstance();
+	auto& input = InputManager::GetInstance();
 
 	// 背景描画
 	backGroundRenderer_->Draw();
@@ -310,7 +333,7 @@ void TitleScene::UpdateMouse(void)
 
 	if (isTitle_)
 	{
-		if (IsTrggerdMleft())
+		if (InputManager::GetInstance().IsTrgMouseLeft())
 		{
 			SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 			isTitle_ = false;
@@ -323,8 +346,8 @@ void TitleScene::UpdateMouse(void)
 
 void TitleScene::UpdatePad(void)
 {
-	auto& ins = InputManager::GetInstance();
-	Vector2 moPos = ins.GetMousePos();
+	auto& input = InputManager::GetInstance();
+	Vector2 moPos = input.GetMousePos();
 
 	if (inputController_->IsPeripheralTriggered(InputController::PeripheralType::MOUSE)
 		|| (agoMousePos_.x != moPos.x && agoMousePos_.y != moPos.y)
@@ -357,7 +380,7 @@ void TitleScene::UpdatePad(void)
 // マウス更新
 void TitleScene::MouseUpdate(void)
 {
-	auto& ins = InputManager::GetInstance();
+	auto& input = InputManager::GetInstance();
 
 	if (inputTextArea_->IsActive())
 	{
@@ -366,9 +389,9 @@ void TitleScene::MouseUpdate(void)
 	}
 
 	// クリックしたとき
-	if (!inputTextArea_->IsActive() && IsTrggerdMleft())
+	if (!inputTextArea_->IsActive() && input.IsTrgMouseLeft())
 	{
-		Vector2 moPos = ins.GetMousePos();
+		Vector2 moPos = input.GetMousePos();
 
 		// ホストになることを選択orクライアントになることを選択
 		if (B1_S_POS.x <= moPos.x && B1_E_POS.x >= moPos.x
@@ -428,7 +451,7 @@ void TitleScene::MouseUpdate(void)
 			mouseUpdate_ = std::bind(&TitleScene::MWeaponUpdate, this);
 		}
 	}
-	else if (inputTextArea_->IsActive() && IsTrggerdMleft())
+	else if (inputTextArea_->IsActive() && input.IsTrgMouseLeft())
 	{
 		SoundManager::GetInstance().Play(SoundManager::SRC::ENTER, Sound::TIMES::ONCE, true);
 
@@ -450,14 +473,14 @@ void TitleScene::MouseUpdate(void)
 
 void TitleScene::MWeaponUpdate(void)
 {
-	auto& ins = InputManager::GetInstance();
+	auto& input = InputManager::GetInstance();
 	auto& sns = SceneManager::GetInstance();
 	auto& gns = GameManager::GetInstance();
 
 	// クリックしたとき
-	if (IsTrggerdMleft())
+	if (input.IsTrgMouseLeft())
 	{
-		Vector2 moPos = ins.GetMousePos();
+		Vector2 moPos = input.GetMousePos();
 		bool isSlect = false;
 
 		for (const auto& wPos : weponsPos_)
@@ -490,7 +513,7 @@ void TitleScene::MWeaponUpdate(void)
 // 通常更新（コントロ－ラー）
 void TitleScene::PNormalUpdate(void)
 {
-	auto& ins = InputManager::GetInstance();
+	auto& input = InputManager::GetInstance();
 	auto& sns = SceneManager::GetInstance();
 
 	if (inputTextArea_->IsActive())
@@ -578,7 +601,7 @@ void TitleScene::PNormalUpdate(void)
 
 void TitleScene::PWeaponUpdate(void)
 {
-	auto& ins = InputManager::GetInstance();
+	auto& input = InputManager::GetInstance();
 	auto& sns = SceneManager::GetInstance();
 	auto& gns = GameManager::GetInstance();
 
@@ -633,12 +656,6 @@ void TitleScene::PIpUpdate(void)
 
 		padUpdate_ = std::bind(&TitleScene::PNormalUpdate, this);
 	}
-}
-
-const bool TitleScene::IsTrggerdMleft(void) const
-{
-	auto& ins = InputManager::GetInstance();
-	return ins.IsClickMouseLeft() && !agoMouseTrg_;
 }
 
 void TitleScene::AddPosTri(std::wstring name, int weponId, const Vector2 size, const Vector2 cPos)

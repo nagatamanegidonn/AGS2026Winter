@@ -71,12 +71,15 @@ void GameManager::Init(void)
 	// 接続はHost
 	IsHost_ = true;
 }
+
 void GameManager::Update(void)
 {
 }
+
 void GameManager::Draw(void)
 {
 }
+
 // clearTime_が一定の数値以下になったときに呼ばれる
 void GameManager::DrawClear(void)
 {
@@ -113,6 +116,7 @@ void GameManager::DrawClear(void)
 		}
 	}
 }
+
 void GameManager::Destroy(void)
 {
 	Save(false);
@@ -165,6 +169,7 @@ void GameManager::Load(void)
 		}
 	}
 }
+
 void GameManager::Save(bool isUse)
 {
 	// JSON読み込み（既存ファイル）
