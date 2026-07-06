@@ -95,7 +95,21 @@ void Stage::Draw(void)
 	{
 		s.second->Draw();
 	}
-	
+	// オブジェクト
+	for (const auto& s : objects_)
+	{
+		s->Draw();
+	}
+}
+
+void Stage::DrawShadow(void)
+{
+	// 惑星
+	for (const auto& s : planets_)
+	{
+		s.second->Draw();
+	}
+
 	// オブジェクト
 	for (const auto& s : objects_)
 	{

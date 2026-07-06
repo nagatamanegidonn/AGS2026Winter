@@ -51,6 +51,9 @@ public:
 	// 描画処理
 	void Draw(void) override;
 
+	// 影の描画
+	void DrawShadow(void) override;
+
 	// ステージ変更
 	void ChangeStage(NAME type);
 

@@ -250,8 +250,6 @@ void SmallMonster::Draw(void)
 	if (state_ != STATE::NONE)
 	{
 		MV1DrawModel(transform_.modelId);
-
-		DrawShadow();
 	}
 
 	// ダメージの表記

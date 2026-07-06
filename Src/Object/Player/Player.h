@@ -173,6 +173,9 @@ public:
 	void Draw(void) override;
 	virtual void DrawUI(int i);
 
+	// ‰e‚Ì•`‰æ
+	void DrawShadow(void) override;
+
 	// ‰ğ•úˆ—
 	void Release(void);
 

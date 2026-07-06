@@ -21,6 +21,9 @@ public:
 	// •`‰æˆ—
 	virtual void Draw(void) = 0;
 
+	// ‰e‚Ì•`‰æ
+	virtual void DrawShadow(void);
+
 	// ƒ‚ƒfƒ‹Šî–{î•ñ‚Ìæ“¾
 	const Transform& GetTransform(void) const;
 

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Common\ShadowMap.cpp" />
     <ClCompile Include="Src\Object\Player\GreatSword.cpp" />
     <ClCompile Include="Src\Manager\GameManager.cpp" />
     <ClCompile Include="Src\Object\Shot\BomObject.cpp" />
@@ -85,6 +86,7 @@
     <ClCompile Include="Src\Object\Common\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Common\ShadowMap.h" />
     <ClInclude Include="Src\Object\Player\GreatSword.h" />
     <ClInclude Include="Src\Manager\GameManager.h" />
     <ClInclude Include="Src\Object\Shot\BomObject.h" />

@@ -7,6 +7,7 @@
 
 #include "SceneBase.h"
 
+class ShadowMap;
 class Fader;
 class Player;
 class Boss;
@@ -66,6 +67,9 @@ public:
 	void CreateObject(const Transform& _trans);
 
 private:
+
+	// シャドウマップ
+	std::unique_ptr<ShadowMap> shadowMap_;
 
 	// フェード（フラッシュ用）
 	std::unique_ptr<Fader> fader_;

@@ -7,6 +7,7 @@
 #include "../Manager/SceneManager.h"
 #include "../Manager/GameManager.h"
 #include "../Manager/Camera.h"
+#include "../Common/ShadowMap.h"
 #include "../Common/Fader.h"
 #include "../Net/NetStructures.h"
 #include "../Net/NetManager.h"
@@ -107,6 +108,10 @@ void GameScene::Init(void)
 	// 初期化
 	GameManager::GetInstance().SetGameResult(GameManager::GAME_RESULT::NONE);
 
+	// シャドウマップクラスの作成
+	shadowMap_ = std::make_unique<ShadowMap>();
+	shadowMap_->Init();
+
 	// フラッシュ用フェードクラスの生成
 	fader_ = std::make_unique<Fader>(0xffffff);
 	fader_->Init(FLASH_FADE_SPEED);
@@ -200,6 +205,24 @@ void GameScene::Update(void)
 
 void GameScene::Draw(void)
 {
+	// シャドウマップの設定
+	shadowMap_->DrawStart();
+
+	// 影の描画
+	// プレイヤーの描画
+	for (auto& player : players_)
+	{
+		player->DrawShadow();
+	}
+	boss_->DrawShadow();
+	for (auto& mons : monsters_)
+	{
+		mons->DrawShadow();
+	}
+	stage_->DrawShadow();
+
+	shadowMap_->DrawEnd();
+
 	// 背景、ステージの描画
 	skyDome_->Draw();
 	stage_->Draw();

@@ -662,9 +662,6 @@ void Player::Draw(void)
 	// ƒ‚ƒfƒ‹‚Ì•`‰æ
 	MV1DrawModel(transform_.modelId);
 
-	// ‰e‚Ì•`‰æ
-	DrawShadow();
-
 	//•Ší‚Ì•`‰æ
 	DrawWeapon();
 
@@ -716,6 +713,12 @@ void Player::DrawUI(int i)
 
 #endif // DEBUG
 
+}
+
+void Player::DrawShadow(void)
+{
+	ActorBase::DrawShadow();
+	MV1DrawModel(transWeapon_.modelId);
 }
 
 void Player::Release(void)
