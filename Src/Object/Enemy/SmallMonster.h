@@ -70,6 +70,9 @@ public:
 	// •`‰æˆ—
 	virtual void Draw(void) override;
 
+	// ‰e‚Ì•`‰æ
+	virtual void DrawShadow(void) override;
+
 	// ƒ_ƒ[ƒWŠÖŒW
 	void Damage(int dama, bool isConst = false) override;
 

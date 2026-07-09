@@ -265,6 +265,14 @@ void SmallMonster::Draw(void)
 #endif // DEBUG
 }
 
+void SmallMonster::DrawShadow(void)
+{
+	if (state_ != STATE::NONE)
+	{
+		MV1DrawModel(transform_.modelId);
+	}
+}
+
 void SmallMonster::Damage(int _dama, bool _isConst)
 {
 	auto& nIns = NetManager::GetInstance();
